@@ -1,0 +1,2578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Quantum Loom — Sub-Graph Canvas</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   QUANTUM LOOM — SUB-GRAPH CANVAS
+   Nested logic editor with LLM Router node
+   ═══════════════════════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:          #080a0c;
+  --bg-2:        #0f1114;
+  --bg-3:        #161920;
+  --surface:     rgba(18,21,26,0.96);
+  --surface-hi:  rgba(28,32,38,0.97);
+  --border:      rgba(255,255,255,0.06);
+  --border-hi:   rgba(255,255,255,0.12);
+  --border-hot:  rgba(255,255,255,0.22);
+  --solari:      #f98f3b;
+  --solari-lt:   #ffd89e;
+  --venturan:    #b1d0f0;
+  --venturan-lt: #e3f3ff;
+  --fusion:      #9b7fd4;
+  --totem:       #7fd4c8;
+  --umbraeth:    #4d4d4d;
+  --blood:       #d45b5b;
+  --emerald:     #4caf7d;
+  --amber:       #e8b84b;
+  --fm:          'Orbitron',monospace;
+  --fd:          'Space Grotesk',sans-serif;
+  --fcode:       'JetBrains Mono',monospace;
+  --r:           10px;
+  --r-sm:        6px;
+  --r-xs:        3px;
+}
+
+/* Node type accent colors */
+:root{
+  --col-stat:      #b1d0f0;  /* Trait/Stat */
+  --col-heraldic:  #9b7fd4;  /* Crest/Sigil/Glyph */
+  --col-condition: #e8b84b;  /* IF/THEN logic */
+  --col-modifier:  #d45b5b;  /* Buff/Debuff */
+  --col-narrative: #7fd4c8;  /* Dialogue/Trigger */
+  --col-router:    #f98f3b;  /* LLM Router */
+  --col-output:    #4caf7d;  /* Output/Result */
+}
+
+@keyframes pulse    {0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.5)}}
+@keyframes spin     {to{transform:rotate(360deg)scale(1.15)}}
+@keyframes breathe  {0%,100%{opacity:.4}50%{opacity:.9}}
+@keyframes fadein   {from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popin    {from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+@keyframes slidein  {from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes wireflow {0%{stroke-dashoffset:60}100%{stroke-dashoffset:0}}
+@keyframes crumb-in {from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes cost-tick{0%,100%{color:rgba(255,255,255,.4)}50%{color:var(--emerald)}}
+@keyframes glitch   {0%,89%,100%{opacity:.07;filter:blur(2px)}90%{opacity:.35;filter:hue-rotate(90deg)}92%{opacity:.04}}
+@keyframes toast-in {0%{opacity:0;transform:translateY(8px)}15%,80%{opacity:1;transform:translateY(0)}100%{opacity:0}}
+
+body{background:var(--bg);font-family:var(--fd);color:#fff;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* ─── TOPBAR ──────────────────────────────── */
+#topbar{
+  height:44px;flex-shrink:0;z-index:300;
+  background:rgba(8,10,12,.98);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;gap:10px;
+}
+.logo{font-family:var(--fm);font-size:.58rem;font-weight:700;letter-spacing:.28em;color:var(--venturan);text-transform:uppercase;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.logo-mark{width:22px;height:22px;border:1.5px solid var(--venturan);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:breathe 4s ease-in-out infinite}
+.tb-sep{width:1px;height:18px;background:var(--border-hi)}
+
+/* Breadcrumb */
+#breadcrumb{display:flex;align-items:center;gap:4px;flex:1;overflow:hidden}
+.crumb{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;
+  padding:4px 9px;border-radius:var(--r-xs);border:1px solid var(--border);
+  background:transparent;color:rgba(255,255,255,.35);cursor:pointer;
+  transition:all .15s;white-space:nowrap;animation:crumb-in .2s ease;
+}
+.crumb:hover{border-color:var(--venturan);color:var(--venturan)}
+.crumb.active{color:var(--venturan);border-color:rgba(177,208,240,.3);background:rgba(177,208,240,.06)}
+.crumb-arrow{color:rgba(255,255,255,.2);font-size:.7rem;flex-shrink:0}
+.crumb-back{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;
+  padding:5px 11px;border-radius:var(--r-xs);
+  border:1px solid rgba(177,208,240,.25);background:rgba(177,208,240,.06);
+  color:var(--venturan);cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;gap:5px;flex-shrink:0;
+}
+.crumb-back:hover{background:rgba(177,208,240,.12)}
+.crumb-back.hidden{display:none}
+
+.tb-right{display:flex;align-items:center;gap:7px;margin-left:auto}
+.btn-sm{
+  font-family:var(--fm);font-size:.48rem;letter-spacing:.15em;text-transform:uppercase;
+  padding:5px 11px;border-radius:var(--r-xs);border:1px solid var(--border-hi);
+  background:transparent;color:rgba(255,255,255,.45);cursor:pointer;transition:all .15s;
+}
+.btn-sm:hover{border-color:var(--venturan);color:var(--venturan)}
+.btn-sm.primary{background:linear-gradient(135deg,var(--solari),var(--solari-lt));border-color:var(--solari);color:#1a1a1a;font-weight:700}
+.btn-sm.primary:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(249,143,59,.25)}
+
+/* ─── CANVAS ─────────────────────────────── */
+#canvas{flex:1;position:relative;overflow:hidden;background:var(--bg);cursor:default}
+#canvas-bg{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(177,208,240,.04)1px,transparent 1px),linear-gradient(90deg,rgba(177,208,240,.04)1px,transparent 1px),linear-gradient(rgba(177,208,240,.07)1px,transparent 1px),linear-gradient(90deg,rgba(177,208,240,.07)1px,transparent 1px);background-size:20px 20px,20px 20px,80px 80px,80px 80px}
+/* Hope basin */
+#canvas-bg::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:600px;background:radial-gradient(ellipse at center,rgba(177,208,240,.02) 0%,transparent 65%);animation:breathe 6s ease-in-out infinite;pointer-events:none}
+
+#canvas-inner{position:absolute;top:0;left:0;transform-origin:0 0}
+#wire-layer{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+
+/* Canvas controls */
+#canvas-controls{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:3px;z-index:10}
+.ctrl{width:28px;height:28px;background:rgba(15,17,20,.9);backdrop-filter:blur(12px);border:1px solid var(--border-hi);border-radius:var(--r-xs);color:var(--venturan);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:all .15s}
+.ctrl:hover{background:rgba(177,208,240,.1)}
+
+#zoom-lbl{position:absolute;bottom:12px;left:12px;font-family:var(--fd);font-size:.58rem;color:rgba(255,255,255,.18);pointer-events:none}
+
+/* Canvas hint */
+.canvas-hint-wrap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;opacity:.5}
+.hint-glyph{font-size:3rem;opacity:.15;animation:breathe 4s ease-in-out infinite}
+.hint-txt{font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;color:rgba(255,255,255,.25);text-transform:uppercase;line-height:2;margin-top:8px}
+
+/* ─── NODE PANEL (right) ─────────────────── */
+#node-panel{width:310px;flex-shrink:0;background:rgba(10,12,16,.98);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;animation:slidein .2s ease}
+#node-panel.hidden{display:none}
+
+/* ─── NODE BASE STYLES ───────────────────── */
+.loom-node{
+  position:absolute;min-width:220px;
+  background:var(--surface);backdrop-filter:blur(14px) saturate(1.2);
+  border:1px solid var(--border);border-radius:var(--r);
+  box-shadow:0 4px 24px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.04) inset;
+  cursor:grab;user-select:none;animation:popin .2s ease;
+}
+.loom-node:hover{border-color:var(--border-hi)}
+.loom-node.selected{border-color:var(--node-accent,var(--venturan));box-shadow:0 0 0 1px var(--node-accent,var(--venturan)),0 6px 28px rgba(0,0,0,.6);z-index:50}
+.loom-node.dragging{cursor:grabbing;z-index:999;box-shadow:0 16px 48px rgba(0,0,0,.7)}
+
+/* Node header */
+.nh{padding:9px 11px 7px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
+.nh-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;animation:pulse 3s ease-in-out infinite}
+.nh-type{font-family:var(--fm);font-size:.44rem;letter-spacing:.28em;text-transform:uppercase;padding:1px 5px;border-radius:2px;flex-shrink:0}
+.nh-title{font-family:var(--fm);font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nh-sub{font-family:var(--fd);font-size:.58rem;color:rgba(255,255,255,.35);margin-top:1px}
+
+/* Node body */
+.nb{padding:9px 11px 11px;display:flex;flex-direction:column;gap:7px}
+
+/* Corner ornaments */
+.nc{position:absolute;pointer-events:none}
+.nc div{position:absolute;background:var(--node-accent,var(--venturan))}
+.nc .ch{width:8px;height:1px}
+.nc .cv{width:1px;height:8px}
+.nc.tl{top:4px;left:4px}.nc.tl .ch,.nc.tl .cv{top:0;left:0}
+.nc.tr{top:4px;right:4px}.nc.tr .ch{top:0;right:0}.nc.tr .cv{top:0;right:0}
+.nc.bl{bottom:4px;left:4px}.nc.bl .ch{bottom:0;left:0}.nc.bl .cv{bottom:0;left:0}
+.nc.br{bottom:4px;right:4px}.nc.br .ch{bottom:0;right:0}.nc.br .cv{bottom:0;right:0}
+
+/* Ports */
+.port{position:absolute;width:11px;height:11px;border-radius:50%;border:2px solid;z-index:20;transition:transform .15s,box-shadow .15s;cursor:crosshair}
+.port:hover{transform:scale(1.3);box-shadow:0 0 8px currentColor}
+.port.left  {left:-5.5px;top:50%;transform:translateY(-50%)}
+.port.right {right:-5.5px;top:50%;transform:translateY(-50%)}
+.port.top   {top:-5.5px;left:50%;transform:translateX(-50%)}
+.port.bottom{bottom:-5.5px;left:50%;transform:translateX(-50%)}
+.port.left:hover  {transform:translateY(-50%) scale(1.3)}
+.port.right:hover {transform:translateY(-50%) scale(1.3)}
+.port.top:hover   {transform:translateX(-50%) scale(1.3)}
+.port.bottom:hover{transform:translateX(-50%) scale(1.3)}
+.port.connected{border-color:var(--port-color,var(--venturan))!important;background:rgba(177,208,240,.15)!important}
+
+/* ─── SPECIFIC NODE TYPES ────────────────── */
+
+/* STAT NODE */
+.stat-node{--node-accent:var(--col-stat)}
+.stat-row-item{display:flex;align-items:center;gap:7px}
+.stat-label{font-family:var(--fm);font-size:.46rem;letter-spacing:.15em;text-transform:uppercase;width:52px;flex-shrink:0;color:rgba(255,255,255,.45)}
+.stat-bar{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.stat-fill{height:100%;border-radius:2px}
+.stat-val{font-family:var(--fcode);font-size:.65rem;width:18px;text-align:right;flex-shrink:0}
+.trait-tags{display:flex;gap:3px;flex-wrap:wrap}
+.trait-tag{font-family:var(--fd);font-size:.58rem;color:rgba(255,255,255,.45);background:rgba(255,255,255,.05);padding:2px 6px;border-radius:2px}
+.trait-tag.flagged{background:rgba(212,91,91,.12);border:1px solid rgba(212,91,91,.3);color:var(--blood)}
+
+/* HERALDIC NODE */
+.heraldic-node{--node-accent:var(--col-heraldic)}
+.heraldic-symbol{font-size:2.2rem;text-align:center;padding:4px 0;filter:drop-shadow(0 0 8px var(--col-heraldic))}
+.heraldic-meta{display:flex;flex-direction:column;gap:3px}
+.h-row{display:flex;align-items:center;justify-content:space-between}
+.h-key{font-family:var(--fm);font-size:.44rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.h-val{font-family:var(--fcode);font-size:.6rem;color:var(--col-heraldic)}
+.fusion-hint{font-family:var(--fd);font-size:.58rem;color:var(--fusion);font-style:italic;padding:4px 0;border-top:1px solid var(--border);margin-top:2px}
+
+/* CONDITION NODE */
+.condition-node{--node-accent:var(--col-condition)}
+.condition-block{background:rgba(0,0,0,.3);border:1px solid rgba(232,184,75,.15);border-radius:var(--r-sm);padding:7px 9px;display:flex;flex-direction:column;gap:4px}
+.cond-line{display:flex;align-items:center;gap:6px}
+.cond-key{font-family:var(--fm);font-size:.46rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3);width:24px;flex-shrink:0}
+.cond-val{font-family:var(--fcode);font-size:.65rem;flex:1;color:var(--col-condition)}
+.cond-op{font-family:var(--fm);font-size:.44rem;letter-spacing:.12em;text-transform:uppercase;padding:1px 5px;border-radius:2px;flex-shrink:0}
+.branch-row{display:flex;align-items:center;gap:5px;padding:3px 0}
+.branch-label{font-family:var(--fm);font-size:.44rem;letter-spacing:.15em;text-transform:uppercase;padding:2px 6px;border-radius:2px;flex-shrink:0}
+.branch-wire{flex:1;height:1px;border-top:1px dashed rgba(255,255,255,.1)}
+.prob-badge{font-family:var(--fcode);font-size:.58rem;color:rgba(255,255,255,.35)}
+
+/* MODIFIER NODE */
+.modifier-node{--node-accent:var(--col-modifier)}
+.mod-list{display:flex;flex-direction:column;gap:4px}
+.mod-item{display:flex;align-items:center;gap:7px;padding:4px 7px;background:rgba(0,0,0,.25);border-radius:var(--r-xs);border:1px solid rgba(212,91,91,.12)}
+.mod-icon{font-size:.85rem;flex-shrink:0;width:16px;text-align:center}
+.mod-desc{font-family:var(--fd);font-size:.62rem;flex:1;color:rgba(255,255,255,.65)}
+.mod-val{font-family:var(--fcode);font-size:.65rem;flex-shrink:0}
+.mod-val.neg{color:var(--blood)}
+.mod-val.pos{color:var(--emerald)}
+.trigger-note{font-family:var(--fd);font-size:.58rem;color:rgba(255,255,255,.35);font-style:italic;border-top:1px solid var(--border);padding-top:5px;margin-top:2px}
+
+/* NARRATIVE NODE */
+.narrative-node{--node-accent:var(--col-narrative)}
+.narr-type{font-family:var(--fm);font-size:.44rem;letter-spacing:.2em;text-transform:uppercase;color:var(--col-narrative);opacity:.7;margin-bottom:2px}
+.narr-seed{font-family:var(--fd);font-size:.68rem;color:rgba(255,255,255,.7);line-height:1.45;font-style:italic}
+.narr-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px}
+.narr-tag{font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;padding:1px 5px;border-radius:2px;background:rgba(127,212,200,.1);border:1px solid rgba(127,212,200,.25);color:var(--col-narrative)}
+
+/* LLM ROUTER NODE — special */
+.router-node{--node-accent:var(--col-router);min-width:280px}
+.router-tiers{display:flex;flex-direction:column;gap:3px}
+.tier{
+  border-radius:var(--r-sm);border:1px solid;padding:6px 8px;
+  display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .15s;
+}
+.tier.offline{border-color:rgba(76,175,125,.3);background:rgba(76,175,125,.06)}
+.tier.local  {border-color:rgba(155,127,212,.25);background:rgba(155,127,212,.06)}
+.tier.mid    {border-color:rgba(232,184,75,.2);background:rgba(232,184,75,.04)}
+.tier.premium{border-color:rgba(249,143,59,.2);background:rgba(249,143,59,.04)}
+.tier.active {border-width:1.5px;box-shadow:0 0 8px rgba(0,0,0,.3)}
+.tier.offline.active{border-color:var(--emerald);background:rgba(76,175,125,.12)}
+.tier.local.active  {border-color:var(--fusion);background:rgba(155,127,212,.12)}
+.tier.mid.active    {border-color:var(--amber);background:rgba(232,184,75,.1)}
+.tier.premium.active{border-color:var(--solari);background:rgba(249,143,59,.1)}
+.tier-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0}
+.tier-info{flex:1;min-width:0}
+.tier-name{font-family:var(--fm);font-size:.52rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1px}
+.tier-desc{font-family:var(--fd);font-size:.58rem;color:rgba(255,255,255,.4)}
+.tier-cost{font-family:var(--fcode);font-size:.58rem;flex-shrink:0;text-align:right}
+.tier-cost.free{color:var(--emerald)}
+.tier-cost.cheap{color:var(--amber)}
+.tier-cost.mid-cost{color:var(--solari)}
+.tier-cost.premium-cost{color:var(--blood)}
+.tier-badge{font-family:var(--fm);font-size:.38rem;letter-spacing:.2em;text-transform:uppercase;padding:1px 5px;border-radius:2px;flex-shrink:0}
+.tier-providers{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+.provider-pill{font-family:var(--fm);font-size:.4rem;letter-spacing:.1em;text-transform:uppercase;padding:1px 5px;border-radius:2px;border:1px solid;cursor:pointer;transition:all .12s}
+.provider-pill.sel{background:rgba(255,255,255,.12)}
+.provider-pill:hover:not(.sel){opacity:.8}
+.router-rule{display:flex;align-items:center;gap:6px;padding:4px 0;border-top:1px solid var(--border)}
+.rule-task{font-family:var(--fm);font-size:.44rem;letter-spacing:.12em;text-transform:uppercase;flex:1;color:rgba(255,255,255,.4)}
+.rule-arrow{color:rgba(255,255,255,.2);font-size:.65rem}
+.rule-target{font-family:var(--fcode);font-size:.58rem}
+.router-status{display:flex;align-items:center;gap:5px;padding-top:5px;border-top:1px solid var(--border);margin-top:2px}
+.rs-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.rs-txt{font-family:var(--fm);font-size:.44rem;letter-spacing:.15em;text-transform:uppercase}
+.rs-cost-lbl{font-family:var(--fd);font-size:.58rem;color:rgba(255,255,255,.35);margin-left:auto}
+.rs-cost-val{font-family:var(--fcode);font-size:.65rem;color:var(--emerald);animation:cost-tick 2s ease-in-out infinite}
+
+/* OUTPUT NODE */
+.output-node{--node-accent:var(--col-output)}
+.output-preview{background:rgba(0,0,0,.35);border:1px solid rgba(76,175,125,.15);border-radius:var(--r-sm);padding:8px;font-family:var(--fcode);font-size:.62rem;color:rgba(76,175,125,.8);line-height:1.5;min-height:50px;font-style:italic}
+.output-meta{display:flex;gap:6px;flex-wrap:wrap}
+.out-tag{font-family:var(--fm);font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;padding:2px 6px;border-radius:2px;background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.25);color:var(--emerald)}
+
+/* ─── RIGHT PANEL ────────────────────────── */
+.rp-head{padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.rp-title{font-family:var(--fm);font-size:.56rem;font-weight:700;letter-spacing:.22em;color:var(--venturan);text-transform:uppercase}
+.rp-close{width:22px;height:22px;background:none;border:1px solid var(--border);border-radius:var(--r-xs);color:rgba(255,255,255,.3);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.rp-close:hover{border-color:var(--blood);color:var(--blood)}
+.rp-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:14px}
+.rp-body::-webkit-scrollbar{width:3px}
+.rp-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.rp-section{display:flex;flex-direction:column;gap:8px}
+.rp-sec-lbl{font-family:var(--fm);font-size:.48rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.3);padding-bottom:6px;border-bottom:1px solid var(--border)}
+.rp-field{display:flex;flex-direction:column;gap:3px}
+.rp-lbl{font-family:var(--fm);font-size:.45rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.rp-input{background:rgba(255,255,255,.04);border:1px solid var(--border-hi);border-radius:var(--r-sm);color:#fff;font-family:var(--fcode);font-size:.72rem;padding:6px 9px;outline:none;transition:border-color .15s;width:100%}
+.rp-input:focus{border-color:rgba(177,208,240,.4)}
+.rp-select{background:rgba(255,255,255,.04);border:1px solid var(--border-hi);border-radius:var(--r-sm);color:#fff;font-family:var(--fd);font-size:.72rem;padding:6px 9px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(177,208,240,0.4)'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;width:100%}
+.rp-select:focus{border-color:rgba(177,208,240,.4)}
+.rp-select option{background:#1a1a1a}
+.rp-textarea{background:rgba(255,255,255,.04);border:1px solid var(--border-hi);border-radius:var(--r-sm);color:#fff;font-family:var(--fcode);font-size:.68rem;padding:7px 9px;outline:none;resize:vertical;min-height:64px;line-height:1.5;width:100%}
+.rp-textarea:focus{border-color:rgba(177,208,240,.4)}
+.rp-row-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* Add node toolbar */
+#node-toolbar{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:5px;background:rgba(10,12,16,.95);border:1px solid var(--border-hi);border-radius:var(--r);padding:5px;backdrop-filter:blur(16px);z-index:50;animation:fadein .3s ease}
+.nt-btn{
+  padding:7px 12px;border-radius:var(--r-sm);border:1px solid;cursor:pointer;
+  font-family:var(--fm);font-size:.46rem;letter-spacing:.15em;text-transform:uppercase;
+  transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap;
+}
+.nt-btn:hover{transform:translateY(-1px)}
+
+/* ─── TOAST ──────────────────────────────── */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(20,24,28,.96);border:1px solid var(--border-hi);backdrop-filter:blur(12px);padding:7px 16px;border-radius:var(--r-sm);font-family:var(--fm);font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--venturan);pointer-events:none;opacity:0;z-index:1000;white-space:nowrap}
+#toast.show{animation:toast-in 2.5s ease forwards}
+
+/* ─── SUBGRAPH ENTER HINT ────────────────── */
+.node-drill-btn{position:absolute;bottom:6px;right:8px;width:20px;height:20px;border-radius:3px;background:rgba(177,208,240,.1);border:1px solid rgba(177,208,240,.25);color:var(--venturan);font-size:.7rem;display:none;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;z-index:30}
+.loom-node:hover .node-drill-btn{display:flex}
+.node-drill-btn:hover{background:rgba(177,208,240,.2);transform:scale(1.1)}
+
+/* ─── WIRE STYLES ────────────────────────── */
+.wire{fill:none;stroke-width:1.5;stroke-linecap:round;opacity:.65;transition:opacity .2s}
+.wire:hover{opacity:1;stroke-width:2}
+.wire-animated{stroke-dasharray:8 4;animation:wireflow .8s linear infinite}
+.wire-active{opacity:.85}
+
+/* Context menu */
+#ctx-menu{position:fixed;z-index:999;background:rgba(12,14,18,.98);border:1px solid var(--border-hi);backdrop-filter:blur(16px);border-radius:var(--r-sm);padding:5px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,.7);display:none}
+.ctx{padding:7px 12px;border-radius:var(--r-xs);cursor:pointer;font-family:var(--fd);font-size:.7rem;color:rgba(255,255,255,.65);display:flex;align-items:center;gap:8px;transition:all .1s}
+.ctx:hover{background:rgba(255,255,255,.07);color:#fff}
+.ctx.danger:hover{background:rgba(212,91,91,.12);color:var(--blood)}
+.ctx-sep{height:1px;background:var(--border);margin:4px 0}
+.ctx-icon{font-size:.8rem;width:14px;text-align:center}
+
+/* Entering sub-graph flash */
+.entering{animation:popin .25s ease}
+
+/* ─── SUBGRAPH LEVEL INDICATOR ───────────── */
+#level-indicator{position:absolute;top:12px;left:12px;font-family:var(--fm);font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.18);pointer-events:none;display:flex;align-items:center;gap:5px}
+.li-dot{width:5px;height:5px;border-radius:50%;background:var(--venturan);animation:pulse 3s ease-in-out infinite}
+
+/* ══ GRAPH COMPILER ════════════════════════════════════════════════ */
+
+/* Compile button */
+.btn-compile{
+  font-family:var(--fm);font-size:.46rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:4px 12px;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;
+  border:1px solid rgba(77,200,160,.4);
+  background:rgba(77,200,160,.07);
+  color:#4dc8a0;
+}
+.btn-compile:hover{background:rgba(77,200,160,.14);border-color:rgba(77,200,160,.7);box-shadow:0 0 14px rgba(77,200,160,.2)}
+.btn-compile.compiling{animation:breathe .8s ease-in-out infinite}
+
+/* Compiled node on canvas */
+.loom-node.compiled-node{
+  border-color:rgba(77,200,160,.45)!important;
+  background:rgba(8,14,20,.97)!important;
+  min-width:200px;
+}
+.loom-node.compiled-node .node-head{
+  background:linear-gradient(135deg,rgba(77,200,160,.12),rgba(77,200,160,.04))!important;
+  border-bottom:1px solid rgba(77,200,160,.2)!important;
+}
+.loom-node.compiled-node .node-type{color:#4dc8a0!important}
+.compiled-version-badge{
+  font-family:var(--fcode);font-size:.32rem;padding:1px 5px;
+  border-radius:10px;background:rgba(77,200,160,.15);
+  color:rgba(77,200,160,.7);letter-spacing:.1em;margin-left:4px;
+}
+.compiled-port-row{
+  display:flex;align-items:center;padding:2px 8px;gap:5px;
+  font-family:var(--fcode);font-size:.38rem;min-height:18px;
+}
+.compiled-port-row.input{ justify-content:flex-start }
+.compiled-port-row.output{ justify-content:flex-end }
+.cport-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  border:1px solid currentColor;opacity:.7;
+}
+.cport-dot.input{ background:rgba(177,208,240,.15);color:var(--venturan) }
+.cport-dot.output{ background:rgba(77,200,160,.15);color:#4dc8a0 }
+.cport-label{ color:rgba(255,255,255,.55);letter-spacing:.06em }
+.cport-type{
+  font-size:.32rem;padding:1px 4px;border-radius:2px;
+  background:rgba(255,255,255,.05);color:rgba(255,255,255,.3);
+}
+.compiled-ports-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  border-top:1px solid rgba(255,255,255,.04);
+  padding:4px 0;
+}
+.compiled-ports-left{ border-right:1px solid rgba(255,255,255,.04) }
+.compiled-summary{
+  font-family:var(--fd);font-size:.38rem;line-height:1.5;
+  color:rgba(255,255,255,.35);padding:5px 9px;
+  border-top:1px solid rgba(255,255,255,.04);
+  font-style:italic;
+}
+
+/* Compile result slide-in panel */
+#compile-panel{
+  position:absolute;top:0;right:0;bottom:0;width:340px;
+  background:rgba(6,8,12,.98);border-left:1px solid var(--border-hi);
+  display:flex;flex-direction:column;z-index:80;
+  transform:translateX(100%);transition:transform .25s cubic-bezier(.2,.8,.2,1);
+  backdrop-filter:blur(20px);
+}
+#compile-panel.open{ transform:translateX(0) }
+.cp-head{
+  padding:14px 16px 12px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+.cp-icon{ font-size:1.1rem }
+.cp-title{ font-family:var(--fm);font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:#4dc8a0;flex:1 }
+.cp-close{ background:none;border:none;color:rgba(255,255,255,.35);cursor:pointer;font-size:.8rem;padding:2px 5px;border-radius:3px }
+.cp-close:hover{ color:#fff;background:rgba(255,255,255,.08) }
+.cp-body{ flex:1;overflow-y:auto;padding:12px 16px }
+.cp-body::-webkit-scrollbar{ width:3px }
+.cp-body::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08) }
+
+.cp-sec-lbl{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);margin-bottom:6px;margin-top:12px;
+}
+.cp-sec-lbl:first-child{ margin-top:0 }
+.cp-row{
+  display:flex;align-items:flex-start;gap:6px;
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);
+  font-family:var(--fd);font-size:.48rem;
+}
+.cp-row-icon{ font-size:.75rem;flex-shrink:0;margin-top:1px }
+.cp-row-body{ flex:1;line-height:1.5 }
+.cp-row-name{ color:rgba(255,255,255,.75);font-weight:600 }
+.cp-row-sub{ color:rgba(255,255,255,.35);font-size:.42rem }
+.cp-row-type{
+  font-family:var(--fcode);font-size:.36rem;padding:1px 5px;
+  border-radius:2px;background:rgba(255,255,255,.06);
+  color:rgba(255,255,255,.4);flex-shrink:0;align-self:center;
+}
+.cp-warn{ color:#e8b84b }
+.cp-error{ color:#d45b5b }
+.cp-ok{ color:#4dc8a0 }
+
+.cp-status{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:6px;margin-bottom:12px;
+  font-family:var(--fm);font-size:.44rem;letter-spacing:.1em;text-transform:uppercase;
+}
+.cp-status.valid{ background:rgba(77,200,160,.08);border:1px solid rgba(77,200,160,.2);color:#4dc8a0 }
+.cp-status.invalid{ background:rgba(212,91,91,.08);border:1px solid rgba(212,91,91,.2);color:#d45b5b }
+.cp-status.warn{ background:rgba(232,184,75,.08);border:1px solid rgba(232,184,75,.2);color:#e8b84b }
+
+.cp-actions{
+  padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0;
+}
+.cp-btn{
+  flex:1;font-family:var(--fm);font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:6px;border-radius:5px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--border-hi);background:transparent;color:rgba(255,255,255,.55);
+}
+.cp-btn:hover{ background:rgba(255,255,255,.07);color:#fff }
+.cp-btn.primary{
+  border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.08);color:#4dc8a0;
+}
+.cp-btn.primary:hover{ background:rgba(77,200,160,.18);box-shadow:0 0 12px rgba(77,200,160,.2) }
+
+/* Compiled nodes library (bottom bar) */
+#compiled-lib{
+  flex-shrink:0;border-top:1px solid var(--border);
+  max-height:0;overflow:hidden;transition:max-height .25s ease;
+  background:rgba(4,6,10,.98);
+}
+#compiled-lib.open{ max-height:120px }
+.cl-head{
+  height:32px;display:flex;align-items:center;padding:0 14px;gap:8px;cursor:pointer;
+  border-bottom:1px solid var(--border);
+}
+.cl-head-lbl{ font-family:var(--fm);font-size:.4rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.4);flex:1 }
+.cl-chips{ display:flex;gap:6px;padding:8px 14px;overflow-x:auto }
+.cl-chips::-webkit-scrollbar{ display:none }
+.cl-chip{
+  display:flex;align-items:center;gap:5px;padding:4px 10px;flex-shrink:0;
+  border-radius:20px;border:1px solid rgba(77,200,160,.25);
+  background:rgba(77,200,160,.05);cursor:pointer;transition:all .12s;
+}
+.cl-chip:hover{ border-color:rgba(77,200,160,.5);background:rgba(77,200,160,.1) }
+.cl-chip-icon{ font-size:.8rem }
+.cl-chip-name{ font-family:var(--fm);font-size:.38rem;letter-spacing:.08em;text-transform:uppercase;color:#4dc8a0 }
+.cl-chip-ver{ font-family:var(--fcode);font-size:.32rem;color:rgba(77,200,160,.45) }
+
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo"><div class="logo-mark">⬡</div>Quantum Loom</div>
+  <div class="tb-sep"></div>
+  <button class="crumb-back hidden" id="btn-back" onclick="navigateBack()">← Back</button>
+  <div id="breadcrumb"></div>
+  <div class="tb-right">
+    <button class="btn-sm" onclick="autoLayout()">Auto Layout</button>
+    <button class="btn-sm" onclick="exportSubgraph()">Export JSON</button>
+    <div class="tb-sep"></div>
+    <button class="btn-sm primary" onclick="evaluateGraph()">▶ Evaluate</button>
+    <div class="tb-sep"></div>
+    <button class="btn-compile" id="btn-compile" onclick="compileGraph()">⬡ Compile</button>
+  </div>
+</div>
+
+<!-- WORKSPACE -->
+<div style="flex:1;display:flex;overflow:hidden">
+
+  <!-- CANVAS -->
+  <div id="canvas"
+    onmousedown="canvasDown(event)"
+    onmousemove="canvasMove(event)"
+    onmouseup="canvasUp(event)"
+    oncontextmenu="return false"
+    ondblclick="canvasDblClick(event)">
+    <div id="canvas-bg"></div>
+    <div id="canvas-inner">
+      <svg id="wire-layer" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <div id="level-indicator">
+      <div class="li-dot"></div>
+      <span id="level-txt">Root Canvas</span>
+    </div>
+
+    <div id="canvas-controls">
+      <button class="ctrl" onclick="zoom(0.15)" title="Zoom in">+</button>
+      <button class="ctrl" onclick="zoom(-0.15)" title="Zoom out">−</button>
+      <button class="ctrl" onclick="resetView()" title="Reset">⌂</button>
+      <button class="ctrl" onclick="fitView()" title="Fit all">⊡</button>
+    </div>
+    <div id="zoom-lbl">100%</div>
+
+    <!-- Node add toolbar -->
+    <div id="node-toolbar">
+      <button class="nt-btn" style="border-color:rgba(177,208,240,.35);color:var(--col-stat);background:rgba(177,208,240,.05)" onclick="addNode('stat')">◈ Trait/Stat</button>
+      <button class="nt-btn" style="border-color:rgba(155,127,212,.35);color:var(--col-heraldic);background:rgba(155,127,212,.05)" onclick="addNode('heraldic')">⬡ Heraldic</button>
+      <button class="nt-btn" style="border-color:rgba(232,184,75,.35);color:var(--col-condition);background:rgba(232,184,75,.05)" onclick="addNode('condition')">◉ Condition</button>
+      <button class="nt-btn" style="border-color:rgba(212,91,91,.35);color:var(--col-modifier);background:rgba(212,91,91,.05)" onclick="addNode('modifier')">▼ Modifier</button>
+      <button class="nt-btn" style="border-color:rgba(127,212,200,.35);color:var(--col-narrative);background:rgba(127,212,200,.05)" onclick="addNode('narrative')">≋ Narrative</button>
+      <button class="nt-btn" style="border-color:rgba(249,143,59,.4);color:var(--col-router);background:rgba(249,143,59,.07);font-weight:700" onclick="addNode('router')">⚡ LLM Router</button>
+    </div>
+
+    <!-- Hint shown when no nodes -->
+    <div id="canvas-hint" class="canvas-hint-wrap" style="display:none">
+      <div class="hint-glyph">◈</div>
+      <div class="hint-txt">Double-click a character node<br>to open its sub-graph<br>or use the toolbar to add logic nodes</div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div id="node-panel" class="hidden">
+    <div class="rp-head">
+      <div class="rp-title" id="rp-title">Node Properties</div>
+      <button class="rp-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="rp-body" id="rp-body"></div>
+  </div>
+
+</div>
+
+<!-- COMPILE RESULT PANEL -->
+<div id="compile-panel">
+  <div class="cp-head">
+    <span class="cp-icon">⬡</span>
+    <span class="cp-title">Compiled Graph</span>
+    <button class="cp-close" onclick="closeCompilePanel()">✕</button>
+  </div>
+  <div class="cp-body" id="cp-body"></div>
+  <div class="cp-actions" id="cp-actions"></div>
+</div>
+
+<!-- COMPILED LIBRARY DOCK -->
+<div id="compiled-lib">
+  <div class="cl-head" onclick="toggleCompiledLib()">
+    <span class="cp-icon" style="font-size:.75rem">⬡</span>
+    <span class="cl-head-lbl">Compiled Graphs</span>
+    <span id="cl-count" style="font-family:var(--fcode);font-size:.38rem;color:rgba(77,200,160,.5)">0</span>
+    <span style="font-size:.5rem;color:rgba(255,255,255,.25)" id="cl-arrow">▾</span>
+  </div>
+  <div class="cl-chips" id="cl-chips"></div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div id="ctx-menu">
+  <div class="ctx" onclick="ctxDrill()"><span class="ctx-icon">↳</span> Open Sub-Graph</div>
+  <div class="ctx" onclick="ctxEdit()"><span class="ctx-icon">✏</span> Edit Properties</div>
+  <div class="ctx" onclick="ctxDuplicate()"><span class="ctx-icon">⧉</span> Duplicate</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx danger" onclick="ctxDelete()"><span class="ctx-icon">✕</span> Delete Node</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   QUANTUM LOOM SUB-GRAPH ENGINE
+   ═══════════════════════════════════════════════════ */
+
+/* ── Canvas transform ─── */
+let tx=80, ty=60, tz=1;
+let isPanning=false, panSX=0, panSY=0;
+let dragging=null, dragOX=0, dragOY=0;
+let ctxTarget=null;
+let selectedNode=null;
+let connecting=null; /* wire drawing state */
+
+/* ── Navigation stack ─── */
+const navStack = [];
+let currentGraph = null;
+
+/* ── Node counter ─── */
+let nodeSeq = 1;
+const genId = () => 'n-' + Date.now() + '-' + (nodeSeq++);
+
+/* ── Graph data model ─── */
+/*
+  Graph: { id, label, owner, nodes: [], wires: [] }
+  Node: { id, type, x, y, data: {} }
+  Wire: { id, from: nodeId, fromPort, to: nodeId, toPort }
+*/
+
+/* ═══ PROVIDER CONFIG ═════════════════════════════ */
+const PROVIDERS = {
+  offline: {
+    tier:'offline',
+    name:'Rule Engine',
+    desc:'Local SQLite — No AI required',
+    icon:'🗄',
+    cost:'Free',
+    costClass:'free',
+    badge:'OFFLINE',
+    badgeColor:'var(--emerald)',
+    providers:[{ id:'sqlite',label:'SQLite',color:'var(--emerald)' }, { id:'csv',label:'CSV/Sheet',color:'var(--emerald)' }],
+  },
+  local: {
+    tier:'local',
+    name:'Local LLM',
+    desc:'Ollama · LM Studio — Private, fast',
+    icon:'💻',
+    cost:'Free',
+    costClass:'free',
+    badge:'LOCAL',
+    badgeColor:'var(--fusion)',
+    providers:[{ id:'ollama',label:'Ollama',color:'var(--fusion)' }, { id:'lmstudio',label:'LM Studio',color:'var(--fusion)' }],
+  },
+  mid: {
+    tier:'mid',
+    name:'Mid-Tier Cloud',
+    desc:'Fast models for dialogue + reactions',
+    icon:'☁',
+    cost:'~$0.001/call',
+    costClass:'cheap',
+    badge:'CLOUD',
+    badgeColor:'var(--amber)',
+    providers:[{ id:'gemini-flash',label:'Gemini Flash',color:'var(--amber)' }, { id:'mistral',label:'Mistral',color:'var(--amber)' }, { id:'gpt-mini',label:'GPT-4o mini',color:'var(--amber)' }],
+  },
+  premium: {
+    tier:'premium',
+    name:'Premium Cloud',
+    desc:'Key narrative moments only',
+    icon:'✦',
+    cost:'~$0.02/call',
+    costClass:'premium-cost',
+    badge:'PREMIUM',
+    badgeColor:'var(--solari)',
+    providers:[{ id:'gemini-pro',label:'Gemini 1.5 Pro',color:'var(--solari)' }, { id:'claude-opus',label:'Claude Opus',color:'var(--solari)' }, { id:'gpt4',label:'GPT-4',color:'var(--solari)' }],
+  },
+};
+
+const ROUTING_RULES = [
+  { task:'Condition Evaluation', target:'offline', targetLabel:'Rule Engine', color:'var(--emerald)' },
+  { task:'Stat / Modifier Calc', target:'offline', targetLabel:'Rule Engine', color:'var(--emerald)' },
+  { task:'NPC Dialogue',         target:'mid',     targetLabel:'Gemini Flash', color:'var(--amber)'  },
+  { task:'Faction Reactions',    target:'local',   targetLabel:'Ollama',       color:'var(--fusion)' },
+  { task:'Chronicle Collapse',   target:'premium', targetLabel:'Gemini Pro',   color:'var(--solari)' },
+  { task:'Cipher Reveal',        target:'premium', targetLabel:'Claude Opus',  color:'var(--solari)' },
+];
+
+/* ═══ DEFAULT GRAPH — Kael Voryn sub-graph ═══════ */
+function buildKaelGraph() {
+  return {
+    id: 'kael-subgraph',
+    label: 'Kael Voryn',
+    owner: 'Kael Voryn',
+    nodes: [
+      {
+        id:'n-stat-1', type:'stat', x:40, y:40,
+        data:{
+          name:"Kael's Character Sheet",
+          vectors:{ grief:7, fear:4, resolve:8, hope:6 },
+          traits:['aggressive','loyal','strategic'],
+          flaggedTraits:['claustrophobic'],
+          hp:72,
+        }
+      },
+      {
+        id:'n-heraldic-1', type:'heraldic', x:40, y:280,
+        data:{
+          class:'CREST', name:'Venturan Sky Rite',
+          motif:'Sky', faction:'Venturan', season:'Summer',
+          symbol:'⬡', fusionWith:'Root', fusionResult:'SylvanAether',
+          color:'var(--col-heraldic)',
+        }
+      },
+      {
+        id:'n-heraldic-2', type:'heraldic', x:40, y:460,
+        data:{
+          class:'SIGIL', name:'Stormweaver Spiral',
+          motif:'Storm', symbol:'◈', fusionWith:'Spiral', fusionResult:'StormWeaver',
+          color:'var(--solari)',
+        }
+      },
+      {
+        id:'n-condition-1', type:'condition', x:340, y:40,
+        data:{
+          label:'Location Check',
+          condition:'location.type',
+          operator:'==',
+          value:'underground',
+          trueLabel:'YES — In cavern/ruin',
+          falseLable:'NO — Open terrain',
+          probability:0.3,
+          context:'Checks if Kael is inside Syntaran caverns or any enclosed underground zone',
+        }
+      },
+      {
+        id:'n-condition-2', type:'condition', x:340, y:280,
+        data:{
+          label:'Faction Ally Check',
+          condition:'target.crest.faction',
+          operator:'==',
+          value:'Venturan',
+          trueLabel:'ALLY — Same faction',
+          falseLable:'NEUTRAL/FOE',
+          probability:0.6,
+          context:'Determines if the target character shares Venturan allegiance',
+        }
+      },
+      {
+        id:'n-modifier-1', type:'modifier', x:640, y:40,
+        data:{
+          label:'Claustrophobia Response',
+          trigger:'When location.type == underground',
+          modifiers:[
+            { icon:'⚔', desc:'Combat effectiveness', val:'-30%', type:'neg' },
+            { icon:'🧠', desc:'Resolve checks',       val:'-2 pts', type:'neg' },
+            { icon:'💨', desc:'Panic chance per turn', val:'+15%', type:'neg' },
+          ],
+          narrativeSeed:'Sky-distress tags active. Kael becomes increasingly agitated.',
+        }
+      },
+      {
+        id:'n-modifier-2', type:'modifier', x:640, y:280,
+        data:{
+          label:'Sky Faction Bond',
+          trigger:'When target is Venturan ally',
+          modifiers:[
+            { icon:'🤝', desc:'Persuasion bonus',   val:'+20%', type:'pos' },
+            { icon:'🛡', desc:'Defense coordination',val:'+10%', type:'pos' },
+          ],
+          narrativeSeed:'Faction trust opens dialogue branches and combat formations.',
+        }
+      },
+      {
+        id:'n-narrative-1', type:'narrative', x:340, y:500,
+        data:{
+          type:'Dialogue Seed',
+          seed:`"The walls press in like a fist. I was not made for stone and shadow — I need the sky above me to think clearly."`,
+          tags:['claustrophobia','distress','sky-longing'],
+          activateOn:'modifier:claustrophobia_response:active',
+        }
+      },
+      {
+        id:'n-narrative-2', type:'narrative', x:640, y:500,
+        data:{
+          type:'Reaction Pattern',
+          seed:`Kael's combat style shifts in enclosed spaces — shorter movements, increased aggression masking fear, tendency to seek exits over objectives.`,
+          tags:['behavior-shift','tactical-penalty','survival-mode'],
+          activateOn:'modifier:claustrophobia_response:active',
+        }
+      },
+      {
+        id:'n-router-1', type:'router', x:960, y:200,
+        data:{
+          activeTier:'offline',
+          activeProviders:{ offline:'sqlite', local:'ollama', mid:'gemini-flash', premium:'claude-opus' },
+          taskRouting: ROUTING_RULES,
+          estimatedCostPerSession:'$0.00',
+        }
+      },
+      {
+        id:'n-output-1', type:'output', x:960, y:500,
+        data:{
+          label:'Character Behavior Output',
+          preview:`{ "combat_modifier": -0.30, "resolve_penalty": -2, "panic_chance": 0.15, "active_tags": ["claustrophobia", "sky-distress"], "dialogue_seed": "sky-longing", "llm_provider": "sqlite" }`,
+          tags:['structured-json','no-ai-required','offline-capable'],
+        }
+      },
+    ],
+    wires:[
+      { id:'w1', from:'n-stat-1',      fromPort:'right',  to:'n-condition-1', toPort:'left',  color:'var(--col-stat)' },
+      { id:'w2', from:'n-heraldic-1',  fromPort:'right',  to:'n-condition-2', toPort:'left',  color:'var(--col-heraldic)' },
+      { id:'w3', from:'n-heraldic-2',  fromPort:'right',  to:'n-condition-2', toPort:'left',  color:'var(--col-heraldic)' },
+      { id:'w4', from:'n-condition-1', fromPort:'right',  to:'n-modifier-1',  toPort:'left',  color:'var(--col-condition)', animated:true },
+      { id:'w5', from:'n-condition-2', fromPort:'right',  to:'n-modifier-2',  toPort:'left',  color:'var(--col-condition)', animated:true },
+      { id:'w6', from:'n-stat-1',      fromPort:'bottom', to:'n-narrative-1', toPort:'top',   color:'var(--col-narrative)' },
+      { id:'w7', from:'n-modifier-1',  fromPort:'bottom', to:'n-narrative-2', toPort:'top',   color:'var(--col-modifier)' },
+      { id:'w8', from:'n-modifier-1',  fromPort:'right',  to:'n-router-1',    toPort:'left',  color:'var(--col-router)', animated:true },
+      { id:'w9', from:'n-modifier-2',  fromPort:'right',  to:'n-router-1',    toPort:'left',  color:'var(--col-router)', animated:true },
+      { id:'w10',from:'n-narrative-1', fromPort:'right',  to:'n-router-1',    toPort:'left',  color:'var(--col-narrative)' },
+      { id:'w11',from:'n-router-1',    fromPort:'bottom', to:'n-output-1',    toPort:'top',   color:'var(--col-output)', animated:true },
+    ]
+  };
+}
+
+/* Root world graph */
+function buildRootGraph() {
+  return {
+    id:'root',
+    label:'World Canvas',
+    owner:null,
+    nodes:[
+      {
+        id:'cn-kael', type:'character', x:60, y:80,
+        data:{ name:'Kael Voryn', role:'protagonist', faction:'Venturan Sky Faction', hp:72, accent:'#f98f3b', hasSubgraph:true }
+      },
+      {
+        id:'cn-morn', type:'character', x:320, y:80,
+        data:{ name:'Morn Ashkin', role:'antagonist', faction:'Umbraeth Order', hp:45, accent:'#d45b5b', hasSubgraph:false }
+      },
+      {
+        id:'cn-sera', type:'character', x:190, y:320,
+        data:{ name:'Sera Mirell', role:'wild_card', faction:'', hp:88, accent:'#9b7fd4', hasSubgraph:false }
+      },
+    ],
+    wires:[]
+  };
+}
+
+/* ═══ NAVIGATION ══════════════════════════════════ */
+
+function loadGraph(graph, pushNav=true) {
+  if (pushNav && currentGraph) navStack.push(currentGraph);
+  currentGraph = graph;
+  renderBreadcrumb();
+  renderAll();
+  document.getElementById('btn-back').classList.toggle('hidden', navStack.length === 0);
+  document.getElementById('level-txt').textContent = navStack.length === 0 ? 'Root Canvas' : 'Sub-Graph: ' + graph.label;
+  fitView(false);
+  showToast('↳ Entered: ' + graph.label);
+}
+
+function navigateBack() {
+  if (!navStack.length) return;
+  currentGraph = navStack.pop();
+  renderBreadcrumb();
+  renderAll();
+  document.getElementById('btn-back').classList.toggle('hidden', navStack.length === 0);
+  document.getElementById('level-txt').textContent = navStack.length === 0 ? 'Root Canvas' : 'Sub-Graph: ' + currentGraph.label;
+  showToast('← Back to: ' + currentGraph.label);
+}
+
+function renderBreadcrumb() {
+  const el = document.getElementById('breadcrumb');
+  const stack = [...navStack, currentGraph];
+  el.innerHTML = stack.map((g,i) => {
+    const isLast = i === stack.length - 1;
+    const arrow = i > 0 ? '<span class="crumb-arrow">›</span>' : '';
+    return `${arrow}<button class="crumb ${isLast?'active':''}" onclick="jumpToLevel(${i})">${g.label}</button>`;
+  }).join('');
+}
+
+function jumpToLevel(idx) {
+  const stack = [...navStack, currentGraph];
+  const target = stack[idx];
+  // Pop back to that level
+  while (navStack.length > idx) navStack.pop();
+  currentGraph = target;
+  renderBreadcrumb();
+  renderAll();
+  document.getElementById('btn-back').classList.toggle('hidden', navStack.length === 0);
+}
+
+/* ═══ RENDERING ═══════════════════════════════════ */
+
+function renderAll() {
+  const inner = document.getElementById('canvas-inner');
+  // Clear all nodes (keep svg wire layer)
+  inner.querySelectorAll('.loom-node').forEach(el => el.remove());
+  // Clear wires
+  document.getElementById('wire-layer').innerHTML = '';
+
+  if (!currentGraph) return;
+
+  // Build nodes
+  currentGraph.nodes.forEach(node => {
+    const el = buildNodeEl(node);
+    inner.appendChild(el);
+  });
+
+  // Render wires (after nodes are in DOM so we can measure)
+  requestAnimationFrame(() => renderWires());
+}
+
+function buildNodeEl(node) {
+  const el = document.createElement('div');
+  el.id = 'node-' + node.id;
+  el.className = 'loom-node ' + node.type + '-node';
+  el.style.left = node.x + 'px';
+  el.style.top  = node.y + 'px';
+  if (node.id === selectedNode) el.classList.add('selected');
+
+  // Corners (colored by type)
+  const corners = ['tl','tr','bl','br'].map(pos =>
+    `<div class="nc ${pos}"><div class="ch"></div><div class="cv"></div></div>`
+  ).join('');
+
+  // Build inner HTML by type
+  el.innerHTML = corners + buildNodeInner(node);
+
+  // Drill button for character or container nodes
+  if (node.data?.hasSubgraph || node.type === 'character') {
+    const drill = document.createElement('button');
+    drill.className = 'node-drill-btn';
+    drill.title = 'Open Sub-Graph';
+    drill.textContent = '↳';
+    drill.onclick = (e) => { e.stopPropagation(); drillInto(node); };
+    el.appendChild(drill);
+  }
+
+  // Events
+  el.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    selectedNode = node.id;
+    updateSelection();
+    const rect = document.getElementById('canvas').getBoundingClientRect();
+    const mx = (e.clientX - rect.left - tx) / tz;
+    const my = (e.clientY - rect.top  - ty) / tz;
+    dragOX = mx - node.x;
+    dragOY = my - node.y;
+    dragging = node.id;
+    el.classList.add('dragging');
+    e.stopPropagation();
+  });
+
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    selectedNode = node.id;
+    updateSelection();
+    openPanel(node);
+  });
+
+  el.addEventListener('dblclick', e => {
+    e.stopPropagation();
+    drillInto(node);
+  });
+
+  el.addEventListener('contextmenu', e => {
+    e.preventDefault(); e.stopPropagation();
+    ctxTarget = node.id;
+    selectedNode = node.id;
+    updateSelection();
+    const menu = document.getElementById('ctx-menu');
+    menu.style.display = 'block';
+    menu.style.left = e.clientX + 'px';
+    menu.style.top  = e.clientY + 'px';
+  });
+
+  return el;
+}
+
+function buildNodeInner(node) {
+  if (node.type === 'compiled') return buildCompiledNodeInner(node);
+  switch(node.type) {
+    case 'character':  return buildCharacterNode(node);
+    case 'stat':       return buildStatNode(node);
+    case 'heraldic':   return buildHeraldricNode(node);
+    case 'condition':  return buildConditionNode(node);
+    case 'modifier':   return buildModifierNode(node);
+    case 'narrative':  return buildNarrativeNode(node);
+    case 'router':     return buildRouterNode(node);
+    case 'output':     return buildOutputNode(node);
+    default: return `<div class="nb"><div style="font-family:var(--fm);font-size:.52rem;color:rgba(255,255,255,.4)">Unknown node type: ${node.type}</div></div>`;
+  }
+}
+
+/* CHARACTER node (root level — drillable) */
+function buildCharacterNode(n) {
+  const d = n.data;
+  const ac = d.accent || 'var(--venturan)';
+  return `
+  <div class="nh" style="border-bottom:1px solid rgba(255,255,255,.06)">
+    <div class="nh-dot" style="background:${ac};box-shadow:0 0 6px ${ac}88"></div>
+    <div class="nh-title" style="color:${ac}">${d.name}</div>
+    <div class="nh-type" style="color:${ac};border:1px solid ${ac}44">AGENT</div>
+  </div>
+  <div class="nb">
+    <div style="font-family:var(--fm);font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35)">${d.role.toUpperCase()}</div>
+    ${d.faction ? `<div style="font-family:var(--fd);font-size:.62rem;color:rgba(255,255,255,.45)">${d.faction}</div>` : ''}
+    <div style="display:flex;align-items:center;gap:6px;margin-top:2px">
+      <div style="flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="width:${d.hp}%;height:100%;background:${ac};box-shadow:0 0 5px ${ac}55"></div></div>
+      <span style="font-family:var(--fcode);font-size:.6rem;color:${ac}">${d.hp}%</span>
+    </div>
+    ${d.hasSubgraph ? `<div style="font-family:var(--fm);font-size:.44rem;letter-spacing:.15em;color:var(--venturan);opacity:.6;text-transform:uppercase;margin-top:2px;display:flex;align-items:center;gap:4px"><span>↳</span> Has sub-graph — dbl-click to open</div>` : ''}
+  </div>
+  <div class="port left"  style="background:#111;border-color:var(--venturan)"></div>
+  <div class="port right" style="background:#111;border-color:${ac}"></div>`;
+}
+
+/* STAT / TRAIT node */
+function buildStatNode(n) {
+  const d = n.data;
+  const AXES = ['grief','fear','resolve','hope'];
+  const AXIS_COLOR = { grief:'#9b7fd4', fear:'#d45b5b', resolve:'#f98f3b', hope:'#7fd4c8' };
+  const stats = AXES.map(ax => {
+    const val = d.vectors?.[ax] ?? 5;
+    const c = AXIS_COLOR[ax];
+    return `<div class="stat-row-item">
+      <div class="stat-label" style="color:${c}">${ax.toUpperCase()}</div>
+      <div class="stat-bar"><div class="stat-fill" style="width:${val*10}%;background:${c};box-shadow:0 0 4px ${c}66"></div></div>
+      <div class="stat-val" style="color:${c}">${val}</div>
+    </div>`;
+  }).join('');
+  const traitHtml = [...(d.traits||[]).map(t =>
+    `<div class="trait-tag">${t}</div>`
+  ), ...(d.flaggedTraits||[]).map(t =>
+    `<div class="trait-tag flagged" title="Conditional trigger">⚠ ${t}</div>`
+  )].join('');
+  return `
+  <div class="nh">
+    <div class="nh-dot" style="background:var(--col-stat);box-shadow:0 0 5px rgba(177,208,240,.4)"></div>
+    <div><div class="nh-title">${d.name||'Character Sheet'}</div><div class="nh-sub">Stat & Trait Block</div></div>
+    <div class="nh-type" style="color:var(--col-stat);border:1px solid rgba(177,208,240,.3)">STAT</div>
+  </div>
+  <div class="nb">
+    ${stats}
+    <div class="trait-tags">${traitHtml}</div>
+    <div style="display:flex;align-items:center;gap:6px;margin-top:2px">
+      <span style="font-family:var(--fm);font-size:.44rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3)">HP</span>
+      <div style="flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="width:${d.hp||80}%;height:100%;background:var(--col-stat);"></div></div>
+      <span style="font-family:var(--fcode);font-size:.6rem;color:var(--col-stat)">${d.hp||80}%</span>
+    </div>
+  </div>
+  <div class="port right" style="background:#111;border-color:var(--col-stat)"></div>
+  <div class="port bottom" style="background:#111;border-color:var(--col-stat)"></div>`;
+}
+
+/* HERALDIC node */
+function buildHeraldricNode(n) {
+  const d = n.data;
+  const c = d.class === 'CREST' ? 'var(--col-heraldic)' : d.class === 'SIGIL' ? 'var(--solari)' : 'var(--totem)';
+  return `
+  <div class="nh">
+    <div class="nh-dot" style="background:${c};box-shadow:0 0 5px ${c}88"></div>
+    <div><div class="nh-title">${d.name}</div><div class="nh-sub">${d.class} · ${d.motif}</div></div>
+    <div class="nh-type" style="color:${c};border:1px solid ${c}44">${d.class}</div>
+  </div>
+  <div class="nb">
+    <div class="heraldic-symbol" style="color:${c}">${d.symbol||'⬡'}</div>
+    <div class="heraldic-meta">
+      ${d.faction ? `<div class="h-row"><div class="h-key">Faction</div><div class="h-val" style="color:${c}">${d.faction}</div></div>` : ''}
+      ${d.season  ? `<div class="h-row"><div class="h-key">Season</div><div class="h-val" style="color:${c}">${d.season}</div></div>` : ''}
+      ${d.fusionWith ? `<div class="fusion-hint">⊕ Fuses with ${d.fusionWith} → <span style="color:var(--fusion)">${d.fusionResult}</span></div>` : ''}
+    </div>
+  </div>
+  <div class="port right" style="background:#111;border-color:${c}"></div>`;
+}
+
+/* CONDITION node */
+function buildConditionNode(n) {
+  const d = n.data;
+  return `
+  <div class="nh">
+    <div class="nh-dot" style="background:var(--col-condition);box-shadow:0 0 5px rgba(232,184,75,.4)"></div>
+    <div><div class="nh-title">${d.label||'Condition'}</div><div class="nh-sub">IF / THEN Logic</div></div>
+    <div class="nh-type" style="color:var(--col-condition);border:1px solid rgba(232,184,75,.3)">IF</div>
+  </div>
+  <div class="nb">
+    <div class="condition-block">
+      <div class="cond-line">
+        <div class="cond-key">IF</div>
+        <div class="cond-val">${d.condition||'—'}</div>
+        <div class="cond-op" style="background:rgba(232,184,75,.15);border:1px solid rgba(232,184,75,.3);color:var(--col-condition)">${d.operator||'=='}</div>
+        <div class="cond-val" style="color:rgba(255,255,255,.8)">"${d.value||'?'}"</div>
+      </div>
+    </div>
+    <div class="branch-row">
+      <div class="branch-label" style="background:rgba(76,175,125,.12);border:1px solid rgba(76,175,125,.3);color:var(--emerald)">▶ TRUE</div>
+      <div class="branch-wire"></div>
+      <div class="prob-badge">${Math.round((d.probability||.5)*100)}%</div>
+    </div>
+    <div class="branch-row">
+      <div class="branch-label" style="background:rgba(212,91,91,.1);border:1px solid rgba(212,91,91,.25);color:var(--blood)">▶ FALSE</div>
+      <div class="branch-wire"></div>
+      <div class="prob-badge">${Math.round((1-(d.probability||.5))*100)}%</div>
+    </div>
+    ${d.context ? `<div style="font-family:var(--fd);font-size:.58rem;color:rgba(255,255,255,.3);font-style:italic;margin-top:3px">${d.context}</div>` : ''}
+  </div>
+  <div class="port left"  style="background:#111;border-color:var(--col-condition)"></div>
+  <div class="port right" style="background:#111;border-color:var(--col-condition)"></div>`;
+}
+
+/* MODIFIER node */
+function buildModifierNode(n) {
+  const d = n.data;
+  const mods = (d.modifiers||[]).map(m =>
+    `<div class="mod-item">
+      <div class="mod-icon">${m.icon}</div>
+      <div class="mod-desc">${m.desc}</div>
+      <div class="mod-val ${m.type}">${m.val}</div>
+    </div>`
+  ).join('');
+  return `
+  <div class="nh">
+    <div class="nh-dot" style="background:var(--col-modifier);box-shadow:0 0 5px rgba(212,91,91,.4)"></div>
+    <div><div class="nh-title">${d.label||'Modifier'}</div><div class="nh-sub">Buff / Debuff Block</div></div>
+    <div class="nh-type" style="color:var(--col-modifier);border:1px solid rgba(212,91,91,.3)">MOD</div>
+  </div>
+  <div class="nb">
+    <div class="mod-list">${mods}</div>
+    ${d.trigger ? `<div class="trigger-note">Trigger: ${d.trigger}</div>` : ''}
+  </div>
+  <div class="port left"   style="background:#111;border-color:var(--col-modifier)"></div>
+  <div class="port right"  style="background:#111;border-color:var(--col-router)"></div>
+  <div class="port bottom" style="background:#111;border-color:var(--col-narrative)"></div>`;
+}
+
+/* NARRATIVE node */
+function buildNarrativeNode(n) {
+  const d = n.data;
+  const tags = (d.tags||[]).map(t => `<div class="narr-tag">${t}</div>`).join('');
+  return `
+  <div class="nh">
+    <div class="nh-dot" style="background:var(--col-narrative);box-shadow:0 0 5px rgba(127,212,200,.4)"></div>
+    <div><div class="nh-title">${d.type||'Narrative'}</div><div class="nh-sub">Prose Seed</div></div>
+    <div class="nh-type" style="color:var(--col-narrative);border:1px solid rgba(127,212,200,.3)">NARR</div>
+  </div>
+  <div class="nb" style="max-width:240px">
+    <div class="narr-seed">${d.seed||'—'}</div>
+    <div class="narr-tags">${tags}</div>
+    ${d.activateOn ? `<div style="font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-top:4px">▶ ${d.activateOn}</div>` : ''}
+  </div>
+  <div class="port top"   style="background:#111;border-color:var(--col-stat)"></div>
+  <div class="port right" style="background:#111;border-color:var(--col-router)"></div>`;
+}
+
+/* LLM ROUTER node */
+function buildRouterNode(n) {
+  const d = n.data;
+  const activeTier = d.activeTier || 'offline';
+
+  const tiersHtml = Object.values(PROVIDERS).map(p => {
+    const isActive = p.tier === activeTier;
+    const activeProvider = d.activeProviders?.[p.tier] || p.providers[0]?.id;
+    const pillsHtml = p.providers.map(pv =>
+      `<div class="provider-pill ${activeProvider===pv.id?'sel':''}"
+        style="color:${pv.color};border-color:${pv.color}44"
+        onclick="selectProvider(event,'${n.id}','${p.tier}','${pv.id}')">${pv.label}</div>`
+    ).join('');
+    return `<div class="tier ${p.tier} ${isActive?'active':''}" onclick="selectTier(event,'${n.id}','${p.tier}')">
+      <div class="tier-icon">${p.icon}</div>
+      <div class="tier-info">
+        <div class="tier-name" style="color:${isActive ? (p.tier==='offline'?'var(--emerald)':p.tier==='local'?'var(--fusion)':p.tier==='mid'?'var(--amber)':'var(--solari)') : 'rgba(255,255,255,.55)'}">${p.name}</div>
+        <div class="tier-desc">${p.desc}</div>
+        <div class="tier-providers">${pillsHtml}</div>
+      </div>
+      <div>
+        <div class="tier-cost ${p.costClass}">${p.cost}</div>
+        <div class="tier-badge" style="color:${p.badgeColor};border:1px solid ${p.badgeColor}44;margin-top:3px;text-align:center">${p.badge}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const rulesHtml = (d.taskRouting||ROUTING_RULES).map(r =>
+    `<div class="router-rule">
+      <div class="rule-task">${r.task}</div>
+      <div class="rule-arrow">→</div>
+      <div class="rule-target" style="color:${r.color}">${r.targetLabel}</div>
+    </div>`
+  ).join('');
+
+  return `
+  <div class="nh">
+    <div class="nh-dot" style="background:var(--col-router);box-shadow:0 0 6px rgba(249,143,59,.5);animation:spin .8s linear infinite"></div>
+    <div><div class="nh-title" style="color:var(--col-router)">LLM Router</div><div class="nh-sub">Task-based provider selection</div></div>
+    <div class="nh-type" style="color:var(--col-router);border:1px solid rgba(249,143,59,.4)">ROUTE</div>
+  </div>
+  <div class="nb">
+    <div class="router-tiers">${tiersHtml}</div>
+    <div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px">
+      <div style="font-family:var(--fm);font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:5px">Task Routing</div>
+      ${rulesHtml}
+    </div>
+    <div class="router-status">
+      <div class="rs-dot" style="background:var(--emerald);animation:pulse 2s ease-in-out infinite"></div>
+      <div class="rs-txt" style="color:var(--emerald)">Ready — ${activeTier === 'offline' ? 'Offline Mode' : 'Cloud Mode'}</div>
+      <div class="rs-cost-lbl">Est. session cost:</div>
+      <div class="rs-cost-val">${activeTier === 'offline' ? '$0.00' : activeTier === 'local' ? '$0.00' : activeTier === 'mid' ? '~$0.08' : '~$1.20'}</div>
+    </div>
+  </div>
+  <div class="port left"   style="background:#111;border-color:var(--col-router)"></div>
+  <div class="port bottom" style="background:#111;border-color:var(--col-output)"></div>`;
+}
+
+/* OUTPUT node */
+function buildOutputNode(n) {
+  const d = n.data;
+  const tags = (d.tags||[]).map(t => `<div class="out-tag">${t}</div>`).join('');
+  return `
+  <div class="nh">
+    <div class="nh-dot" style="background:var(--col-output);box-shadow:0 0 6px rgba(76,175,125,.5)"></div>
+    <div><div class="nh-title" style="color:var(--col-output)">${d.label||'Output'}</div><div class="nh-sub">Evaluated result</div></div>
+    <div class="nh-type" style="color:var(--col-output);border:1px solid rgba(76,175,125,.3)">OUT</div>
+  </div>
+  <div class="nb">
+    <div class="output-preview">${d.preview||'Awaiting evaluation...'}</div>
+    <div class="output-meta">${tags}</div>
+  </div>
+  <div class="port top"  style="background:#111;border-color:var(--col-router)"></div>
+  <div class="port left" style="background:#111;border-color:var(--col-output)"></div>`;
+}
+
+/* ═══ WIRE RENDERING ══════════════════════════════ */
+
+function getPortPos(nodeId, portSide) {
+  const el = document.getElementById('node-' + nodeId);
+  if (!el) return null;
+  const inner = document.getElementById('canvas-inner');
+  const innerRect = inner.getBoundingClientRect();
+  const elRect = el.getBoundingClientRect();
+
+  const nx = el.offsetLeft;
+  const ny = el.offsetTop;
+  const nw = el.offsetWidth;
+  const nh = el.offsetHeight;
+
+  switch(portSide) {
+    case 'left':   return { x: nx,      y: ny + nh/2 };
+    case 'right':  return { x: nx + nw, y: ny + nh/2 };
+    case 'top':    return { x: nx + nw/2, y: ny };
+    case 'bottom': return { x: nx + nw/2, y: ny + nh };
+    default:       return { x: nx + nw, y: ny + nh/2 };
+  }
+}
+
+function renderWires() {
+  const svg = document.getElementById('wire-layer');
+  svg.innerHTML = '';
+  if (!currentGraph) return;
+
+  /* Update SVG size to match canvas-inner */
+  const allNodes = currentGraph.nodes;
+  if (!allNodes.length) return;
+
+  const maxX = Math.max(...allNodes.map(n => {
+    const el = document.getElementById('node-' + n.id);
+    return el ? n.x + el.offsetWidth : n.x + 300;
+  })) + 200;
+  const maxY = Math.max(...allNodes.map(n => {
+    const el = document.getElementById('node-' + n.id);
+    return el ? n.y + el.offsetHeight : n.y + 400;
+  })) + 200;
+
+  svg.setAttribute('width',  maxX);
+  svg.setAttribute('height', maxY);
+  svg.style.width  = maxX + 'px';
+  svg.style.height = maxY + 'px';
+
+  /* Defs for glow filter */
+  svg.innerHTML = `<defs>
+    <filter id="wire-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>`;
+
+  currentGraph.wires.forEach(wire => {
+    const from = getPortPos(wire.from, wire.fromPort);
+    const to   = getPortPos(wire.to,   wire.toPort);
+    if (!from || !to) return;
+
+    const dx = Math.abs(to.x - from.x) * 0.5;
+    const cp1x = from.x + dx, cp1y = from.y;
+    const cp2x = to.x - dx,   cp2y = to.y;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', `M${from.x},${from.y} C${cp1x},${cp1y} ${cp2x},${cp2y} ${to.x},${to.y}`);
+    path.setAttribute('stroke', wire.color || 'rgba(177,208,240,.5)');
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke-linecap', 'round');
+    if (wire.animated) {
+      path.setAttribute('stroke-dasharray','8 4');
+      path.style.animation = 'wireflow .9s linear infinite';
+      path.setAttribute('filter','url(#wire-glow)');
+      path.setAttribute('opacity','.75');
+    } else {
+      path.setAttribute('opacity','.5');
+    }
+    svg.appendChild(path);
+
+    /* Terminal dot at destination */
+    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx', to.x);
+    dot.setAttribute('cy', to.y);
+    dot.setAttribute('r', '3');
+    dot.setAttribute('fill', wire.color || 'rgba(177,208,240,.5)');
+    dot.setAttribute('opacity', '.7');
+    svg.appendChild(dot);
+  });
+}
+
+/* ═══ CANVAS INTERACTION ══════════════════════════ */
+
+function canvasDown(e) {
+  if (e.target.closest('#node-toolbar') || e.target.closest('#canvas-controls')) return;
+  if (e.button === 1 || (e.button === 0 && e.altKey)) {
+    isPanning = true;
+    panSX = e.clientX - tx;
+    panSY = e.clientY - ty;
+    document.getElementById('canvas').style.cursor = 'grabbing';
+    e.preventDefault();
+  }
+  if (e.button === 0 && !e.target.closest('.loom-node')) {
+    selectedNode = null;
+    updateSelection();
+    closePanel();
+    document.getElementById('ctx-menu').style.display = 'none';
+  }
+}
+
+function canvasMove(e) {
+  if (isPanning) {
+    tx = e.clientX - panSX;
+    ty = e.clientY - panSY;
+    applyTransform();
+  }
+  if (dragging) {
+    const node = currentGraph?.nodes.find(n => n.id === dragging);
+    if (!node) return;
+    const rect = document.getElementById('canvas').getBoundingClientRect();
+    const mx = (e.clientX - rect.left - tx) / tz;
+    const my = (e.clientY - rect.top  - ty) / tz;
+    node.x = Math.round((mx - dragOX) / 20) * 20;
+    node.y = Math.round((my - dragOY) / 20) * 20;
+    const el = document.getElementById('node-' + node.id);
+    if (el) { el.style.left = node.x + 'px'; el.style.top = node.y + 'px'; }
+    renderWires();
+  }
+}
+
+function canvasUp(e) {
+  if (isPanning) { isPanning = false; document.getElementById('canvas').style.cursor = 'default'; }
+  if (dragging) {
+    const el = document.getElementById('node-' + dragging);
+    if (el) el.classList.remove('dragging');
+    dragging = null;
+  }
+}
+
+function canvasDblClick(e) {
+  if (e.target.closest('.loom-node')) return;
+  // Double click on empty canvas — could add node at position
+}
+
+function zoom(delta) {
+  const el = document.getElementById('canvas');
+  const cx = el.clientWidth / 2, cy = el.clientHeight / 2;
+  const nz = Math.min(3, Math.max(0.2, tz + delta));
+  const zr = nz / tz;
+  tx = cx - (cx - tx) * zr;
+  ty = cy - (cy - ty) * zr;
+  tz = nz;
+  applyTransform();
+}
+
+function resetView() { tx=80; ty=60; tz=1; applyTransform(); }
+
+function fitView(animate=true) {
+  if (!currentGraph?.nodes.length) return;
+  const canvas = document.getElementById('canvas');
+  const cw = canvas.clientWidth  - 340; // account for right panel
+  const ch = canvas.clientHeight - 60;
+
+  const minX = Math.min(...currentGraph.nodes.map(n => n.x));
+  const minY = Math.min(...currentGraph.nodes.map(n => n.y));
+  const maxX = Math.max(...currentGraph.nodes.map(n => {
+    const el = document.getElementById('node-' + n.id);
+    return n.x + (el?.offsetWidth || 220);
+  }));
+  const maxY = Math.max(...currentGraph.nodes.map(n => {
+    const el = document.getElementById('node-' + n.id);
+    return n.y + (el?.offsetHeight || 200);
+  }));
+
+  const graphW = maxX - minX + 80;
+  const graphH = maxY - minY + 80;
+  const newZ = Math.min(1, cw / graphW, ch / graphH) * 0.9;
+  tz = newZ;
+  tx = (cw  - graphW * newZ) / 2 - minX * newZ + 40;
+  ty = (ch  - graphH * newZ) / 2 - minY * newZ + 40;
+  applyTransform();
+}
+
+function applyTransform() {
+  document.getElementById('canvas-inner').style.transform =
+    `translate(${tx}px,${ty}px) scale(${tz})`;
+  document.getElementById('zoom-lbl').textContent = Math.round(tz * 100) + '%';
+}
+
+function updateSelection() {
+  document.querySelectorAll('.loom-node').forEach(el => {
+    const id = el.id.replace('node-','');
+    el.classList.toggle('selected', id === selectedNode);
+  });
+}
+
+/* ═══ DRILL INTO SUB-GRAPH ════════════════════════ */
+
+function drillInto(node) {
+  if (node.type === 'character' && node.id === 'cn-kael') {
+    loadGraph(buildKaelGraph());
+  } else {
+    showToast('⬡ Sub-graph coming soon for: ' + (node.data?.name || node.type));
+  }
+}
+
+/* ═══ NODE CREATION ═══════════════════════════════ */
+
+const NODE_DEFAULTS = {
+  stat: { name:'New Character Sheet', vectors:{grief:5,fear:5,resolve:5,hope:5}, traits:['loyal'], flaggedTraits:[], hp:80 },
+  heraldic: { class:'SIGIL', name:'New Sigil', motif:'Storm', symbol:'◈', color:'var(--col-heraldic)' },
+  condition: { label:'New Condition', condition:'target.property', operator:'==', value:'value', probability:.5, context:'Describe the condition context here.' },
+  modifier: { label:'New Modifier', trigger:'When condition fires', modifiers:[{icon:'⚡',desc:'Stat effect',val:'+0%',type:'pos'}], narrativeSeed:'Describe the narrative effect.' },
+  narrative: { type:'Dialogue Seed', seed:'Enter the narrative seed text here.', tags:['new'], activateOn:'modifier:new:active' },
+  router: { activeTier:'offline', activeProviders:{offline:'sqlite',local:'ollama',mid:'gemini-flash',premium:'claude-opus'}, taskRouting:ROUTING_RULES, estimatedCostPerSession:'$0.00' },
+  output: { label:'Output Node', preview:'Awaiting graph evaluation...', tags:['output'] },
+};
+
+let newNodeOffset = 0;
+
+function addNode(type) {
+  if (!currentGraph) { showToast('Enter a sub-graph first'); return; }
+  const id = genId();
+  newNodeOffset += 20;
+  const node = {
+    id,
+    type,
+    x: 100 + newNodeOffset % 200,
+    y: 100 + Math.floor(newNodeOffset / 200) * 20 + newNodeOffset % 200,
+    data: JSON.parse(JSON.stringify(NODE_DEFAULTS[type] || {})),
+  };
+  currentGraph.nodes.push(node);
+  const el = buildNodeEl(node);
+  document.getElementById('canvas-inner').appendChild(el);
+  requestAnimationFrame(() => renderWires());
+  selectedNode = id;
+  updateSelection();
+  openPanel(node);
+  showToast('+ Added ' + type + ' node');
+}
+
+/* ═══ CONTEXT MENU ════════════════════════════════ */
+
+function ctxDrill()     { const n = currentGraph?.nodes.find(n=>n.id===ctxTarget); if(n) drillInto(n); document.getElementById('ctx-menu').style.display='none'; }
+function ctxEdit()      { const n = currentGraph?.nodes.find(n=>n.id===ctxTarget); if(n) openPanel(n); document.getElementById('ctx-menu').style.display='none'; }
+function ctxDuplicate() {
+  const n = currentGraph?.nodes.find(n=>n.id===ctxTarget);
+  if (!n) return;
+  const clone = JSON.parse(JSON.stringify(n));
+  clone.id = genId(); clone.x += 30; clone.y += 30;
+  currentGraph.nodes.push(clone);
+  const el = buildNodeEl(clone);
+  document.getElementById('canvas-inner').appendChild(el);
+  requestAnimationFrame(() => renderWires());
+  document.getElementById('ctx-menu').style.display='none';
+  showToast('Duplicated node');
+}
+function ctxDelete() {
+  if (!currentGraph || !ctxTarget) return;
+  currentGraph.nodes = currentGraph.nodes.filter(n => n.id !== ctxTarget);
+  currentGraph.wires = currentGraph.wires.filter(w => w.from !== ctxTarget && w.to !== ctxTarget);
+  document.getElementById('node-' + ctxTarget)?.remove();
+  renderWires();
+  document.getElementById('ctx-menu').style.display='none';
+  if (selectedNode === ctxTarget) { selectedNode=null; closePanel(); }
+  showToast('Node deleted');
+}
+
+/* ═══ RIGHT PANEL ═════════════════════════════════ */
+
+function openPanel(node) {
+  const panel = document.getElementById('node-panel');
+  const body  = document.getElementById('rp-body');
+  const title = document.getElementById('rp-title');
+  panel.classList.remove('hidden');
+
+  const typeLabels = { stat:'Trait/Stat Node', heraldic:'Heraldic Node', condition:'Condition Node', modifier:'Modifier Node', narrative:'Narrative Node', router:'LLM Router Node', output:'Output Node', character:'Agent Node' };
+  title.textContent = typeLabels[node.type] || 'Node Properties';
+
+  body.innerHTML = buildPanelHTML(node);
+}
+
+function buildPanelHTML(node) {
+  const d = node.data;
+  switch(node.type) {
+    case 'router':
+      return `<div class="rp-section">
+        <div class="rp-sec-lbl">Provider Tiers</div>
+        <p style="font-family:var(--fd);font-size:.68rem;color:rgba(255,255,255,.5);line-height:1.5">
+          The LLM Router selects the execution engine for each task type. Use <b style="color:var(--emerald)">Rule Engine</b> or <b style="color:var(--fusion)">Local LLM</b> for zero-cost, zero-IP-exposure operation. AI providers are purely optional for prose generation.
+        </p>
+        <div style="padding:10px;background:rgba(76,175,125,.07);border:1px solid rgba(76,175,125,.2);border-radius:var(--r-sm);margin-top:4px">
+          <div style="font-family:var(--fm);font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;color:var(--emerald);margin-bottom:5px">◉ No-AI Path</div>
+          <p style="font-family:var(--fd);font-size:.65rem;color:rgba(255,255,255,.6);line-height:1.5">The Rule Engine evaluates all graph conditions, modifiers, and narrative tags using your local SQLite database. Your world logic never leaves your machine. AI enhances prose — it doesn't own your story.</p>
+        </div>
+      </div>
+      <div class="rp-section">
+        <div class="rp-sec-lbl">SQLite Schema</div>
+        <div style="font-family:var(--fcode);font-size:.6rem;color:rgba(76,175,125,.75);background:rgba(0,0,0,.4);padding:10px;border-radius:var(--r-sm);border:1px solid rgba(76,175,125,.15);line-height:1.7">
+          CREATE TABLE character_rules (<br>
+          &nbsp;&nbsp;id TEXT PRIMARY KEY,<br>
+          &nbsp;&nbsp;condition TEXT,<br>
+          &nbsp;&nbsp;modifier_json TEXT,<br>
+          &nbsp;&nbsp;narrative_seed TEXT,<br>
+          &nbsp;&nbsp;priority INTEGER<br>
+          );<br><br>
+          CREATE TABLE heraldry_fusions (<br>
+          &nbsp;&nbsp;motif_a TEXT,<br>
+          &nbsp;&nbsp;motif_b TEXT,<br>
+          &nbsp;&nbsp;result TEXT<br>
+          );
+        </div>
+      </div>`;
+
+    case 'condition':
+      return `<div class="rp-section">
+        <div class="rp-sec-lbl">Condition Logic</div>
+        <div class="rp-field"><div class="rp-lbl">Label</div><input class="rp-input" value="${d.label||''}" oninput="patchNode('${node.id}','label',this.value)"></div>
+        <div class="rp-row-2">
+          <div class="rp-field"><div class="rp-lbl">Property Path</div><input class="rp-input" value="${d.condition||''}" oninput="patchNode('${node.id}','condition',this.value)"></div>
+          <div class="rp-field"><div class="rp-lbl">Operator</div>
+            <select class="rp-select" onchange="patchNode('${node.id}','operator',this.value)">
+              ${['==','!=','>','<','>=','<=','includes','excludes'].map(op=>`<option ${d.operator===op?'selected':''}>${op}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="rp-field"><div class="rp-lbl">Match Value</div><input class="rp-input" value="${d.value||''}" oninput="patchNode('${node.id}','value',this.value)"></div>
+        <div class="rp-field"><div class="rp-lbl">True Probability (0–1)</div><input class="rp-input" type="number" min="0" max="1" step=".05" value="${d.probability||0.5}" oninput="patchNode('${node.id}','probability',parseFloat(this.value))"></div>
+        <div class="rp-field"><div class="rp-lbl">Context Note</div><textarea class="rp-textarea" oninput="patchNode('${node.id}','context',this.value)">${d.context||''}</textarea></div>
+      </div>`;
+
+    case 'stat':
+      return `<div class="rp-section">
+        <div class="rp-sec-lbl">Character Sheet</div>
+        <div class="rp-field"><div class="rp-lbl">Sheet Name</div><input class="rp-input" value="${d.name||''}" oninput="patchNode('${node.id}','name',this.value)"></div>
+        ${['grief','fear','resolve','hope'].map(ax=>`
+          <div class="rp-field">
+            <div class="rp-lbl">${ax.toUpperCase()} (0–10)</div>
+            <input class="rp-input" type="number" min="0" max="10" value="${d.vectors?.[ax]??5}" oninput="patchVector('${node.id}','${ax}',parseInt(this.value))">
+          </div>`).join('')}
+        <div class="rp-field"><div class="rp-lbl">Traits (comma-separated)</div>
+          <input class="rp-input" value="${(d.traits||[]).join(', ')}" oninput="patchList('${node.id}','traits',this.value)">
+        </div>
+        <div class="rp-field"><div class="rp-lbl">Flagged Traits ⚠ (conditional triggers)</div>
+          <input class="rp-input" value="${(d.flaggedTraits||[]).join(', ')}" oninput="patchList('${node.id}','flaggedTraits',this.value)">
+        </div>
+      </div>`;
+
+    case 'modifier':
+      return `<div class="rp-section">
+        <div class="rp-sec-lbl">Modifier Block</div>
+        <div class="rp-field"><div class="rp-lbl">Label</div><input class="rp-input" value="${d.label||''}" oninput="patchNode('${node.id}','label',this.value)"></div>
+        <div class="rp-field"><div class="rp-lbl">Trigger Condition</div><input class="rp-input" value="${d.trigger||''}" oninput="patchNode('${node.id}','trigger',this.value)"></div>
+        <div class="rp-field"><div class="rp-lbl">Narrative Seed</div><textarea class="rp-textarea" oninput="patchNode('${node.id}','narrativeSeed',this.value)">${d.narrativeSeed||''}</textarea></div>
+        <div style="font-family:var(--fm);font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:4px">Modifiers defined in graph editor</div>
+      </div>`;
+
+    case 'narrative':
+      return `<div class="rp-section">
+        <div class="rp-sec-lbl">Narrative Trigger</div>
+        <div class="rp-field"><div class="rp-lbl">Type</div>
+          <select class="rp-select" onchange="patchNode('${node.id}','type',this.value)">
+            ${['Dialogue Seed','Reaction Pattern','Behavior Note','Environmental Response','Cipher Hint'].map(t=>`<option ${d.type===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="rp-field"><div class="rp-lbl">Seed Text</div><textarea class="rp-textarea" style="min-height:90px" oninput="patchNode('${node.id}','seed',this.value)">${d.seed||''}</textarea></div>
+        <div class="rp-field"><div class="rp-lbl">Tags (comma-separated)</div><input class="rp-input" value="${(d.tags||[]).join(', ')}" oninput="patchList('${node.id}','tags',this.value)"></div>
+        <div class="rp-field"><div class="rp-lbl">Activate On</div><input class="rp-input" value="${d.activateOn||''}" oninput="patchNode('${node.id}','activateOn',this.value)"></div>
+      </div>`;
+
+    default:
+      return `<div class="rp-section"><div style="font-family:var(--fd);font-size:.7rem;color:rgba(255,255,255,.4)">Select a node to edit its properties.</div></div>`;
+  }
+}
+
+function patchNode(nodeId, key, val) {
+  const node = currentGraph?.nodes.find(n => n.id === nodeId);
+  if (!node) return;
+  node.data[key] = val;
+  // Live update node
+  const el = document.getElementById('node-' + nodeId);
+  if (el) {
+    const corners = el.querySelectorAll('.nc');
+    el.innerHTML = [...corners].map(c=>c.outerHTML).join('') + buildNodeInner(node);
+  }
+}
+
+function patchVector(nodeId, axis, val) {
+  const node = currentGraph?.nodes.find(n => n.id === nodeId);
+  if (!node?.data?.vectors) return;
+  node.data.vectors[axis] = val;
+  patchNode(nodeId, 'vectors', node.data.vectors);
+}
+
+function patchList(nodeId, key, csv) {
+  const vals = csv.split(',').map(v => v.trim()).filter(Boolean);
+  patchNode(nodeId, key, vals);
+}
+
+function closePanel() {
+  document.getElementById('node-panel').classList.add('hidden');
+}
+
+/* Router tier/provider selection */
+function selectTier(e, nodeId, tier) {
+  e.stopPropagation();
+  const node = currentGraph?.nodes.find(n => n.id === nodeId);
+  if (!node) return;
+  node.data.activeTier = tier;
+  const el = document.getElementById('node-' + nodeId);
+  if (el) el.innerHTML = ['tl','tr','bl','br'].map(p=>`<div class="nc ${p}"><div class="ch"></div><div class="cv"></div></div>`).join('') + buildNodeInner(node);
+  showToast('Router: ' + PROVIDERS[tier].name + ' selected');
+}
+
+function selectProvider(e, nodeId, tier, providerId) {
+  e.stopPropagation();
+  const node = currentGraph?.nodes.find(n => n.id === nodeId);
+  if (!node) return;
+  if (!node.data.activeProviders) node.data.activeProviders = {};
+  node.data.activeProviders[tier] = providerId;
+  const el = document.getElementById('node-' + nodeId);
+  if (el) el.innerHTML = ['tl','tr','bl','br'].map(p=>`<div class="nc ${p}"><div class="ch"></div><div class="cv"></div></div>`).join('') + buildNodeInner(node);
+}
+
+/* ═══ TOOLBAR ACTIONS ═════════════════════════════ */
+
+function autoLayout() {
+  if (!currentGraph) return;
+  // Simple left-to-right by type order
+  const typeOrder = ['stat','heraldic','condition','modifier','narrative','router','output'];
+  const cols = {};
+  currentGraph.nodes.forEach(n => {
+    const col = typeOrder.indexOf(n.type);
+    if (!cols[col]) cols[col] = [];
+    cols[col].push(n);
+  });
+  Object.entries(cols).forEach(([col,nodes]) => {
+    nodes.forEach((n,i) => {
+      n.x = 60 + parseInt(col) * 260;
+      n.y = 60 + i * 240;
+      const el = document.getElementById('node-'+n.id);
+      if (el) { el.style.left=n.x+'px'; el.style.top=n.y+'px'; }
+    });
+  });
+  requestAnimationFrame(() => { renderWires(); fitView(); });
+  showToast('Graph laid out');
+}
+
+function evaluateGraph() {
+  if (!currentGraph) { showToast('Load a sub-graph first'); return; }
+  // Simulate evaluation — find router tier and show result
+  const routerNode = currentGraph.nodes.find(n => n.type === 'router');
+  const tier = routerNode?.data?.activeTier || 'offline';
+  const cost = { offline:'$0.00', local:'$0.00', mid:'~$0.04', premium:'~$0.60' }[tier];
+  showToast(`▶ Evaluated — ${PROVIDERS[tier].name} — Est. cost: ${cost}`);
+
+  // Update output node
+  const outputNode = currentGraph.nodes.find(n => n.type === 'output');
+  if (outputNode) {
+    outputNode.data.preview = `{ "status": "evaluated", "provider": "${tier}", "cost": "${cost}", "active_tags": ["claustrophobia", "sky-distress"], "modifiers_applied": 2, "narrative_seeds": 2 }`;
+    const el = document.getElementById('node-'+outputNode.id);
+    if (el) el.innerHTML = ['tl','tr','bl','br'].map(p=>`<div class="nc ${p}"><div class="ch"></div><div class="cv"></div></div>`).join('') + buildNodeInner(outputNode);
+  }
+}
+
+function exportSubgraph() {
+  if (!currentGraph) return;
+  const data = JSON.stringify(currentGraph, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = (currentGraph.label||'graph').replace(/\s/g,'_') + '-subgraph.json';
+  a.click();
+  showToast('Exported: ' + currentGraph.label + '.json');
+}
+
+/* ═══ UTILITIES ═══════════════════════════════════ */
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+}
+
+window.addEventListener('click', () => document.getElementById('ctx-menu').style.display = 'none');
+window.addEventListener('wheel', e => { if (e.target.closest('#canvas')) e.preventDefault(); }, {passive:false});
+window.addEventListener('resize', () => renderWires());
+
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║           QUANTUM LOOM — GRAPH COMPILER  v1.0                   ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+
+/* ── Port semantic types (inferred from node type + wire direction) ─ */
+const PORT_TYPE_MAP = {
+  stat:      { right:'capsule', bottom:'capsule', left:'any',     top:'any' },
+  heraldic:  { right:'capsule', bottom:'capsule', left:'any',     top:'any' },
+  condition: { left:'any',      right:'boolean',  top:'any',      bottom:'boolean' },
+  modifier:  { left:'boolean',  right:'capsule',  top:'capsule',  bottom:'capsule' },
+  narrative: { left:'capsule',  top:'capsule',    right:'string', bottom:'string' },
+  router:    { left:'any',      top:'any',        right:'string', bottom:'string' },
+  output:    { left:'any',      top:'any',        right:null,     bottom:null },
+};
+
+const PORT_TYPE_LABELS = {
+  capsule:'capsule', boolean:'bool', string:'string',
+  number:'number',   any:'any',      'clip[]':'clip[]',
+};
+
+const NODE_TYPE_ICONS = {
+  stat:'◈', heraldic:'⬡', condition:'◉', modifier:'▼',
+  narrative:'≋', router:'⚡', output:'◎',
+  compiled:'⬡',
+};
+
+/* ── compiled graphs storage ──────────────────────────────────────── */
+function loadCompiled() {
+  try { return JSON.parse(localStorage.getItem('ql-compiled') || '{}'); }
+  catch(e) { return {}; }
+}
+function saveCompiled(store) {
+  localStorage.setItem('ql-compiled', JSON.stringify(store));
+}
+
+/* ── Topological sort ─────────────────────────────────────────────── */
+function topoSort(nodes, wires) {
+  const ids   = nodes.map(n => n.id);
+  const inDeg = {};
+  const adj   = {};
+  ids.forEach(id => { inDeg[id] = 0; adj[id] = []; });
+
+  wires.forEach(w => {
+    if (adj[w.from] && inDeg[w.to] !== undefined) {
+      adj[w.from].push(w.to);
+      inDeg[w.to]++;
+    }
+  });
+
+  const queue  = ids.filter(id => inDeg[id] === 0);
+  const sorted = [];
+  const visited = new Set();
+  const cycles  = [];
+
+  while (queue.length) {
+    const id = queue.shift();
+    if (visited.has(id)) { cycles.push(id); continue; }
+    visited.add(id);
+    sorted.push(id);
+    (adj[id] || []).forEach(next => {
+      inDeg[next]--;
+      if (inDeg[next] === 0) queue.push(next);
+    });
+  }
+
+  // Any nodes not yet visited = cycle
+  ids.filter(id => !visited.has(id)).forEach(id => cycles.push(id));
+
+  return { sorted, cycles };
+}
+
+/* ── Port inference ───────────────────────────────────────────────── */
+function inferPorts(nodes, wires) {
+  // Find which (nodeId, direction) combos have NO incoming wire → graph inputs
+  // Output nodes → graph outputs
+
+  const connected = new Set(wires.map(w => `${w.to}:${w.toPort}`));
+  const inputs  = [];
+  const outputs = [];
+
+  nodes.forEach(node => {
+    const typeMap = PORT_TYPE_MAP[node.type] || {};
+
+    if (node.type === 'output') {
+      // This whole node is a graph output
+      const inType = typeMap.left || typeMap.top || 'any';
+      outputs.push({
+        id:       `out:${node.id}`,
+        label:    node.data?.label || 'Output',
+        type:     inType,
+        nodeId:   node.id,
+        required: false,
+      });
+      return;
+    }
+
+    if (node.type === 'router') {
+      outputs.push({
+        id:       `out:${node.id}`,
+        label:    'LLM Response',
+        type:     'string',
+        nodeId:   node.id,
+        required: false,
+      });
+    }
+
+    // Check each input port direction for this node type
+    ['left','top'].forEach(dir => {
+      const portType = typeMap[dir];
+      if (!portType || portType === null) return;
+      const portKey = `${node.id}:${dir}`;
+      if (!connected.has(portKey)) {
+        // No wire feeding this port → it's a graph-level input
+        const label = _portLabel(node.type, dir, node.data);
+        inputs.push({
+          id:       `in:${node.id}:${dir}`,
+          label,
+          type:     portType,
+          nodeId:   node.id,
+          port:     dir,
+          required: portType !== 'any',
+          default:  _portDefault(node.type, dir),
+        });
+      }
+    });
+  });
+
+  return { inputs, outputs };
+}
+
+function _portLabel(nodeType, dir, data) {
+  const labels = {
+    stat:      { left:'Character In',  top:'Context' },
+    heraldic:  { left:'Symbol In',     top:'Context' },
+    condition: { left:'Subject',       top:'Context' },
+    modifier:  { left:'Condition',     top:'Target' },
+    narrative: { left:'Context',       top:'Character' },
+    router:    { left:'Payload',       top:'Context' },
+  };
+  return (labels[nodeType] || {})[dir] || `${nodeType} ${dir}`;
+}
+
+function _portDefault(nodeType, dir) {
+  const defaults = {
+    stat:      { left:null,  top:null },
+    condition: { left:null,  top:null },
+    modifier:  { left:false, top:null },
+    router:    { left:null,  top:null },
+  };
+  return (defaults[nodeType] || {})[dir] ?? null;
+}
+
+/* ── Type check wires ─────────────────────────────────────────────── */
+function typeCheckWires(nodes, wires) {
+  const nodeMap  = Object.fromEntries(nodes.map(n => [n.id, n]));
+  const warnings = [];
+  const COMPAT   = {
+    capsule:['capsule','any'], boolean:['boolean','any'],
+    string: ['string','any'],  number: ['number','any'],
+    any:    ['capsule','boolean','string','number','any','clip[]'],
+  };
+
+  wires.forEach(w => {
+    const fromNode = nodeMap[w.from];
+    const toNode   = nodeMap[w.to];
+    if (!fromNode || !toNode) {
+      warnings.push(`Wire ${w.id}: references missing node`);
+      return;
+    }
+    const outType = (PORT_TYPE_MAP[fromNode.type] || {})[w.fromPort] || 'any';
+    const inType  = (PORT_TYPE_MAP[toNode.type]   || {})[w.toPort]   || 'any';
+    if (outType && inType && outType !== 'any' && inType !== 'any') {
+      const ok = (COMPAT[outType] || []).includes(inType);
+      if (!ok) {
+        warnings.push(`Type mismatch: ${fromNode.type}[${w.fromPort}]→${outType} ≠ ${toNode.type}[${w.toPort}]→${inType}`);
+      }
+    }
+  });
+  return warnings;
+}
+
+/* ── Build compiled display metadata ──────────────────────────────── */
+function buildCompiledDisplay(nodes, graph) {
+  // Derive icon + color from dominant node types
+  const typeCounts = {};
+  nodes.forEach(n => { typeCounts[n.type] = (typeCounts[n.type]||0)+1; });
+  const dominant = Object.entries(typeCounts).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'stat';
+
+  const colors = {
+    stat:'#b1d0f0', heraldic:'#9b7fd4', condition:'#e8b84b',
+    modifier:'#d45b5b', narrative:'#7fd4c8', router:'#f98f3b',
+    output:'#4caf7d',
+  };
+
+  // Gather tags from narrative/output nodes
+  const tags = [];
+  nodes.forEach(n => {
+    if (n.data?.tags) tags.push(...n.data.tags);
+  });
+
+  // Auto-description
+  const parts = [];
+  if (typeCounts.stat)      parts.push(`${typeCounts.stat} stat node${typeCounts.stat>1?'s':''}`);
+  if (typeCounts.condition)  parts.push(`${typeCounts.condition} condition${typeCounts.condition>1?'s':''}`);
+  if (typeCounts.modifier)   parts.push(`${typeCounts.modifier} modifier${typeCounts.modifier>1?'s':''}`);
+  if (typeCounts.narrative)  parts.push(`${typeCounts.narrative} narrative seed${typeCounts.narrative>1?'s':''}`);
+  if (typeCounts.router)     parts.push('LLM router');
+
+  return {
+    icon:        NODE_TYPE_ICONS[dominant] || '⬡',
+    color:       colors[dominant] || '#b1d0f0',
+    description: parts.length ? `Contains: ${parts.join(', ')}` : graph.label,
+    tags:        [...new Set(tags)],
+  };
+}
+
+/* ══ MAIN COMPILE FUNCTION ════════════════════════════════════════════ */
+let lastCompiled = null;
+
+function compileGraph() {
+  if (!currentGraph) { showToast('Open a sub-graph to compile'); return; }
+  if (!currentGraph.nodes.length) { showToast('Graph is empty'); return; }
+
+  const btn = document.getElementById('btn-compile');
+  btn.classList.add('compiling');
+  btn.textContent = '⬡ Compiling…';
+
+  setTimeout(() => {
+    const result = _runCompile(currentGraph);
+    lastCompiled = result;
+    btn.classList.remove('compiling');
+    btn.textContent = '⬡ Compile';
+    showCompilePanel(result);
+
+    if (result.valid) {
+      // Save to storage
+      const store = loadCompiled();
+      store[result.id] = result;
+      saveCompiled(store);
+      renderCompiledLib();
+      showToast(`⬡ Compiled: ${result.label} (${result.outputs.length} output${result.outputs.length!==1?'s':''})`);
+      try{window.parent.postMessage({type:'hub:compiled:ready',label:result.label,id:result.id},'*');}catch(e){}
+      try{window.parent.postMessage({type:'hub:storage:write',key:'ql-compiled',value:JSON.stringify(store)},'*');}catch(e){}
+    }
+  }, 320); // brief delay for "compiling" feel
+}
+
+function _runCompile(graph) {
+  const errors   = [];
+  const warnings = [];
+  const nodes    = graph.nodes;
+  const wires    = graph.wires || [];
+
+  // ── Validation ────
+  const hasOutput = nodes.some(n => n.type === 'output' || n.type === 'router');
+  if (!hasOutput) errors.push('No output or router node — graph has no terminal');
+
+  // ── Topo sort ─────
+  const { sorted, cycles } = topoSort(nodes, wires);
+  if (cycles.length) {
+    const cycleNames = cycles.map(id => nodes.find(n=>n.id===id)?.type || id);
+    if (cycles.length > nodes.length / 2) {
+      errors.push(`Hard cycle detected in: ${cycleNames.join(', ')}`);
+    } else {
+      warnings.push(`Soft cycle — evaluation will break at: ${cycleNames.join(', ')}`);
+    }
+  }
+
+  // ── Type check ────
+  const typeWarns = typeCheckWires(nodes, wires);
+  warnings.push(...typeWarns);
+
+  // ── Port inference ──
+  const { inputs, outputs } = inferPorts(nodes, wires);
+
+  // ── Node check ────
+  nodes.forEach(n => {
+    const map = PORT_TYPE_MAP[n.type];
+    if (!map) warnings.push(`Unknown node type "${n.type}" — may be an addon node`);
+    if (n.type === 'condition' && !n.data?.condition) {
+      warnings.push(`Condition node "${n.id}" has no condition expression`);
+    }
+    if (n.type === 'modifier' && !n.data?.modifiers?.length) {
+      warnings.push(`Modifier node "${n.id}" has no modifiers defined`);
+    }
+  });
+
+  // ── Build sorted nodes (strip x,y) ──
+  const sortedNodes = sorted
+    .map(id => nodes.find(n => n.id === id))
+    .filter(Boolean)
+    .map(n => ({ id: n.id, type: n.type, data: JSON.parse(JSON.stringify(n.data || {})) }));
+
+  // ── Normalize edges ──
+  const edges = wires.map(w => ({
+    from: `${w.from}:${w.fromPort}`,
+    to:   `${w.to}:${w.toPort}`,
+  }));
+
+  // ── Display ──
+  const display = buildCompiledDisplay(nodes, graph);
+
+  const compiled = {
+    id:         `compiled-${graph.id}`,
+    sourceId:   graph.id,
+    label:      graph.label,
+    version:    '1.0.0',
+    compiledAt: new Date().toISOString(),
+    owner:      graph.owner || 'root',
+    inputs,
+    outputs,
+    nodes:      sortedNodes,
+    edges,
+    display,
+    valid:      errors.length === 0,
+    warnings,
+    errors,
+  };
+
+  return compiled;
+}
+
+/* ── Compile panel UI ─────────────────────────────────────────────── */
+function showCompilePanel(compiled) {
+  const panel = document.getElementById('compile-panel');
+  const body  = document.getElementById('cp-body');
+  const acts  = document.getElementById('cp-actions');
+
+  const statusClass = compiled.errors.length   ? 'invalid'
+                    : compiled.warnings.length  ? 'warn'
+                    : 'valid';
+  const statusLabel = compiled.errors.length   ? `✕ ${compiled.errors.length} error${compiled.errors.length>1?'s':''}`
+                    : compiled.warnings.length  ? `⚠ ${compiled.warnings.length} warning${compiled.warnings.length>1?'s':''}`
+                    : '✓ Valid — ready to place';
+
+  let html = `
+    <div class="cp-status ${statusClass}">${statusLabel}</div>
+
+    <div class="cp-sec-lbl">Identity</div>
+    <div class="cp-row">
+      <span class="cp-row-icon">${compiled.display.icon}</span>
+      <div class="cp-row-body">
+        <div class="cp-row-name">${compiled.label}</div>
+        <div class="cp-row-sub">${compiled.display.description}</div>
+      </div>
+      <span class="cp-row-type">v${compiled.version}</span>
+    </div>
+    <div class="cp-row">
+      <span class="cp-row-icon" style="font-size:.55rem">⧉</span>
+      <div class="cp-row-body">
+        <div class="cp-row-sub">${compiled.nodes.length} nodes · ${compiled.edges.length} edges · topo-sorted</div>
+      </div>
+    </div>`;
+
+  if (compiled.inputs.length) {
+    html += `<div class="cp-sec-lbl">Inputs (${compiled.inputs.length})</div>`;
+    compiled.inputs.forEach(p => {
+      html += `<div class="cp-row">
+        <span class="cp-row-icon" style="color:var(--venturan);font-size:.7rem">○</span>
+        <div class="cp-row-body">
+          <div class="cp-row-name">${p.label}</div>
+          <div class="cp-row-sub">${p.required ? 'Required' : 'Optional'}${p.default!==null ? ` · default: ${JSON.stringify(p.default)}` : ''}</div>
+        </div>
+        <span class="cp-row-type">${PORT_TYPE_LABELS[p.type]||p.type}</span>
+      </div>`;
+    });
+  }
+
+  if (compiled.outputs.length) {
+    html += `<div class="cp-sec-lbl">Outputs (${compiled.outputs.length})</div>`;
+    compiled.outputs.forEach(p => {
+      html += `<div class="cp-row">
+        <span class="cp-row-icon" style="color:#4dc8a0;font-size:.7rem">●</span>
+        <div class="cp-row-body">
+          <div class="cp-row-name">${p.label}</div>
+        </div>
+        <span class="cp-row-type">${PORT_TYPE_LABELS[p.type]||p.type}</span>
+      </div>`;
+    });
+  }
+
+  if (compiled.errors.length) {
+    html += `<div class="cp-sec-lbl cp-error">Errors</div>`;
+    compiled.errors.forEach(e => {
+      html += `<div class="cp-row"><span class="cp-row-icon cp-error">✕</span><div class="cp-row-body cp-error">${e}</div></div>`;
+    });
+  }
+
+  if (compiled.warnings.length) {
+    html += `<div class="cp-sec-lbl cp-warn">Warnings</div>`;
+    compiled.warnings.forEach(w => {
+      html += `<div class="cp-row"><span class="cp-row-icon cp-warn">⚠</span><div class="cp-row-body" style="color:rgba(255,255,255,.5)">${w}</div></div>`;
+    });
+  }
+
+  if (compiled.display.tags.length) {
+    html += `<div class="cp-sec-lbl">Tags</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;padding:4px 0">
+        ${compiled.display.tags.map(t => `<span style="font-family:var(--fcode);font-size:.36rem;padding:2px 6px;border-radius:10px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.4)">${t}</span>`).join('')}
+      </div>`;
+  }
+
+  body.innerHTML = html;
+
+  acts.innerHTML = compiled.valid
+    ? `<button class="cp-btn" onclick="closeCompilePanel()">Close</button>
+       <button class="cp-btn primary" onclick="placeCompiledNode('${compiled.id}')">⬡ Place on Canvas</button>`
+    : `<button class="cp-btn primary" onclick="closeCompilePanel()">Close</button>`;
+
+  panel.classList.add('open');
+}
+
+function closeCompilePanel() {
+  document.getElementById('compile-panel').classList.remove('open');
+}
+
+/* ── Place compiled node on canvas ───────────────────────────────── */
+function placeCompiledNode(compiledId) {
+  const store    = loadCompiled();
+  const compiled = store[compiledId];
+  if (!compiled || !currentGraph) return;
+
+  const cx = Math.max(100, -tx / tz + 300);
+  const cy = Math.max(100, -ty / tz + 200);
+
+  const node = {
+    id:   'node-compiled-' + Date.now(),
+    type: 'compiled',
+    x:    cx, y: cy,
+    data: {
+      compiledId,
+      label:    compiled.label,
+      version:  compiled.version,
+      inputs:   compiled.inputs,
+      outputs:  compiled.outputs,
+      display:  compiled.display,
+    },
+  };
+
+  currentGraph.nodes.push(node);
+  const el = buildNodeEl(node);
+  document.getElementById('canvas-inner').appendChild(el);
+  requestAnimationFrame(() => renderWires());
+  selectedNode = node.id;
+  updateSelection();
+  closeCompilePanel();
+  showToast(`⬡ Placed: ${compiled.label}`);
+}
+
+/* ── Compiled node renderer ───────────────────────────────────────── */
+function buildCompiledNodeInner(node) {
+  const d       = node.data || {};
+  const inputs  = d.inputs  || [];
+  const outputs = d.outputs || [];
+  const display = d.display || {};
+
+  const inputRows  = inputs.map(p => `
+    <div class="compiled-port-row input">
+      <div class="cport-dot input"></div>
+      <span class="cport-label">${p.label}</span>
+      <span class="cport-type">${PORT_TYPE_LABELS[p.type]||p.type}</span>
+    </div>`).join('');
+
+  const outputRows = outputs.map(p => `
+    <div class="compiled-port-row output">
+      <span class="cport-type">${PORT_TYPE_LABELS[p.type]||p.type}</span>
+      <span class="cport-label">${p.label}</span>
+      <div class="cport-dot output"></div>
+    </div>`).join('');
+
+  return `
+    <div class="node-head" style="background:linear-gradient(135deg,rgba(77,200,160,.12),rgba(77,200,160,.04));border-bottom:1px solid rgba(77,200,160,.2)">
+      <div class="node-icon">${display.icon || '⬡'}</div>
+      <div class="node-title-wrap">
+        <div class="node-type" style="color:#4dc8a0">compiled</div>
+        <div class="node-name">${d.label || 'Compiled Graph'}</div>
+      </div>
+      <span class="compiled-version-badge">v${d.version || '1.0'}</span>
+    </div>
+    <div class="compiled-ports-grid">
+      <div class="compiled-ports-left">${inputRows || '<div class="compiled-port-row input" style="opacity:.3">no inputs</div>'}</div>
+      <div>${outputRows || '<div class="compiled-port-row output" style="opacity:.3">no outputs</div>'}</div>
+    </div>
+    ${display.description ? `<div class="compiled-summary">${display.description}</div>` : ''}`;
+}
+
+/* ── Compiled library dock ────────────────────────────────────────── */
+function renderCompiledLib() {
+  const store   = loadCompiled();
+  const entries = Object.values(store);
+  const chips   = document.getElementById('cl-chips');
+  const count   = document.getElementById('cl-count');
+  const lib     = document.getElementById('compiled-lib');
+
+  count.textContent = entries.length;
+
+  if (!entries.length) {
+    lib.classList.remove('open');
+    chips.innerHTML = '';
+    return;
+  }
+
+  chips.innerHTML = entries.map(c => `
+    <div class="cl-chip" onclick="placeCompiledNode('${c.id}')" title="${c.display?.description||c.label}">
+      <span class="cl-chip-icon">${c.display?.icon||'⬡'}</span>
+      <span class="cl-chip-name">${c.label}</span>
+      <span class="cl-chip-ver">v${c.version}</span>
+    </div>`).join('');
+
+  lib.classList.add('open');
+}
+
+function toggleCompiledLib() {
+  document.getElementById('compiled-lib').classList.toggle('open');
+}
+
+/* ── Patch buildNodeEl to handle compiled type ────────────────────── */
+const _origBuildNodeEl = buildNodeEl;
+buildNodeEl = function(node) {
+  if (node.type !== 'compiled') return _origBuildNodeEl(node);
+
+  const el = document.createElement('div');
+  el.className = 'loom-node compiled-node';
+  el.id = 'node-' + node.id;
+  el.style.cssText = `left:${node.x}px;top:${node.y}px;--nc:rgba(77,200,160,.45)`;
+  el.dataset.id = node.id;
+  el.innerHTML =
+    ['tl','tr','bl','br'].map(p =>
+      `<div class="nc ${p}"><div class="ch"></div><div class="cv"></div></div>`
+    ).join('') + buildCompiledNodeInner(node);
+  return el;
+};
+
+/* ── Patch ctxDrill to show compiled read-only inspector ──────────── */
+const _origCtxDrill = ctxDrill;
+ctxDrill = function() {
+  const n = currentGraph?.nodes.find(n => n.id === ctxTarget);
+  if (n?.type === 'compiled') {
+    document.getElementById('ctx-menu').style.display = 'none';
+    const store    = loadCompiled();
+    const compiled = store[n.data?.compiledId];
+    if (compiled) showCompilePanel(compiled);
+    else showToast('Compiled data not found in storage');
+    return;
+  }
+  _origCtxDrill();
+};
+
+/* ── Hub listener ────────────────────────────────── */
+window.addEventListener('message', e => {
+  const d = e.data; if(!d||typeof d!=='object') return;
+  if(d.type==='hub:init') { renderCompiledLib(); }
+});
+
+/* ═══ INIT ════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  loadGraph(buildRootGraph(), false);
+  renderCompiledLib();
+  setTimeout(() => {
+    showToast('Double-click Kael Voryn to open his sub-graph');
+  }, 600);
+});
+
+/* ══════════════════════════════════════════════════════════════
+   NODE CONNECTION SYSTEM
+   Port mousedown → drag wire → port mouseup → save edge
+   Edges stored on currentGraph.edges = [{id,from,fromPort,to,toPort,color}]
+   renderWires() draws all saved edges + the live drag wire
+══════════════════════════════════════════════════════════════ */
+
+/* Connection state */
+/* connecting already declared above; add dragWireEnd */
+let dragWireEnd = { x:0, y:0 };
+
+/* ── Attach port events after a node element is built ────────── */
+function attachPortEvents(nodeEl, nodeId) {
+  nodeEl.querySelectorAll('.port').forEach(portEl => {
+    portEl.addEventListener('mousedown', e => {
+      e.stopPropagation();
+      e.preventDefault();
+      const rect   = portEl.getBoundingClientRect();
+      const cRect  = document.getElementById('canvas').getBoundingClientRect();
+      const px     = (rect.left + rect.width/2  - cRect.left  - tx) / tz;
+      const py     = (rect.top  + rect.height/2 - cRect.top   - ty) / tz;
+      const side   = [...portEl.classList].find(c => ['left','right','top','bottom'].includes(c)) || 'right';
+      connecting   = { nodeId, portSide: side, x: px, y: py };
+      dragWireEnd  = { x: px, y: py };
+      document.getElementById('canvas').style.cursor = 'crosshair';
+    });
+    portEl.addEventListener('mouseenter', e => {
+      if (!connecting || portEl.closest('.loom-node').id === 'node-' + connecting.nodeId) return;
+      portEl.style.boxShadow = '0 0 12px 3px currentColor';
+    });
+    portEl.addEventListener('mouseleave', e => {
+      portEl.style.boxShadow = '';
+    });
+  });
+}
+
+/* ── Patch cMove to also move the drag wire ───────────────────── */
+const _connOrigCMove = cMove;
+cMove = function(e) {
+  _connOrigCMove(e);
+  if (connecting) {
+    const cRect = document.getElementById('canvas').getBoundingClientRect();
+    dragWireEnd = {
+      x: (e.clientX - cRect.left - tx) / tz,
+      y: (e.clientY - cRect.top  - ty) / tz,
+    };
+    renderWires();
+  }
+};
+
+/* ── Patch cUp to finalize or cancel connection ───────────────── */
+const _connOrigCUp = cUp;
+cUp = function(e) {
+  _connOrigCUp(e);
+  if (connecting) {
+    /* Check if we landed on a port */
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    const portEl = target?.closest('.port');
+    const nodeEl = portEl?.closest('.loom-node');
+    if (portEl && nodeEl) {
+      const toId   = nodeEl.id.replace('node-','');
+      const toSide = [...portEl.classList].find(c => ['left','right','top','bottom'].includes(c)) || 'left';
+      if (toId !== connecting.nodeId) {
+        if (!currentGraph.edges) currentGraph.edges = [];
+        /* Avoid duplicates */
+        const exists = currentGraph.edges.find(ed =>
+          ed.from === connecting.nodeId && ed.to === toId &&
+          ed.fromPort === connecting.portSide && ed.toPort === toSide
+        );
+        if (!exists) {
+          /* Pick color from target node accent */
+          const toNode  = currentGraph.nodes.find(n => n.id === toId);
+          const edColor = toNode?.data?.accent || 'rgba(200,151,58,0.6)';
+          currentGraph.edges.push({
+            id: 'e-' + Date.now(),
+            from:     connecting.nodeId,
+            fromPort: connecting.portSide,
+            to:       toId,
+            toPort:   toSide,
+            color:    edColor,
+          });
+          saveGraph();
+        }
+      }
+    }
+    connecting   = null;
+    dragWireEnd  = { x:0, y:0 };
+    document.getElementById('canvas').style.cursor = 'default';
+    renderWires();
+  }
+};
+
+/* ── Delete edge on right-click ──────────────────────────────── */
+function deleteEdge(edgeId) {
+  if (!currentGraph?.edges) return;
+  currentGraph.edges = currentGraph.edges.filter(e => e.id !== edgeId);
+  saveGraph();
+  renderWires();
+}
+
+/* ── Get port centre position in graph-space ─────────────────── */
+function portPos(nodeId, side) {
+  const el    = document.getElementById('node-' + nodeId);
+  const pEl   = el?.querySelector('.port.' + side);
+  if (!el || !pEl) return null;
+  const cRect = document.getElementById('canvas').getBoundingClientRect();
+  const r     = pEl.getBoundingClientRect();
+  return {
+    x: (r.left + r.width/2  - cRect.left - tx) / tz,
+    y: (r.top  + r.height/2 - cRect.top  - ty) / tz,
+  };
+}
+
+/* ── Cubic bezier path between two points ───────────────────── */
+function wirePath(ax, ay, bx, by, fromSide, toSide) {
+  const dx = Math.abs(bx - ax);
+  const cx = Math.max(60, dx * 0.55);
+  let   c1x = ax, c1y = ay, c2x = bx, c2y = by;
+  if      (fromSide === 'right')  c1x = ax + cx;
+  else if (fromSide === 'left')   c1x = ax - cx;
+  else if (fromSide === 'bottom') c1y = ay + cx;
+  else                             c1y = ay - cx;
+  if      (toSide   === 'left')   c2x = bx - cx;
+  else if (toSide   === 'right')  c2x = bx + cx;
+  else if (toSide   === 'top')    c2y = by - cx;
+  else                             c2y = by + cx;
+  return `M${ax},${ay} C${c1x},${c1y} ${c2x},${c2y} ${bx},${by}`;
+}
+
+/* ── Override renderWires to draw saved edges + drag wire ─────── */
+const _connOrigRenderWires = typeof renderWires !== "undefined" ? renderWires : ()=>{};
+renderWires = function() {
+  const svg = document.getElementById('wl');
+  svg.innerHTML = '';
+  if (!currentGraph?.nodes?.length) return;
+
+  /* Size SVG to fit content */
+  const maxX = Math.max(...currentGraph.nodes.map(n=>{const e=document.getElementById('node-'+n.id);return n.x+(e?.offsetWidth||260);})) + 200;
+  const maxY = Math.max(...currentGraph.nodes.map(n=>{const e=document.getElementById('node-'+n.id);return n.y+(e?.offsetHeight||200);})) + 200;
+  svg.setAttribute('width',  maxX); svg.style.width  = maxX + 'px';
+  svg.setAttribute('height', maxY); svg.style.height = maxY + 'px';
+
+  /* Glow filter */
+  svg.innerHTML = `<defs>
+    <filter id="wglow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>`;
+
+  /* Draw saved edges */
+  (currentGraph.edges || []).forEach(ed => {
+    const a = portPos(ed.from, ed.fromPort);
+    const b = portPos(ed.to,   ed.toPort);
+    if (!a || !b) return;
+    const d = wirePath(a.x, a.y, b.x, b.y, ed.fromPort, ed.toPort);
+    const col = ed.color || 'rgba(200,151,58,0.5)';
+
+    /* Glow layer */
+    const glow = document.createElementNS('http://www.w3.org/2000/svg','path');
+    glow.setAttribute('d', d);
+    glow.setAttribute('stroke', col);
+    glow.setAttribute('stroke-width', '3');
+    glow.setAttribute('fill', 'none');
+    glow.setAttribute('filter', 'url(#wglow)');
+    glow.setAttribute('opacity', '0.4');
+    svg.appendChild(glow);
+
+    /* Main wire */
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', d);
+    path.setAttribute('stroke', col);
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke-linecap', 'round');
+    path.style.cursor = 'pointer';
+    path.title = 'Right-click to delete';
+    path.addEventListener('contextmenu', ev => {
+      ev.preventDefault(); ev.stopPropagation();
+      deleteEdge(ed.id);
+    });
+    svg.appendChild(path);
+
+    /* Arrowhead at destination */
+    const angle = Math.atan2(b.y - a.y, b.x - a.x);
+    const arr = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    const tip = { x: b.x, y: b.y };
+    const al = 8, aw = 4;
+    const p1 = { x: tip.x - al*Math.cos(angle) + aw*Math.sin(angle), y: tip.y - al*Math.sin(angle) - aw*Math.cos(angle) };
+    const p2 = { x: tip.x - al*Math.cos(angle) - aw*Math.sin(angle), y: tip.y - al*Math.sin(angle) + aw*Math.cos(angle) };
+    arr.setAttribute('points', `${tip.x},${tip.y} ${p1.x},${p1.y} ${p2.x},${p2.y}`);
+    arr.setAttribute('fill', col);
+    arr.setAttribute('opacity', '0.8');
+    svg.appendChild(arr);
+  });
+
+  /* Draw live drag wire */
+  if (connecting) {
+    const d = wirePath(connecting.x, connecting.y, dragWireEnd.x, dragWireEnd.y, connecting.portSide, 'left');
+    const live = document.createElementNS('http://www.w3.org/2000/svg','path');
+    live.setAttribute('d', d);
+    live.setAttribute('stroke', 'rgba(200,151,58,0.7)');
+    live.setAttribute('stroke-width', '1.5');
+    live.setAttribute('stroke-dasharray', '5 4');
+    live.setAttribute('fill', 'none');
+    live.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(live);
+
+    /* Pulse dot at cursor */
+    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx', dragWireEnd.x);
+    dot.setAttribute('cy', dragWireEnd.y);
+    dot.setAttribute('r', '4');
+    dot.setAttribute('fill', 'rgba(200,151,58,0.8)');
+    svg.appendChild(dot);
+  }
+};
+
+/* ── Save graph edges to localStorage ────────────────────────── */
+function saveGraph() {
+  try {
+    const stored = JSON.parse(localStorage.getItem('ql-graphs') || '{}');
+    stored[currentGraph.id] = {
+      nodes: currentGraph.nodes,
+      edges: currentGraph.edges || [],
+    };
+    localStorage.setItem('ql-graphs', JSON.stringify(stored));
+  } catch(e) { console.warn('saveGraph failed', e); }
+}
+
+/* ── Load saved edges when a graph is loaded ─────────────────── */
+const _connOrigLoadGraph = loadGraph;
+loadGraph = function(graph, push=true) {
+  /* Restore saved edges */
+  try {
+    const stored = JSON.parse(localStorage.getItem('ql-graphs') || '{}');
+    if (stored[graph.id]?.edges) graph.edges = stored[graph.id].edges;
+    if (!graph.edges) graph.edges = [];
+  } catch(e) { graph.edges = []; }
+  _connOrigLoadGraph(graph, push);
+};
+
+/* ── Hook buildNodeEl to attach port events after creation ─────── */
+const _connOrigBuildNodeEl = buildNodeEl;
+buildNodeEl = function(node) {
+  const el = _connOrigBuildNodeEl(node);
+  /* Attach port events after element is in the DOM on next tick */
+  setTimeout(() => attachPortEvents(el, node.id), 0);
+  return el;
+};
+
+/* ── Tooltip: show connection hint on first port hover ────────── */
+(function() {
+  let hinted = false;
+  document.addEventListener('mouseover', e => {
+    if (hinted) return;
+    if (e.target.closest('.port')) {
+      hinted = true;
+      showToast('Drag from any port to connect nodes  •  Right-click a wire to delete');
+    }
+  });
+})();
+
+
+/* ── Quantum Loom Theme System ──────────────────────────────── */
+(function initQLTheme() {
+  const MAP = {
+    'c-bg':'--bg',
+    'c-surf':'--bg-2',
+    'c-surf2':'--bg-3',
+    'c-edge':'--border',
+    'c-edge-hi':'--border-hi',
+    'c-accent1':'--venturan',
+    'c-accent2':'--amber',
+    'c-accent3':'--emerald',
+    'c-accent4':'--fusion',
+    'c-danger':'--blood',
+    'c-warm':'--solari'
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([canonical, varName]) => {
+      if (tokens[canonical] !== undefined)
+        root.style.setProperty(varName, tokens[canonical]);
+    });
+  }
+  // Apply saved theme on load
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  // Listen for live theme broadcasts from hub
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens)
+      applyTokens(e.data.tokens);
+  });
+})();
+
+</script>
+</body>
+</html>

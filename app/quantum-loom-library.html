@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Quantum Loom — Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  /* Core palette — aged brass & vellum against void */
+  --void:        #07080a;
+  --void-2:      #0c0d10;
+  --void-3:      #111318;
+  --void-4:      #181a1f;
+  --void-5:      #1e2026;
+  --panel:       #14161b;
+  --panel-hi:    #1a1d24;
+  --panel-edge:  rgba(255,255,255,.06);
+  --brass:       #c8973a;
+  --brass-dim:   #8a6422;
+  --brass-glow:  rgba(200,151,58,.15);
+  --vellum:      #d4c8a8;
+  --vellum-dim:  #8a7d62;
+  --ink:         rgba(212,200,168,.85);
+  --ink-dim:     rgba(212,200,168,.4);
+  --ink-faint:   rgba(212,200,168,.15);
+  --crimson:     #c0392b;
+  --emerald:     #27ae60;
+  --sapphire:    #2980b9;
+  --amethyst:    #8e44ad;
+  --gold:        #f1c40f;
+  --silver:      #bdc3c7;
+  --copper:      #e67e22;
+  --obsidian:    #2c3e50;
+
+  /* Type colors — each heraldic type has its own identity color */
+  --c-seal:      #e8d5a3;   /* Gold parchment — highest authority */
+  --c-crest:     #7fb3d3;   /* Noble blue — identity */
+  --c-glyph:     #82e0aa;   /* Verdant — capability */
+  --c-sigil:     #bb8fce;   /* Amethyst — personal power */
+  --c-totem:     #a3e4d7;   /* Spirit teal */
+  --c-emblem:    #f0b27a;   /* Amber — faction */
+  --c-rune:      #f7dc6f;   /* Arcane yellow — enchantment */
+  --c-cipher:    #aab7b8;   /* Muted — secret */
+  --c-token:     #d5d8dc;   /* Silver — transactional */
+  --c-badge:     #52be80;   /* Achievement green */
+  --c-insignia:  #5dade2;   /* Official blue */
+  --c-ensign:    #ec7063;   /* State red */
+  --c-standard:  #f8c471;   /* Rally amber */
+  --c-device:    #d7bde2;   /* Personal lavender */
+  --c-mark:      #a9cce3;   /* Administrative grey-blue */
+  --c-charge:    #fad7a0;   /* Compositional warm */
+  --c-icon:      #f9e79f;   /* Sacred gold */
+  --c-talisman:  #a2d9ce;   /* Protective mint */
+  --c-trait:     #ccd1d1;   /* Neutral descriptor */
+  --c-zone:      #f0e6d3;   /* Warm zone cream */
+  --c-scene:     #d5e8d4;   /* Scene green */
+  --c-node:      #dae8fc;   /* Node blue */
+
+  --fm: 'Cinzel', serif;
+  --fd: 'Crimson Pro', serif;
+  --fcode: 'JetBrains Mono', monospace;
+}
+
+/* ── Animations ── */
+@keyframes fade-in   {from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes breathe   {0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes shimmer   {0%{background-position:200% center}100%{background-position:-200% center}}
+@keyframes unfurl    {from{opacity:0;transform:scaleY(.92);transform-origin:top}to{opacity:1;transform:scaleY(1)}}
+@keyframes glow-pulse{0%,100%{box-shadow:0 0 6px var(--glow-c,var(--brass))}50%{box-shadow:0 0 16px var(--glow-c,var(--brass))}}
+@keyframes toast-in  {0%{opacity:0;transform:translateY(10px)}15%,80%{opacity:1;transform:translateY(0)}100%{opacity:0}}
+@keyframes spin      {to{transform:rotate(360deg)}}
+
+body{
+  background:var(--void);
+  font-family:var(--fd);
+  color:var(--ink);
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  /* Subtle noise texture */
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+}
+
+/* ── TOP BAR ── */
+#topbar{
+  height:46px;flex-shrink:0;
+  background:linear-gradient(180deg,var(--void-3),var(--void-2));
+  border-bottom:1px solid var(--brass-dim);
+  display:flex;align-items:center;padding:0 18px;gap:12px;
+  z-index:100;
+  box-shadow:0 1px 20px rgba(200,151,58,.08);
+}
+.logo{
+  font-family:var(--fm);font-size:.65rem;font-weight:600;
+  letter-spacing:.35em;text-transform:uppercase;color:var(--brass);
+  display:flex;align-items:center;gap:10px;white-space:nowrap;
+}
+.logo-mark{
+  width:24px;height:24px;
+  border:1.5px solid var(--brass);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;animation:breathe 4s ease-in-out infinite;
+  background:var(--brass-glow);
+}
+.tb-sep{width:1px;height:20px;background:rgba(200,151,58,.2)}
+.tb-nav-btn{
+  font-family:var(--fm);font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;
+  padding:5px 14px;border-radius:3px;border:1px solid transparent;
+  cursor:pointer;transition:all .15s;color:var(--ink-dim);background:none;
+}
+.tb-nav-btn:hover{color:var(--ink);border-color:var(--panel-edge)}
+.tb-nav-btn.active{color:var(--brass);border-color:var(--brass-dim);background:var(--brass-glow)}
+.tb-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.tb-btn{
+  font-family:var(--fm);font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;
+  padding:5px 14px;border-radius:3px;border:1px solid var(--panel-edge);
+  background:transparent;color:var(--ink-dim);cursor:pointer;transition:all .15s;
+}
+.tb-btn:hover{border-color:var(--brass-dim);color:var(--brass)}
+.tb-btn.primary{background:var(--brass);border-color:var(--brass);color:var(--void);font-weight:600}
+.tb-btn.primary:hover{background:#d4a44a;box-shadow:0 2px 12px rgba(200,151,58,.3)}
+
+/* ── WORKSPACE ── */
+#workspace{flex:1;display:flex;overflow:hidden}
+
+/* ── LEFT NAV — Type browser ── */
+#type-nav{
+  width:190px;flex-shrink:0;
+  background:var(--void-2);
+  border-right:1px solid var(--brass-dim);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.tn-head{
+  padding:14px 14px 10px;
+  border-bottom:1px solid rgba(200,151,58,.12);
+  flex-shrink:0;
+}
+.tn-title{font-family:var(--fm);font-size:.55rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--brass)}
+.tn-subtitle{font-family:var(--fd);font-size:.72rem;color:var(--ink-dim);margin-top:2px;font-style:italic}
+
+.tn-search{
+  padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);flex-shrink:0;
+}
+.tn-search input{
+  width:100%;background:var(--void-3);border:1px solid rgba(255,255,255,.08);
+  border-radius:4px;padding:6px 10px;font-family:var(--fd);font-size:.75rem;
+  color:var(--ink);outline:none;transition:border-color .15s;
+}
+.tn-search input::placeholder{color:var(--ink-dim)}
+.tn-search input:focus{border-color:var(--brass-dim)}
+
+.tn-list{flex:1;overflow-y:auto;padding:8px 0}
+.tn-list::-webkit-scrollbar{width:3px}
+.tn-list::-webkit-scrollbar-thumb{background:var(--brass-dim);border-radius:2px}
+.tn-group-lbl{
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(200,151,58,.35);padding:8px 14px 4px;
+}
+.tn-item{
+  display:flex;align-items:center;gap:9px;
+  padding:7px 14px;cursor:pointer;transition:all .12s;
+  position:relative;
+}
+.tn-item:hover{background:rgba(255,255,255,.03)}
+.tn-item.active{background:rgba(200,151,58,.08)}
+.tn-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--brass)}
+.tn-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tn-name{font-family:var(--fm);font-size:.52rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;flex:1}
+.tn-count{
+  font-family:var(--fcode);font-size:.48rem;
+  color:var(--ink-dim);
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+  padding:1px 5px;border-radius:10px;
+}
+
+/* ── MAIN CONTENT — Item grid ── */
+#main-content{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  background:var(--void);
+}
+
+/* Content header */
+.content-head{
+  padding:14px 18px 12px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+  background:var(--void-2);
+}
+.ch-title{font-family:var(--fm);font-size:.75rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;flex:1}
+.ch-count{font-family:var(--fcode);font-size:.6rem;color:var(--ink-dim)}
+.view-toggle{display:flex;gap:3px}
+.vt-btn{width:26px;height:26px;border-radius:3px;border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--ink-dim);cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.vt-btn:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.vt-btn.active{background:var(--brass-glow);border-color:var(--brass-dim);color:var(--brass)}
+
+/* Filters bar */
+.filters-bar{
+  padding:8px 18px;border-bottom:1px solid rgba(255,255,255,.04);
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
+  background:var(--void-2);overflow-x:auto;
+}
+.filters-bar::-webkit-scrollbar{height:0}
+.filter-chip{
+  font-family:var(--fm);font-size:.44rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.08);
+  background:transparent;color:var(--ink-dim);cursor:pointer;transition:all .12s;white-space:nowrap;
+}
+.filter-chip:hover{border-color:rgba(255,255,255,.18);color:var(--ink)}
+.filter-chip.active{border-color:var(--brass-dim);background:var(--brass-glow);color:var(--brass)}
+
+/* Item grid */
+#item-grid{
+  flex:1;overflow-y:auto;padding:16px;
+  display:grid;gap:10px;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+}
+#item-grid.list-view{grid-template-columns:1fr}
+#item-grid::-webkit-scrollbar{width:5px}
+#item-grid::-webkit-scrollbar-thumb{background:var(--brass-dim);border-radius:3px;opacity:.5}
+
+/* Empty state */
+.empty-state{
+  grid-column:1/-1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:12px;padding:60px 20px;opacity:.4;
+}
+.empty-glyph{font-size:2.5rem;opacity:.5}
+.empty-text{font-family:var(--fm);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brass)}
+.empty-sub{font-family:var(--fd);font-size:.8rem;color:var(--ink-dim);font-style:italic;text-align:center}
+
+/* ── ITEM CARD ── */
+.item-card{
+  background:var(--panel);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:8px;cursor:pointer;
+  transition:all .15s;
+  position:relative;overflow:hidden;
+  animation:fade-in .2s ease;
+}
+.item-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--type-color,var(--brass));opacity:.6;
+}
+.item-card:hover{border-color:var(--type-color,var(--brass));transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 0 1px var(--type-color,var(--brass))22}
+.item-card.selected{border-color:var(--type-color,var(--brass));box-shadow:0 0 0 2px var(--type-color,var(--brass))44,0 4px 20px rgba(0,0,0,.5)}
+
+.ic-head{padding:12px 12px 8px;display:flex;align-items:flex-start;gap:8px}
+.ic-symbol{
+  width:36px;height:36px;border-radius:6px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+  position:relative;
+}
+.ic-symbol::after{
+  content:'';position:absolute;inset:0;border-radius:6px;
+  background:var(--type-color,var(--brass));opacity:.06;
+}
+.ic-meta{flex:1;min-width:0}
+.ic-name{font-family:var(--fm);font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px}
+.ic-type{font-family:var(--fm);font-size:.42rem;letter-spacing:.18em;text-transform:uppercase;color:var(--type-color,var(--brass));opacity:.8}
+.ic-body{padding:0 12px 10px}
+.ic-desc{font-family:var(--fd);font-size:.75rem;color:var(--ink-dim);font-style:italic;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ic-tags{padding:8px 12px;border-top:1px solid rgba(255,255,255,.04);display:flex;gap:4px;flex-wrap:wrap}
+.ic-tag{font-family:var(--fcode);font-size:.42rem;padding:1px 6px;border-radius:3px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:var(--ink-dim)}
+.ic-authority{position:absolute;top:10px;right:10px;font-family:var(--fcode);font-size:.4rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 5px;border-radius:2px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.07);color:var(--ink-dim)}
+
+/* List view card */
+#item-grid.list-view .item-card{border-radius:4px}
+#item-grid.list-view .item-card::before{top:0;left:0;right:auto;bottom:0;width:2px;height:auto}
+#item-grid.list-view .ic-head{padding:8px 12px;align-items:center}
+#item-grid.list-view .ic-symbol{width:28px;height:28px;font-size:.9rem;flex-shrink:0}
+#item-grid.list-view .ic-body{display:none}
+#item-grid.list-view .ic-tags{display:none}
+#item-grid.list-view .ic-name{font-size:.55rem}
+
+/* ── RIGHT PANEL — Preview / Editor ── */
+#preview-panel{
+  width:320px;flex-shrink:0;
+  background:var(--void-2);
+  border-left:1px solid var(--brass-dim);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.pp-head{
+  padding:14px 16px 12px;
+  border-bottom:1px solid rgba(200,151,58,.12);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.pp-title{font-family:var(--fm);font-size:.6rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--brass)}
+.pp-actions{display:flex;gap:5px}
+.pp-btn{
+  font-family:var(--fm);font-size:.44rem;letter-spacing:.15em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;border:1px solid rgba(255,255,255,.1);
+  background:transparent;color:var(--ink-dim);cursor:pointer;transition:all .12s;
+}
+.pp-btn:hover{border-color:var(--brass-dim);color:var(--brass)}
+.pp-btn.danger:hover{border-color:#c0392b;color:#c0392b}
+.pp-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.pp-body::-webkit-scrollbar{width:3px}
+.pp-body::-webkit-scrollbar-thumb{background:var(--brass-dim);border-radius:2px}
+
+/* Preview symbol display */
+.pp-symbol-display{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  padding:20px;background:var(--void-3);border-radius:8px;
+  border:1px solid rgba(255,255,255,.05);
+  position:relative;overflow:hidden;
+}
+.pp-symbol-display::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,var(--type-glow,rgba(200,151,58,.08)) 0%,transparent 70%);
+  pointer-events:none;
+}
+.pp-symbol-big{font-size:3rem;line-height:1;filter:drop-shadow(0 0 12px var(--type-glow,rgba(200,151,58,.3)))}
+.pp-type-badge{
+  font-family:var(--fm);font-size:.5rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;
+  padding:4px 12px;border-radius:20px;
+  border:1px solid var(--type-color,var(--brass));
+  color:var(--type-color,var(--brass));
+  background:rgba(0,0,0,.4);
+}
+.pp-name-big{font-family:var(--fm);font-size:.85rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--ink);text-align:center}
+.pp-authority-ring{
+  font-family:var(--fcode);font-size:.48rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:3px 10px;border-radius:3px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);color:var(--ink-dim);
+}
+
+/* Preview metadata sections */
+.pp-section{display:flex;flex-direction:column;gap:7px}
+.pp-sec-lbl{font-family:var(--fm);font-size:.48rem;letter-spacing:.25em;text-transform:uppercase;color:var(--brass-dim);padding-bottom:6px;border-bottom:1px solid rgba(200,151,58,.1)}
+.pp-field{display:flex;flex-direction:column;gap:3px}
+.pp-field-lbl{font-family:var(--fm);font-size:.42rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-dim)}
+.pp-field-val{font-family:var(--fd);font-size:.82rem;color:var(--ink);line-height:1.5}
+.pp-field-val.code{font-family:var(--fcode);font-size:.72rem;color:var(--brass);background:rgba(200,151,58,.07);padding:4px 8px;border-radius:3px;border:1px solid rgba(200,151,58,.12)}
+.pp-tags{display:flex;flex-wrap:wrap;gap:4px}
+.pp-tag{font-family:var(--fcode);font-size:.48rem;padding:2px 8px;border-radius:3px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:var(--ink-dim)}
+
+/* Heraldic logic block */
+.pp-logic{
+  background:var(--void-3);border:1px solid rgba(200,151,58,.15);
+  border-radius:6px;padding:10px 12px;
+  font-family:var(--fcode);font-size:.65rem;
+  color:var(--brass);line-height:1.7;
+}
+.pp-logic .comment{color:var(--ink-dim);font-style:italic}
+.pp-logic .keyword{color:#82e0aa}
+.pp-logic .value{color:#f7dc6f}
+
+/* No selection state */
+.pp-empty{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:10px;padding:30px;opacity:.4;
+}
+.pp-empty-glyph{font-size:2rem}
+.pp-empty-text{font-family:var(--fd);font-size:.85rem;color:var(--ink-dim);font-style:italic;text-align:center;line-height:1.6}
+
+/* ── CREATE / EDIT MODAL ── */
+#modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);
+  backdrop-filter:blur(8px);z-index:500;
+  display:flex;align-items:center;justify-content:center;
+}
+#modal-overlay.hidden{display:none}
+.modal{
+  background:var(--void-3);border:1px solid var(--brass-dim);
+  border-radius:10px;width:520px;max-height:85vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 24px 80px rgba(0,0,0,.9),0 0 0 1px rgba(200,151,58,.1);
+  animation:unfurl .25s ease;
+}
+.modal-head{
+  padding:16px 18px;border-bottom:1px solid rgba(200,151,58,.15);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.modal-title{font-family:var(--fm);font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--brass)}
+.modal-close{background:none;border:none;color:var(--ink-dim);font-size:1.1rem;cursor:pointer;padding:2px 6px;border-radius:3px;transition:all .12s}
+.modal-close:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.modal-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px}
+.modal-body::-webkit-scrollbar{width:3px}
+.modal-body::-webkit-scrollbar-thumb{background:var(--brass-dim);border-radius:2px}
+.modal-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
+
+/* Form fields */
+.form-row{display:flex;gap:10px}
+.form-group{display:flex;flex-direction:column;gap:5px;flex:1}
+.form-lbl{font-family:var(--fm);font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-dim)}
+.form-input,.form-select,.form-textarea{
+  background:var(--void-4);border:1px solid rgba(255,255,255,.1);
+  border-radius:4px;padding:8px 10px;
+  font-family:var(--fd);font-size:.82rem;color:var(--ink);
+  outline:none;transition:border-color .15s;width:100%;
+}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--ink-dim)}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--brass-dim);box-shadow:0 0 0 2px var(--brass-glow)}
+.form-select{cursor:pointer}
+.form-select option{background:var(--void-3);color:var(--ink)}
+.form-textarea{resize:vertical;min-height:70px;font-size:.8rem;line-height:1.5}
+
+/* Symbol picker */
+.symbol-picker{display:flex;flex-wrap:wrap;gap:4px}
+.sym-opt{
+  width:32px;height:32px;border-radius:4px;border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);cursor:pointer;font-size:.95rem;
+  display:flex;align-items:center;justify-content:center;transition:all .12s;
+}
+.sym-opt:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);transform:scale(1.1)}
+.sym-opt.selected{border-color:var(--brass);background:var(--brass-glow);box-shadow:0 0 8px var(--brass-glow)}
+
+/* Color swatch row */
+.color-row{display:flex;flex-wrap:wrap;gap:5px}
+.color-swatch{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .12s;flex-shrink:0}
+.color-swatch:hover{transform:scale(1.15)}
+.color-swatch.selected{border-color:white;box-shadow:0 0 6px rgba(255,255,255,.4)}
+
+/* Tag input */
+.tag-input-wrap{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:5px 8px;background:var(--void-4);border:1px solid rgba(255,255,255,.1);border-radius:4px;min-height:38px;cursor:text;transition:border-color .15s}
+.tag-input-wrap:focus-within{border-color:var(--brass-dim)}
+.tag-pill{font-family:var(--fcode);font-size:.5rem;padding:2px 7px;background:var(--brass-glow);border:1px solid var(--brass-dim);border-radius:3px;color:var(--brass);display:flex;align-items:center;gap:4px}
+.tag-remove{cursor:pointer;opacity:.6;font-size:.7rem;line-height:1}
+.tag-remove:hover{opacity:1;color:var(--crimson)}
+.tag-raw-input{background:none;border:none;outline:none;font-family:var(--fd);font-size:.8rem;color:var(--ink);flex:1;min-width:60px}
+.tag-raw-input::placeholder{color:var(--ink-dim)}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  background:rgba(7,8,10,.97);border:1px solid var(--brass-dim);
+  backdrop-filter:blur(12px);padding:8px 18px;border-radius:5px;
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--brass);pointer-events:none;opacity:0;z-index:1000;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,.8);
+}
+#toast.show{animation:toast-in 2.5s ease forwards}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo"><div class="logo-mark">⬡</div>Quantum Loom</div>
+  <div class="tb-sep"></div>
+  <button class="tb-nav-btn" onclick="toast('Node Graph — integration build')">◈ Node Graph</button>
+  <button class="tb-nav-btn" onclick="toast('Sub-Graph — integration build')">⟁ Sub-Graph</button>
+  <button class="tb-nav-btn" onclick="toast('Rack — open quantum-loom-rack.html')">⚙ Rack</button>
+  <button class="tb-nav-btn active">⊞ Library</button>
+  <div class="tb-sep"></div>
+  <div class="tb-right">
+    <button class="tb-btn" id="import-btn" onclick="importJSON()">↑ Import</button>
+    <button class="tb-btn" id="export-btn" onclick="exportJSON()">↓ Export</button>
+    <button class="tb-btn primary" onclick="openCreateModal()">+ New Entry</button>
+  </div>
+</div>
+
+<!-- WORKSPACE -->
+<div id="workspace">
+
+  <!-- LEFT TYPE NAV -->
+  <div id="type-nav">
+    <div class="tn-head">
+      <div class="tn-title">Codex</div>
+      <div class="tn-subtitle">Heraldic Registry</div>
+    </div>
+    <div class="tn-search">
+      <input type="text" id="search-input" placeholder="Search entries…" oninput="handleSearch(this.value)">
+    </div>
+    <div class="tn-list" id="type-list"></div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="main-content">
+    <div class="content-head">
+      <div class="ch-title" id="content-title">All Entries</div>
+      <div class="ch-count" id="content-count">0 entries</div>
+      <div class="view-toggle">
+        <button class="vt-btn active" id="vt-grid" onclick="setView('grid')" title="Grid view">⊞</button>
+        <button class="vt-btn" id="vt-list" onclick="setView('list')" title="List view">☰</button>
+      </div>
+    </div>
+    <div class="filters-bar" id="filters-bar"></div>
+    <div id="item-grid"></div>
+  </div>
+
+  <!-- PREVIEW PANEL -->
+  <div id="preview-panel">
+    <div class="pp-head">
+      <div class="pp-title">Preview</div>
+      <div class="pp-actions" id="pp-actions" style="display:none">
+        <button class="pp-btn" onclick="editSelected()">Edit</button>
+        <button class="pp-btn danger" onclick="deleteSelected()">Delete</button>
+      </div>
+    </div>
+    <div class="pp-body" id="pp-body">
+      <div class="pp-empty">
+        <div class="pp-empty-glyph">⚜</div>
+        <div class="pp-empty-text">Select an entry from the codex to examine its heraldic details and logic bindings.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CREATE / EDIT MODAL -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">New Library Entry</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group" style="flex:2">
+          <div class="form-lbl">Name *</div>
+          <input class="form-input" id="f-name" type="text" placeholder="e.g. Crest of the Ashen Order">
+        </div>
+        <div class="form-group" style="flex:1">
+          <div class="form-lbl">Type *</div>
+          <select class="form-select" id="f-type" onchange="onTypeChange()"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-lbl">Symbol</div>
+        <div class="symbol-picker" id="symbol-picker"></div>
+      </div>
+      <div class="form-group">
+        <div class="form-lbl">Accent Color</div>
+        <div class="color-row" id="color-row"></div>
+      </div>
+      <div class="form-group">
+        <div class="form-lbl">Description</div>
+        <textarea class="form-textarea" id="f-desc" placeholder="Describe the meaning, purpose, or lore of this entry…"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="form-lbl">World / Setting</div>
+          <input class="form-input" id="f-world" type="text" placeholder="e.g. Xyrona Prime, Generic, Any">
+        </div>
+        <div class="form-group">
+          <div class="form-lbl">Authority Level</div>
+          <select class="form-select" id="f-authority">
+            <option value="cosmic">Cosmic — Highest</option>
+            <option value="dynastic">Dynastic — Generational</option>
+            <option value="sacred">Sacred — Religious</option>
+            <option value="institutional">Institutional — Org</option>
+            <option value="personal">Personal — Individual</option>
+            <option value="functional">Functional — Utility</option>
+            <option value="situational">Situational — Temporary</option>
+            <option value="transactional">Transactional — Currency</option>
+            <option value="descriptive">Descriptive — Metadata</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-lbl">Logic Binding <span style="font-style:italic;color:var(--ink-dim)">(how this maps to code)</span></div>
+        <textarea class="form-textarea" id="f-logic" placeholder="e.g. if (zone.crest === 'Ashen') { actor.despair += 2 }" style="font-family:var(--fcode);font-size:.72rem;min-height:55px"></textarea>
+      </div>
+
+      <div class="form-group" id="lyric-seed-row">
+        <div class="form-lbl">Lyric Seed <span style="font-style:italic;color:var(--ink-dim)">(optional — starting phrase for Song renderer)</span></div>
+        <textarea class="form-textarea" id="f-lyric-seed" placeholder="e.g. &#39;ash still falls where we once stood&#39; — a line, image, or feeling to seed lyrics…" style="min-height:48px"></textarea>
+      </div>
+      <div class="form-group" id="branch-label-row" style="display:none">
+        <div class="form-lbl">Branch Label <span style="font-style:italic;color:var(--ink-dim)">(choice text shown in Game Script decision trees)</span></div>
+        <input class="form-input" id="f-branch-label" placeholder="e.g. &#39;Follow the stranger&#39;, &#39;Refuse the offer&#39;, &#39;Ask about the Vault&#39;…">
+      </div>
+      <div class="form-group">
+        <div class="form-lbl">Zone Modifiers <span style="font-style:italic;color:var(--ink-dim)">(numeric effects applied to actors in zones — for Glyphs, Totems)</span></div>
+        <div id="effect-rows" style="display:flex;flex-direction:column;gap:4px;margin-bottom:6px"></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px" id="effect-presets">
+          <span style="font-family:var(--fm);font-size:.42rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-dim);align-self:center">Quick add:</span>
+        </div>
+        <button type="button" onclick="addEffectRow()" style="font-family:var(--fm);font-size:.44rem;letter-spacing:.15em;text-transform:uppercase;padding:4px 10px;border-radius:3px;border:1px dashed rgba(200,151,58,.3);background:transparent;color:var(--brass-dim);cursor:pointer;transition:all .12s;width:100%;text-align:center" onmouseover="this.style.borderColor='var(--brass)';this.style.color='var(--brass)'" onmouseout="this.style.borderColor='rgba(200,151,58,.3)';this.style.color='var(--brass-dim)'">+ Add Modifier</button>
+      </div>
+      <div class="form-group">
+        <div class="form-lbl">Tags <span style="font-style:italic;color:var(--ink-dim)">(press Enter or comma to add)</span></div>
+        <div class="tag-input-wrap" id="tag-input-wrap" onclick="document.getElementById('tag-raw').focus()">
+          <input type="text" id="tag-raw" class="tag-raw-input" placeholder="add tag…" onkeydown="handleTagKey(event)">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="tb-btn" onclick="closeModal()">Cancel</button>
+      <button class="tb-btn primary" onclick="saveEntry()">Save to Codex</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   QUANTUM LOOM — HERALDIC LIBRARY ENGINE
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Heraldic type definitions ── */
+const TYPES = [
+  { id:'seal',     label:'Seal',     color:'var(--c-seal)',     authority:'cosmic',      permanence:'Permanent until broken',  question:'Is this permitted by cosmic law?',   returns:'boolean',       group:'Authority' },
+  { id:'crest',    label:'Crest',    color:'var(--c-crest)',    authority:'dynastic',    permanence:'Generational',            question:'Who or what IS this?',               returns:'enum/string',   group:'Identity' },
+  { id:'sigil',    label:'Sigil',    color:'var(--c-sigil)',    authority:'personal',    permanence:'Semi-permanent',          question:'Does THIS individual have authority?',returns:'boolean',       group:'Identity' },
+  { id:'emblem',   label:'Emblem',   color:'var(--c-emblem)',   authority:'institutional',permanence:'Long-term',             question:'What faction or ideology is this?',   returns:'enum/string',   group:'Identity' },
+  { id:'ensign',   label:'Ensign',   color:'var(--c-ensign)',   authority:'dynastic',    permanence:'Permanent',               question:'What nation or state claims this?',   returns:'enum/string',   group:'Identity' },
+  { id:'device',   label:'Device',   color:'var(--c-device)',   authority:'personal',    permanence:'Semi-permanent',          question:'What is this individual\'s heraldic design?', returns:'string', group:'Identity' },
+  { id:'glyph',    label:'Glyph',    color:'var(--c-glyph)',    authority:'functional',  permanence:'Permanent',               question:'What can this DO or mean?',          returns:'set/array',     group:'Capability' },
+  { id:'rune',     label:'Rune',     color:'var(--c-rune)',     authority:'functional',  permanence:'Permanent (inscribed)',   question:'What enchantment or formula does this encode?', returns:'effect', group:'Capability' },
+  { id:'totem',    label:'Totem',    color:'var(--c-totem)',    authority:'sacred',      permanence:'Permanent',               question:'What spirit or culture guides this?', returns:'affinity',      group:'Capability' },
+  { id:'icon',     label:'Icon',     color:'var(--c-icon)',     authority:'sacred',      permanence:'Permanent',               question:'What sacred truth does this represent?', returns:'boolean',    group:'Capability' },
+  { id:'badge',    label:'Badge',    color:'var(--c-badge)',    authority:'situational', permanence:'Variable',                question:'What has been earned or achieved?',  returns:'boolean',       group:'Status' },
+  { id:'insignia', label:'Insignia', color:'var(--c-insignia)', authority:'institutional',permanence:'Duration of office',    question:'What rank or office is held?',        returns:'enum',          group:'Status' },
+  { id:'standard', label:'Standard', color:'var(--c-standard)', authority:'situational', permanence:'Temporary',              question:'What active campaign or scene is live?', returns:'string',     group:'Status' },
+  { id:'cipher',   label:'Cipher',   color:'var(--c-cipher)',   authority:'situational', permanence:'Variable',               question:'Is this secret or encoded?',          returns:'boolean',       group:'Special' },
+  { id:'token',    label:'Token',    color:'var(--c-token)',    authority:'transactional',permanence:'Temporary',             question:'Does the actor hold this permission?',returns:'boolean',       group:'Special' },
+  { id:'talisman', label:'Talisman', color:'var(--c-talisman)', authority:'personal',    permanence:'Until used/broken',      question:'Does this protective effect still apply?', returns:'boolean',  group:'Special' },
+  { id:'mark',     label:'Mark',     color:'var(--c-mark)',     authority:'descriptive', permanence:'Temp to permanent',      question:'Is this tagged with this attribute?', returns:'tag',           group:'Meta' },
+  { id:'charge',   label:'Charge',   color:'var(--c-charge)',   authority:'descriptive', permanence:'N/A — compositional',    question:'What design element composes this?', returns:'component',     group:'Meta' },
+  { id:'trait',    label:'Trait',    color:'var(--c-trait)',    authority:'descriptive', permanence:'Semi-permanent',         question:'How much or what quality?',          returns:'number/string', group:'Meta' },
+  // Structural types for the engine
+  { id:'zone',     label:'Zone',     color:'var(--c-zone)',     authority:'situational', permanence:'Scene-duration',         question:'What area or environment is this?',  returns:'container',     group:'Engine' },
+  { id:'scene',    label:'Scene',    color:'var(--c-scene)',    authority:'dynastic',    permanence:'Sealed on completion',   question:'What narrative moment is this?',     returns:'context',       group:'Engine' },
+  { id:'node',     label:'Node',     color:'var(--c-node)',     authority:'functional',  permanence:'Project lifetime',       question:'What compiled graph asset is this?', returns:'graph',         group:'Engine' },
+];
+
+const TYPE_MAP = Object.fromEntries(TYPES.map(t => [t.id, t]));
+
+/* ── Symbol palette ── */
+const SYMBOLS = [
+  '⚜','✦','◈','⬡','⟁','⊕','◉','⧖','⚔','🛡','👁','🗝','🌑','🌕','⭐','🔮',
+  '🌀','⚡','🔥','💧','🌊','🌿','🍄','💀','🦅','🐺','🐉','🦋','🌸','🌙','☀','❄',
+  '🏔','🌋','🌲','🏛','⚗','📜','🎭','🎪','🎵','🔔','⚙','🗡','🏹','🪬','🧿','🌺',
+];
+
+/* ── Color palette ── */
+const COLORS = [
+  '#c8973a','#7fb3d3','#82e0aa','#bb8fce','#a3e4d7','#f0b27a','#f7dc6f',
+  '#aab7b8','#d5d8dc','#52be80','#5dade2','#ec7063','#f8c471','#d7bde2',
+  '#a9cce3','#fad7a0','#f9e79f','#a2d9ce','#ccd1d1','#f0e6d3','#d5e8d4','#dae8fc',
+  '#e74c3c','#e67e22','#f1c40f','#2ecc71','#1abc9c','#3498db','#9b59b6','#e91e63',
+];
+
+/* ── Seed data — the full taxonomy pre-populated ── */
+const SEED = [
+  // SEALS
+  { id:'seed-1', type:'seal', name:'Seal of the First Age', symbol:'⭐', color:'#e8d5a3', desc:'The binding cosmic law from which all narrative reality flows. Cannot be overridden by any lower authority.', world:'Generic', authority:'cosmic', logic:'if (!world.seals.firstAge) { throw new Error("Reality unstable") }', tags:['cosmic','world-law','immutable'], created:Date.now()-8e8 },
+  { id:'seed-2', type:'seal', name:'Seal of the Concluded Arc', symbol:'◉', color:'#c8973a', desc:'Applied to a scene or chapter on completion. Locks it as read-only history.', world:'Generic', authority:'cosmic', logic:'if (scene.seal === "concluded") { scene.readonly = true }', tags:['scene','completion','lock'], created:Date.now()-7e8 },
+  // CRESTS
+  { id:'seed-3', type:'crest', name:'Crest of the Ashen Order', symbol:'🌑', color:'#7fb3d3', desc:'Identity marker for the Ashen Order faction. All who bear this share lineage, purpose, and the ambient Despair modifier.', world:'Generic', authority:'dynastic', logic:'if (actor.crest === "Ashen") { actor.despair += 2; actor.faction = "order" }', tags:['faction','identity','despair'], created:Date.now()-6e8 },
+  { id:'seed-4', type:'crest', name:'Crest of the Verdant Wild', symbol:'🌿', color:'#82e0aa', desc:'Racial crest for creatures of the old forest. Grants nature affinity and resistance to civilized curses.', world:'Generic', authority:'dynastic', logic:'if (actor.crest === "Verdant") { actor.natureAffinity += 3; actor.resistCivilized = true }', tags:['racial','nature','forest'], created:Date.now()-5e8 },
+  // GLYPHS
+  { id:'seed-5', type:'glyph', name:'Glyph of Despair', symbol:'🌑', color:'#bb8fce', desc:'Ambient emotional modifier. Stacks with other Glyphs. When applied to a Zone, all actors within suffer reduced resolve and heightened fear.', world:'Generic', authority:'functional', logic:'actor.resolve -= 2; actor.fear += 1.5;', tags:['emotion','modifier','stackable','zone-effect'], created:Date.now()-4e8 },
+  { id:'seed-6', type:'glyph', name:'Glyph of Abundance', symbol:'🌸', color:'#82e0aa', desc:'Prosperity modifier. Zones bearing this glyph grant bonus to trade, health regeneration, and faction goodwill.', world:'Generic', authority:'functional', logic:'actor.health.regenRate *= 1.3; trade.bonus += 15;', tags:['prosperity','health','trade','zone-effect'], created:Date.now()-3.5e8 },
+  { id:'seed-7', type:'glyph', name:'Glyph of Threshold', symbol:'🚪', color:'#f7dc6f', desc:'Marks a decision or transition point. When an actor reaches this glyph, a branch evaluation is triggered.', world:'Generic', authority:'functional', logic:'if (actor.glyphs.has("Threshold")) { evaluateBranch(actor, scene) }', tags:['decision','branch','logic','transition'], created:Date.now()-3e8 },
+  { id:'seed-8', type:'glyph', name:'Glyph of Binding', symbol:'⛓', color:'#ec7063', desc:'Locks a relationship, contract, or state between two actors. Neither can act against the binding terms.', world:'Generic', authority:'functional', logic:'if (bond.glyphs.has("Binding")) { restrict(actorA, actorB, bond.terms) }', tags:['contract','relationship','lock'], created:Date.now()-2.8e8 },
+  // SIGILS
+  { id:'seed-9', type:'sigil', name:'Sigil of the Protagonist', symbol:'⚜', color:'#bb8fce', desc:'Personal power marker for the primary narrative agent. Gates dialogue options, quest triggers, and world-state changes only a protagonist can invoke.', world:'Generic', authority:'personal', logic:'if (actor.sigil.tier === "protagonist") { unlockNarrativeGates(actor) }', tags:['protagonist','personal','gate'], created:Date.now()-2.5e8 },
+  // TOTEMS
+  { id:'seed-10', type:'totem', name:'Totem of the Serpent', symbol:'🐍', color:'#a3e4d7', desc:'Spiritual patron of swamp-dwelling and underground cultures. Grants venom resistance, tunnel navigation, and whisper-bond with reptilian creatures.', world:'Generic', authority:'sacred', logic:'if (zone.totem === "Serpent") { actor.venomResist = true; actor.tunnelNav += 2 }', tags:['spirit','swamp','underground','reptile'], created:Date.now()-2e8 },
+  { id:'seed-11', type:'totem', name:'Totem of the Storm Eagle', symbol:'🦅', color:'#f7dc6f', desc:'Patron of highland warriors and sky-navigators. Heightens perception, grants storm affinity.', world:'Generic', authority:'sacred', logic:'if (actor.totem === "StormEagle") { actor.perception += 3; actor.stormAffinity = true }', tags:['spirit','highland','sky','warrior'], created:Date.now()-1.8e8 },
+  // RUNES
+  { id:'seed-12', type:'rune', name:'Rune of Passage', symbol:'🗝', color:'#f7dc6f', desc:'Enchantment formula granting traversal through sealed gates. Carved onto objects or actors. Burns out on use unless reinforced with a Seal.', world:'Generic', authority:'functional', logic:'if (item.runes.has("Passage") && gate.sealed !== "cosmic") { allow(actor, gate) }', tags:['traversal','enchantment','gate','consumable'], created:Date.now()-1.5e8 },
+  // EMBLEMS
+  { id:'seed-13', type:'emblem', name:'Emblem of the Rising Tide', symbol:'🌊', color:'#f0b27a', desc:'Faction symbol for a resistance movement. Spans multiple scenes. Characters bearing this share faction tension bonuses and access to hidden caches.', world:'Generic', authority:'institutional', logic:'if (actor.emblem === "RisingTide") { factionTension.resistance += 5 }', tags:['faction','resistance','multi-scene'], created:Date.now()-1.2e8 },
+  // ZONES
+  { id:'seed-14', type:'zone', name:'The Ashfall Swamp', symbol:'🍄', color:'#a3e4d7', desc:'A decaying marshland zone. Bears the Serpent Totem and Despair Glyph. All actors within suffer resolve penalties. Merchants avoid it; exiles hide within it.', world:'Generic', authority:'situational', logic:'zone.applyGlyphs(["Despair"]); zone.totem = "Serpent"; zone.passability = "difficult";', tags:['swamp','zone','container','hostile'], created:Date.now()-1e8 },
+  { id:'seed-15', type:'zone', name:'The Merchant Quarter', symbol:'🏛', color:'#f0e6d3', desc:'A prosperous trade district. Bears Abundance Glyph and the Merchant Emblem. Trade bonuses active for all actors within. Faction politics simmer beneath the surface.', world:'Generic', authority:'situational', logic:'zone.applyGlyphs(["Abundance"]); zone.emblem = "Merchants"; zone.tradeBonus = 20;', tags:['city','zone','merchant','prosperous'], created:Date.now()-8e7 },
+  // TOKENS
+  { id:'seed-16', type:'token', name:'Token of Safe Passage', symbol:'🪬', color:'#d5d8dc', desc:'Grants temporary access through guarded zone perimeters. Expires after one crossing or one scene.', world:'Generic', authority:'transactional', logic:'if (actor.tokens.has("SafePassage")) { actor.tokens.delete("SafePassage"); allow(actor, zone) }', tags:['access','temporary','consumable'], created:Date.now()-5e7 },
+  // BADGES
+  { id:'seed-17', type:'badge', name:'Badge of the Initiated', symbol:'✦', color:'#52be80', desc:'Awarded upon completion of the initiation ritual. Unlocks hidden dialogue trees and marks the actor as trusted within their faction.', world:'Generic', authority:'situational', logic:'if (actor.badges.has("Initiated")) { dialogue.unlockTier("inner") }', tags:['achievement','dialogue','faction','earned'], created:Date.now()-3e7 },
+  // TRAITS
+  { id:'seed-18', type:'trait', name:'Resolve', symbol:'◉', color:'#f98f3b', desc:'Core emotional backbone stat. Affects decision-making under pressure, resistance to despair glyphs, and dialogue confidence tier.', world:'Generic', authority:'descriptive', logic:'actor.resolve = clamp(0, 10, actor.resolve); // used in: checkConditions, dialogueTier, glyphResistance', tags:['stat','emotion','core','numeric'], created:Date.now()-2e7 },
+  { id:'seed-19', type:'trait', name:'Fear', symbol:'👁', color:'#d45b5b', desc:'Measures acute terror response. Raised by proximity to threat, despair glyphs, and claustrophobic conditions. Triggers panic at threshold 7+.', world:'Generic', authority:'descriptive', logic:'if (actor.fear > 7) { triggerCondition("claustrophobia_risk", actor) }', tags:['stat','emotion','core','threshold'], created:Date.now()-1e7 },
+  // SCENE
+  { id:'seed-20', type:'scene', name:'Act I — The Arrival', symbol:'📜', color:'#d5e8d4', desc:'Opening act. Kael enters the Ashfall Swamp. Plague of Ash is dormant. Establish world-state baseline before the infection spreads.', world:'Generic', authority:'dynastic', logic:'scene.standard = "active"; scene.actors = ["kael", "plague"]; scene.zones = ["ashfall_swamp"];', tags:['act','opening','baseline'], created:Date.now()-5e6 },
+];
+
+/* ── State ── */
+let library = [];
+let selectedId = null;
+let activeType = 'all';
+let activeFilter = 'all';
+let currentView = 'grid';
+let searchQuery = '';
+let editingId = null;
+let formTags = [];
+let formEffect = []; // [{key:'resolve', val:-2}, ...]
+
+const EFFECT_PRESETS = [
+  {key:'resolve',   val:-2,  label:'−Resolve',  color:'#f98f3b'},
+  {key:'resolve',   val:2,   label:'+Resolve',   color:'#4caf7d'},
+  {key:'fear',      val:1.5, label:'+Fear',      color:'#d45b5b'},
+  {key:'fear',      val:-1,  label:'−Fear',      color:'#7fd4c8'},
+  {key:'health',    val:-10, label:'−Health',    color:'#d45b5b'},
+  {key:'health',    val:10,  label:'+Health',    color:'#4caf7d'},
+  {key:'trade',     val:15,  label:'+Trade',     color:'#f0b27a'},
+  {key:'perception',val:3,   label:'+Percept',  color:'#b1d0f0'},
+  {key:'stability', val:4,   label:'+Stability', color:'#7fd4c8'},
+  {key:'stability', val:-3,  label:'−Stability', color:'#d45b5b'},
+];
+let formSymbol = SYMBOLS[0];
+let formColor = COLORS[0];
+
+/* ═══ INIT ════════════════════════════════════════════ */
+function init() {
+  const saved = localStorage.getItem('ql-library');
+  library = saved ? JSON.parse(saved) : [...SEED];
+  renderTypeNav();
+  renderFilters();
+  renderGrid();
+  buildTypeSelect();
+  buildSymbolPicker();
+  buildColorRow();
+  setTimeout(() => toast('Codex loaded — ' + library.length + ' entries'), 500);
+}
+
+function save() {
+  localStorage.setItem('ql-library', JSON.stringify(library));
+  try { window.parent.postMessage({ type:'hub:storage:write', key:'ql-library', value:JSON.stringify(library) }, '*'); } catch(e) {}
+}
+
+/* ═══ TYPE NAV ════════════════════════════════════════ */
+const GROUPS = ['Authority','Identity','Capability','Status','Special','Meta','Engine'];
+
+function renderTypeNav() {
+  const list = document.getElementById('type-list');
+  const counts = {};
+  library.forEach(e => { counts[e.type] = (counts[e.type]||0)+1; });
+  counts['all'] = library.length;
+
+  let html = `<div class="tn-group-lbl">All</div>
+    <div class="tn-item ${activeType==='all'?'active':''}" onclick="setType('all')">
+      <div class="tn-dot" style="background:var(--brass)"></div>
+      <div class="tn-name">All Entries</div>
+      <div class="tn-count">${library.length}</div>
+    </div>`;
+
+  GROUPS.forEach(g => {
+    const groupTypes = TYPES.filter(t => t.group === g);
+    const groupCount = groupTypes.reduce((acc,t) => acc+(counts[t.id]||0), 0);
+    if (groupCount === 0 && g !== 'Engine') return;
+    html += `<div class="tn-group-lbl">${g}</div>`;
+    groupTypes.forEach(t => {
+      const c = counts[t.id]||0;
+      html += `<div class="tn-item ${activeType===t.id?'active':''}" onclick="setType('${t.id}')">
+        <div class="tn-dot" style="background:${t.color}"></div>
+        <div class="tn-name" style="${activeType===t.id?'color:'+t.color:''}">${t.label}</div>
+        ${c>0?`<div class="tn-count">${c}</div>`:''}
+      </div>`;
+    });
+  });
+  list.innerHTML = html;
+}
+
+function setType(typeId) {
+  activeType = typeId;
+  activeFilter = 'all';
+  selectedId = null;
+  renderTypeNav();
+  renderFilters();
+  renderGrid();
+  renderPreview();
+}
+
+/* ═══ FILTERS ═════════════════════════════════════════ */
+function renderFilters() {
+  const bar = document.getElementById('filters-bar');
+  const items = filteredByType();
+  const allTags = [...new Set(items.flatMap(i => i.tags||[]))].slice(0,12);
+  bar.innerHTML = `<button class="filter-chip ${activeFilter==='all'?'active':''}" onclick="setFilter('all')">All</button>` +
+    allTags.map(t => `<button class="filter-chip ${activeFilter===t?'active':''}" onclick="setFilter('${t}')">${t}</button>`).join('');
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  selectedId = null;
+  renderFilters();
+  renderGrid();
+  renderPreview();
+}
+
+/* ═══ GRID ════════════════════════════════════════════ */
+function filteredByType() {
+  let items = activeType === 'all' ? library : library.filter(i => i.type === activeType);
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    items = items.filter(i => i.name.toLowerCase().includes(q) || (i.desc||'').toLowerCase().includes(q) || (i.tags||[]).some(t=>t.includes(q)));
+  }
+  return items;
+}
+
+function filteredItems() {
+  let items = filteredByType();
+  if (activeFilter !== 'all') items = items.filter(i => (i.tags||[]).includes(activeFilter));
+  return items;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('item-grid');
+  const title = document.getElementById('content-title');
+  const count = document.getElementById('content-count');
+  const items = filteredItems();
+
+  const typeDef = activeType !== 'all' ? TYPE_MAP[activeType] : null;
+  title.textContent = typeDef ? typeDef.label + 's' : 'All Entries';
+  count.textContent = items.length + ' entr' + (items.length===1?'y':'ies');
+
+  if (items.length === 0) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-glyph">⚜</div>
+      <div class="empty-text">The Codex is Empty</div>
+      <div class="empty-sub">No entries match your current selection.<br>Create a new entry to begin the registry.</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = items.map(item => {
+    const td = TYPE_MAP[item.type];
+    const typeColor = item.color || td?.color || 'var(--brass)';
+    const resolvedColor = typeColor.startsWith('var(') ? getComputedColor(typeColor) : typeColor;
+    return `<div class="item-card ${selectedId===item.id?'selected':''}" 
+      style="--type-color:${resolvedColor}"
+      onclick="selectItem('${item.id}')">
+      <div class="ic-authority">${td?.authority||''}</div>
+      <div class="ic-head">
+        <div class="ic-symbol">${item.symbol||'⚜'}</div>
+        <div class="ic-meta">
+          <div class="ic-name">${item.name}</div>
+          <div class="ic-type">${td?.label||item.type}</div>
+        </div>
+      </div>
+      <div class="ic-body">
+        <div class="ic-desc">${item.desc||''}</div>
+      </div>
+      ${(item.tags||[]).length ? `<div class="ic-tags">${item.tags.slice(0,4).map(t=>`<span class="ic-tag">${t}</span>`).join('')}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function getComputedColor(cssVar) {
+  // Map var() names to fallback hex values for card rendering
+  const map = {
+    'var(--c-seal)':'#e8d5a3','var(--c-crest)':'#7fb3d3','var(--c-glyph)':'#82e0aa',
+    'var(--c-sigil)':'#bb8fce','var(--c-totem)':'#a3e4d7','var(--c-emblem)':'#f0b27a',
+    'var(--c-rune)':'#f7dc6f','var(--c-cipher)':'#aab7b8','var(--c-token)':'#d5d8dc',
+    'var(--c-badge)':'#52be80','var(--c-insignia)':'#5dade2','var(--c-ensign)':'#ec7063',
+    'var(--c-standard)':'#f8c471','var(--c-device)':'#d7bde2','var(--c-mark)':'#a9cce3',
+    'var(--c-charge)':'#fad7a0','var(--c-icon)':'#f9e79f','var(--c-talisman)':'#a2d9ce',
+    'var(--c-trait)':'#ccd1d1','var(--c-zone)':'#f0e6d3','var(--c-scene)':'#d5e8d4','var(--c-node)':'#dae8fc',
+  };
+  return map[cssVar] || '#c8973a';
+}
+
+function selectItem(id) {
+  selectedId = id;
+  renderGrid();
+  renderPreview();
+}
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('item-grid').className = v === 'list' ? 'list-view' : '';
+  document.getElementById('vt-grid').className = 'vt-btn' + (v==='grid'?' active':'');
+  document.getElementById('vt-list').className = 'vt-btn' + (v==='list'?' active':'');
+}
+
+function handleSearch(q) {
+  searchQuery = q;
+  renderGrid();
+  renderFilters();
+}
+
+/* ═══ PREVIEW PANEL ═══════════════════════════════════ */
+function renderPreview() {
+  const body = document.getElementById('pp-body');
+  const actions = document.getElementById('pp-actions');
+
+  if (!selectedId) {
+    actions.style.display = 'none';
+    body.innerHTML = `<div class="pp-empty"><div class="pp-empty-glyph">⚜</div><div class="pp-empty-text">Select an entry from the codex to examine its heraldic details and logic bindings.</div></div>`;
+    return;
+  }
+
+  const item = library.find(i => i.id === selectedId);
+  if (!item) return;
+  const td = TYPE_MAP[item.type];
+  const color = item.color || getComputedColor(td?.color||'var(--brass)');
+
+  actions.style.display = 'flex';
+
+  body.innerHTML = `
+    <!-- Symbol display -->
+    <div class="pp-symbol-display" style="--type-glow:${color}22">
+      <div class="pp-symbol-big" style="--type-glow:${color}44">${item.symbol||'⚜'}</div>
+      <div class="pp-type-badge" style="--type-color:${color}">${td?.label||item.type}</div>
+      <div class="pp-name-big">${item.name}</div>
+      <div class="pp-authority-ring">${td?.authority?.toUpperCase()||'UNKNOWN'} AUTHORITY</div>
+    </div>
+
+    <!-- Core question -->
+    <div class="pp-section">
+      <div class="pp-sec-lbl">Heraldic Question</div>
+      <div class="pp-field">
+        <div class="pp-field-val" style="font-style:italic;color:${color}">"${td?.question||''}"</div>
+      </div>
+      <div class="pp-field">
+        <div class="pp-field-lbl">Returns</div>
+        <div class="pp-field-val code">${td?.returns||''}</div>
+      </div>
+    </div>
+
+    <!-- Details -->
+    <div class="pp-section">
+      <div class="pp-sec-lbl">Details</div>
+      ${item.world ? `<div class="pp-field"><div class="pp-field-lbl">World / Setting</div><div class="pp-field-val">${item.world}</div></div>` : ''}
+      <div class="pp-field"><div class="pp-field-lbl">Permanence</div><div class="pp-field-val">${td?.permanence||''}</div></div>
+      ${item.desc ? `<div class="pp-field"><div class="pp-field-lbl">Description</div><div class="pp-field-val">${item.desc}</div></div>` : ''}
+    </div>
+
+    <!-- Logic binding -->
+    ${item.logic ? `<div class="pp-section">
+      <div class="pp-sec-lbl">Logic Binding</div>
+      <div class="pp-logic"><span class="comment">// ${td?.label} — ${td?.question}</span>
+${item.logic}</div>
+    </div>` : ''}
+
+    <!-- Tags -->
+    ${(item.tags||[]).length ? `<div class="pp-section">
+      <div class="pp-sec-lbl">Tags</div>
+      <div class="pp-tags">${item.tags.map(t=>`<span class="pp-tag">${t}</span>`).join('')}</div>
+    </div>` : ''}
+
+    <!-- Created -->
+    <div style="font-family:var(--fcode);font-size:.48rem;color:var(--ink-dim);text-align:center;padding-top:4px">
+      Created ${new Date(item.created).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})}
+    </div>
+  `;
+}
+
+/* ═══ CREATE / EDIT MODAL ═════════════════════════════ */
+function buildTypeSelect() {
+  const sel = document.getElementById('f-type');
+  sel.innerHTML = TYPES.map(t => `<option value="${t.id}">${t.label} — ${t.authority}</option>`).join('');
+}
+
+function buildSymbolPicker() {
+  document.getElementById('symbol-picker').innerHTML =
+    SYMBOLS.map(s => `<div class="sym-opt ${s===formSymbol?'selected':''}" onclick="selectSymbol('${s}')">${s}</div>`).join('');
+}
+
+function buildColorRow() {
+  document.getElementById('color-row').innerHTML =
+    COLORS.map(c => `<div class="color-swatch ${c===formColor?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
+}
+
+function selectSymbol(s) {
+  formSymbol = s;
+  document.querySelectorAll('.sym-opt').forEach(el => el.classList.toggle('selected', el.textContent === s));
+}
+
+function selectColor(c) {
+  formColor = c;
+  document.querySelectorAll('.color-swatch').forEach(el => el.classList.toggle('selected', el.style.background === c || el.style.background === hexToRgb(c)));
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function onTypeChange() {
+  // Auto-set authority to match type default
+  const td = TYPE_MAP[document.getElementById('f-type').value];
+  if (td) document.getElementById('f-authority').value = td.authority;
+  // Show branch_label only for decision/branching types
+  const branchTypes = ['event', 'token', 'cipher', 'node', 'scene', 'standard'];
+  const typeVal = document.getElementById('f-type').value;
+  const branchRow = document.getElementById('branch-label-row');
+  if (branchRow) branchRow.style.display = branchTypes.includes(typeVal) ? 'block' : 'none';
+}
+
+function openCreateModal(prefillType) {
+  editingId = null;
+  formTags = [];
+  formSymbol = SYMBOLS[0];
+  formColor = COLORS[0];
+  document.getElementById('modal-title').textContent = 'New Library Entry';
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-type').value = prefillType || (activeType !== 'all' ? activeType : 'crest');
+  document.getElementById('f-desc').value = '';
+  document.getElementById('f-world').value = '';
+  document.getElementById('f-logic').value = '';
+  document.getElementById('f-lyric-seed').value = '';
+  document.getElementById('f-branch-label').value = '';
+  onTypeChange();
+  formEffect = []; renderEffectRows();
+  onTypeChange();
+  buildSymbolPicker();
+  buildColorRow();
+  renderTagPills();
+  document.getElementById('modal-overlay').classList.remove('hidden');
+  setTimeout(() => document.getElementById('f-name').focus(), 50);
+}
+
+function editSelected() {
+  const item = library.find(i => i.id === selectedId);
+  if (!item) return;
+  editingId = item.id;
+  formTags = [...(item.tags||[])];
+  formSymbol = item.symbol || SYMBOLS[0];
+  formColor = item.color || COLORS[0];
+  document.getElementById('modal-title').textContent = 'Edit Entry';
+  document.getElementById('f-name').value = item.name;
+  document.getElementById('f-type').value = item.type;
+  document.getElementById('f-desc').value = item.desc||'';
+  document.getElementById('f-world').value = item.world||'';
+  document.getElementById('f-authority').value = item.authority||'functional';
+  document.getElementById('f-logic').value = item.logic||'';
+  document.getElementById('f-lyric-seed').value = item.lyric_seed||'';
+  document.getElementById('f-branch-label').value = item.branch_label||'';
+  onTypeChange();
+  loadEffectIntoRows(item.effect||null);
+  buildSymbolPicker();
+  buildColorRow();
+  renderTagPills();
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  editingId = null;
+}
+
+function saveEntry() {
+  const name = document.getElementById('f-name').value.trim();
+  const type = document.getElementById('f-type').value;
+  if (!name) { toast('Name is required'); return; }
+  if (!type)  { toast('Type is required'); return; }
+
+  const entry = {
+    id:          editingId || 'e-' + Date.now(),
+    type,
+    name,
+    symbol:      formSymbol,
+    color:       formColor,
+    desc:        document.getElementById('f-desc').value.trim(),
+    lyric_seed:    document.getElementById('f-lyric-seed')?.value?.trim() || '',
+    branch_label:  document.getElementById('f-branch-label')?.value?.trim() || '',
+    world:       document.getElementById('f-world').value.trim() || 'Generic',
+    authority:   document.getElementById('f-authority').value,
+    logic:       document.getElementById('f-logic').value.trim(),
+    effect:      effectFromRows(),
+    tags:        [...formTags],
+    created:     editingId ? library.find(i=>i.id===editingId)?.created : Date.now(),
+    updated:     Date.now(),
+  };
+
+  if (editingId) {
+    const idx = library.findIndex(i => i.id === editingId);
+    if (idx >= 0) library[idx] = entry;
+    toast('✓ Entry updated');
+  } else {
+    library.unshift(entry);
+    toast('✓ Saved to Codex');
+  }
+
+  selectedId = entry.id;
+  save();
+  closeModal();
+  renderTypeNav();
+  renderFilters();
+  renderGrid();
+  renderPreview();
+}
+
+function deleteSelected() {
+  if (!selectedId) return;
+  const item = library.find(i => i.id === selectedId);
+  if (!confirm(`Delete "${item?.name}"? This cannot be undone.`)) return;
+  library = library.filter(i => i.id !== selectedId);
+  selectedId = null;
+  save();
+  renderTypeNav();
+  renderFilters();
+  renderGrid();
+  renderPreview();
+  toast('Entry removed from Codex');
+}
+
+/* ═══ TAG INPUT ═══════════════════════════════════════ */
+
+/* ═══ EFFECT ROWS ══════════════════════════════════════ */
+function addEffectRow(key='', val=0) {
+  formEffect.push({key, val});
+  renderEffectRows();
+}
+
+function removeEffectRow(idx) {
+  formEffect.splice(idx, 1);
+  renderEffectRows();
+}
+
+function renderEffectRows() {
+  const container = document.getElementById('effect-rows');
+  if (!container) return;
+  container.innerHTML = formEffect.map((e, i) => `
+    <div style="display:flex;align-items:center;gap:6px">
+      <input type="text" value="${e.key}" placeholder="stat (e.g. resolve, fear)"
+        style="flex:2;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:5px 8px;font-family:var(--fcode);font-size:.72rem;color:var(--ink);outline:none"
+        oninput="formEffect[${i}].key=this.value">
+      <input type="number" value="${e.val}" step="0.5"
+        style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:5px 8px;font-family:var(--fcode);font-size:.72rem;color:${e.val>=0?'#82e0aa':'#ec7063'};outline:none;text-align:right"
+        oninput="formEffect[${i}].val=parseFloat(this.value)||0;this.style.color=parseFloat(this.value)>=0?'#82e0aa':'#ec7063'">
+      <button type="button" onclick="removeEffectRow(${i})"
+        style="width:22px;height:22px;border-radius:3px;border:1px solid rgba(255,0,0,.2);background:transparent;color:rgba(255,80,80,.4);cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;flex-shrink:0"
+        onmouseover="this.style.background='rgba(255,0,0,.1)';this.style.color='#ff3344'"
+        onmouseout="this.style.background='transparent';this.style.color='rgba(255,80,80,.4)'">✕</button>
+    </div>`).join('');
+
+  // Render presets
+  const presets = document.getElementById('effect-presets');
+  if (presets) {
+    presets.innerHTML = `<span style="font-family:var(--fm);font-size:.42rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-dim);align-self:center">Quick add:</span>` +
+      EFFECT_PRESETS.map(p => `<button type="button"
+        onclick="addEffectRow('${p.key}',${p.val})"
+        style="font-family:var(--fm);font-size:.41rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:10px;border:1px solid ${p.color}44;background:${p.color}11;color:${p.color};cursor:pointer;transition:all .1s"
+        onmouseover="this.style.background='${p.color}22'"
+        onmouseout="this.style.background='${p.color}11'">${p.label}</button>`).join('');
+  }
+}
+
+function effectFromRows() {
+  if (!formEffect.length) return null;
+  const obj = {};
+  formEffect.forEach(({key, val}) => { if (key.trim()) obj[key.trim()] = val; });
+  return Object.keys(obj).length ? obj : null;
+}
+
+function loadEffectIntoRows(effect) {
+  formEffect = effect ? Object.entries(effect).map(([key, val]) => ({key, val})) : [];
+  renderEffectRows();
+}
+
+function handleTagKey(e) {
+  const input = document.getElementById('tag-raw');
+  const val = input.value.trim().replace(/,$/,'').trim();
+  if ((e.key === 'Enter' || e.key === ',') && val) {
+    e.preventDefault();
+    if (!formTags.includes(val)) { formTags.push(val); renderTagPills(); }
+    input.value = '';
+  }
+  if (e.key === 'Backspace' && !input.value && formTags.length) {
+    formTags.pop(); renderTagPills();
+  }
+}
+
+function removeTag(t) {
+  formTags = formTags.filter(x => x !== t);
+  renderTagPills();
+}
+
+function renderTagPills() {
+  const wrap = document.getElementById('tag-input-wrap');
+  const input = document.getElementById('tag-raw');
+  const pills = formTags.map(t => `<div class="tag-pill">${t}<span class="tag-remove" onclick="removeTag('${t}')">✕</span></div>`).join('');
+  wrap.innerHTML = pills;
+  wrap.appendChild(input);
+  input.focus();
+}
+
+/* ═══ IMPORT / EXPORT ═════════════════════════════════ */
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(library, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'quantum-loom-library.json'; a.click();
+  toast('↓ Codex exported as JSON');
+}
+
+function importJSON() {
+  const inp = document.createElement('input'); inp.type='file'; inp.accept='.json';
+  inp.onchange = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw new Error('Invalid format');
+        const existing = new Set(library.map(i=>i.id));
+        const newItems = data.filter(i => !existing.has(i.id));
+        library = [...library, ...newItems];
+        save(); renderTypeNav(); renderFilters(); renderGrid();
+        toast(`↑ Imported ${newItems.length} new entries`);
+      } catch(err) { toast('Import failed — invalid JSON'); }
+    };
+    reader.readAsText(file);
+  };
+  inp.click();
+}
+
+/* ═══ TOAST ═══════════════════════════════════════════ */
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.remove('show');
+  void el.offsetWidth; el.classList.add('show');
+}
+
+/* ═══ KEYBOARD ════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if ((e.metaKey||e.ctrlKey) && e.key === 'n') { e.preventDefault(); openCreateModal(); }
+  if ((e.metaKey||e.ctrlKey) && e.key === 'e') { e.preventDefault(); if(selectedId) editSelected(); }
+});
+window.addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+/* ── Hub storage relay listener ─────────────────────── */
+window.addEventListener('message', e => {
+  const d = e.data; if(!d||typeof d!=='object') return;
+  if(d.type==='hub:storage:updated'&&d.key==='ql-library') {
+    try { library = JSON.parse(d.value); renderTypeNav(); renderGrid(); } catch(e2) {}
+  }
+  if(d.type==='hub:init') { init(); }
+});
+
+document.addEventListener('DOMContentLoaded', init);
+
+/* ── Quantum Loom Theme System ──────────────────────────────── */
+(function initQLTheme() {
+  const MAP = {
+    'c-bg':'--panel',
+    'c-surf':'--panel-hi',
+    'c-surf2':'--panel-edge',
+    'c-accent3':'--emerald'
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([canonical, varName]) => {
+      if (tokens[canonical] !== undefined)
+        root.style.setProperty(varName, tokens[canonical]);
+    });
+  }
+  // Apply saved theme on load
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  // Listen for live theme broadcasts from hub
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens)
+      applyTokens(e.data.tokens);
+  });
+})();
+
+</script>
+</body>
+</html>

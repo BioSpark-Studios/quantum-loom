@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Quantum Loom — Signal Bus & I/O Nodes</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080a0c; --bg2:#0f1114; --bg3:#161920;
+  --surf:rgba(18,21,26,.96); --surf2:rgba(28,32,38,.97);
+  --b:rgba(255,255,255,.06); --bhi:rgba(255,255,255,.12); --bhot:rgba(255,255,255,.22);
+  --solari:#f98f3b; --solari-lt:#ffd89e;
+  --venturan:#b1d0f0; --venturan-lt:#e3f3ff;
+  --fusion:#9b7fd4; --totem:#7fd4c8;
+  --blood:#d45b5b; --emerald:#4caf7d; --amber:#e8b84b;
+  /* Node type colors */
+  --c-stat:#b1d0f0; --c-heraldic:#9b7fd4; --c-condition:#e8b84b;
+  --c-modifier:#d45b5b; --c-narrative:#7fd4c8; --c-router:#f98f3b;
+  --c-output:#4caf7d;
+  /* I/O node colors — the new ones */
+  --c-input:#00d4ff;   /* cyan — incoming signals */
+  --c-emit:#ff6b9d;    /* pink-magenta — outgoing broadcasts */
+  --c-system:#c8a0ff;  /* soft purple — external system nodes */
+  --fm:'Orbitron',monospace; --fd:'Space Grotesk',sans-serif; --fcode:'JetBrains Mono',monospace;
+  --r:10px; --rsm:6px; --rxs:3px;
+}
+
+@keyframes pulse    {0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.5)}}
+@keyframes spin     {to{transform:rotate(360deg)}}
+@keyframes breathe  {0%,100%{opacity:.35}50%{opacity:.9}}
+@keyframes fadein   {from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popin    {from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+@keyframes slidein  {from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes wireflow {0%{stroke-dashoffset:60}100%{stroke-dashoffset:0}}
+@keyframes crumb-in {from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+@keyframes signal-ping{0%{transform:scale(1);opacity:1}100%{transform:scale(2.8);opacity:0}}
+@keyframes io-glow  {0%,100%{box-shadow:0 0 8px rgba(0,212,255,.2)}50%{box-shadow:0 0 18px rgba(0,212,255,.5),0 0 32px rgba(0,212,255,.15)}}
+@keyframes emit-glow{0%,100%{box-shadow:0 0 8px rgba(255,107,157,.2)}50%{box-shadow:0 0 18px rgba(255,107,157,.5),0 0 32px rgba(255,107,157,.15)}}
+@keyframes bus-flow {0%{stroke-dashoffset:100}100%{stroke-dashoffset:0}}
+@keyframes toast-in {0%{opacity:0;transform:translateY(8px)}15%,80%{opacity:1;transform:translateY(0)}100%{opacity:0}}
+@keyframes scan     {0%{top:0}100%{top:100%}}
+
+body{background:var(--bg);font-family:var(--fd);color:#fff;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* ─── TOP BAR ─────────────────────────────── */
+#topbar{height:44px;flex-shrink:0;z-index:300;background:rgba(8,10,12,.98);border-bottom:1px solid var(--b);display:flex;align-items:center;padding:0 14px;gap:10px}
+.logo{font-family:var(--fm);font-size:.58rem;font-weight:700;letter-spacing:.28em;color:var(--venturan);text-transform:uppercase;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.logo-mark{width:22px;height:22px;border:1.5px solid var(--venturan);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:breathe 4s ease-in-out infinite}
+.tb-sep{width:1px;height:18px;background:var(--bhi)}
+#breadcrumb{display:flex;align-items:center;gap:4px;flex:1;overflow:hidden}
+.crumb{font-family:var(--fm);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;padding:4px 9px;border-radius:var(--rxs);border:1px solid var(--b);background:transparent;color:rgba(255,255,255,.35);cursor:pointer;transition:all .15s;white-space:nowrap;animation:crumb-in .2s ease}
+.crumb:hover{border-color:var(--venturan);color:var(--venturan)}
+.crumb.active{color:var(--venturan);border-color:rgba(177,208,240,.3);background:rgba(177,208,240,.06)}
+.crumb-arrow{color:rgba(255,255,255,.2);font-size:.7rem}
+.crumb-back{font-family:var(--fm);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;padding:5px 11px;border-radius:var(--rxs);border:1px solid rgba(177,208,240,.25);background:rgba(177,208,240,.06);color:var(--venturan);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.crumb-back:hover{background:rgba(177,208,240,.12)}
+.crumb-back.hidden{display:none}
+.tb-right{display:flex;align-items:center;gap:7px;margin-left:auto}
+.btn-sm{font-family:var(--fm);font-size:.48rem;letter-spacing:.15em;text-transform:uppercase;padding:5px 11px;border-radius:var(--rxs);border:1px solid var(--bhi);background:transparent;color:rgba(255,255,255,.45);cursor:pointer;transition:all .15s}
+.btn-sm:hover{border-color:var(--venturan);color:var(--venturan)}
+.btn-sm.primary{background:linear-gradient(135deg,var(--solari),var(--solari-lt));border-color:var(--solari);color:#1a1a1a;font-weight:700}
+.btn-sm.primary:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(249,143,59,.25)}
+.btn-sm.bus{border-color:rgba(0,212,255,.35);color:var(--c-input);background:rgba(0,212,255,.05)}
+.btn-sm.bus:hover{background:rgba(0,212,255,.12)}
+
+/* ─── WORKSPACE ──────────────────────────── */
+#workspace{flex:1;display:flex;overflow:hidden}
+
+/* ─── CANVAS ─────────────────────────────── */
+#canvas{flex:1;position:relative;overflow:hidden;background:var(--bg);cursor:default}
+#cbg{position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(177,208,240,.04)1px,transparent 1px),linear-gradient(90deg,rgba(177,208,240,.04)1px,transparent 1px),linear-gradient(rgba(177,208,240,.07)1px,transparent 1px),linear-gradient(90deg,rgba(177,208,240,.07)1px,transparent 1px);
+  background-size:20px 20px,20px 20px,80px 80px,80px 80px}
+#cbg::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:600px;background:radial-gradient(ellipse at center,rgba(177,208,240,.018) 0%,transparent 65%);animation:breathe 6s ease-in-out infinite;pointer-events:none}
+#ci{position:absolute;top:0;left:0;transform-origin:0 0}
+#wl{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
+
+/* Canvas controls */
+#cctrl{position:absolute;top:12px;right:14px;display:flex;flex-direction:column;gap:3px;z-index:10}
+.ctrl{width:28px;height:28px;background:rgba(12,14,18,.9);backdrop-filter:blur(12px);border:1px solid var(--bhi);border-radius:var(--rxs);color:var(--venturan);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:all .15s}
+.ctrl:hover{background:rgba(177,208,240,.1)}
+#zoom-lbl{position:absolute;bottom:70px;left:14px;font-family:var(--fd);font-size:.58rem;color:rgba(255,255,255,.18);pointer-events:none}
+#lvl-indicator{position:absolute;top:12px;left:14px;font-family:var(--fm);font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.18);pointer-events:none;display:flex;align-items:center;gap:5px}
+.li-dot{width:5px;height:5px;border-radius:50%;background:var(--venturan);animation:pulse 3s ease-in-out infinite}
+
+/* ─── NODE ADD TOOLBAR ───────────────────── */
+#node-toolbar{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:4px;background:rgba(8,10,12,.96);border:1px solid var(--bhi);border-radius:var(--r);padding:5px;backdrop-filter:blur(16px);z-index:50;animation:fadein .3s ease;flex-wrap:wrap;max-width:780px;justify-content:center}
+.nt{padding:6px 11px;border-radius:var(--rsm);border:1px solid;cursor:pointer;font-family:var(--fm);font-size:.44rem;letter-spacing:.12em;text-transform:uppercase;transition:all .15s;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.nt:hover{transform:translateY(-1px)}
+.nt-sep{width:1px;height:20px;background:var(--bhi);margin:0 2px;align-self:center}
+
+/* ─── LOOM NODE BASE ─────────────────────── */
+.loom-node{position:absolute;min-width:200px;background:var(--surf);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--b);border-radius:var(--r);box-shadow:0 4px 24px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.04) inset;cursor:grab;user-select:none;animation:popin .2s ease;transition:border-color .2s,box-shadow .2s}
+.loom-node:hover{border-color:var(--bhi)}
+.loom-node.selected{border-color:var(--node-accent,var(--venturan));box-shadow:0 0 0 1px var(--node-accent,var(--venturan)),0 6px 28px rgba(0,0,0,.6);z-index:50}
+.loom-node.dragging{cursor:grabbing;z-index:999;box-shadow:0 16px 48px rgba(0,0,0,.7)}
+
+/* Corner ornaments */
+.nc{position:absolute;pointer-events:none}
+.nc div{position:absolute;background:var(--node-accent,var(--venturan))}
+.nc .ch{width:8px;height:1px}.nc .cv{width:1px;height:8px}
+.nc.tl{top:4px;left:4px}.nc.tl .ch,.nc.tl .cv{top:0;left:0}
+.nc.tr{top:4px;right:4px}.nc.tr .ch{top:0;right:0}.nc.tr .cv{top:0;right:0}
+.nc.bl{bottom:4px;left:4px}.nc.bl .ch{bottom:0;left:0}.nc.bl .cv{bottom:0;left:0}
+.nc.br{bottom:4px;right:4px}.nc.br .ch{bottom:0;right:0}.nc.br .cv{bottom:0;right:0}
+
+/* Ports */
+.port{position:absolute;width:11px;height:11px;border-radius:50%;border:2px solid;z-index:20;transition:transform .15s,box-shadow .15s;cursor:crosshair}
+.port:hover{box-shadow:0 0 8px currentColor}
+.port.left  {left:-5.5px;top:50%;transform:translateY(-50%)}
+.port.right {right:-5.5px;top:50%;transform:translateY(-50%)}
+.port.top   {top:-5.5px;left:50%;transform:translateX(-50%)}
+.port.bottom{bottom:-5.5px;left:50%;transform:translateX(-50%)}
+.port.left:hover  {transform:translateY(-50%) scale(1.35)}
+.port.right:hover {transform:translateY(-50%) scale(1.35)}
+.port.top:hover   {transform:translateX(-50%) scale(1.35)}
+.port.bottom:hover{transform:translateX(-50%) scale(1.35)}
+
+/* Node header / body */
+.nh{padding:9px 11px 7px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:7px}
+.nh-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;animation:pulse 3s ease-in-out infinite}
+.nh-type{font-family:var(--fm);font-size:.44rem;letter-spacing:.28em;text-transform:uppercase;padding:1px 5px;border-radius:2px;flex-shrink:0}
+.nh-title{font-family:var(--fm);font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nh-sub{font-family:var(--fd);font-size:.58rem;color:rgba(255,255,255,.35);margin-top:1px}
+.nb{padding:9px 11px 11px;display:flex;flex-direction:column;gap:7px}
+
+/* Drill button */
+.node-drill-btn{position:absolute;bottom:6px;right:8px;width:20px;height:20px;border-radius:3px;background:rgba(177,208,240,.08);border:1px solid rgba(177,208,240,.2);color:var(--venturan);font-size:.7rem;display:none;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;z-index:30}
+.loom-node:hover .node-drill-btn{display:flex}
+.node-drill-btn:hover{background:rgba(177,208,240,.18)}
+
+/* ─── I/O NODE STYLES (NEW) ──────────────── */
+
+/* INPUT node */
+.input-node{
+  --node-accent:var(--c-input);
+  min-width:240px;
+  animation:io-glow 2.5s ease-in-out infinite,popin .2s ease;
+  border-color:rgba(0,212,255,.25)!important;
+}
+.input-node.selected{border-color:var(--c-input)!important}
+.input-slot{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 8px;border-radius:var(--rsm);
+  border:1px solid rgba(0,212,255,.15);background:rgba(0,212,255,.05);
+  transition:all .2s;cursor:default;
+}
+.input-slot.active{border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.1);box-shadow:0 0 10px rgba(0,212,255,.12)}
+.input-slot.active .slot-dot{animation:spin .6s linear infinite!important}
+.slot-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;animation:pulse 3s ease-in-out infinite}
+.slot-type{font-family:var(--fm);font-size:.44rem;letter-spacing:.18em;text-transform:uppercase;flex-shrink:0}
+.slot-label{font-family:var(--fd);font-size:.62rem;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slot-channel{font-family:var(--fcode);font-size:.55rem;opacity:.5;flex-shrink:0}
+.slot-val{font-family:var(--fcode);font-size:.58rem;padding:0 5px;border-radius:2px;flex-shrink:0}
+
+/* EMIT/OUTPUT (broadcast) node */
+.emit-node{
+  --node-accent:var(--c-emit);
+  min-width:260px;
+  animation:emit-glow 2.5s ease-in-out infinite,popin .2s ease;
+  border-color:rgba(255,107,157,.25)!important;
+}
+.emit-node.selected{border-color:var(--c-emit)!important}
+.broadcast-channel{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 8px;border-radius:var(--rsm);
+  border:1px solid rgba(255,107,157,.18);background:rgba(255,107,157,.05);
+  margin-bottom:3px;
+}
+.ch-icon{font-size:.9rem;flex-shrink:0;width:18px;text-align:center}
+.ch-name{font-family:var(--fm);font-size:.5rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.ch-desc{font-family:var(--fd);font-size:.58rem;color:rgba(255,255,255,.45);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch-status{font-family:var(--fcode);font-size:.55rem;padding:1px 5px;border-radius:2px;flex-shrink:0}
+.ch-status.hot{color:var(--c-emit);border:1px solid rgba(255,107,157,.4);background:rgba(255,107,157,.1);animation:pulse 1.5s ease-in-out infinite}
+.ch-status.idle{color:rgba(255,255,255,.25);border:1px solid var(--b)}
+.emit-cond{font-family:var(--fcode);font-size:.6rem;color:rgba(255,255,255,.45);padding:5px 7px;background:rgba(0,0,0,.3);border-radius:var(--rsm);border-left:2px solid var(--c-emit);margin-top:2px}
+.subscribers{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
+.sub-pill{font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:3px;border:1px solid;cursor:pointer;transition:all .15s}
+.sub-pill:hover{filter:brightness(1.3)}
+
+/* SYSTEM node (external) */
+.system-node{
+  --node-accent:var(--c-system);
+  min-width:220px;border-style:dashed!important;border-color:rgba(200,160,255,.3)!important;
+  background:rgba(200,160,255,.03)!important;
+}
+.system-node.selected{border-style:solid!important;border-color:var(--c-system)!important}
+.sys-endpoint{display:flex;align-items:center;gap:7px;padding:4px 7px;border-radius:var(--rsm);border:1px solid rgba(200,160,255,.15);background:rgba(200,160,255,.04);margin-bottom:3px}
+.sys-ep-icon{font-size:.85rem;width:18px;text-align:center;flex-shrink:0}
+.sys-ep-name{font-family:var(--fm);font-size:.48rem;letter-spacing:.12em;text-transform:uppercase;flex:1}
+.sys-ep-type{font-family:var(--fcode);font-size:.52rem;color:var(--c-system);flex-shrink:0}
+.sys-note{font-family:var(--fd);font-size:.6rem;color:rgba(255,255,255,.35);font-style:italic;border-top:1px solid var(--b);padding-top:5px;margin-top:3px}
+
+/* Signal bus container (root canvas groups) */
+.subgraph-container{
+  position:absolute;border:1px solid rgba(177,208,240,.12);border-radius:14px;
+  background:rgba(177,208,240,.015);pointer-events:none;
+}
+.container-label{
+  position:absolute;top:-12px;left:10px;
+  font-family:var(--fm);font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(177,208,240,.35);background:var(--bg);padding:1px 8px;border-radius:3px;
+}
+
+/* Signal ping animation overlay */
+.sig-ping{position:absolute;width:14px;height:14px;border-radius:50%;pointer-events:none;z-index:100;animation:signal-ping .7s ease-out forwards}
+
+/* ─── RIGHT PANEL ────────────────────────── */
+#node-panel{width:310px;flex-shrink:0;background:rgba(10,12,16,.98);border-left:1px solid var(--b);display:flex;flex-direction:column;overflow:hidden;animation:slidein .2s ease}
+#node-panel.hidden{display:none}
+.rp-head{padding:12px 14px 10px;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.rp-title{font-family:var(--fm);font-size:.56rem;font-weight:700;letter-spacing:.22em;color:var(--venturan);text-transform:uppercase}
+.rp-close{width:22px;height:22px;background:none;border:1px solid var(--b);border-radius:var(--rxs);color:rgba(255,255,255,.3);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.rp-close:hover{border-color:var(--blood);color:var(--blood)}
+.rp-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:14px}
+.rp-body::-webkit-scrollbar{width:3px}
+.rp-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.rp-section{display:flex;flex-direction:column;gap:8px}
+.rp-sec-lbl{font-family:var(--fm);font-size:.48rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.3);padding-bottom:6px;border-bottom:1px solid var(--b)}
+.rp-lbl{font-family:var(--fm);font-size:.44rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.rp-input{background:rgba(255,255,255,.04);border:1px solid var(--bhi);border-radius:var(--rsm);color:#fff;font-family:var(--fcode);font-size:.72rem;padding:6px 9px;outline:none;transition:border-color .15s;width:100%}
+.rp-input:focus{border-color:rgba(177,208,240,.4)}
+.rp-select{background:rgba(255,255,255,.04);border:1px solid var(--bhi);border-radius:var(--rsm);color:#fff;font-family:var(--fd);font-size:.72rem;padding:6px 9px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(177,208,240,0.4)'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;width:100%}
+.rp-select option{background:#1a1a1a}
+.rp-textarea{background:rgba(255,255,255,.04);border:1px solid var(--bhi);border-radius:var(--rsm);color:#fff;font-family:var(--fcode);font-size:.66rem;padding:7px 9px;outline:none;resize:vertical;min-height:60px;line-height:1.5;width:100%}
+.rp-field{display:flex;flex-direction:column;gap:3px}
+.rp-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rp-info{font-family:var(--fd);font-size:.67rem;color:rgba(255,255,255,.45);line-height:1.55;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:var(--rsm);border-left:2px solid var(--node-accent,var(--venturan))}
+
+/* ─── SIGNAL BUS PANEL ───────────────────── */
+#bus-panel{width:260px;flex-shrink:0;background:rgba(10,12,16,.98);border-right:1px solid var(--b);display:flex;flex-direction:column;overflow:hidden}
+.bp-head{padding:12px 14px 10px;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.bp-title{font-family:var(--fm);font-size:.52rem;font-weight:700;letter-spacing:.22em;color:var(--c-input);text-transform:uppercase}
+.bp-body{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
+.bp-body::-webkit-scrollbar{width:3px}
+.bp-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.bus-event{
+  padding:8px 10px;border-radius:var(--rsm);
+  border:1px solid var(--b);background:rgba(255,255,255,.025);
+  display:flex;flex-direction:column;gap:4px;animation:fadein .2s ease;
+  transition:all .2s;
+}
+.bus-event.active{border-color:rgba(255,107,157,.35);background:rgba(255,107,157,.05)}
+.bus-event.active .be-status{color:var(--c-emit);animation:pulse 1.5s ease-in-out infinite}
+.be-head{display:flex;align-items:center;gap:6px}
+.be-icon{font-size:.85rem;flex-shrink:0;width:18px}
+.be-channel{font-family:var(--fm);font-size:.52rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;flex:1}
+.be-status{font-family:var(--fm);font-size:.42rem;letter-spacing:.15em;text-transform:uppercase;flex-shrink:0}
+.be-from{font-family:var(--fd);font-size:.6rem;color:rgba(255,255,255,.35)}
+.be-payload{font-family:var(--fcode);font-size:.56rem;color:rgba(255,255,255,.5);padding:4px 6px;background:rgba(0,0,0,.35);border-radius:3px;margin-top:2px}
+.be-subs{display:flex;gap:3px;flex-wrap:wrap;margin-top:2px}
+.be-sub{font-family:var(--fm);font-size:.4rem;letter-spacing:.1em;text-transform:uppercase;padding:1px 5px;border-radius:2px;border:1px solid;opacity:.7}
+.bp-sec{font-family:var(--fm);font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:4px 0 2px;border-top:1px solid var(--b);margin-top:4px}
+
+/* ─── CTX MENU ───────────────────────────── */
+#ctx-menu{position:fixed;z-index:999;background:rgba(10,12,16,.98);border:1px solid var(--bhi);backdrop-filter:blur(16px);border-radius:var(--rsm);padding:5px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,.7);display:none}
+.ctx{padding:7px 12px;border-radius:var(--rxs);cursor:pointer;font-family:var(--fd);font-size:.7rem;color:rgba(255,255,255,.65);display:flex;align-items:center;gap:8px;transition:all .1s}
+.ctx:hover{background:rgba(255,255,255,.07);color:#fff}
+.ctx.danger:hover{background:rgba(212,91,91,.12);color:var(--blood)}
+.ctx-sep{height:1px;background:var(--b);margin:4px 0}
+.ctx-icon{font-size:.8rem;width:14px;text-align:center}
+
+/* ─── TOAST ──────────────────────────────── */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(18,22,26,.98);border:1px solid var(--bhi);backdrop-filter:blur(12px);padding:7px 16px;border-radius:var(--rsm);font-family:var(--fm);font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--venturan);pointer-events:none;opacity:0;z-index:1000;white-space:nowrap}
+#toast.show{animation:toast-in 2.8s ease forwards}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo"><div class="logo-mark">⬡</div>Quantum Loom</div>
+  <div class="tb-sep"></div>
+  <button class="crumb-back hidden" id="btn-back" onclick="navigateBack()">← Back</button>
+  <div id="breadcrumb"></div>
+  <div class="tb-right">
+    <button class="btn-sm bus" onclick="toggleBusPanel()">⟳ Signal Bus</button>
+    <button class="btn-sm" onclick="autoLayout()">Auto Layout</button>
+    <button class="btn-sm" onclick="exportGraph()">Export JSON</button>
+    <div class="tb-sep"></div>
+    <button class="btn-sm primary" onclick="fireSignals()">⚡ Fire Signals</button>
+  </div>
+</div>
+
+<!-- WORKSPACE -->
+<div id="workspace">
+
+  <!-- SIGNAL BUS PANEL (left) -->
+  <div id="bus-panel">
+    <div class="bp-head">
+      <div class="bp-title">⟳ Signal Bus</div>
+      <div style="font-family:var(--fm);font-size:.44rem;letter-spacing:.15em;color:rgba(255,255,255,.25);text-transform:uppercase" id="bus-count">0 active</div>
+    </div>
+    <div class="bp-body" id="bus-body"></div>
+  </div>
+
+  <!-- CANVAS -->
+  <div id="canvas" onmousedown="cDown(event)" onmousemove="cMove(event)" onmouseup="cUp(event)" oncontextmenu="return false" ondblclick="cDblClick(event)">
+    <div id="cbg"></div>
+    <div id="ci">
+      <svg id="wl" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div id="lvl-indicator"><div class="li-dot"></div><span id="lvl-txt">Root Canvas — Signal Map</span></div>
+    <div id="cctrl">
+      <button class="ctrl" onclick="zoom(.15)">+</button>
+      <button class="ctrl" onclick="zoom(-.15)">−</button>
+      <button class="ctrl" onclick="resetView()">⌂</button>
+      <button class="ctrl" onclick="fitView()">⊡</button>
+    </div>
+    <div id="zoom-lbl">100%</div>
+
+    <!-- Node toolbar -->
+    <div id="node-toolbar">
+      <button class="nt" style="border-color:rgba(177,208,240,.3);color:var(--c-stat);background:rgba(177,208,240,.05)" onclick="addNode('stat')">◈ Stat</button>
+      <button class="nt" style="border-color:rgba(155,127,212,.3);color:var(--c-heraldic);background:rgba(155,127,212,.05)" onclick="addNode('heraldic')">⬡ Heraldic</button>
+      <button class="nt" style="border-color:rgba(232,184,75,.3);color:var(--c-condition);background:rgba(232,184,75,.05)" onclick="addNode('condition')">◉ Condition</button>
+      <button class="nt" style="border-color:rgba(212,91,91,.3);color:var(--c-modifier);background:rgba(212,91,91,.05)" onclick="addNode('modifier')">▼ Modifier</button>
+      <button class="nt" style="border-color:rgba(127,212,200,.3);color:var(--c-narrative);background:rgba(127,212,200,.05)" onclick="addNode('narrative')">≋ Narrative</button>
+      <button class="nt" style="border-color:rgba(249,143,59,.3);color:var(--c-router);background:rgba(249,143,59,.05)" onclick="addNode('router')">⚡ Router</button>
+      <div class="nt-sep"></div>
+      <!-- NEW I/O NODES -->
+      <button class="nt" style="border-color:rgba(0,212,255,.45);color:var(--c-input);background:rgba(0,212,255,.07);font-weight:700" onclick="addNode('input')">▶ Input</button>
+      <button class="nt" style="border-color:rgba(255,107,157,.45);color:var(--c-emit);background:rgba(255,107,157,.07);font-weight:700" onclick="addNode('emit')">◀ Emit</button>
+      <button class="nt" style="border-color:rgba(200,160,255,.35);color:var(--c-system);background:rgba(200,160,255,.05);font-style:italic" onclick="addNode('system')">⊕ System</button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div id="node-panel" class="hidden">
+    <div class="rp-head">
+      <div class="rp-title" id="rp-title">Node Properties</div>
+      <button class="rp-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="rp-body" id="rp-body"></div>
+  </div>
+
+</div>
+
+<!-- CTX MENU -->
+<div id="ctx-menu">
+  <div class="ctx" onclick="ctxDrill()"><span class="ctx-icon">↳</span> Open Sub-Graph</div>
+  <div class="ctx" onclick="ctxEdit()"><span class="ctx-icon">✏</span> Edit Properties</div>
+  <div class="ctx" onclick="ctxDuplicate()"><span class="ctx-icon">⧉</span> Duplicate</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx danger" onclick="ctxDelete()"><span class="ctx-icon">✕</span> Delete</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   QUANTUM LOOM — I/O NODE ENGINE + SIGNAL BUS
+   ═══════════════════════════════════════════════════════ */
+
+/* Canvas transform */
+let tx=60,ty=50,tz=1;
+let isPanning=false,panSX=0,panSY=0;
+let dragging=null,dOX=0,dOY=0;
+let ctxTarget=null, selectedNode=null;
+
+/* Navigation */
+const navStack=[];
+let currentGraph=null;
+let nodeSeq=1;
+const genId=()=>'n-'+Date.now()+'-'+(nodeSeq++);
+
+/* ═══ SIGNAL BUS STATE ════════════════════════════════ */
+const signalBus = {
+  channels: {},   /* channelName → { active, payload, subscribers } */
+  history:  [],   /* last N signal events */
+
+  register(channel, data) {
+    this.channels[channel] = { active: false, ...data };
+  },
+
+  fire(channel, payload) {
+    if (!this.channels[channel]) return;
+    this.channels[channel].active = true;
+    this.channels[channel].lastPayload = payload;
+    this.history.unshift({ time: Date.now(), channel, payload });
+    if (this.history.length > 20) this.history.pop();
+    renderBusPanel();
+    // Auto-clear after 4s
+    setTimeout(() => {
+      if (this.channels[channel]) this.channels[channel].active = false;
+      renderBusPanel();
+    }, 4000);
+  }
+};
+
+/* Register all demo channels */
+[
+  { id:'UI_THEME_CHANGE',    icon:'🎨', desc:'Swap global crest/UI theme',       from:'Hydralis Crest Condition', subs:['UI Theme Manager','Event Scheduler','All Sub-Graphs'] },
+  { id:'FACTION_SHIFT',      icon:'⬡', desc:'Faction allegiance change',         from:'World State Monitor',      subs:['Character Sub-Graphs','Quest Log','Dialogue Engine'] },
+  { id:'VIRUS_SPREAD',       icon:'🦠', desc:'Infection radius crossing threshold',from:'Plague Sub-Graph',         subs:['Kael Sub-Graph','Morn Sub-Graph','World Map Node'] },
+  { id:'QUEST_TRIGGER',      icon:'📜', desc:'New quest item injected to character',from:'Virus → Kael Proximity',  subs:['Quest Log Agent','Kael Sub-Graph','UI Overlay'] },
+  { id:'PROXIMITY_SIGNAL',   icon:'📡', desc:'NPC within N feet of character',    from:'World Position Monitor',   subs:['Kael Sub-Graph','Combat System','Dialogue Engine'] },
+  { id:'EVENT_SCHEDULE',     icon:'📅', desc:'Scheduled world event trigger',     from:'Event Scheduler Agent',    subs:['Timeline','All Active Sub-Graphs'] },
+  { id:'CIPHER_REVEAL',      icon:'◆', desc:'Hidden cipher activated',            from:'Beat 56 Collapse',         subs:['Sera Sub-Graph','Chronicle Writer','UI Overlay'] },
+].forEach(c => signalBus.register(c.id, c));
+
+/* ═══ DATA TYPES ══════════════════════════════════════ */
+const SIGNAL_TYPES = [
+  'world_event','proximity_signal','infection_payload','time_tick',
+  'faction_change','quest_inject','cipher_reveal','ui_theme_swap',
+  'beat_signal','damage_event','stat_delta','heraldry_change',
+];
+
+const SYSTEM_ENDPOINTS = [
+  { id:'event-scheduler', icon:'📅', name:'Event Scheduler Agent', type:'AGENT',   desc:'Receives signals and queues world events' },
+  { id:'quest-log',       icon:'📜', name:'Quest Log',             type:'DATABASE', desc:'Injects / updates quest items' },
+  { id:'ui-theme',        icon:'🎨', name:'UI Theme Manager',      type:'SYSTEM',   desc:'Swaps global crest and UI palette' },
+  { id:'dialogue-engine', icon:'💬', name:'Dialogue Engine',       type:'SERVICE',  desc:'Re-routes NPC dialogue trees' },
+  { id:'world-map',       icon:'🗺', name:'World Map Node',         type:'SYSTEM',   desc:'Updates zone visibility and markers' },
+  { id:'combat-system',   icon:'⚔', name:'Combat Engine',          type:'SERVICE',  desc:'Applies modifiers to combat resolution' },
+  { id:'chronicle',       icon:'📖', name:'Chronicle Writer',       type:'AGENT',    desc:'Records narrative events to ChronicleDB' },
+];
+
+/* ═══ GRAPH DEFINITIONS ═══════════════════════════════ */
+
+function buildRootGraph() {
+  return {
+    id:'root', label:'World Canvas',
+    nodes:[
+      /* Sub-graph containers represented as character nodes */
+      { id:'cn-kael',    type:'character', x:60,  y:80,
+        data:{ name:'Kael Voryn',     role:'protagonist', faction:'Venturan Sky Faction', hp:72, accent:'#f98f3b', hasSubgraph:true }},
+      { id:'cn-morn',    type:'character', x:340, y:80,
+        data:{ name:'Morn Ashkin',    role:'antagonist',  faction:'Umbraeth Order',       hp:45, accent:'#d45b5b', hasSubgraph:true }},
+      { id:'cn-plague',  type:'character', x:200, y:290,
+        data:{ name:'Plague of Ash',  role:'world_event', faction:'',                     hp:100,accent:'#9b7fd4', hasSubgraph:true, isEvent:true }},
+      /* System nodes */
+      { id:'sys-sched',  type:'system',    x:620, y:60,
+        data:{ endpoints:[SYSTEM_ENDPOINTS[0]], note:'Receives signals from any sub-graph and queues world events globally' }},
+      { id:'sys-quest',  type:'system',    x:620, y:240,
+        data:{ endpoints:[SYSTEM_ENDPOINTS[1]], note:'Quest items are injected via QUEST_TRIGGER channel. No polling required.' }},
+      { id:'sys-ui',     type:'system',    x:620, y:390,
+        data:{ endpoints:[SYSTEM_ENDPOINTS[2]], note:'UI_THEME_CHANGE signal swaps all UI crest assets globally.' }},
+      { id:'sys-chron',  type:'system',    x:620, y:520,
+        data:{ endpoints:[SYSTEM_ENDPOINTS[6]], note:'All CIPHER_REVEAL and QUEST_TRIGGER events auto-log to ChronicleDB.' }},
+    ],
+    wires:[
+      /* Kael emits to quest log and event scheduler */
+      { id:'w1', from:'cn-kael',   fromPort:'right', to:'sys-quest',  toPort:'left', color:'var(--c-emit)',   animated:true, label:'QUEST_TRIGGER' },
+      { id:'w2', from:'cn-kael',   fromPort:'right', to:'sys-sched',  toPort:'left', color:'var(--c-input)',  animated:false },
+      /* Plague emits infection signal to Kael and Morn */
+      { id:'w3', from:'cn-plague', fromPort:'right', to:'cn-kael',    toPort:'bottom',color:'var(--c-emit)',  animated:true, label:'VIRUS_SPREAD' },
+      { id:'w4', from:'cn-plague', fromPort:'right', to:'cn-morn',    toPort:'bottom',color:'var(--c-emit)',  animated:true, label:'VIRUS_SPREAD' },
+      /* Plague emits to world map */
+      { id:'w5', from:'cn-plague', fromPort:'right', to:'sys-sched',  toPort:'left', color:'var(--c-emit)',   animated:true, label:'EVENT_SCHEDULE' },
+      /* Morn's cipher reveal goes to chronicle */
+      { id:'w6', from:'cn-morn',   fromPort:'right', to:'sys-chron',  toPort:'left', color:'var(--c-system)', animated:false },
+    ]
+  };
+}
+
+function buildKaelSubgraph() {
+  return {
+    id:'kael-graph', label:'Kael Voryn', owner:'Kael Voryn',
+    nodes:[
+      /* ── INPUTS ── */
+      { id:'in-virus',   type:'input', x:40, y:40,
+        data:{ label:"Kael's Inputs", slots:[
+          { type:'SIGNAL', label:'VIRUS_SPREAD payload', channel:'VIRUS_SPREAD',   active:false, typeColor:'var(--c-emit)', val:'null' },
+          { type:'SIGNAL', label:'PROXIMITY_SIGNAL',     channel:'PROXIMITY_SIGNAL',active:false,typeColor:'var(--c-input)', val:'null' },
+          { type:'DATA',   label:'World location coords', channel:'WORLD_POSITION', active:true,  typeColor:'var(--totem)',  val:'[12.3,44.1]' },
+          { type:'BEAT',   label:'Timeline beat position',channel:'BEAT_SIGNAL',    active:true,  typeColor:'var(--amber)',  val:'Beat 34' },
+        ]}},
+      /* ── EXISTING LOGIC NODES ── */
+      { id:'ns-stat',    type:'stat',      x:40,  y:300, data:{ name:"Kael's Character Sheet", vectors:{grief:7,fear:4,resolve:8,hope:6}, traits:['aggressive','loyal','strategic'], flaggedTraits:['claustrophobic'], hp:72 }},
+      { id:'ns-cond-v',  type:'condition', x:360, y:40,  data:{ label:'Virus Proximity Check', condition:'distance(Kael,infected_npc)', operator:'<=', value:'10', probability:.6, context:'Fires when Kael is within 10 feet of infected NPC' }},
+      { id:'ns-cond-c',  type:'condition', x:360, y:260, data:{ label:'Location: Underground?', condition:'location.type', operator:'==', value:'underground', probability:.3, context:'Claustrophobia trigger' }},
+      { id:'ns-mod-v',   type:'modifier',  x:640, y:40,  data:{ label:'Infection Response', trigger:'When virus proximity <= 10', modifiers:[{icon:'🦠',desc:'Infection risk per turn',val:'+8%',type:'neg'},{icon:'🧠',desc:'New quest flag injected',val:'active',type:'neg'},{icon:'💊',desc:'Immunity if HAS CIPHER: Rebirth',val:'immune',type:'pos'}], narrativeSeed:'A cold dread. The air smells wrong.' }},
+      { id:'ns-mod-c',   type:'modifier',  x:640, y:260, data:{ label:'Claustrophobia Response', trigger:'When location.type == underground', modifiers:[{icon:'⚔',desc:'Combat effectiveness',val:'-30%',type:'neg'},{icon:'🧠',desc:'Resolve checks',val:'-2 pts',type:'neg'},{icon:'💨',desc:'Panic chance',val:'+15%',type:'neg'}], narrativeSeed:'Walls press in. Sky-distress active.' }},
+      { id:'ns-narr',    type:'narrative', x:360, y:480, data:{ type:'Dialogue Seed', seed:'"If that thing gets close to me—stay back. I know what it does to people."', tags:['virus-fear','proximity-warning','survival-mode'], activateOn:'modifier:infection_response:active' }},
+      /* ── OUTPUTS ── */
+      { id:'out-quest',  type:'emit', x:920, y:40,
+        data:{ label:"Kael's Broadcast", channels:[
+          { icon:'📜', name:'QUEST_TRIGGER',   desc:'Quest: Find the Cure — Ash Plague',    status:'hot',  color:'var(--c-emit)',   condition:'virus_proximity <= 10 AND !quest:find_cure', subs:['Quest Log','Event Scheduler','UI Overlay'] },
+          { icon:'🎨', name:'UI_THEME_CHANGE', desc:'Swap to Hydralis Crest if Crest==Ash', status:'idle', color:'var(--solari)',   condition:'crest.motif == "Ash" AND season == "Winter"', subs:['UI Theme Manager','All Sub-Graphs'] },
+          { icon:'📡', name:'PROXIMITY_OUT',   desc:'Re-emit proximity to world bus',        status:'idle', color:'var(--c-input)', condition:'always — passthrough', subs:['World Map Node','Event Scheduler'] },
+        ]}},
+      { id:'ns-router', type:'router', x:920, y:380,
+        data:{ activeTier:'offline', activeProviders:{offline:'sqlite',local:'ollama',mid:'gemini-flash',premium:'claude-opus'}, taskRouting:[] }},
+    ],
+    wires:[
+      { id:'kw1', from:'in-virus',  fromPort:'right',  to:'ns-cond-v',  toPort:'left',  color:'var(--c-input)',   animated:true },
+      { id:'kw2', from:'in-virus',  fromPort:'right',  to:'ns-cond-c',  toPort:'left',  color:'var(--totem)',     animated:false },
+      { id:'kw3', from:'ns-stat',   fromPort:'right',  to:'ns-cond-v',  toPort:'left',  color:'var(--c-stat)',    animated:false },
+      { id:'kw4', from:'ns-stat',   fromPort:'right',  to:'ns-cond-c',  toPort:'left',  color:'var(--c-stat)',    animated:false },
+      { id:'kw5', from:'ns-cond-v', fromPort:'right',  to:'ns-mod-v',   toPort:'left',  color:'var(--c-condition)',animated:true },
+      { id:'kw6', from:'ns-cond-c', fromPort:'right',  to:'ns-mod-c',   toPort:'left',  color:'var(--c-condition)',animated:true },
+      { id:'kw7', from:'ns-mod-v',  fromPort:'right',  to:'out-quest',  toPort:'left',  color:'var(--c-emit)',    animated:true },
+      { id:'kw8', from:'ns-mod-c',  fromPort:'bottom', to:'ns-narr',    toPort:'top',   color:'var(--c-modifier)',animated:false },
+      { id:'kw9', from:'ns-mod-v',  fromPort:'right',  to:'ns-router',  toPort:'left',  color:'var(--c-router)',  animated:true },
+      { id:'kw10',from:'ns-narr',   fromPort:'right',  to:'ns-router',  toPort:'left',  color:'var(--c-narrative)'},
+    ]
+  };
+}
+
+function buildPlagueSubgraph() {
+  return {
+    id:'plague-graph', label:'Plague of Ash',
+    nodes:[
+      { id:'pl-in', type:'input', x:40, y:80,
+        data:{ label:'Plague Inputs', slots:[
+          { type:'BEAT',  label:'Timeline beat tick',       channel:'BEAT_SIGNAL',     active:true,  typeColor:'var(--amber)',   val:'Beat 34' },
+          { type:'DATA',  label:'Infection count (world)',  channel:'INFECTION_COUNT',  active:true,  typeColor:'var(--blood)',   val:'14 NPCs' },
+          { type:'SIGNAL',label:'Immunity granted signal',  channel:'IMMUNITY_GRANTED', active:false, typeColor:'var(--emerald)', val:'null' },
+        ]}},
+      { id:'pl-cond', type:'condition', x:340, y:80,
+        data:{ label:'Critical Threshold', condition:'infection_count', operator:'>=', value:'10', probability:.8, context:'Once 10 or more NPCs infected, plague enters critical spread phase' }},
+      { id:'pl-mod',  type:'modifier',   x:340, y:280,
+        data:{ label:'Spread Accelerator', trigger:'When threshold crossed', modifiers:[{icon:'🦠',desc:'Infection radius',val:'×2',type:'neg'},{icon:'💀',desc:'Lethality chance/beat',val:'+5%',type:'neg'}], narrativeSeed:'The plague reaches critical mass. No village is safe.' }},
+      { id:'pl-narr', type:'narrative',  x:40,  y:300,
+        data:{ type:'Behavior Note', seed:'Infected NPCs begin moving toward water sources — spreading to previously safe zones. A pattern emerges.', tags:['critical-spread','behavioral-shift','environmental-hazard'], activateOn:'modifier:spread_accelerator:active' }},
+      { id:'pl-emit', type:'emit', x:640, y:80,
+        data:{ label:'Plague Broadcasts', channels:[
+          { icon:'🦠', name:'VIRUS_SPREAD',    desc:'Infection radius + NPC list to all character sub-graphs', status:'hot',  color:'var(--blood)',    condition:'infection_count >= 1', subs:['Kael Sub-Graph','Morn Sub-Graph','Sera Sub-Graph','World Map'] },
+          { icon:'📅', name:'EVENT_SCHEDULE',  desc:'Queue "Plague Spreads" event in scheduler at Beat+4',    status:'idle', color:'var(--amber)',   condition:'threshold == critical', subs:['Event Scheduler Agent','Timeline'] },
+          { icon:'🗺', name:'ZONE_CONTAMINATE',desc:'Mark zones as contaminated on world map',                 status:'hot',  color:'var(--c-system)',condition:'infection_count > 3',   subs:['World Map Node','UI Theme Manager'] },
+        ]}},
+    ],
+    wires:[
+      { id:'pw1', from:'pl-in',   fromPort:'right',  to:'pl-cond', toPort:'left',  color:'var(--c-input)',   animated:true },
+      { id:'pw2', from:'pl-cond', fromPort:'right',  to:'pl-mod',  toPort:'left',  color:'var(--c-condition)',animated:true },
+      { id:'pw3', from:'pl-in',   fromPort:'bottom', to:'pl-narr', toPort:'top',   color:'var(--totem)' },
+      { id:'pw4', from:'pl-mod',  fromPort:'right',  to:'pl-emit', toPort:'left',  color:'var(--c-emit)',    animated:true },
+    ]
+  };
+}
+
+/* ═══ NAVIGATION ══════════════════════════════════════ */
+function loadGraph(graph, push=true) {
+  if (push && currentGraph) navStack.push(currentGraph);
+  currentGraph = graph;
+  renderBreadcrumb();
+  renderAll();
+  document.getElementById('btn-back').classList.toggle('hidden', navStack.length===0);
+  document.getElementById('lvl-txt').textContent = navStack.length===0 ? 'Root Canvas — Signal Map' : 'Sub-Graph: '+graph.label;
+  fitView(false);
+  if(push) showToast('↳ Entered: '+graph.label);
+}
+function navigateBack() {
+  if(!navStack.length) return;
+  currentGraph=navStack.pop();
+  renderBreadcrumb();
+  renderAll();
+  document.getElementById('btn-back').classList.toggle('hidden',navStack.length===0);
+  document.getElementById('lvl-txt').textContent=navStack.length===0?'Root Canvas — Signal Map':'Sub-Graph: '+currentGraph.label;
+  showToast('← Back: '+currentGraph.label);
+}
+function renderBreadcrumb() {
+  const el=document.getElementById('breadcrumb');
+  const stack=[...navStack,currentGraph];
+  el.innerHTML=stack.map((g,i)=>{
+    const isLast=i===stack.length-1;
+    return `${i>0?'<span class="crumb-arrow">›</span>':''}<button class="crumb ${isLast?'active':''}" onclick="jumpTo(${i})">${g.label}</button>`;
+  }).join('');
+}
+function jumpTo(idx) {
+  const stack=[...navStack,currentGraph];
+  while(navStack.length>idx) navStack.pop();
+  currentGraph=stack[idx];
+  renderBreadcrumb();
+  renderAll();
+  document.getElementById('btn-back').classList.toggle('hidden',navStack.length===0);
+}
+
+/* ═══ RENDERING ═══════════════════════════════════════ */
+function renderAll() {
+  const inner=document.getElementById('ci');
+  inner.querySelectorAll('.loom-node').forEach(e=>e.remove());
+  document.getElementById('wl').innerHTML='';
+  if(!currentGraph) return;
+  currentGraph.nodes.forEach(n=>inner.appendChild(buildNodeEl(n)));
+  requestAnimationFrame(()=>renderWires());
+}
+
+function corners() {
+  return ['tl','tr','bl','br'].map(p=>`<div class="nc ${p}"><div class="ch"></div><div class="cv"></div></div>`).join('');
+}
+
+function buildNodeEl(node) {
+  const el=document.createElement('div');
+  el.id='node-'+node.id;
+  el.className='loom-node '+node.type+'-node';
+  el.style.left=node.x+'px'; el.style.top=node.y+'px';
+  if(node.id===selectedNode) el.classList.add('selected');
+  el.innerHTML=corners()+buildInner(node);
+  if(node.data?.hasSubgraph||node.type==='character') {
+    const d=document.createElement('button');
+    d.className='node-drill-btn'; d.title='Open Sub-Graph'; d.textContent='↳';
+    d.onclick=e=>{e.stopPropagation();drillInto(node);};
+    el.appendChild(d);
+  }
+  el.addEventListener('mousedown',e=>{
+    if(e.button!==0) return;
+    selectedNode=node.id; updateSel();
+    const rect=document.getElementById('canvas').getBoundingClientRect();
+    dOX=(e.clientX-rect.left-tx)/tz-node.x;
+    dOY=(e.clientY-rect.top -ty)/tz-node.y;
+    dragging=node.id; el.classList.add('dragging');
+    e.stopPropagation();
+  });
+  el.addEventListener('click',e=>{e.stopPropagation();selectedNode=node.id;updateSel();openPanel(node);});
+  el.addEventListener('dblclick',e=>{e.stopPropagation();drillInto(node);});
+  el.addEventListener('contextmenu',e=>{
+    e.preventDefault();e.stopPropagation();
+    ctxTarget=node.id;selectedNode=node.id;updateSel();
+    const m=document.getElementById('ctx-menu');
+    m.style.display='block';m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';
+  });
+  return el;
+}
+
+function buildInner(node) {
+  switch(node.type) {
+    case 'character':  return buildCharNode(node);
+    case 'stat':       return buildStatNode(node);
+    case 'heraldic':   return buildHeraldricNode(node);
+    case 'condition':  return buildCondNode(node);
+    case 'modifier':   return buildModNode(node);
+    case 'narrative':  return buildNarrNode(node);
+    case 'router':     return buildRouterNode(node);
+    case 'input':      return buildInputNode(node);
+    case 'emit':       return buildEmitNode(node);
+    case 'system':     return buildSystemNode(node);
+    default: return '<div class="nb"><span style="opacity:.4">Unknown type</span></div>';
+  }
+}
+
+/* CHARACTER node */
+function buildCharNode(n) {
+  const d=n.data, ac=d.accent||'var(--venturan)';
+  const isEvent=d.isEvent;
+  return `<div class="nh">
+    <div class="nh-dot" style="background:${ac}"></div>
+    <div><div class="nh-title" style="color:${ac}">${d.name}</div><div class="nh-sub">${isEvent?'World Event':'Agent'}</div></div>
+    <div class="nh-type" style="color:${ac};border:1px solid ${ac}44">${isEvent?'EVENT':'AGENT'}</div>
+  </div>
+  <div class="nb">
+    <div style="font-family:var(--fm);font-size:.46rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35)">${(d.role||'').toUpperCase()}</div>
+    ${d.faction?`<div style="font-size:.6rem;color:rgba(255,255,255,.4)">${d.faction}</div>`:''}
+    <div style="display:flex;align-items:center;gap:5px">
+      <div style="flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="width:${d.hp}%;height:100%;background:${ac}"></div></div>
+      <span style="font-family:var(--fcode);font-size:.6rem;color:${ac}">${d.hp}%</span>
+    </div>
+    ${d.hasSubgraph?`<div style="font-family:var(--fm);font-size:.43rem;letter-spacing:.12em;color:var(--venturan);opacity:.55;text-transform:uppercase">↳ dbl-click to open sub-graph</div>`:''}
+  </div>
+  <div class="port left"  style="background:#111;border-color:var(--venturan)"></div>
+  <div class="port right" style="background:#111;border-color:${ac}"></div>
+  <div class="port bottom"style="background:#111;border-color:${ac}"></div>`;
+}
+
+/* STAT node */
+function buildStatNode(n) {
+  const d=n.data;
+  const AC={'grief':'#9b7fd4','fear':'#d45b5b','resolve':'#f98f3b','hope':'#7fd4c8'};
+  const bars=['grief','fear','resolve','hope'].map(ax=>`<div style="display:flex;align-items:center;gap:6px">
+    <span style="font-family:var(--fm);font-size:.43rem;letter-spacing:.1em;text-transform:uppercase;color:${AC[ax]};width:50px;flex-shrink:0">${ax}</span>
+    <div style="flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="width:${(d.vectors?.[ax]??5)*10}%;height:100%;background:${AC[ax]}"></div></div>
+    <span style="font-family:var(--fcode);font-size:.6rem;color:${AC[ax]};width:16px">${d.vectors?.[ax]??5}</span>
+  </div>`).join('');
+  const traits=[...(d.traits||[]).map(t=>`<div style="font-size:.58rem;color:rgba(255,255,255,.45);background:rgba(255,255,255,.05);padding:1px 5px;border-radius:2px">${t}</div>`),
+    ...(d.flaggedTraits||[]).map(t=>`<div style="font-size:.58rem;color:var(--blood);background:rgba(212,91,91,.1);border:1px solid rgba(212,91,91,.25);padding:1px 5px;border-radius:2px">⚠ ${t}</div>`)].join('');
+  return `<div class="nh"><div class="nh-dot" style="background:var(--c-stat)"></div><div><div class="nh-title">${d.name||'Stat Block'}</div><div class="nh-sub">Character Sheet</div></div><div class="nh-type" style="color:var(--c-stat);border:1px solid rgba(177,208,240,.3)">STAT</div></div>
+  <div class="nb">${bars}<div style="display:flex;gap:3px;flex-wrap:wrap">${traits}</div></div>
+  <div class="port right" style="background:#111;border-color:var(--c-stat)"></div>
+  <div class="port bottom" style="background:#111;border-color:var(--c-stat)"></div>`;
+}
+
+/* HERALDIC node */
+function buildHeraldricNode(n) {
+  const d=n.data,c=d.class==='CREST'?'var(--c-heraldic)':d.class==='SIGIL'?'var(--solari)':'var(--totem)';
+  return `<div class="nh"><div class="nh-dot" style="background:${c}"></div><div><div class="nh-title">${d.name}</div><div class="nh-sub">${d.class} · ${d.motif}</div></div><div class="nh-type" style="color:${c};border:1px solid ${c}44">${d.class}</div></div>
+  <div class="nb">
+    <div style="font-size:2rem;text-align:center;color:${c};padding:4px 0;filter:drop-shadow(0 0 8px ${c})">${d.symbol||'⬡'}</div>
+    ${d.fusionWith?`<div style="font-family:var(--fd);font-size:.58rem;color:var(--fusion);font-style:italic;border-top:1px solid var(--b);padding-top:4px">⊕ Fuses with ${d.fusionWith} → ${d.fusionResult}</div>`:''}
+  </div>
+  <div class="port right" style="background:#111;border-color:${c}"></div>`;
+}
+
+/* CONDITION node */
+function buildCondNode(n) {
+  const d=n.data;
+  return `<div class="nh"><div class="nh-dot" style="background:var(--c-condition)"></div><div><div class="nh-title">${d.label||'Condition'}</div><div class="nh-sub">IF / THEN</div></div><div class="nh-type" style="color:var(--c-condition);border:1px solid rgba(232,184,75,.3)">IF</div></div>
+  <div class="nb">
+    <div style="background:rgba(0,0,0,.3);border:1px solid rgba(232,184,75,.15);border-radius:var(--rsm);padding:6px 8px;font-family:var(--fcode);font-size:.6rem;display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+      <span style="color:rgba(255,255,255,.4)">IF</span>
+      <span style="color:var(--c-condition)">${d.condition}</span>
+      <span style="background:rgba(232,184,75,.15);border:1px solid rgba(232,184,75,.3);padding:0 4px;border-radius:2px;color:var(--c-condition)">${d.operator}</span>
+      <span style="color:#fff">"${d.value}"</span>
+    </div>
+    <div style="display:flex;gap:6px">
+      <div style="flex:1;padding:3px 7px;border-radius:3px;font-family:var(--fm);font-size:.44rem;letter-spacing:.1em;text-transform:uppercase;background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.25);color:var(--emerald)">▶ TRUE ${Math.round((d.probability||.5)*100)}%</div>
+      <div style="flex:1;padding:3px 7px;border-radius:3px;font-family:var(--fm);font-size:.44rem;letter-spacing:.1em;text-transform:uppercase;background:rgba(212,91,91,.08);border:1px solid rgba(212,91,91,.2);color:var(--blood)">▶ FALSE</div>
+    </div>
+    ${d.context?`<div style="font-size:.58rem;color:rgba(255,255,255,.3);font-style:italic">${d.context}</div>`:''}
+  </div>
+  <div class="port left"  style="background:#111;border-color:var(--c-condition)"></div>
+  <div class="port right" style="background:#111;border-color:var(--c-condition)"></div>`;
+}
+
+/* MODIFIER node */
+function buildModNode(n) {
+  const d=n.data;
+  const mods=(d.modifiers||[]).map(m=>`<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(0,0,0,.25);border-radius:3px;border:1px solid rgba(212,91,91,.1)">
+    <span style="font-size:.8rem;width:16px;text-align:center">${m.icon}</span>
+    <span style="font-size:.6rem;flex:1;color:rgba(255,255,255,.6)">${m.desc}</span>
+    <span style="font-family:var(--fcode);font-size:.6rem;color:${m.type==='neg'?'var(--blood)':'var(--emerald)'}">${m.val}</span>
+  </div>`).join('');
+  return `<div class="nh"><div class="nh-dot" style="background:var(--c-modifier)"></div><div><div class="nh-title">${d.label||'Modifier'}</div><div class="nh-sub">Buff / Debuff</div></div><div class="nh-type" style="color:var(--c-modifier);border:1px solid rgba(212,91,91,.3)">MOD</div></div>
+  <div class="nb">${mods}${d.trigger?`<div style="font-size:.58rem;color:rgba(255,255,255,.3);font-style:italic;border-top:1px solid var(--b);padding-top:4px">Trigger: ${d.trigger}</div>`:''}</div>
+  <div class="port left"   style="background:#111;border-color:var(--c-modifier)"></div>
+  <div class="port right"  style="background:#111;border-color:var(--c-emit)"></div>
+  <div class="port bottom" style="background:#111;border-color:var(--c-narrative)"></div>`;
+}
+
+/* NARRATIVE node */
+function buildNarrNode(n) {
+  const d=n.data;
+  const tags=(d.tags||[]).map(t=>`<div style="font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;padding:1px 5px;border-radius:2px;background:rgba(127,212,200,.08);border:1px solid rgba(127,212,200,.2);color:var(--totem)">${t}</div>`).join('');
+  return `<div class="nh"><div class="nh-dot" style="background:var(--c-narrative)"></div><div><div class="nh-title">${d.type||'Narrative'}</div><div class="nh-sub">Prose Seed</div></div><div class="nh-type" style="color:var(--c-narrative);border:1px solid rgba(127,212,200,.3)">NARR</div></div>
+  <div class="nb" style="max-width:240px"><div style="font-style:italic;font-size:.66rem;color:rgba(255,255,255,.65);line-height:1.45">${d.seed||'—'}</div><div style="display:flex;gap:3px;flex-wrap:wrap;margin-top:4px">${tags}</div></div>
+  <div class="port top"   style="background:#111;border-color:var(--c-stat)"></div>
+  <div class="port right" style="background:#111;border-color:var(--c-emit)"></div>`;
+}
+
+/* ROUTER node (simplified) */
+function buildRouterNode(n) {
+  return `<div class="nh"><div class="nh-dot" style="background:var(--c-router);animation:spin .8s linear infinite"></div><div><div class="nh-title" style="color:var(--c-router)">LLM Router</div><div class="nh-sub">Task-based routing</div></div><div class="nh-type" style="color:var(--c-router);border:1px solid rgba(249,143,59,.4)">ROUTE</div></div>
+  <div class="nb">
+    <div style="padding:6px 8px;border-radius:var(--rsm);background:rgba(76,175,125,.07);border:1px solid rgba(76,175,125,.2);display:flex;align-items:center;gap:7px">
+      <span style="font-size:1rem">🗄</span>
+      <div><div style="font-family:var(--fm);font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald)">Rule Engine</div><div style="font-size:.58rem;color:rgba(255,255,255,.4)">Offline · $0.00/session</div></div>
+      <div style="margin-left:auto;font-family:var(--fm);font-size:.42rem;letter-spacing:.15em;color:var(--emerald);border:1px solid rgba(76,175,125,.35);padding:1px 5px;border-radius:2px">ACTIVE</div>
+    </div>
+    <div style="font-family:var(--fm);font-size:.44rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.2);text-align:center">Click to configure full router</div>
+  </div>
+  <div class="port left"  style="background:#111;border-color:var(--c-router)"></div>
+  <div class="port bottom"style="background:#111;border-color:var(--c-output)"></div>`;
+}
+
+/* ═══ NEW I/O NODE RENDERERS ══════════════════════════ */
+
+/* INPUT node */
+function buildInputNode(n) {
+  const d=n.data;
+  const slots=(d.slots||[]).map(s=>`<div class="input-slot ${s.active?'active':''}">
+    <div class="slot-dot" style="background:${s.typeColor}"></div>
+    <div class="slot-type" style="color:${s.typeColor};border:1px solid ${s.typeColor}44;padding:0 4px;border-radius:2px;font-size:.42rem">${s.type}</div>
+    <div class="slot-label">${s.label}</div>
+    <div class="slot-val" style="color:${s.active?s.typeColor:'rgba(255,255,255,.2)'};background:rgba(0,0,0,.3);font-family:var(--fcode);font-size:.52rem;padding:0 5px;border-radius:2px">${s.active?s.val:'—'}</div>
+  </div>`).join('');
+  return `
+  <div class="nh" style="border-bottom:1px solid rgba(0,212,255,.12)">
+    <div class="nh-dot" style="background:var(--c-input);box-shadow:0 0 6px rgba(0,212,255,.5)"></div>
+    <div><div class="nh-title" style="color:var(--c-input)">${d.label||'Sub-Graph Input'}</div><div class="nh-sub">Accepts external signals</div></div>
+    <div class="nh-type" style="color:var(--c-input);border:1px solid rgba(0,212,255,.35)">IN</div>
+  </div>
+  <div class="nb" style="gap:4px">${slots}</div>
+  <div class="port right" style="background:#111;border-color:var(--c-input)"></div>`;
+}
+
+/* EMIT / BROADCAST node */
+function buildEmitNode(n) {
+  const d=n.data;
+  const channels=(d.channels||[]).map(ch=>`<div class="broadcast-channel">
+    <div class="ch-icon">${ch.icon}</div>
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:center;gap:5px">
+        <div class="ch-name" style="color:${ch.color}">${ch.name}</div>
+        <div class="ch-status ${ch.status}">${ch.status.toUpperCase()}</div>
+      </div>
+      <div class="ch-desc">${ch.desc}</div>
+    </div>
+  </div>
+  <div class="emit-cond" style="border-left-color:${ch.color}">WHEN: ${ch.condition}</div>
+  <div class="subscribers">${(ch.subs||[]).map(s=>`<div class="sub-pill" style="color:${ch.color};border-color:${ch.color}44">${s}</div>`).join('')}</div>
+  `).join('<div style="height:6px"></div>');
+  return `
+  <div class="nh" style="border-bottom:1px solid rgba(255,107,157,.12)">
+    <div class="nh-dot" style="background:var(--c-emit);box-shadow:0 0 6px rgba(255,107,157,.5)"></div>
+    <div><div class="nh-title" style="color:var(--c-emit)">${d.label||'Broadcast'}</div><div class="nh-sub">Emits to Signal Bus</div></div>
+    <div class="nh-type" style="color:var(--c-emit);border:1px solid rgba(255,107,157,.35)">EMIT</div>
+  </div>
+  <div class="nb" style="gap:0;max-width:300px">${channels}</div>
+  <div class="port left" style="background:#111;border-color:var(--c-emit)"></div>`;
+}
+
+/* SYSTEM node (external endpoint) */
+function buildSystemNode(n) {
+  const d=n.data;
+  const eps=(d.endpoints||[]).map(ep=>`<div class="sys-endpoint">
+    <div class="sys-ep-icon">${ep.icon}</div>
+    <div class="sys-ep-name">${ep.name}</div>
+    <div class="sys-ep-type">${ep.type}</div>
+  </div>`).join('');
+  return `
+  <div class="nh" style="border-bottom:1px solid rgba(200,160,255,.1)">
+    <div class="nh-dot" style="background:var(--c-system);animation:pulse 4s ease-in-out infinite"></div>
+    <div><div class="nh-title" style="color:var(--c-system)">${(d.endpoints||[{name:'System'}])[0].name}</div><div class="nh-sub">External endpoint</div></div>
+    <div class="nh-type" style="color:var(--c-system);border:1px solid rgba(200,160,255,.3)">SYS</div>
+  </div>
+  <div class="nb">${eps}${d.note?`<div class="sys-note">${d.note}</div>`:''}</div>
+  <div class="port left" style="background:#111;border-color:var(--c-system)"></div>
+  <div class="port top"  style="background:#111;border-color:var(--c-system)"></div>`;
+}
+
+/* ═══ WIRES ═══════════════════════════════════════════ */
+function portPos(nodeId, side) {
+  const el=document.getElementById('node-'+nodeId);
+  if(!el) return null;
+  const nx=el.offsetLeft, ny=el.offsetTop, nw=el.offsetWidth, nh=el.offsetHeight;
+  return {
+    left:   {x:nx,    y:ny+nh/2},
+    right:  {x:nx+nw, y:ny+nh/2},
+    top:    {x:nx+nw/2, y:ny},
+    bottom: {x:nx+nw/2, y:ny+nh},
+  }[side] || {x:nx+nw, y:ny+nh/2};
+}
+
+function renderWires() {
+  const svg=document.getElementById('wl');
+  svg.innerHTML='';
+  if(!currentGraph?.nodes.length) return;
+
+  const maxX=Math.max(...currentGraph.nodes.map(n=>{const e=document.getElementById('node-'+n.id);return n.x+(e?.offsetWidth||300);})) + 200;
+  const maxY=Math.max(...currentGraph.nodes.map(n=>{const e=document.getElementById('node-'+n.id);return n.y+(e?.offsetHeight||400);})) + 200;
+  svg.setAttribute('width',maxX); svg.setAttribute('height',maxY);
+  svg.style.width=maxX+'px'; svg.style.height=maxY+'px';
+
+  svg.innerHTML=`<defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-hot" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>`;
+
+  currentGraph.wires.forEach(wire=>{
+    const f=portPos(wire.from, wire.fromPort);
+    const t=portPos(wire.to,   wire.toPort);
+    if(!f||!t) return;
+
+    const dx=Math.abs(t.x-f.x)*.5;
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    const dPath=`M${f.x},${f.y} C${f.x+dx},${f.y} ${t.x-dx},${t.y} ${t.x},${t.y}`;
+    path.setAttribute('d',dPath);
+    path.setAttribute('stroke',wire.color||'rgba(177,208,240,.5)');
+    path.setAttribute('stroke-width','1.5');
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke-linecap','round');
+
+    const isHot = wire.color && (wire.color.includes('emit')||wire.color.includes('router')||wire.color.includes('condition'));
+    if(wire.animated) {
+      path.setAttribute('stroke-dasharray','8 4');
+      path.style.animation='wireflow .85s linear infinite';
+      path.setAttribute('filter', isHot ? 'url(#glow-hot)' : 'url(#glow)');
+      path.setAttribute('opacity','.8');
+    } else {
+      path.setAttribute('opacity','.45');
+    }
+
+    /* Wire label */
+    if(wire.label) {
+      const midX=(f.x+t.x)/2, midY=(f.y+t.y)/2-10;
+      const lbl=document.createElementNS('http://www.w3.org/2000/svg','text');
+      lbl.setAttribute('x',midX); lbl.setAttribute('y',midY);
+      lbl.setAttribute('text-anchor','middle');
+      lbl.setAttribute('fill',wire.color||'rgba(177,208,240,.6)');
+      lbl.setAttribute('font-family','Orbitron,monospace');
+      lbl.setAttribute('font-size','8');
+      lbl.setAttribute('letter-spacing','1.5');
+      lbl.setAttribute('opacity','.7');
+      lbl.textContent=wire.label;
+      svg.appendChild(lbl);
+    }
+
+    svg.appendChild(path);
+    /* Dot at destination */
+    const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx',t.x); dot.setAttribute('cy',t.y); dot.setAttribute('r','3');
+    dot.setAttribute('fill',wire.color||'rgba(177,208,240,.5)'); dot.setAttribute('opacity','.75');
+    svg.appendChild(dot);
+  });
+}
+
+/* ═══ SIGNAL BUS PANEL ════════════════════════════════ */
+function renderBusPanel() {
+  const body=document.getElementById('bus-body');
+  const channels=Object.values(signalBus.channels);
+  const active=channels.filter(c=>c.active).length;
+  document.getElementById('bus-count').textContent=active+' active';
+
+  body.innerHTML='<div class="bp-sec">Channels</div>' +
+  channels.map(c=>`<div class="bus-event ${c.active?'active':''}">
+    <div class="be-head">
+      <div class="be-icon">${c.icon}</div>
+      <div class="be-channel">${c.id}</div>
+      <div class="be-status" style="color:${c.active?'var(--c-emit)':'rgba(255,255,255,.2)'}">${c.active?'FIRING':'idle'}</div>
+    </div>
+    <div class="be-from">${c.from}</div>
+    ${c.lastPayload?`<div class="be-payload">${JSON.stringify(c.lastPayload).slice(0,80)}</div>`:''}
+    <div class="be-subs">${(c.subs||[]).map(s=>`<div class="be-sub" style="color:${c.active?'var(--c-emit)':'rgba(255,255,255,.3)'};border-color:${c.active?'rgba(255,107,157,.35)':'rgba(255,255,255,.1)'}">${s}</div>`).join('')}</div>
+  </div>`).join('') +
+  (signalBus.history.length ? `<div class="bp-sec">Recent History</div>` + signalBus.history.slice(0,5).map(h=>`<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:3px;background:rgba(255,255,255,.02)">
+    <div style="font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;color:var(--c-emit)">${h.channel}</div>
+    <div style="font-family:var(--fd);font-size:.55rem;color:rgba(255,255,255,.3);margin-left:auto">${new Date(h.time).toLocaleTimeString()}</div>
+  </div>`).join('') : '');
+}
+
+function toggleBusPanel() {
+  const p=document.getElementById('bus-panel');
+  p.style.display=p.style.display==='none'?'flex':'none';
+}
+
+/* ═══ DRILL INTO ══════════════════════════════════════ */
+function drillInto(node) {
+  if(node.id==='cn-kael')   loadGraph(buildKaelSubgraph());
+  else if(node.id==='cn-plague') loadGraph(buildPlagueSubgraph());
+  else showToast('⬡ Sub-graph coming soon: '+(node.data?.name||node.type));
+}
+
+/* ═══ ADD NEW NODE ════════════════════════════════════ */
+const DEFAULTS={
+  stat:     { name:'New Stat Block', vectors:{grief:5,fear:5,resolve:5,hope:5}, traits:[], flaggedTraits:[], hp:80 },
+  heraldic: { class:'SIGIL', name:'New Sigil', motif:'Storm', symbol:'◈', color:'var(--c-heraldic)' },
+  condition:{ label:'New Condition', condition:'property.path', operator:'==', value:'value', probability:.5, context:'Describe condition' },
+  modifier: { label:'New Modifier', trigger:'When condition fires', modifiers:[{icon:'⚡',desc:'Effect',val:'+0',type:'pos'}], narrativeSeed:'Describe effect.' },
+  narrative:{ type:'Dialogue Seed', seed:'Enter seed text.', tags:['new'], activateOn:'' },
+  router:   { activeTier:'offline' },
+  input:    { label:'Sub-Graph Input', slots:[
+    { type:'SIGNAL', label:'Incoming signal', channel:'CHANNEL_NAME', active:false, typeColor:'var(--c-input)', val:'null' },
+    { type:'DATA',   label:'Data payload',    channel:'DATA_CHANNEL',  active:false, typeColor:'var(--totem)',   val:'null' },
+  ]},
+  emit:     { label:'Broadcast', channels:[
+    { icon:'📡', name:'MY_SIGNAL', desc:'Describe what this broadcasts', status:'idle', color:'var(--c-emit)', condition:'condition == true', subs:['Subscriber A','Subscriber B'] },
+  ]},
+  system:   { endpoints:[{ icon:'⊕', name:'External System', type:'SERVICE', desc:'Connect to external endpoint' }], note:'Configure endpoint URL and authentication.' },
+};
+let nOff=0;
+function addNode(type) {
+  if(!currentGraph) { showToast('Enter a sub-graph first'); return; }
+  nOff+=25;
+  const node={ id:genId(), type, x:120+nOff%160, y:120+Math.floor(nOff/160)*25+nOff%160, data:JSON.parse(JSON.stringify(DEFAULTS[type]||{})) };
+  currentGraph.nodes.push(node);
+  const el=buildNodeEl(node);
+  document.getElementById('ci').appendChild(el);
+  requestAnimationFrame(()=>renderWires());
+  selectedNode=node.id; updateSel();
+  openPanel(node);
+  showToast('+ Added: '+type+' node');
+}
+
+/* ═══ CANVAS EVENTS ═══════════════════════════════════ */
+function cDown(e) {
+  if(e.target.closest('#node-toolbar')||e.target.closest('#cctrl')) return;
+  if(e.button===1||(e.button===0&&e.altKey)) {
+    isPanning=true; panSX=e.clientX-tx; panSY=e.clientY-ty;
+    document.getElementById('canvas').style.cursor='grabbing';
+    e.preventDefault();
+  }
+  if(e.button===0&&!e.target.closest('.loom-node')) {
+    selectedNode=null; updateSel(); closePanel();
+    document.getElementById('ctx-menu').style.display='none';
+  }
+}
+function cMove(e) {
+  if(isPanning) { tx=e.clientX-panSX; ty=e.clientY-panSY; applyT(); }
+  if(dragging) {
+    const node=currentGraph?.nodes.find(n=>n.id===dragging);
+    if(!node) return;
+    const rect=document.getElementById('canvas').getBoundingClientRect();
+    node.x=Math.round(((e.clientX-rect.left-tx)/tz-dOX)/20)*20;
+    node.y=Math.round(((e.clientY-rect.top -ty)/tz-dOY)/20)*20;
+    const el=document.getElementById('node-'+node.id);
+    if(el){ el.style.left=node.x+'px'; el.style.top=node.y+'px'; }
+    renderWires();
+  }
+}
+function cUp(e) {
+  if(isPanning){ isPanning=false; document.getElementById('canvas').style.cursor='default'; }
+  if(dragging){ document.getElementById('node-'+dragging)?.classList.remove('dragging'); dragging=null; }
+}
+function cDblClick(e) { if(!e.target.closest('.loom-node')) addNode('condition'); }
+
+function zoom(d) {
+  const el=document.getElementById('canvas');
+  const cx=el.clientWidth/2,cy=el.clientHeight/2;
+  const nz=Math.min(3,Math.max(0.2,tz+d));
+  const zr=nz/tz;
+  tx=cx-(cx-tx)*zr; ty=cy-(cy-ty)*zr; tz=nz;
+  applyT();
+}
+function resetView(){ tx=60;ty=50;tz=1;applyT(); }
+function fitView(anim=true) {
+  if(!currentGraph?.nodes.length) return;
+  const cv=document.getElementById('canvas');
+  const cw=cv.clientWidth-330, ch=cv.clientHeight-70;
+  const minX=Math.min(...currentGraph.nodes.map(n=>n.x));
+  const minY=Math.min(...currentGraph.nodes.map(n=>n.y));
+  const maxX=Math.max(...currentGraph.nodes.map(n=>{const e=document.getElementById('node-'+n.id);return n.x+(e?.offsetWidth||200);}));
+  const maxY=Math.max(...currentGraph.nodes.map(n=>{const e=document.getElementById('node-'+n.id);return n.y+(e?.offsetHeight||180);}));
+  const gw=maxX-minX+80, gh=maxY-minY+80;
+  tz=Math.min(1,cw/gw,ch/gh)*.9;
+  tx=(cw-gw*tz)/2-minX*tz+40; ty=(ch-gh*tz)/2-minY*tz+40;
+  applyT();
+}
+function applyT() {
+  document.getElementById('ci').style.transform=`translate(${tx}px,${ty}px) scale(${tz})`;
+  document.getElementById('zoom-lbl').textContent=Math.round(tz*100)+'%';
+}
+function updateSel() {
+  document.querySelectorAll('.loom-node').forEach(el=>{
+    el.classList.toggle('selected',el.id.replace('node-','')===selectedNode);
+  });
+}
+
+/* ═══ CTX MENU ════════════════════════════════════════ */
+function ctxDrill()     { const n=currentGraph?.nodes.find(n=>n.id===ctxTarget); if(n) drillInto(n); closeCtx(); }
+function ctxEdit()      { const n=currentGraph?.nodes.find(n=>n.id===ctxTarget); if(n) openPanel(n); closeCtx(); }
+function ctxDuplicate() {
+  const n=currentGraph?.nodes.find(n=>n.id===ctxTarget); if(!n) return;
+  const c=JSON.parse(JSON.stringify(n)); c.id=genId(); c.x+=30; c.y+=30;
+  currentGraph.nodes.push(c);
+  document.getElementById('ci').appendChild(buildNodeEl(c));
+  requestAnimationFrame(()=>renderWires());
+  closeCtx(); showToast('Duplicated');
+}
+function ctxDelete() {
+  if(!ctxTarget) return;
+  currentGraph.nodes=currentGraph.nodes.filter(n=>n.id!==ctxTarget);
+  currentGraph.wires=currentGraph.wires.filter(w=>w.from!==ctxTarget&&w.to!==ctxTarget);
+  document.getElementById('node-'+ctxTarget)?.remove();
+  renderWires();
+  if(selectedNode===ctxTarget){selectedNode=null;closePanel();}
+  closeCtx(); showToast('Deleted');
+}
+function closeCtx(){ document.getElementById('ctx-menu').style.display='none'; }
+
+/* ═══ RIGHT PANEL ═════════════════════════════════════ */
+function openPanel(node) {
+  const p=document.getElementById('node-panel');
+  p.classList.remove('hidden');
+  const labels={input:'Input Node',emit:'Emit / Broadcast Node',system:'System Endpoint',stat:'Stat Node',condition:'Condition Node',modifier:'Modifier Node',narrative:'Narrative Node',router:'LLM Router',character:'Agent Node',heraldic:'Heraldic Node'};
+  document.getElementById('rp-title').textContent=labels[node.type]||'Properties';
+  document.getElementById('rp-body').innerHTML=buildPanelHTML(node);
+}
+function buildPanelHTML(node) {
+  const d=node.data;
+  switch(node.type) {
+    case 'input':
+      return `<div class="rp-section">
+        <div class="rp-sec-lbl" style="color:var(--c-input)">Input Node</div>
+        <div class="rp-info" style="--node-accent:var(--c-input)">
+          <b>Input nodes are a sub-graph's public receive API.</b> They declare typed slots that accept signals from external sources — other sub-graphs, the event scheduler, world position monitors, anything on the bus. The sub-graph doesn't poll; it reacts.
+        </div>
+        <div class="rp-field"><div class="rp-lbl">Label</div><input class="rp-input" value="${d.label||''}" oninput="patchNode('${node.id}','label',this.value)"></div>
+        <div style="font-family:var(--fm);font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:6px">Slot Types</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          ${SIGNAL_TYPES.map(t=>`<div style="font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:3px;border:1px solid rgba(0,212,255,.25);color:var(--c-input);cursor:pointer;transition:all .15s" onclick="showToast('Slot type: '+this.textContent)">${t}</div>`).join('')}
+        </div>
+      </div>`;
+    case 'emit':
+      return `<div class="rp-section">
+        <div class="rp-sec-lbl" style="color:var(--c-emit)">Emit / Broadcast Node</div>
+        <div class="rp-info" style="--node-accent:var(--c-emit)">
+          <b>Emit nodes are a sub-graph's public send API.</b> They fire named signals on the bus when conditions are met. Subscribers — other sub-graphs, system agents, the UI — receive the payload without any direct coupling. The sub-graph never needs to know who's listening.
+        </div>
+        <div class="rp-field"><div class="rp-lbl">Label</div><input class="rp-input" value="${d.label||''}" oninput="patchNode('${node.id}','label',this.value)"></div>
+        <div class="rp-field"><div class="rp-lbl">Available Bus Channels</div>
+          <select class="rp-select" onchange="showToast('Channel: '+this.value)">
+            <option>— Select to add channel —</option>
+            ${Object.keys(signalBus.channels).map(c=>`<option>${c}</option>`).join('')}
+          </select>
+        </div>
+      </div>`;
+    case 'system':
+      return `<div class="rp-section">
+        <div class="rp-sec-lbl" style="color:var(--c-system)">System Endpoint</div>
+        <div class="rp-info" style="--node-accent:var(--c-system)">
+          <b>System nodes represent external services that subscribe to the bus.</b> They appear on the root canvas as clean black boxes — no internal logic exposed. The Loom treats them as pure consumers or producers with a typed API.
+        </div>
+        <div class="rp-field"><div class="rp-lbl">Endpoint</div>
+          <select class="rp-select" onchange="showToast('Endpoint: '+this.value)">
+            ${SYSTEM_ENDPOINTS.map(e=>`<option>${e.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="rp-field"><div class="rp-lbl">Note</div>
+          <textarea class="rp-textarea" oninput="patchNode('${node.id}','note',this.value)">${d.note||''}</textarea>
+        </div>
+      </div>`;
+    case 'condition':
+      return `<div class="rp-section">
+        <div class="rp-sec-lbl">Condition Logic</div>
+        <div class="rp-field"><div class="rp-lbl">Label</div><input class="rp-input" value="${d.label||''}" oninput="patchNode('${node.id}','label',this.value)"></div>
+        <div class="rp-row2">
+          <div class="rp-field"><div class="rp-lbl">Property Path</div><input class="rp-input" value="${d.condition||''}" oninput="patchNode('${node.id}','condition',this.value)"></div>
+          <div class="rp-field"><div class="rp-lbl">Operator</div>
+            <select class="rp-select" onchange="patchNode('${node.id}','operator',this.value)">
+              ${['==','!=','>','<','>=','<=','includes','excludes'].map(op=>`<option ${d.operator===op?'selected':''}>${op}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="rp-field"><div class="rp-lbl">Match Value</div><input class="rp-input" value="${d.value||''}" oninput="patchNode('${node.id}','value',this.value)"></div>
+        <div class="rp-field"><div class="rp-lbl">True Probability</div><input class="rp-input" type="number" min="0" max="1" step=".05" value="${d.probability||.5}" oninput="patchNode('${node.id}','probability',parseFloat(this.value))"></div>
+        <div class="rp-field"><div class="rp-lbl">Context</div><textarea class="rp-textarea" oninput="patchNode('${node.id}','context',this.value)">${d.context||''}</textarea></div>
+      </div>`;
+    case 'narrative':
+      return `<div class="rp-section">
+        <div class="rp-sec-lbl">Narrative Trigger</div>
+        <div class="rp-field"><div class="rp-lbl">Type</div>
+          <select class="rp-select" onchange="patchNode('${node.id}','type',this.value)">
+            ${['Dialogue Seed','Reaction Pattern','Behavior Note','Environmental Response','Cipher Hint'].map(t=>`<option ${d.type===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="rp-field"><div class="rp-lbl">Seed Text</div><textarea class="rp-textarea" style="min-height:90px" oninput="patchNode('${node.id}','seed',this.value)">${d.seed||''}</textarea></div>
+        <div class="rp-field"><div class="rp-lbl">Tags</div><input class="rp-input" value="${(d.tags||[]).join(', ')}" oninput="patchList('${node.id}','tags',this.value)"></div>
+      </div>`;
+    default:
+      return `<div class="rp-section"><div style="font-family:var(--fd);font-size:.7rem;color:rgba(255,255,255,.4);line-height:1.6">Click any node to view and edit its properties here.</div></div>`;
+  }
+}
+function patchNode(id,key,val) {
+  const node=currentGraph?.nodes.find(n=>n.id===id);
+  if(!node) return;
+  node.data[key]=val;
+  const el=document.getElementById('node-'+id);
+  if(el) el.innerHTML=corners()+buildInner(node);
+}
+function patchList(id,key,csv) { patchNode(id,key,csv.split(',').map(v=>v.trim()).filter(Boolean)); }
+function closePanel() { document.getElementById('node-panel').classList.add('hidden'); }
+
+/* ═══ FIRE SIGNALS (demo) ═════════════════════════════ */
+function fireSignals() {
+  const sigs=[
+    ['VIRUS_SPREAD',    { source:'Plague of Ash', infectedCount:14, radius:12, nearestCharacter:'Kael Voryn', distance:8.3 }],
+    ['QUEST_TRIGGER',   { character:'Kael Voryn', quest:'Find the Cure — Ash Plague', injectedAt:'Beat 34', priority:'urgent' }],
+    ['PROXIMITY_SIGNAL',{ from:'Infected NPC', to:'Kael Voryn', distance:8.3, unit:'feet' }],
+    ['UI_THEME_CHANGE', { from:'Sylvanid Crest', to:'Hydralis Crest', trigger:'crest.motif==Ash && season==Winter', scope:'global' }],
+  ];
+  sigs.forEach(([ch,pl],i)=>{
+    setTimeout(()=>{ signalBus.fire(ch,pl); if(i===0) showToast('⚡ Signals firing — check Signal Bus panel'); }, i*600);
+  });
+}
+
+/* ═══ AUTO LAYOUT ═════════════════════════════════════ */
+function autoLayout() {
+  if(!currentGraph) return;
+  const typeOrder=['input','stat','heraldic','condition','modifier','narrative','router','emit','system','output','character'];
+  const cols={};
+  currentGraph.nodes.forEach(n=>{ const c=typeOrder.indexOf(n.type); if(!cols[c]) cols[c]=[]; cols[c].push(n); });
+  Object.entries(cols).forEach(([col,nodes])=>{
+    nodes.forEach((n,i)=>{ n.x=60+parseInt(col)*250; n.y=60+i*250; const el=document.getElementById('node-'+n.id); if(el){el.style.left=n.x+'px';el.style.top=n.y+'px';} });
+  });
+  requestAnimationFrame(()=>{renderWires();fitView();});
+  showToast('Graph laid out');
+}
+
+function exportGraph() {
+  if(!currentGraph) return;
+  const blob=new Blob([JSON.stringify(currentGraph,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=(currentGraph.label||'graph').replace(/\s/g,'_')+'.json'; a.click();
+}
+
+/* ═══ UTILITIES ═══════════════════════════════════════ */
+function showToast(msg) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.remove('show');
+  void el.offsetWidth; el.classList.add('show');
+}
+window.addEventListener('click',()=>closeCtx());
+window.addEventListener('wheel',e=>{if(e.target.closest('#canvas'))e.preventDefault();},{passive:false});
+window.addEventListener('resize',()=>renderWires());
+
+/* ═══ INIT ════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  loadGraph(buildRootGraph(), false);
+  renderBusPanel();
+  setTimeout(()=>showToast('Double-click Kael or Plague to open their sub-graphs'),700);
+});
+
+/* ── Hub listener — relay storage events into signal bus ──────── */
+window.addEventListener('message', e => {
+  const d = e.data; if(!d||typeof d!=='object') return;
+  if(d.type==='hub:storage:updated') {
+    const ch = 'storage.' + d.key.replace('ql-','');
+    signalBus.fire(ch, { key:d.key, updatedAt:Date.now() });
+  }
+  if(d.type==='hub:init') {
+    ['ql-library','ql-scenes','ql-sequencer','ql-workspace'].forEach(k => {
+      if(localStorage.getItem(k)) signalBus.fire('storage.'+k.replace('ql-',''), {key:k,init:true});
+    });
+    renderBusPanel();
+  }
+});
+
+/* ══════════════════════════════════════════════════════════════
+   NODE CONNECTION SYSTEM
+   Port mousedown → drag wire → port mouseup → save edge
+   Edges stored on currentGraph.edges = [{id,from,fromPort,to,toPort,color}]
+   renderWires() draws all saved edges + the live drag wire
+══════════════════════════════════════════════════════════════ */
+
+/* Connection state */
+let connecting    = null;   /* { nodeId, portSide, x, y } while dragging */
+let dragWireEnd   = { x:0, y:0 };
+
+/* ── Attach port events after a node element is built ────────── */
+function attachPortEvents(nodeEl, nodeId) {
+  nodeEl.querySelectorAll('.port').forEach(portEl => {
+    portEl.addEventListener('mousedown', e => {
+      e.stopPropagation();
+      e.preventDefault();
+      const rect   = portEl.getBoundingClientRect();
+      const cRect  = document.getElementById('canvas').getBoundingClientRect();
+      const px     = (rect.left + rect.width/2  - cRect.left  - tx) / tz;
+      const py     = (rect.top  + rect.height/2 - cRect.top   - ty) / tz;
+      const side   = [...portEl.classList].find(c => ['left','right','top','bottom'].includes(c)) || 'right';
+      connecting   = { nodeId, portSide: side, x: px, y: py };
+      dragWireEnd  = { x: px, y: py };
+      document.getElementById('canvas').style.cursor = 'crosshair';
+    });
+    portEl.addEventListener('mouseenter', e => {
+      if (!connecting || portEl.closest('.loom-node').id === 'node-' + connecting.nodeId) return;
+      portEl.style.boxShadow = '0 0 12px 3px currentColor';
+    });
+    portEl.addEventListener('mouseleave', e => {
+      portEl.style.boxShadow = '';
+    });
+  });
+}
+
+/* ── Patch cMove to also move the drag wire ───────────────────── */
+const _origCMove = cMove;
+cMove = function(e) {
+  _origCMove(e);
+  if (connecting) {
+    const cRect = document.getElementById('canvas').getBoundingClientRect();
+    dragWireEnd = {
+      x: (e.clientX - cRect.left - tx) / tz,
+      y: (e.clientY - cRect.top  - ty) / tz,
+    };
+    renderWires();
+  }
+};
+
+/* ── Patch cUp to finalize or cancel connection ───────────────── */
+const _origCUp = cUp;
+cUp = function(e) {
+  _origCUp(e);
+  if (connecting) {
+    /* Check if we landed on a port */
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    const portEl = target?.closest('.port');
+    const nodeEl = portEl?.closest('.loom-node');
+    if (portEl && nodeEl) {
+      const toId   = nodeEl.id.replace('node-','');
+      const toSide = [...portEl.classList].find(c => ['left','right','top','bottom'].includes(c)) || 'left';
+      if (toId !== connecting.nodeId) {
+        if (!currentGraph.edges) currentGraph.edges = [];
+        /* Avoid duplicates */
+        const exists = currentGraph.edges.find(ed =>
+          ed.from === connecting.nodeId && ed.to === toId &&
+          ed.fromPort === connecting.portSide && ed.toPort === toSide
+        );
+        if (!exists) {
+          /* Pick color from target node accent */
+          const toNode  = currentGraph.nodes.find(n => n.id === toId);
+          const edColor = toNode?.data?.accent || 'rgba(200,151,58,0.6)';
+          currentGraph.edges.push({
+            id: 'e-' + Date.now(),
+            from:     connecting.nodeId,
+            fromPort: connecting.portSide,
+            to:       toId,
+            toPort:   toSide,
+            color:    edColor,
+          });
+          saveGraph();
+        }
+      }
+    }
+    connecting   = null;
+    dragWireEnd  = { x:0, y:0 };
+    document.getElementById('canvas').style.cursor = 'default';
+    renderWires();
+  }
+};
+
+/* ── Delete edge on right-click ──────────────────────────────── */
+function deleteEdge(edgeId) {
+  if (!currentGraph?.edges) return;
+  currentGraph.edges = currentGraph.edges.filter(e => e.id !== edgeId);
+  saveGraph();
+  renderWires();
+}
+
+/* ── Get port centre position in graph-space ─────────────────── */
+function portPos(nodeId, side) {
+  const el    = document.getElementById('node-' + nodeId);
+  const pEl   = el?.querySelector('.port.' + side);
+  if (!el || !pEl) return null;
+  const cRect = document.getElementById('canvas').getBoundingClientRect();
+  const r     = pEl.getBoundingClientRect();
+  return {
+    x: (r.left + r.width/2  - cRect.left - tx) / tz,
+    y: (r.top  + r.height/2 - cRect.top  - ty) / tz,
+  };
+}
+
+/* ── Cubic bezier path between two points ───────────────────── */
+function wirePath(ax, ay, bx, by, fromSide, toSide) {
+  const dx = Math.abs(bx - ax);
+  const cx = Math.max(60, dx * 0.55);
+  let   c1x = ax, c1y = ay, c2x = bx, c2y = by;
+  if      (fromSide === 'right')  c1x = ax + cx;
+  else if (fromSide === 'left')   c1x = ax - cx;
+  else if (fromSide === 'bottom') c1y = ay + cx;
+  else                             c1y = ay - cx;
+  if      (toSide   === 'left')   c2x = bx - cx;
+  else if (toSide   === 'right')  c2x = bx + cx;
+  else if (toSide   === 'top')    c2y = by - cx;
+  else                             c2y = by + cx;
+  return `M${ax},${ay} C${c1x},${c1y} ${c2x},${c2y} ${bx},${by}`;
+}
+
+/* ── Override renderWires to draw saved edges + drag wire ─────── */
+const _origRenderWires = renderWires;
+renderWires = function() {
+  const svg = document.getElementById('wl');
+  svg.innerHTML = '';
+  if (!currentGraph?.nodes?.length) return;
+
+  /* Size SVG to fit content */
+  const maxX = Math.max(...currentGraph.nodes.map(n=>{const e=document.getElementById('node-'+n.id);return n.x+(e?.offsetWidth||260);})) + 200;
+  const maxY = Math.max(...currentGraph.nodes.map(n=>{const e=document.getElementById('node-'+n.id);return n.y+(e?.offsetHeight||200);})) + 200;
+  svg.setAttribute('width',  maxX); svg.style.width  = maxX + 'px';
+  svg.setAttribute('height', maxY); svg.style.height = maxY + 'px';
+
+  /* Glow filter */
+  svg.innerHTML = `<defs>
+    <filter id="wglow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>`;
+
+  /* Draw saved edges */
+  (currentGraph.edges || []).forEach(ed => {
+    const a = portPos(ed.from, ed.fromPort);
+    const b = portPos(ed.to,   ed.toPort);
+    if (!a || !b) return;
+    const d = wirePath(a.x, a.y, b.x, b.y, ed.fromPort, ed.toPort);
+    const col = ed.color || 'rgba(200,151,58,0.5)';
+
+    /* Glow layer */
+    const glow = document.createElementNS('http://www.w3.org/2000/svg','path');
+    glow.setAttribute('d', d);
+    glow.setAttribute('stroke', col);
+    glow.setAttribute('stroke-width', '3');
+    glow.setAttribute('fill', 'none');
+    glow.setAttribute('filter', 'url(#wglow)');
+    glow.setAttribute('opacity', '0.4');
+    svg.appendChild(glow);
+
+    /* Main wire */
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', d);
+    path.setAttribute('stroke', col);
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke-linecap', 'round');
+    path.style.cursor = 'pointer';
+    path.title = 'Right-click to delete';
+    path.addEventListener('contextmenu', ev => {
+      ev.preventDefault(); ev.stopPropagation();
+      deleteEdge(ed.id);
+    });
+    svg.appendChild(path);
+
+    /* Arrowhead at destination */
+    const angle = Math.atan2(b.y - a.y, b.x - a.x);
+    const arr = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    const tip = { x: b.x, y: b.y };
+    const al = 8, aw = 4;
+    const p1 = { x: tip.x - al*Math.cos(angle) + aw*Math.sin(angle), y: tip.y - al*Math.sin(angle) - aw*Math.cos(angle) };
+    const p2 = { x: tip.x - al*Math.cos(angle) - aw*Math.sin(angle), y: tip.y - al*Math.sin(angle) + aw*Math.cos(angle) };
+    arr.setAttribute('points', `${tip.x},${tip.y} ${p1.x},${p1.y} ${p2.x},${p2.y}`);
+    arr.setAttribute('fill', col);
+    arr.setAttribute('opacity', '0.8');
+    svg.appendChild(arr);
+  });
+
+  /* Draw live drag wire */
+  if (connecting) {
+    const d = wirePath(connecting.x, connecting.y, dragWireEnd.x, dragWireEnd.y, connecting.portSide, 'left');
+    const live = document.createElementNS('http://www.w3.org/2000/svg','path');
+    live.setAttribute('d', d);
+    live.setAttribute('stroke', 'rgba(200,151,58,0.7)');
+    live.setAttribute('stroke-width', '1.5');
+    live.setAttribute('stroke-dasharray', '5 4');
+    live.setAttribute('fill', 'none');
+    live.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(live);
+
+    /* Pulse dot at cursor */
+    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx', dragWireEnd.x);
+    dot.setAttribute('cy', dragWireEnd.y);
+    dot.setAttribute('r', '4');
+    dot.setAttribute('fill', 'rgba(200,151,58,0.8)');
+    svg.appendChild(dot);
+  }
+};
+
+/* ── Save graph edges to localStorage ────────────────────────── */
+function saveGraph() {
+  try {
+    const stored = JSON.parse(localStorage.getItem('ql-graphs') || '{}');
+    stored[currentGraph.id] = {
+      nodes: currentGraph.nodes,
+      edges: currentGraph.edges || [],
+    };
+    localStorage.setItem('ql-graphs', JSON.stringify(stored));
+  } catch(e) { console.warn('saveGraph failed', e); }
+}
+
+/* ── Load saved edges when a graph is loaded ─────────────────── */
+const _origLoadGraph = loadGraph;
+loadGraph = function(graph, push=true) {
+  /* Restore saved edges */
+  try {
+    const stored = JSON.parse(localStorage.getItem('ql-graphs') || '{}');
+    if (stored[graph.id]?.edges) graph.edges = stored[graph.id].edges;
+    if (!graph.edges) graph.edges = [];
+  } catch(e) { graph.edges = []; }
+  _origLoadGraph(graph, push);
+};
+
+/* ── Hook buildNodeEl to attach port events after creation ─────── */
+const _origBuildNodeEl = buildNodeEl;
+buildNodeEl = function(node) {
+  const el = _origBuildNodeEl(node);
+  /* Attach port events after element is in the DOM on next tick */
+  setTimeout(() => attachPortEvents(el, node.id), 0);
+  return el;
+};
+
+/* ── Tooltip: show connection hint on first port hover ────────── */
+(function() {
+  let hinted = false;
+  document.addEventListener('mouseover', e => {
+    if (hinted) return;
+    if (e.target.closest('.port')) {
+      hinted = true;
+      showToast('Drag from any port to connect nodes  •  Right-click a wire to delete');
+    }
+  });
+})();
+
+
+/* ── Quantum Loom Theme System ──────────────────────────────── */
+(function initQLTheme() {
+  const MAP = {
+    'c-bg':'--bg',
+    'c-surf':'--bg2',
+    'c-surf2':'--bg3',
+    'c-accent1':'--venturan',
+    'c-accent2':'--amber',
+    'c-accent3':'--emerald',
+    'c-accent4':'--fusion',
+    'c-danger':'--blood',
+    'c-warm':'--solari'
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([canonical, varName]) => {
+      if (tokens[canonical] !== undefined)
+        root.style.setProperty(varName, tokens[canonical]);
+    });
+  }
+  // Apply saved theme on load
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  // Listen for live theme broadcasts from hub
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens)
+      applyTokens(e.data.tokens);
+  });
+})();
+
+</script>
+</body>
+</html>
