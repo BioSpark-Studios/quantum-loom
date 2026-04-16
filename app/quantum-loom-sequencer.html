@@ -1,0 +1,2768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Quantum Loom — Track Sequencer</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07080a; --panel:#0f1013; --panel-hi:#161719; --panel-mid:#131417;
+  --edge:rgba(255,255,255,.055); --deep:rgba(0,0,0,.55);
+  --venturan:#b1d0f0; --solari:#f98f3b; --fusion:#9b7fd4;
+  --totem:#7fd4c8; --blood:#d45b5b; --emerald:#4caf7d; --amber:#e8b84b;
+  --led-green:#00ff88; --led-amber:#ffaa00; --led-red:#ff3344; --led-cyan:#00d4ff;
+  --brass:#c8973a; --seal-gold:#e8c04a;
+  --fm:'Orbitron',monospace; --fd:'Space Grotesk',sans-serif; --fcode:'JetBrains Mono',monospace;
+  --track-head:190px;
+  --ruler-h:40px;
+  --ch-width:120px; /* pixels per chapter at zoom 1 */
+}
+@keyframes led-pulse   {0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes breathe     {0%,100%{opacity:.3}50%{opacity:.85}}
+@keyframes toast-in    {0%{opacity:0;transform:translateY(8px)}15%,80%{opacity:1;transform:translateY(0)}100%{opacity:0}}
+@keyframes playhead-blink{0%,100%{opacity:1}50%{opacity:.6}}
+@keyframes clip-in     {from{opacity:0;transform:scaleY(.7)}to{opacity:1;transform:scaleY(1)}}
+@keyframes step-hit    {0%{filter:brightness(3) saturate(2)}100%{filter:brightness(1) saturate(1)}}
+@keyframes pulse-ring  {0%{transform:scale(1);opacity:.8}100%{transform:scale(1.6);opacity:0}}
+@keyframes unfurl      {from{opacity:0;transform:scaleY(.93);transform-origin:top}to{opacity:1;transform:scaleY(1)}}
+
+body{
+  background:var(--bg);font-family:var(--fd);color:#fff;
+  height:100vh;overflow:hidden;display:flex;flex-direction:column;
+  background-image:
+    radial-gradient(ellipse at 10% 80%,rgba(177,208,240,.018),transparent 50%),
+    radial-gradient(ellipse at 90% 10%,rgba(155,127,212,.018),transparent 50%);
+}
+
+/* ══ TOP BAR ══════════════════════════════════════════════════════ */
+#topbar{
+  height:44px;flex-shrink:0;
+  background:rgba(5,5,7,.98);border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;padding:0 14px;gap:8px;z-index:200;
+}
+.logo{font-family:var(--fm);font-size:.58rem;font-weight:700;letter-spacing:.26em;color:var(--venturan);display:flex;align-items:center;gap:7px}
+.logo-mark{width:21px;height:21px;border:1.5px solid var(--venturan);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.75rem;animation:breathe 4s ease-in-out infinite}
+.tb-sep{width:1px;height:18px;background:rgba(255,255,255,.09);flex-shrink:0}
+.tb-tab{font-family:var(--fm);font-size:.48rem;letter-spacing:.16em;text-transform:uppercase;padding:5px 11px;border-radius:3px;border:1px solid transparent;cursor:pointer;transition:all .14s;color:rgba(255,255,255,.48);background:none}
+.tb-tab:hover{color:rgba(255,255,255,.6)}
+.tb-tab.active{color:var(--solari);border-color:rgba(249,143,59,.28);background:rgba(249,143,59,.06)}
+.tb-right{display:flex;align-items:center;gap:6px;margin-left:auto}
+.tb-btn{font-family:var(--fm);font-size:.46rem;letter-spacing:.14em;text-transform:uppercase;padding:5px 11px;border-radius:3px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.6);cursor:pointer;transition:all .14s}
+.tb-btn:hover{border-color:var(--venturan);color:var(--venturan)}
+.tb-btn.hot{background:linear-gradient(135deg,var(--solari),#ffd89e);border-color:var(--solari);color:#1a1200;font-weight:700}
+
+/* ══ TRANSPORT BAR ════════════════════════════════════════════════ */
+#transport{
+  height:46px;flex-shrink:0;
+  background:rgba(8,8,11,.97);border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;padding:0 14px;gap:10px;
+}
+.tp-group{display:flex;align-items:center;gap:4px}
+.tp-btn{
+  width:30px;height:30px;border-radius:5px;border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;transition:all .12s;
+}
+.tp-btn:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.58)}
+.tp-btn.active{background:rgba(255,0,60,.15);border-color:#ff003c;color:#ff003c}
+.tp-btn.playing{background:rgba(0,212,100,.12);border-color:var(--led-green);color:var(--led-green)}
+.tp-btn.loop-on{background:rgba(177,208,240,.1);border-color:var(--venturan);color:var(--venturan)}
+
+.tp-display{
+  font-family:var(--fcode);font-size:.95rem;font-weight:500;
+  color:var(--led-green);background:rgba(0,0,0,.6);
+  border:1px solid rgba(0,255,136,.12);border-radius:4px;
+  padding:4px 10px;min-width:110px;text-align:center;letter-spacing:.08em;
+}
+.tp-bpm{display:flex;align-items:center;gap:5px}
+.tp-bpm-lbl{font-family:var(--fm);font-size:.42rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+.tp-bpm-val{font-family:var(--fcode);font-size:.9rem;color:var(--amber);min-width:36px;text-align:center}
+.tp-bpm input[type=range]{width:70px;accent-color:var(--amber);cursor:pointer}
+.tp-chapter{font-family:var(--fm);font-size:.46rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.58)}
+.tp-chapter-val{font-family:var(--fcode);font-size:.75rem;color:var(--venturan);min-width:50px}
+
+.zoom-group{display:flex;align-items:center;gap:3px;margin-left:auto}
+.zoom-lbl{font-family:var(--fm);font-size:.42rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.58)}
+.zoom-btn{width:22px;height:22px;border-radius:3px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.55);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .1s}
+.zoom-btn:hover{background:rgba(255,255,255,.06);color:#fff}
+.zoom-val{font-family:var(--fcode);font-size:.6rem;color:rgba(255,255,255,.5);min-width:32px;text-align:center}
+
+/* ══ WORKSPACE ════════════════════════════════════════════════════ */
+#workspace{flex:1;display:flex;overflow:hidden}
+
+/* ══ CAPSULE LIBRARY ══════════════════════════════════════════════ */
+.lib-head{padding:10px 11px 8px;border-bottom:1px solid rgba(255,255,255,.045);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.lib-title{font-family:var(--fm);font-size:.5rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.48)}
+.lib-filter{display:flex;gap:3px;padding:7px 10px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.04);flex-shrink:0}
+.lf-btn{font-family:var(--fm);font-size:.38rem;letter-spacing:.12em;text-transform:uppercase;padding:2px 6px;border-radius:2px;border:1px solid rgba(255,255,255,.08);background:transparent;color:rgba(255,255,255,.45);cursor:pointer;transition:all .1s}
+.lf-btn:hover{border-color:rgba(255,255,255,.58);color:rgba(255,255,255,.5)}
+.lf-btn.active{border-color:var(--sc,var(--venturan));color:var(--sc,var(--venturan));background:rgba(177,208,240,.06)}
+.lib-body{flex:1;overflow-y:auto;padding:6px}
+.lib-body::-webkit-scrollbar{width:3px}
+.lib-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.07)}
+.lib-category{margin-bottom:10px}
+.lib-cat-head{font-family:var(--fm);font-size:.4rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6);padding:4px 6px;display:flex;align-items:center;gap:5px;cursor:pointer;border-radius:3px;transition:background .1s;user-select:none}
+.lib-cat-head:hover{background:rgba(255,255,255,.04)}
+.lib-cat-head::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07)}
+.lib-cat-arrow{font-size:.5rem;color:rgba(255,255,255,.5);transition:transform .18s;flex-shrink:0;margin-left:2px}
+.lib-cat-arrow.collapsed{transform:rotate(-90deg)}
+.lib-cat-body{overflow:hidden;transition:max-height .2s ease}
+.lib-cat-body.collapsed{max-height:0!important}
+
+.capsule-card{
+  padding:6px 8px;margin-bottom:3px;border-radius:4px;
+  border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.025);
+  cursor:grab;transition:all .12s;
+  position:relative;overflow:hidden;
+  animation:clip-in .2s ease;
+}
+.capsule-card:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);transform:translateX(2px)}
+.capsule-card:active{cursor:grabbing}
+.capsule-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--cc,var(--venturan))}
+.cc-name{font-family:var(--fm);font-size:.46rem;letter-spacing:.08em;text-transform:uppercase;color:var(--cc,var(--venturan));margin-bottom:2px}
+.cc-type{font-family:var(--fcode);font-size:.42rem;color:rgba(255,255,255,.45)}
+.cc-sym{position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:1rem;opacity:.3}
+
+/* ══ SEQUENCER MAIN ═══════════════════════════════════════════════ */
+#seq-main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+/* Ruler */
+#ruler-wrap{
+  height:var(--ruler-h);flex-shrink:0;
+  display:flex;overflow:hidden;position:relative;z-index:10;
+  background:rgba(6,7,9,.98);border-bottom:1px solid rgba(255,255,255,.06);
+}
+#ruler-head{width:var(--track-head);flex-shrink:0;border-right:1px solid var(--edge);display:flex;align-items:center;padding:0 10px;background:rgba(6,7,9,.98)}
+.rh-label{font-family:var(--fm);font-size:.44rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.58)}
+#ruler-canvas{flex:1;overflow-x:hidden;overflow-y:hidden;position:relative}
+#ruler-inner{position:absolute;top:0;left:0;height:100%;will-change:transform}
+.ruler-chapter{
+  position:absolute;top:0;bottom:0;
+  border-left:1px solid rgba(255,255,255,.08);
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:3px 6px;
+}
+.ruler-chapter.scene-start{border-left-color:rgba(255,255,255,.58)}
+.ruler-ch-num{font-family:var(--fcode);font-size:.52rem;color:rgba(255,255,255,.55)}
+.ruler-ch-scene{font-family:var(--fm);font-size:.38rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.58);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px}
+.ruler-ch-act{font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;text-transform:uppercase;opacity:.5}
+
+/* Playhead */
+#playhead{
+  position:absolute;top:0;bottom:0;width:2px;
+  background:var(--led-red);pointer-events:none;z-index:50;
+  box-shadow:0 0 8px rgba(255,51,68,.5);
+  animation:playhead-blink 1.2s ease-in-out infinite;
+}
+#playhead::before{content:'▾';position:absolute;top:-1px;left:50%;transform:translateX(-50%);color:var(--led-red);font-size:.8rem;animation:none}
+#playhead.playing{animation:none;opacity:1}
+
+/* Track area */
+#tracks-wrap{flex:1;display:flex;overflow:hidden;position:relative}
+#tracks-head{width:var(--track-head);flex-shrink:0;border-right:1px solid var(--edge);overflow-y:auto;overflow-x:hidden;background:rgba(6,7,9,.98)}
+#tracks-head::-webkit-scrollbar{width:0}
+#tracks-body{flex:1;overflow:auto;position:relative;cursor:default}
+#tracks-body::-webkit-scrollbar{height:6px;width:6px}
+#tracks-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px}
+#tracks-body::-webkit-scrollbar-corner{background:transparent}
+#tracks-canvas{position:relative;min-width:100%}
+
+/* Track row */
+.track-row{
+  display:flex;position:relative;border-bottom:1px solid rgba(255,255,255,.04);
+  transition:background .12s;
+}
+.track-row:hover{background:rgba(255,255,255,.008)}
+.track-row.muted .clip{opacity:.3}
+.track-row.soloed .clip{opacity:1}
+
+.track-head-row{
+  height:var(--th);
+  background:rgba(6,7,9,.96);border-bottom:1px solid rgba(255,255,255,.04);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:4px 8px;gap:3px;position:relative;overflow:hidden;
+  cursor:pointer;transition:background .12s;
+}
+.track-head-row:hover{background:rgba(255,255,255,.03)}
+.track-head-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--tc)}
+.th-top{display:flex;align-items:center;gap:5px}
+.th-icon{font-size:.85rem;flex-shrink:0}
+.th-name{font-family:var(--fm);font-size:.46rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tc);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.th-name-input{font-family:var(--fm);font-size:.46rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tc);background:rgba(255,255,255,.07);border:1px solid var(--tc);border-radius:2px;padding:0 3px;outline:none;width:90%}
+.th-btns{display:flex;gap:3px}
+.th-btn{
+  width:17px;height:17px;border-radius:2px;border:1px solid rgba(255,255,255,.1);
+  background:transparent;font-family:var(--fm);font-size:.38rem;font-weight:700;letter-spacing:.06em;
+  color:rgba(255,255,255,.5);cursor:pointer;transition:all .1s;display:flex;align-items:center;justify-content:center;
+}
+.th-btn.M:hover,.th-btn.M.on{background:rgba(255,170,0,.15);border-color:var(--led-amber);color:var(--led-amber)}
+.th-btn.S:hover,.th-btn.S.on{background:rgba(0,255,136,.1);border-color:var(--led-green);color:var(--led-green)}
+.th-btn.R:hover,.th-btn.R.on{background:rgba(255,51,68,.15);border-color:var(--led-red);color:var(--led-red)}
+.th-del{position:absolute;right:5px;top:5px;opacity:0;width:14px;height:14px;border-radius:2px;border:1px solid rgba(255,60,60,.25);background:transparent;color:rgba(255,80,80,.4);cursor:pointer;font-size:.5rem;display:flex;align-items:center;justify-content:center;transition:all .1s}
+.track-head-row:hover .th-del{opacity:1}
+.th-del:hover{background:rgba(255,0,0,.1);color:#ff3344;border-color:#ff3344}
+.th-type-badge{font-family:var(--fm);font-size:.36rem;letter-spacing:.14em;text-transform:uppercase;padding:1px 5px;border-radius:2px;border:1px solid;color:var(--tc);border-color:var(--tc);opacity:.5;align-self:flex-start}
+.th-resize{height:4px;background:transparent;cursor:row-resize;position:absolute;bottom:0;left:0;right:0}
+.th-resize:hover{background:rgba(255,255,255,.1)}
+
+/* Track lane (right side) */
+.track-lane{
+  position:relative;overflow:hidden;
+  background:repeating-linear-gradient(90deg,transparent,transparent calc(var(--ch-width) * var(--zoom) - 1px),rgba(255,255,255,.025) calc(var(--ch-width) * var(--zoom) - 1px),rgba(255,255,255,.025) calc(var(--ch-width) * var(--zoom)));
+  cursor:crosshair;
+}
+.track-lane.drop-target{background:rgba(177,208,240,.04);box-shadow:inset 0 0 0 1px rgba(177,208,240,.2)}
+
+/* Clips */
+.clip{
+  position:absolute;top:3px;bottom:3px;border-radius:4px;
+  overflow:hidden;cursor:grab;user-select:none;
+  transition:box-shadow .1s,filter .1s;
+  animation:clip-in .18s ease;
+  border:1px solid var(--cc);
+  background:linear-gradient(180deg,var(--cc-bg-hi),var(--cc-bg));
+  min-width:20px;
+}
+.clip:hover{box-shadow:0 0 0 2px var(--cc),0 4px 14px rgba(0,0,0,.7);z-index:5}
+.clip.selected-clip{box-shadow:0 0 0 2px #fff,0 4px 18px rgba(0,0,0,.8)!important;z-index:10}
+.clip:active{cursor:grabbing}
+.clip.dragging-clip{opacity:.6;box-shadow:0 8px 30px rgba(0,0,0,.9)!important;z-index:100}
+.clip-inner{position:absolute;inset:0;padding:4px 7px;display:flex;flex-direction:column;justify-content:space-between}
+.clip-name{font-family:var(--fm);font-size:.44rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.8)}
+.clip-type{font-family:var(--fcode);font-size:.4rem;color:rgba(255,255,255,.45);text-shadow:0 1px 2px rgba(0,0,0,.8)}
+.clip-resize-l,.clip-resize-r{position:absolute;top:0;bottom:0;width:6px;cursor:ew-resize;z-index:5}
+.clip-resize-l{left:0}
+.clip-resize-r{right:0}
+.clip-resize-l:hover,.clip-resize-r:hover{background:rgba(255,255,255,.15)}
+/* Fade handles (legacy, unused) */
+.clip-fade-in,.clip-fade-out{display:none}
+
+/* ── FADE ENVELOPE SVG inside clips ── */
+.clip-envelope{position:absolute;inset:0;pointer-events:none;overflow:visible;border-radius:3px}
+.clip-envelope polyline{fill:none;stroke:rgba(255,255,255,.55);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── PANEL COLLAPSE TOGGLES ── */
+.panel-toggle{
+  flex-shrink:0;width:36px;height:36px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:.75rem;
+  background:transparent;border:none;
+  transition:all .14s;color:rgba(255,255,255,.35);
+}
+.panel-toggle:hover{color:var(--venturan);background:rgba(177,208,240,.07)}
+
+/* ── Collapsed icon strip shared styles ── */
+.panel-icon-strip{
+  display:none;flex-direction:column;align-items:center;
+  padding:6px 0;gap:2px;width:100%;flex:1;overflow-y:auto;
+}
+.panel-icon-strip::-webkit-scrollbar{display:none}
+.pis-btn{
+  width:36px;height:36px;border-radius:5px;border:none;
+  background:transparent;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;transition:all .13s;position:relative;flex-shrink:0;
+}
+.pis-btn:hover{background:rgba(255,255,255,.06)}
+.pis-btn.pis-active{background:rgba(177,208,240,.1)}
+.pis-icon{font-size:1.05rem;line-height:1}
+.pis-label{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);line-height:1;
+}
+.pis-btn:hover .pis-label{color:var(--venturan)}
+.pis-btn:hover .pis-icon{filter:drop-shadow(0 0 4px var(--pis-c,var(--venturan)))}
+.pis-sep{width:20px;height:1px;background:rgba(255,255,255,.07);margin:3px auto;flex-shrink:0}
+/* Tooltip on hover */
+.pis-btn::after{
+  content:attr(data-tip);
+  position:absolute;left:calc(100% + 8px);top:50%;transform:translateY(-50%);
+  background:rgba(5,5,8,.97);border:1px solid rgba(255,255,255,.1);
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--venturan);padding:3px 8px;border-radius:3px;white-space:nowrap;
+  pointer-events:none;opacity:0;transition:opacity .1s;z-index:200;
+}
+.pis-btn:hover::after{opacity:1}
+/* Right panel tooltip on the other side */
+#insp-strip .pis-btn::after{left:auto;right:calc(100% + 8px)}
+
+/* ── Capsule library ── */
+/* ── Lib bar: always-visible 36px column on the left ── */
+#lib-bar{
+  width:36px;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;
+  background:rgba(4,4,6,.98);border-right:1px solid var(--edge);
+  z-index:10;
+}
+#lib-bar-top{padding:4px 0;display:flex;flex-direction:column;align-items:center;border-bottom:1px solid rgba(255,255,255,.05);width:100%}
+#lib-icon-strip{display:none}
+
+/* ── Lib content panel: collapses to 0 ── */
+#capsule-lib{
+  width:178px;flex-shrink:0;
+  transition:width .2s ease;overflow:hidden;
+  display:flex;flex-direction:column;
+  background:rgba(6,7,9,.98);border-right:1px solid rgba(255,255,255,.04);
+}
+#capsule-lib.collapsed{width:0}
+#capsule-lib.collapsed + #lib-bar ~ * #lib-icon-strip,
+.lib-collapsed #lib-icon-strip{display:flex}
+
+/* ── Insp bar: always-visible 36px column on the right ── */
+#insp-bar{
+  width:36px;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;
+  background:rgba(4,4,6,.98);border-left:1px solid var(--edge);
+  z-index:10;
+}
+#insp-bar-top{padding:4px 0;display:flex;flex-direction:column;align-items:center;border-bottom:1px solid rgba(255,255,255,.05);width:100%}
+#insp-icon-strip{display:none}
+
+/* ── Inspector content panel: collapses to 0 ── */
+#inspector{
+  width:240px;flex-shrink:0;
+  transition:width .2s ease;overflow:hidden;
+  display:flex;flex-direction:column;
+  background:rgba(6,7,9,.98);border-left:1px solid rgba(255,255,255,.04);
+}
+#inspector.collapsed{width:0}
+
+/* Show icon strips via body class set by togglePanel */
+body.lib-collapsed #lib-icon-strip{display:flex}
+body.insp-collapsed #insp-icon-strip{display:flex}
+
+/* ── AUTO-LANE CLIP (draggable arc range block) ── */
+.arc-clip{
+  position:absolute;top:2px;bottom:2px;border-radius:3px;
+  border:1px solid var(--ac-color,var(--venturan));
+  background:linear-gradient(180deg,rgba(0,0,0,.0),rgba(0,0,0,.0));
+  cursor:grab;overflow:hidden;z-index:5;transition:box-shadow .1s;
+}
+.arc-clip:hover{box-shadow:0 0 0 2px var(--ac-color,var(--venturan)),0 3px 10px rgba(0,0,0,.7);z-index:8}
+.arc-clip.selected-arc-clip{box-shadow:0 0 0 2px #fff,0 3px 12px rgba(0,0,0,.8)!important;z-index:10}
+.arc-clip:active{cursor:grabbing}
+.arc-clip-inner{position:absolute;inset:0;display:flex;align-items:center;padding:0 6px;gap:4px;background:var(--ac-color,var(--venturan));opacity:.12;border-radius:2px}
+.arc-clip-lbl{position:absolute;inset:0;display:flex;align-items:center;padding:0 6px;gap:4px}
+.arc-clip-name{font-family:var(--fm);font-size:.38rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ac-color,var(--venturan));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;text-shadow:0 1px 2px rgba(0,0,0,.9)}
+.arc-clip-ch{font-family:var(--fcode);font-size:.36rem;color:rgba(255,255,255,.55)}
+.arc-clip-del{opacity:0;font-size:.55rem;color:rgba(255,80,80,.5);cursor:pointer;flex-shrink:0;padding:1px 3px;border-radius:2px;border:none;background:none;transition:all .1s}
+.arc-clip:hover .arc-clip-del{opacity:1}
+.arc-clip-del:hover{color:#ff3344;background:rgba(255,0,0,.12)}
+.arc-clip-resize-l,.arc-clip-resize-r{position:absolute;top:0;bottom:0;width:5px;cursor:ew-resize;z-index:6}
+.arc-clip-resize-l{left:0}
+.arc-clip-resize-r{right:0}
+.arc-clip-resize-l:hover,.arc-clip-resize-r:hover{background:rgba(255,255,255,.15)}
+
+/* Automation lane */
+.auto-lane{
+  border-top:1px solid rgba(255,255,255,.04);
+  background:rgba(0,0,0,.3);position:relative;
+  overflow:hidden;height:40px;
+}
+.auto-lane-head-row{
+  height:40px;background:rgba(0,0,0,.4);border-bottom:1px solid rgba(255,255,255,.04);
+  border-top:1px solid rgba(255,255,255,.04);
+  display:flex;align-items:center;padding:0 8px;gap:5px;
+}
+.al-name{font-family:var(--fm);font-size:.4rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+.al-color{width:6px;height:6px;border-radius:50%}
+.auto-lane svg{position:absolute;inset:0;width:100%;height:100%}
+
+/* ══ STEP SEQUENCER PANEL ════════════════════════════════════════ */
+#step-panel{
+  flex-shrink:0;background:rgba(6,7,9,.98);
+  border-top:1px solid var(--edge);
+  overflow:hidden;transition:height .25s ease;
+  height:0;
+}
+#step-panel.open{height:220px}
+.sp-head{
+  height:34px;display:flex;align-items:center;padding:0 12px;gap:10px;
+  background:rgba(0,0,0,.3);border-bottom:1px solid rgba(255,255,255,.04);
+  flex-shrink:0;
+}
+.sp-title{font-family:var(--fm);font-size:.5rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.sp-body{display:flex;overflow:hidden;height:calc(100% - 34px)}
+.sp-patterns{width:160px;flex-shrink:0;border-right:1px solid rgba(255,255,255,.05);overflow-y:auto;padding:5px}
+.sp-patterns::-webkit-scrollbar{width:2px}
+.sp-pat-item{
+  padding:5px 7px;border-radius:4px;cursor:pointer;border:1px solid transparent;
+  font-family:var(--fm);font-size:.44rem;letter-spacing:.08em;text-transform:uppercase;
+  transition:all .1s;margin-bottom:2px;display:flex;align-items:center;gap:6px;
+}
+.sp-pat-item:hover{background:rgba(255,255,255,.04)}
+.sp-pat-item.active-pat{border-color:var(--p-color,var(--venturan));background:rgba(177,208,240,.04);color:var(--p-color,var(--venturan))}
+.sp-pat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sp-grid{flex:1;overflow-x:auto;overflow-y:hidden;padding:10px 12px}
+.sp-grid::-webkit-scrollbar{height:3px}
+.sp-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,.07)}
+.step-grid{display:flex;flex-direction:column;gap:6px;min-width:max-content}
+.step-row{display:flex;align-items:center;gap:5px}
+.step-row-lbl{font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);width:88px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step-cells{display:flex;gap:3px}
+.step-cell{
+  width:28px;height:28px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);
+  transition:all .08s;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.step-cell:nth-child(4n+1){border-left:2px solid rgba(255,255,255,.12)}
+.step-cell.on{background:var(--sc,rgba(177,208,240,.3));border-color:var(--sc,var(--venturan));box-shadow:0 0 8px var(--sc,rgba(177,208,240,.3))}
+.step-cell.active-step{filter:brightness(1.8);box-shadow:0 0 12px var(--sc,var(--venturan))!important;animation:step-hit .3s ease}
+.step-cell.on::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.15),transparent)}
+.step-cell .step-vel{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.25);transition:height .1s}
+.step-controls{display:flex;align-items:center;gap:8px;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.05)}
+.sc-lbl{font-family:var(--fm);font-size:.4rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.sc-val{font-family:var(--fcode);font-size:.62rem;color:var(--venturan)}
+.sc-select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:2px 5px;font-family:var(--fcode);font-size:.58rem;color:#fff;cursor:pointer;outline:none}
+.sc-select option{background:#111}
+.sp-add-pat{font-family:var(--fm);font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;padding:5px 7px;border-radius:3px;border:1px dashed rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.45);cursor:pointer;width:100%;text-align:center;margin-top:5px;transition:all .12s}
+.sp-add-pat:hover{border-color:var(--venturan);color:var(--venturan)}
+
+/* ══ RIGHT INSPECTOR ══════════════════════════════════════════════ */
+.insp-head{padding:10px 12px 8px;border-bottom:1px solid rgba(255,255,255,.045);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.insp-title{font-family:var(--fm);font-size:.5rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.48)}
+.insp-body{flex:1;overflow-y:auto;padding:11px}
+.insp-body::-webkit-scrollbar{width:3px}
+.insp-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.07)}
+.insp-sec{margin-bottom:14px}
+.insp-sec-lbl{font-family:var(--fm);font-size:.42rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.58);padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:8px}
+.insp-row{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.insp-lbl{font-family:var(--fm);font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.48);width:66px;flex-shrink:0}
+.insp-val{font-family:var(--fcode);font-size:.68rem;color:rgba(255,255,255,.7);flex:1}
+.insp-input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:4px 6px;font-family:var(--fcode);font-size:.64rem;color:#fff;outline:none}
+.insp-input:focus{border-color:rgba(255,255,255,.58)}
+.insp-select{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:3px 6px;font-family:var(--fcode);font-size:.6rem;color:#fff;cursor:pointer;outline:none}
+.insp-select option{background:#111}
+.insp-empty{font-family:var(--fd);font-size:.72rem;color:rgba(255,255,255,.58);font-style:italic;line-height:1.6;text-align:center;padding:20px 0}
+.insp-color-swatch{width:28px;height:22px;border-radius:3px;border:1px solid rgba(255,255,255,.1);cursor:pointer;padding:0}
+.prop-arc-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.par-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.par-name{font-family:var(--fm);font-size:.44rem;letter-spacing:.06em;text-transform:uppercase;flex:1;overflow:hidden;text-overflow:ellipsis}
+.par-val{font-family:var(--fcode);font-size:.58rem}
+
+/* Add track button */
+.add-track-row{
+  display:flex;align-items:center;gap:0;
+  background:rgba(6,7,9,.96);border-bottom:1px solid rgba(255,255,255,.04);
+  position:sticky;bottom:0;
+}
+.add-track-btn{
+  width:var(--track-head);flex-shrink:0;height:36px;
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.14em;text-transform:uppercase;
+  border:none;background:transparent;color:rgba(255,255,255,.58);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  transition:all .12s;border-right:1px solid var(--edge);
+}
+.add-track-btn:hover{background:rgba(255,255,255,.03);color:var(--venturan)}
+
+/* Step panel toggle */
+#step-toggle{
+  height:22px;background:rgba(6,7,9,.98);border-top:1px solid rgba(255,255,255,.04);
+  display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.58);transition:all .12s;flex-shrink:0;
+}
+#step-toggle:hover{background:rgba(255,255,255,.03);color:var(--venturan)}
+#step-toggle.open{color:var(--venturan)}
+
+/* Modal */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center}
+#modal-overlay.hidden{display:none}
+.modal{background:var(--panel);border:1px solid rgba(255,255,255,.09);border-radius:9px;width:400px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.92);animation:unfurl .18s ease}
+.modal-head{padding:13px 15px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-family:var(--fm);font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--venturan)}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.5);font-size:1rem;cursor:pointer;padding:2px 6px;border-radius:3px;transition:all .1s}
+.modal-close:hover{background:rgba(255,255,255,.06);color:#fff}
+.modal-body{flex:1;overflow-y:auto;padding:13px 15px;display:flex;flex-direction:column;gap:9px}
+.modal-foot{padding:9px 15px;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:flex-end;gap:7px;flex-shrink:0}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-lbl{font-family:var(--fm);font-size:.44rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.48)}
+.form-input,.form-select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:6px 9px;font-family:var(--fd);font-size:.78rem;color:#fff;outline:none;transition:border-color .12s;width:100%}
+.form-input:focus,.form-select:focus{border-color:rgba(255,255,255,.6)}
+.form-select option{background:#111}
+.type-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.type-btn{padding:8px 5px;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .12s}
+.type-btn:hover{background:rgba(255,255,255,.04)}
+.type-btn.selected-type{border-color:var(--tc,var(--venturan));background:rgba(177,208,240,.06)}
+.type-btn-icon{font-size:1.1rem}
+.type-btn-name{font-family:var(--fm);font-size:.38rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.58)}
+
+/* Toast */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(5,5,8,.97);border:1px solid rgba(177,208,240,.18);backdrop-filter:blur(12px);padding:7px 15px;border-radius:5px;font-family:var(--fm);font-size:.48rem;letter-spacing:.14em;text-transform:uppercase;color:var(--venturan);pointer-events:none;opacity:0;z-index:1000;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.8)}
+#toast.show{animation:toast-in 2.6s ease forwards}
+
+/* ══ ADDON MOUNT POINTS ═══════════════════════════════════════════ */
+#addon-step-dock{display:none;flex-direction:column;flex-shrink:0;border-top:1px solid rgba(255,255,255,.06)}
+#addon-step-dock.has-addons{display:flex}
+.addon-dock-panel{background:rgba(6,7,9,.98);border-bottom:1px solid rgba(255,255,255,.04);overflow:hidden}
+.addon-dock-head{height:28px;display:flex;align-items:center;padding:0 12px;gap:8px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);flex-shrink:0}
+.addon-dock-icon{font-size:.85rem}
+.addon-dock-name{font-family:var(--fm);font-size:.42rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.55);flex:1}
+.addon-dock-badge{font-family:var(--fcode);font-size:.38rem;color:rgba(255,255,255,.3);background:rgba(255,255,255,.05);padding:1px 5px;border-radius:2px}
+.addon-dock-arrow{font-size:.45rem;color:rgba(255,255,255,.3);transition:transform .15s}
+.addon-dock-arrow.open{transform:rotate(180deg)}
+.addon-dock-body{padding:8px 10px;overflow-y:auto;max-height:160px}
+.addon-dock-body::-webkit-scrollbar{width:3px}
+.addon-dock-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.07)}
+#addon-insp-tabs{display:none;flex-direction:row;border-bottom:1px solid rgba(255,255,255,.05);padding:0 8px;gap:1px;flex-shrink:0;overflow-x:auto}
+#addon-insp-tabs.has-tabs{display:flex}
+#addon-insp-tabs::-webkit-scrollbar{display:none}
+.addon-insp-tab{font-family:var(--fm);font-size:.38rem;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;border-radius:3px 3px 0 0;cursor:pointer;flex-shrink:0;color:rgba(255,255,255,.35);border:1px solid transparent;border-bottom:none;transition:all .12s;background:transparent}
+.addon-insp-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.04)}
+.addon-insp-tab.active{color:var(--venturan);border-color:rgba(255,255,255,.08);background:rgba(6,7,9,.98)}
+.addon-insp-pane{display:none}
+.addon-insp-pane.active{display:block}
+#addon-toolbar-slots{display:flex;align-items:center;gap:4px;margin-left:4px}
+.addon-track-overlay{position:absolute;inset:0;pointer-events:none;z-index:15;overflow:hidden}
+.addon-cap-badge{font-family:var(--fcode);font-size:.34rem;padding:1px 4px;border-radius:2px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);display:inline-block;margin-top:1px}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo"><div class="logo-mark">⬡</div>Quantum Loom</div>
+  <div class="tb-sep"></div>
+  <button class="tb-tab" onclick="navTo('ionodes')">◈ Node Graph</button>
+  <button class="tb-tab" onclick="navTo('subgraph')">⟁ Sub-Graph</button>
+  <button class="tb-tab" onclick="navTo('zones')">◫ Zones</button>
+  <button class="tb-tab" onclick="navTo('scenes')">⌚ Scenes</button>
+  <button class="tb-tab active" onclick="navTo('sequencer')">🎛 Track Sequencer</button>
+  <button class="tb-tab" onclick="navTo('rack')">⚙ Rack</button>
+  <div class="tb-right">
+    <button class="tb-btn" onclick="openModal('track')">+ Track</button>
+    <button class="tb-btn" onclick="openModal('pattern')">+ Pattern</button>
+    <button class="tb-btn" onclick="exportProject()">↓ Export</button>
+    <button class="tb-btn hot" id="perf-btn" onclick="togglePerformance()">⚡ Performance</button>
+    <!-- Addon toolbar slots -->
+    <div id="addon-toolbar-slots"></div>
+  </div>
+</div>
+
+<!-- TRANSPORT -->
+<div id="transport">
+  <div class="tp-group">
+    <button class="tp-btn" id="btn-stop" onclick="stopPlayback()" title="Stop">■</button>
+    <button class="tp-btn" id="btn-play" onclick="togglePlay()" title="Play/Pause">▶</button>
+    <button class="tp-btn" id="btn-record" onclick="toggleRecord()" title="Record">⏺</button>
+    <button class="tp-btn" id="btn-loop" onclick="toggleLoop()" title="Loop">⟲</button>
+  </div>
+  <div class="tb-sep"></div>
+  <div class="tp-display" id="tp-pos">01 · 01.000</div>
+  <div class="tb-sep"></div>
+  <div class="tp-bpm">
+    <span class="tp-bpm-lbl">BPM</span>
+    <span class="tp-bpm-val" id="bpm-val">120</span>
+    <input type="range" min="40" max="240" value="120" oninput="setBPM(this.value)">
+  </div>
+  <div class="tb-sep"></div>
+  <div class="tp-chapter">
+    Chapter <span class="tp-chapter-val" id="tp-chapter">1</span>
+    <span style="color:rgba(255,255,255,.38);margin-left:5px" id="tp-scene-name">— The Awakening</span>
+  </div>
+  <div class="zoom-group">
+    <span class="zoom-lbl">Zoom</span>
+    <button class="zoom-btn" onclick="setZoom(-1)">−</button>
+    <span class="zoom-val" id="zoom-val">100%</span>
+    <button class="zoom-btn" onclick="setZoom(1)">+</button>
+  </div>
+</div>
+
+<div id="workspace">
+
+  <!-- LEFT BAR: always-visible 36px strip -->
+  <div id="lib-bar">
+    <div id="lib-bar-top">
+      <button class="panel-toggle" id="lib-toggle" onclick="togglePanel('lib')" title="Toggle library">◀</button>
+    </div>
+    <div class="panel-icon-strip" id="lib-icon-strip"></div>
+  </div>
+
+  <!-- CAPSULE LIBRARY: collapses to 0 -->
+  <div id="capsule-lib">
+    <div class="lib-head">
+      <div class="lib-title">Capsules</div>
+    </div>
+    <div class="lib-filter" id="lib-filter"></div>
+    <div class="lib-body" id="lib-body"></div>
+  </div>
+
+  <!-- SEQUENCER MAIN -->
+  <div id="seq-main">
+    <!-- Ruler -->
+    <div id="ruler-wrap">
+      <div id="ruler-head"><span class="rh-label">Tracks</span></div>
+      <div id="ruler-canvas" onmousedown="rulerSeek($event||event)">
+        <div id="ruler-inner"></div>
+        <div id="playhead" style="left:0px"></div>
+      </div>
+    </div>
+
+    <!-- Track area -->
+    <div id="tracks-wrap">
+      <div id="tracks-head"></div>
+      <div id="tracks-body" ondragover="trackBodyDragOver(event)" ondrop="trackBodyDrop(event)">
+        <div id="tracks-canvas"></div>
+        <div class="add-track-row">
+          <button class="add-track-btn" onclick="openModal('track')">＋ Add Track</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step panel toggle -->
+    <div id="step-toggle" onclick="toggleStepPanel()">
+      <span id="step-toggle-arrow">▴</span>
+      <span>Step Sequencer</span>
+      <span style="font-family:var(--fcode);font-size:.46rem;color:rgba(255,255,255,.4)" id="step-count-lbl">0 patterns</span>
+    </div>
+
+    <!-- Step sequencer -->
+    <div id="step-panel">
+      <div class="sp-head">
+        <div class="sp-title">⊞ Step Sequencer — Recurring Events</div>
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+          <span style="font-family:var(--fd);font-size:.68rem;color:rgba(255,255,255,.45)">Good for: sunrise, fountain wish, toll bell, tide cycle…</span>
+          <button class="tb-btn" style="padding:3px 8px;font-size:.42rem" onclick="openModal('pattern')">+ Pattern</button>
+        </div>
+      </div>
+      <div class="sp-body">
+        <div class="sp-patterns" id="sp-patterns"></div>
+        <div class="sp-grid" id="sp-grid"></div>
+      </div>
+    </div>
+    <!-- Addon Step Dock: mounted panels appear here -->
+    <div id="addon-step-dock"></div>
+  </div>
+
+  <!-- INSPECTOR: collapses to 0 -->
+  <div id="inspector">
+    <div class="insp-head">
+      <div class="insp-title" id="insp-title">Inspector</div>
+    </div>
+    <!-- Addon inspector tabs -->
+    <div id="addon-insp-tabs"></div>
+    <div class="insp-body" id="insp-body">
+      <div class="insp-empty">Select a clip or track<br>to view its properties.<br><br>Drag capsules from the<br>library onto any track.</div>
+    </div>
+  </div>
+
+  <!-- RIGHT BAR: always-visible 36px strip -->
+  <div id="insp-bar">
+    <div id="insp-bar-top">
+      <button class="panel-toggle" id="insp-toggle" onclick="togglePanel('insp')" title="Toggle inspector">▶</button>
+    </div>
+    <div class="panel-icon-strip" id="insp-icon-strip"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- Modal -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">—</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot">
+      <button class="tb-btn" onclick="closeModal()">Cancel</button>
+      <button class="tb-btn hot" id="modal-confirm" onclick="confirmModal()">Create</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   QUANTUM LOOM — TRACK SEQUENCER ENGINE
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Design tokens (mirrored from CSS vars for JS use) ── */
+const TRACK_HEAD_W = 190;
+const CH_W_BASE    = 120; // px per chapter at zoom 1
+const RULER_H      = 40;
+
+/* ── Track type definitions ── */
+const TRACK_TYPES = {
+  character: { label:'Character Arc', icon:'🎭', color:'#f98f3b',  desc:'Character development, arcs, emotional journey' },
+  emotion:   { label:'Emotion Layer', icon:'💫', color:'#9b7fd4',  desc:'Mood, feeling, atmospheric tone' },
+  environ:   { label:'Environment',   icon:'🌍', color:'#7fd4c8',  desc:'Setting, weather, physical world state' },
+  event:     { label:'Event',         icon:'⚡', color:'#e8b84b',  desc:'Plot points, triggers, key moments' },
+  effect:    { label:'Effect/Mod',    icon:'🌊', color:'#b1d0f0',  desc:'Modifiers, overlays, tone adjustments' },
+  step:      { label:'Step Pattern',  icon:'⊞',  color:'#4caf7d',  desc:'Recurring beat-based event pattern' },
+};
+
+/* ── Seed capsules matching the Library ── */
+const SEED_CAPSULES = [
+  { id:'c-001', name:"Hero's Journey",   type:'character', color:'#f98f3b', sym:'🎭' },
+  { id:'c-002', name:'Betrayal Arc',     type:'character', color:'#d45b5b', sym:'💔' },
+  { id:'c-003', name:'Mentor Bond',      type:'character', color:'#f98f3b', sym:'🤝' },
+  { id:'c-004', name:'Dark Lord Rising', type:'character', color:'#9b7fd4', sym:'👁' },
+  { id:'c-005', name:'Creeping Dread',   type:'emotion',   color:'#9b7fd4', sym:'😱' },
+  { id:'c-006', name:'Hope Spark',       type:'emotion',   color:'#e8b84b', sym:'✨' },
+  { id:'c-007', name:'Grief Wave',       type:'emotion',   color:'#4a6fa5', sym:'🌊' },
+  { id:'c-008', name:'Rage Surge',       type:'emotion',   color:'#d45b5b', sym:'🔥' },
+  { id:'c-009', name:'Storm Gathering',  type:'environ',   color:'#7fd4c8', sym:'⛈' },
+  { id:'c-010', name:'Ashfall Swamp',    type:'environ',   color:'#7fd4c8', sym:'🌿' },
+  { id:'c-011', name:'Highland Citadel', type:'environ',   color:'#b1d0f0', sym:'🏔' },
+  { id:'c-012', name:'Dead of Night',    type:'environ',   color:'#9b7fd4', sym:'🌑' },
+  { id:'c-013', name:'Betrayal Sting',   type:'event',     color:'#e8b84b', sym:'🗡' },
+  { id:'c-014', name:'First Contact',    type:'event',     color:'#4caf7d', sym:'🤲' },
+  { id:'c-015', name:'Prophecy Drops',   type:'event',     color:'#e8b84b', sym:'📜' },
+  { id:'c-016', name:'Battle Climax',    type:'event',     color:'#d45b5b', sym:'⚔' },
+  { id:'c-017', name:'Victory',          type:'event',     color:'#4caf7d', sym:'🏆' },
+  { id:'c-018', name:'Tension Riser',    type:'effect',    color:'#b1d0f0', sym:'📈' },
+  { id:'c-019', name:'Echo Chamber',     type:'effect',    color:'#9b7fd4', sym:'🔊' },
+  { id:'c-020', name:'Fade to Grey',     type:'effect',    color:'#888',    sym:'🌫' },
+  { id:'c-021', name:'Insect Swarm',     type:'environ',   color:'#82e0aa', sym:'🐛' },
+];
+
+/* ── State ── */
+let tracks    = [];
+let patterns  = [];
+let scenes    = [];
+let propArcs  = [];
+let zoom      = 1.0;
+let chCount   = 24; // total chapters shown
+let playPos   = 0;  // current chapter (float)
+let bpm       = 120;
+let playing   = false;
+let recording = false;
+let looping   = false;
+let loopStart = 1, loopEnd = 8;
+let playInterval = null;
+let selectedClipId  = null;
+let selectedTrackId = null;
+let selectedArcClipId = null; // "trackId__propId"
+let selectedPatId   = null;
+let stepPlayStep    = 0;
+let stepInterval    = null;
+let performMode     = false;
+let modalMode       = null;
+let capsules        = [...SEED_CAPSULES];
+let libFilter       = 'all';
+let libCollapsed    = new Set(); // collapsed category type keys
+let dragSrc         = null; // { type:'capsule'|'clip', data }
+let clipDrag        = null; // active clip drag state
+
+/* ── Load from other Loom panels ── */
+function loadFromStorage() {
+  try {
+    const seqRaw = localStorage.getItem('ql-sequencer');
+    if (seqRaw) {
+      const seqData = JSON.parse(seqRaw);
+      if (seqData.bpm)     { bpm = seqData.bpm; document.getElementById('bpm-display').textContent = bpm; }
+      if (seqData.chCount) { chCount = seqData.chCount; }
+    }
+  } catch(e) {}
+  try {
+    const savedActs = localStorage.getItem('ql-scenes');
+    if (savedActs) {
+      const acts = JSON.parse(savedActs);
+      scenes = acts.flatMap(a => a.scenes).sort((a,b) => a.chapter - b.chapter);
+      chCount = Math.max(24, (scenes[scenes.length-1]?.chapter || 0) + 4);
+    }
+  } catch(e) {}
+  try {
+    const rawProps = localStorage.getItem('ql-propagations');
+    if (rawProps) propArcs = JSON.parse(rawProps);
+  } catch(e) {}
+  try {
+    const rawLib = localStorage.getItem('ql-library');
+    if (rawLib) {
+      const lib = JSON.parse(rawLib);
+      lib.forEach(e => {
+        if (!capsules.find(c => c.id === e.id)) {
+          capsules.push({ id: e.id, name: e.name, type: e.type || 'effect', color: e.color || '#b1d0f0', sym: e.symbol || '◈' });
+        }
+      });
+    }
+  } catch(e) {}
+  // Migrate any saved autoLanes that are missing startCh/endCh
+  try {
+    tracks.forEach(t => {
+      (t.autoLanes||[]).forEach(al => {
+        if (al.startCh == null) al.startCh = 1;
+        if (al.endCh   == null) al.endCh   = chCount;
+      });
+    });
+  } catch(e) {}
+}
+
+window.addEventListener('storage', () => { loadFromStorage(); renderRuler(); });
+
+/* ── Seed tracks ── */
+function seedTracks() {
+  const saved = localStorage.getItem('ql-sequencer');
+  if (saved) {
+    const data = JSON.parse(saved);
+    tracks   = data.tracks   || [];
+    patterns = data.patterns || [];
+    return;
+  }
+  tracks = [
+    {
+      id:'t-1', name:'Character Arc', type:'character', muted:false, solo:false, recording:false, height:72,
+      autoLanes:[],
+      clips:[
+        { id:'cl-1', capId:'c-001', name:"Hero's Journey", color:'#f98f3b', startCh:1, endCh:4, fadeIn:0, fadeOut:0, prose_weight:0.5 },
+        { id:'cl-2', capId:'c-002', name:'Betrayal Arc',   color:'#d45b5b', startCh:6, endCh:9, fadeIn:0, fadeOut:0 },
+        { id:'cl-3', capId:'c-017', name:'Victory',        color:'#4caf7d', startCh:20, endCh:24, fadeIn:0.5, fadeOut:0 },
+      ]
+    },
+    {
+      id:'t-2', name:'Emotion Layer', type:'emotion', muted:false, solo:false, recording:false, height:72,
+      autoLanes:[],
+      clips:[
+        { id:'cl-4', capId:'c-006', name:'Hope Spark',    color:'#e8b84b', startCh:1,  endCh:2, fadeIn:0, fadeOut:0 },
+        { id:'cl-5', capId:'c-005', name:'Creeping Dread',color:'#9b7fd4', startCh:3,  endCh:7, fadeIn:0.3, fadeOut:0 },
+        { id:'cl-6', capId:'c-007', name:'Grief Wave',    color:'#4a6fa5', startCh:9,  endCh:12, fadeIn:0, fadeOut:0 },
+        { id:'cl-7', capId:'c-006', name:'Hope Rising',   color:'#e8b84b', startCh:18, endCh:24, fadeIn:0.5, fadeOut:0 },
+      ]
+    },
+    {
+      id:'t-3', name:'Environment',   type:'environ', muted:false, solo:false, recording:false, height:72,
+      autoLanes:[],
+      clips:[
+        { id:'cl-8',  capId:'c-010', name:'Ashfall Swamp',    color:'#7fd4c8', startCh:1,  endCh:5, fadeIn:0, fadeOut:0 },
+        { id:'cl-9',  capId:'c-009', name:'Storm Gathering',  color:'#b1d0f0', startCh:4,  endCh:7, fadeIn:0, fadeOut:0 },
+        { id:'cl-10', capId:'c-011', name:'Highland Citadel', color:'#b1d0f0', startCh:8,  endCh:14, fadeIn:0, fadeOut:0 },
+        { id:'cl-11', capId:'c-012', name:'Dead of Night',    color:'#9b7fd4', startCh:15, endCh:20, fadeIn:0.2, fadeOut:0.2 },
+      ]
+    },
+    {
+      id:'t-4', name:'Event Track',   type:'event', muted:false, solo:false, recording:false, height:60,
+      autoLanes:[],
+      clips:[
+        { id:'cl-12', capId:'c-014', name:'First Contact',  color:'#4caf7d', startCh:3, endCh:4, fadeIn:0, fadeOut:0 },
+        { id:'cl-13', capId:'c-013', name:'Betrayal Sting', color:'#e8b84b', startCh:6, endCh:7, fadeIn:0, fadeOut:0 },
+        { id:'cl-15', capId:'c-015', name:'Prophecy Drops', color:'#e8b84b', startCh:11, endCh:12, fadeIn:0, fadeOut:0 },
+        { id:'cl-16', capId:'c-016', name:'Battle Climax',  color:'#d45b5b', startCh:19, endCh:21, fadeIn:0, fadeOut:0 },
+      ]
+    },
+    {
+      id:'t-5', name:'Effect/Mod',    type:'effect', muted:false, solo:false, recording:false, height:60,
+      autoLanes:[],
+      clips:[
+        { id:'cl-17', capId:'c-018', name:'Tension Riser',color:'#b1d0f0', startCh:4,  endCh:10, fadeIn:0, fadeOut:0 },
+        { id:'cl-18', capId:'c-019', name:'Echo Chamber', color:'#9b7fd4', startCh:14, endCh:17, fadeIn:0, fadeOut:0 },
+      ]
+    },
+  ];
+
+  // Seed propagation arc auto-lanes from ql-propagations (if loaded)
+  propArcs.forEach(p => {
+    const target = tracks.find(t => t.type === 'event' || t.type === 'environ');
+    if (target && !target.autoLanes.find(al => al.propId === p.id)) {
+      target.autoLanes.push({ propId: p.id, name: p.name, color: p.color, startCh: p.startChapter || 1, endCh: chCount });
+    }
+  });
+
+  patterns = [
+    {
+      id:'pat-1', name:'Morning Ritual', color:'#e8b84b', steps:16, interval:'chapter', meter:'4/4',
+      events:['Sunrise','Princess at Fountain','Bell Tower','Market Opens','Guard Change','','','','Midday Bell','','','','','','','Sunset Prayer'],
+      active: Array(16).fill(false).map((_,i) => [0,2,4,8,14].includes(i)),
+      velocity: Array(16).fill(1.0),
+    },
+    {
+      id:'pat-2', name:'Plague Cycle', color:'#d45b5b', steps:16, interval:'scene',
+      events:['Cough','','Spore Spread','','','Symptom Peak','','','','Quarantine','','','','','Recovery',''],
+      active: Array(16).fill(false).map((_,i) => [0,2,5,9,14].includes(i)),
+      velocity: Array(16).fill(0.8),
+    },
+    {
+      id:'pat-3', name:'Tide of the Venturan', color:'#b1d0f0', steps:8, interval:'act',
+      events:['Ebb','','','Low','','','','High Tide'],
+      active: Array(8).fill(false).map((_,i) => [0,3,7].includes(i)),
+      velocity: Array(8).fill(0.7),
+    },
+  ];
+  save();
+}
+
+function save() {
+  const data = { tracks, patterns, bpm, chCount };
+  localStorage.setItem('ql-sequencer', JSON.stringify(data));
+  try { window.parent.postMessage({ type:'hub:storage:write', key:'ql-sequencer', value:JSON.stringify(data) }, '*'); } catch(e) {}
+}
+
+/* ════════════════════════════════════════════════════════════════
+   RENDER
+════════════════════════════════════════════════════════════════ */
+function renderAll() {
+  renderLibrary();
+  renderRuler();
+  renderTracks();
+  renderStepPatterns();
+  renderInspector();
+  renderIconStrips();
+}
+
+/* ── Library ── */
+function renderLibrary() {
+  const types = ['all', ...Object.keys(TRACK_TYPES).filter(t => t !== 'step')];
+  const filterEl = document.getElementById('lib-filter');
+  filterEl.innerHTML = types.map(t => {
+    const info = TRACK_TYPES[t];
+    return `<button class="lf-btn ${libFilter===t?'active':''}" 
+      style="${libFilter===t?`--sc:${info?.color||'var(--venturan)'}`:''}"
+      onclick="setLibFilter('${t}')">${t==='all'?'ALL':(info?.icon||'')+' '+t.toUpperCase()}</button>`;
+  }).join('');
+
+  const filtered = libFilter === 'all' ? capsules : capsules.filter(c => c.type === libFilter);
+  const byType = {};
+  filtered.forEach(c => { (byType[c.type] = byType[c.type]||[]).push(c); });
+
+  const bodyEl = document.getElementById('lib-body');
+  bodyEl.innerHTML = Object.entries(byType).map(([type, caps]) => {
+    const info  = TRACK_TYPES[type];
+    const isCol = libCollapsed.has(type);
+    const bodyH = caps.length * 46; // approx height for transition
+    return `<div class="lib-category">
+      <div class="lib-cat-head" onclick="toggleLibCategory('${type}')">
+        ${info?.icon||'◈'} ${(info?.label||type).toUpperCase()}
+        <span class="lib-cat-arrow ${isCol?'collapsed':''}">▾</span>
+      </div>
+      <div class="lib-cat-body ${isCol?'collapsed':''}" style="max-height:${isCol?0:bodyH+20}px">
+        ${caps.map(c => `<div class="capsule-card" draggable="true"
+          style="--cc:${c.color}"
+          data-capid="${c.id}"
+          ondragstart="libDragStart(event,'${c.id}')"
+          ondblclick="quickAddClip('${c.id}')"
+          title="Drag to track · Double-click to add to selected track">
+          <div class="cc-name">${c.name}</div>
+          <div class="cc-type">${type.toUpperCase()}</div>
+          <div class="cc-sym">${c.sym}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleLibCategory(type) {
+  if (libCollapsed.has(type)) libCollapsed.delete(type);
+  else libCollapsed.add(type);
+  renderLibrary();
+}
+
+function setLibFilter(t) { libFilter = t; renderLibrary(); }
+
+/* ── Panel collapse with icon strips ── */
+let panelState = { lib: true, insp: true };
+
+function renderIconStrips() {
+  // Left strip: one icon per capsule type
+  const libStrip = document.getElementById('lib-icon-strip');
+  if (libStrip) {
+    const types = Object.entries(TRACK_TYPES).filter(([k]) => k !== 'step');
+    libStrip.innerHTML = types.map(([k, v]) => {
+      const count = capsules.filter(c => c.type === k).length;
+      return `<button class="pis-btn ${libFilter===k?'pis-active':''}"
+        style="--pis-c:${v.color}"
+        data-tip="${v.label} (${count})"
+        onclick="libIconClick('${k}')"
+        title="${v.label}">
+        <span class="pis-icon">${v.icon}</span>
+        <span class="pis-label">${k.substring(0,3).toUpperCase()}</span>
+      </button>`;
+    }).join('<div class="pis-sep"></div>');
+  }
+
+  // Right strip: inspector modes + actions
+  const inspStrip = document.getElementById('insp-icon-strip');
+  if (inspStrip) {
+    const modes = [
+      { id:'props',   icon:'◈', label:'Props',  tip:'Properties',      fn:`inspIconClick('props')` },
+      { id:'arcs',    icon:'⟁', label:'Arcs',   tip:'Propagation Arcs',fn:`inspIconClick('arcs')` },
+      { id:'sep1',    icon:null },
+      { id:'addtrk',  icon:'＋', label:'Track',  tip:'Add Track',       fn:`openModal('track')` },
+      { id:'addpat',  icon:'⊞', label:'Pattern',tip:'Add Pattern',     fn:`openModal('pattern')` },
+      { id:'sep2',    icon:null },
+      { id:'export',  icon:'↓', label:'Export', tip:'Export Project',  fn:`exportProject()` },
+    ];
+    inspStrip.innerHTML = modes.map(m => {
+      if (!m.icon) return '<div class="pis-sep"></div>';
+      return `<button class="pis-btn"
+        data-tip="${m.tip}"
+        onclick="${m.fn}"
+        title="${m.tip}">
+        <span class="pis-icon" style="font-size:.9rem">${m.icon}</span>
+        <span class="pis-label">${m.label}</span>
+      </button>`;
+    }).join('');
+  }
+
+  // Update toggle arrow direction
+  const libBtn  = document.getElementById('lib-toggle');
+  const inspBtn = document.getElementById('insp-toggle');
+  if (libBtn)  libBtn.textContent  = panelState.lib  ? '◀' : '▶';
+  if (inspBtn) inspBtn.textContent = panelState.insp ? '▶' : '◀';
+}
+
+function libIconClick(type) {
+  // If already open, just filter; if collapsed, expand then filter
+  if (!panelState.lib) togglePanel('lib');
+  libFilter = type;
+  // Scroll lib body to that category
+  renderLibrary();
+  setTimeout(() => {
+    const cats = document.querySelectorAll('.lib-category');
+    cats.forEach(el => { if (el.querySelector('.lib-cat-head')?.textContent.toLowerCase().includes(type)) el.scrollIntoView({behavior:'smooth',block:'start'}); });
+  }, 220);
+}
+
+function inspIconClick(mode) {
+  if (!panelState.insp) togglePanel('insp');
+  if (mode === 'arcs') {
+    document.getElementById('insp-title').textContent = 'Propagation Arcs';
+    const body = document.getElementById('insp-body');
+    if (!propArcs.length) {
+      body.innerHTML = '<div class="insp-empty">No propagation arcs found.<br><br>Create arcs in the<br>Scene Manager.</div>';
+      return;
+    }
+    body.innerHTML = `<div class="insp-sec">
+      <div class="insp-sec-lbl">Active Arcs</div>
+      ${propArcs.map(p => `<div class="prop-arc-row" style="--p-color:${p.color}">
+        <div class="par-dot" style="background:${p.color}"></div>
+        <div class="par-name" style="color:${p.color}">${p.name}</div>
+        <div class="par-val" style="color:${p.color}">${p.shape}</div>
+      </div>`).join('')}
+    </div>
+    <div class="insp-sec">
+      <div class="insp-sec-lbl">Add to Track</div>
+      ${tracks.map(t => `<div style="margin-bottom:6px">
+        <div style="font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px">${TRACK_TYPES[t.type]?.icon||'◈'} ${t.name}</div>
+        ${propArcs.map(p => {
+          const has = t.autoLanes?.find(al => al.propId === p.id);
+          return `<button onclick="${has?`removeAutoLane('${t.id}','${p.id}')`:` addAutoLane('${t.id}','${p.id}','${p.name}','${p.color}')`}"
+            style="font-family:var(--fm);font-size:.4rem;padding:2px 7px;border-radius:2px;margin:1px;border:1px solid ${has?'rgba(255,80,80,.3)':'rgba(177,208,240,.2)'};background:transparent;color:${has?'rgba(255,80,80,.55)':'rgba(177,208,240,.45)'};cursor:pointer;transition:all .1s"
+            onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+            <span style="color:${p.color}">${p.name.substring(0,8)}</span> ${has?'✕':'＋'}
+          </button>`;
+        }).join('')}
+      </div>`).join('')}
+    </div>`;
+  } else {
+    renderInspector();
+  }
+}
+
+function togglePanel(which) {
+  panelState[which] = !panelState[which];
+  const isOpen = panelState[which];
+  const panelEl = document.getElementById(which === 'lib' ? 'capsule-lib' : 'inspector');
+  panelEl.classList.toggle('collapsed', !isOpen);
+  document.body.classList.toggle(which === 'lib' ? 'lib-collapsed' : 'insp-collapsed', !isOpen);
+  renderIconStrips();
+}
+
+/* ── Ruler ── */
+function renderRuler() {
+  const inner = document.getElementById('ruler-inner');
+  const cw = chapterWidth();
+  const totalW = cw * chCount;
+  inner.style.width = totalW + 'px';
+  inner.innerHTML = Array.from({length: chCount}, (_, i) => {
+    const ch = i + 1;
+    const sceneAtCh = scenes.find(s => s.chapter === ch);
+    const actClass = sceneAtCh ? 'scene-start' : '';
+    return `<div class="ruler-chapter ${actClass}" style="left:${i*cw}px;width:${cw}px">
+      <div class="ruler-ch-num" style="${sceneAtCh?`color:${sceneAtCh.color}`:''}">Ch.${ch}</div>
+      ${sceneAtCh ? `<div class="ruler-ch-scene" style="color:${sceneAtCh.color}">${sceneAtCh.name}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+/* ── Tracks ── */
+function renderTracks() {
+  const headEl   = document.getElementById('tracks-head');
+  const canvasEl = document.getElementById('tracks-canvas');
+  const cw       = chapterWidth();
+  const totalW   = Math.max(cw * chCount, 800);
+
+  const hasSolo = tracks.some(t => t.solo);
+
+  headEl.innerHTML   = tracks.map(t => buildTrackHead(t, hasSolo)).join('');
+  canvasEl.innerHTML = tracks.map(t => buildTrackLane(t, cw, totalW, hasSolo)).join('');
+  canvasEl.style.width  = totalW + 'px';
+
+  // Sync scroll between ruler, head, and canvas
+  syncScroll();
+}
+
+function buildTrackHead(t, hasSolo) {
+  const def = TRACK_TYPES[t.type] || TRACK_TYPES.event;
+  const dim = hasSolo && !t.solo ? ' opacity:.35' : '';
+  return `<div class="track-head-row" id="th-${t.id}" 
+    style="--tc:${def.color};--th:${t.height}px;height:${t.height}px;${dim}"
+    onclick="selectTrack('${t.id}')">
+    <div class="th-top">
+      <span class="th-icon">${def.icon}</span>
+      <span class="th-name" id="thn-${t.id}" ondblclick="inlineRenameTrack(event,'${t.id}')">${t.name}</span>
+      <div class="th-btns" onclick="event.stopPropagation()">
+        <button class="th-btn M ${t.muted?'on':''}" onclick="toggleMute('${t.id}')" title="Mute">M</button>
+        <button class="th-btn S ${t.solo?'on':''}" onclick="toggleSolo('${t.id}')" title="Solo">S</button>
+        <button class="th-btn R ${t.recording?'on':''}" onclick="toggleRecord2('${t.id}')" title="Record">R</button>
+      </div>
+    </div>
+    <span class="th-type-badge">${def.label}</span>
+    <button class="th-del" onclick="deleteTrack(event,'${t.id}')" title="Delete track">✕</button>
+    <div class="th-resize" onmousedown="trackResizeStart(event,'${t.id}')"></div>
+    ${t.autoLanes?.length ? t.autoLanes.map(al => `
+      <div class="auto-lane-head-row" style="height:40px">
+        <div class="al-color" style="background:${al.color}"></div>
+        <div class="al-name">${al.name} <span style="opacity:.5">Ch.${al.startCh||1}–${al.endCh||chCount}</span></div>
+        <button onclick="removeAutoLaneCtx(event,'${t.id}','${al.propId}')" style="margin-left:auto;font-size:.55rem;color:rgba(255,80,80,.35);background:none;border:none;cursor:pointer;padding:1px 4px;transition:color .1s" onmouseover="this.style.color='#ff3344'" onmouseout="this.style.color='rgba(255,80,80,.35)'" title="Remove arc">✕</button>
+      </div>`).join('') : ''}
+  </div>`;
+}
+
+function buildTrackLane(t, cw, totalW, hasSolo) {
+  const dim = hasSolo && !t.solo ? 'opacity:.3' : (t.muted ? 'opacity:.25' : '');
+  const lane = `<div class="track-lane" id="tl-${t.id}" 
+    style="height:${t.height}px;width:${totalW}px;${dim}"
+    ondragover="laneDragOver(event,'${t.id}')"
+    ondrop="laneDrop(event,'${t.id}')"
+    ondragleave="laneDragLeave('${t.id}')"
+    onmousedown="laneMousedown(event,'${t.id}')">
+    ${t.clips.map(cl => buildClip(cl, cw, t.height)).join('')}
+  </div>`;
+
+  const autoLaneDivs = (t.autoLanes||[]).map(al => {
+    const svgPath = buildAutoSVG(al, cw, totalW);
+    const arcClip = buildArcClip(al, t.id, cw);
+    return `<div class="auto-lane" id="al-${t.id}-${al.propId}" style="width:${totalW}px;position:relative">
+      <svg viewBox="0 0 ${totalW} 40" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">
+        ${svgPath}
+      </svg>
+      ${arcClip}
+    </div>`;
+  }).join('');
+
+  return `<div class="track-row ${t.muted?'muted':''} ${t.solo?'soloed':''}" id="tr-${t.id}">${lane}${autoLaneDivs}</div>`;
+}
+
+function buildArcClip(al, trackId, cw) {
+  const left  = ((al.startCh||1) - 1) * cw;
+  const width = Math.max(24, ((al.endCh||chCount) - (al.startCh||1)) * cw);
+  const arcId = `${trackId}__${al.propId}`;
+  const isSel = selectedArcClipId === arcId;
+  return `<div class="arc-clip ${isSel?'selected-arc-clip':''}" id="arccl-${arcId}"
+    style="left:${left}px;width:${width}px;--ac-color:${al.color}"
+    onclick="selectArcClip(event,'${arcId}')"
+    onmousedown="arcClipMousedown(event,'${trackId}','${al.propId}')"
+    oncontextmenu="removeAutoLaneCtx(event,'${trackId}','${al.propId}')"
+    title="${al.name} · Ch.${al.startCh||1}–${al.endCh||chCount} · Drag to move · Drag edges to resize · Right-click to remove">
+    <div class="arc-clip-inner"></div>
+    <div class="arc-clip-lbl">
+      <div class="arc-clip-resize-l" onmousedown="arcClipEdgeMousedown(event,'${trackId}','${al.propId}','left')"></div>
+      <div class="arc-clip-name">${al.name}</div>
+      <div class="arc-clip-ch">Ch.${al.startCh||1}→${al.endCh||chCount}</div>
+      <button class="arc-clip-del" onclick="removeAutoLaneCtx(event,'${trackId}','${al.propId}')" title="Remove arc from track">✕</button>
+      <div class="arc-clip-resize-r" onmousedown="arcClipEdgeMousedown(event,'${trackId}','${al.propId}','right')"></div>
+    </div>
+  </div>`;
+}
+
+function buildClip(cl, cw, trackH) {
+  const left   = (cl.startCh - 1) * cw;
+  const width  = Math.max(20, (cl.endCh - cl.startCh) * cw);
+  const clipH  = trackH - 6;
+  const sel    = cl.id === selectedClipId ? 'selected-clip' : '';
+  const col    = cl.color;
+  const colBg  = col + '44';
+  const colHi  = col + '88';
+  const envSVG = buildFadeEnvelope(cl.fadeIn||0, cl.fadeOut||0, width, clipH);
+  return `<div class="clip ${sel}" id="clip-${cl.id}"
+    style="left:${left}px;width:${width}px;--cc:${col};--cc-bg:${colBg};--cc-bg-hi:${colHi}"
+    data-clipid="${cl.id}"
+    onclick="selectClip(event,'${cl.id}')"
+    onmousedown="clipMousedown(event,'${cl.id}')"
+    ondblclick="openModal('clip','${cl.id}')"
+    title="${cl.name} (Ch.${cl.startCh}–${cl.endCh}) · Double-click to edit · Right-click to delete"
+    oncontextmenu="deleteClip(event,'${cl.id}')">
+    <div class="clip-resize-l" onmousedown="clipEdgeMousedown(event,'${cl.id}','left')"></div>
+    <div class="clip-inner">
+      <div class="clip-name">${cl.name}</div>
+      <div class="clip-type">${cl.startCh}→${cl.endCh}</div>
+    </div>
+    ${envSVG}
+    <div class="clip-resize-r" onmousedown="clipEdgeMousedown(event,'${cl.id}','right')"></div>
+  </div>`;
+}
+
+/* Fade envelope SVG — diagonal ramp in, flat top, diagonal ramp out */
+function buildFadeEnvelope(fadeIn, fadeOut, width, height) {
+  if (fadeIn <= 0 && fadeOut <= 0) return '';
+  const W = Math.max(1, width), H = Math.max(1, height);
+  const fiX  = fadeIn  * W;  // x where fade-in ends
+  const foX  = (1 - fadeOut) * W; // x where fade-out starts
+  // Build polyline points: bottom-left ramp up, flat, ramp down bottom-right
+  const pts  = [];
+  if (fadeIn > 0)  { pts.push(`0,${H}`); pts.push(`${fiX.toFixed(1)},2`); }
+  else             { pts.push(`0,2`); }
+  if (fadeOut > 0) { pts.push(`${foX.toFixed(1)},2`); pts.push(`${W},${H}`); }
+  else             { pts.push(`${W},2`); }
+  return `<svg class="clip-envelope" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <polyline points="${pts.join(' ')}"/>
+  </svg>`;
+}
+
+function buildAutoSVG(al, cw, totalW) {
+  const prop = propArcs.find(p => p.id === al.propId);
+  if (!prop) return '';
+  const H = 40, pad = 2;
+  const chs = Array.from({length: chCount}, (_, i) => i + 1);
+  const vals = chs.map(ch => {
+    const t = Math.max(0, ch - prop.startChapter);
+    let v = prop.startValue;
+    switch(prop.shape) {
+      case 'linear':      v = prop.startValue + prop.rate * t; break;
+      case 'exponential': v = prop.startValue * Math.pow(prop.rate, t); break;
+      case 'decay':       v = prop.startValue * Math.pow(Math.max(0, 1 - prop.rate * 0.08), t); break;
+      case 'sigmoid':     v = prop.minValue + (prop.maxValue - prop.minValue) / (1 + Math.exp(-(t - 10) * prop.rate * 0.3)); break;
+      case 'cyclical':    v = prop.startValue + prop.rate * Math.sin(t * Math.PI * 0.4); break;
+    }
+    return Math.min(prop.maxValue, Math.max(prop.minValue || 0, v));
+  });
+  const maxV = Math.max(...vals, 1);
+  const pts = chs.map((ch, i) => {
+    const x = (i + 0.5) * cw;
+    const y = H - pad - ((vals[i] / maxV) * (H - pad * 2));
+    return [x, y];
+  });
+  const d = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const areaD = d + ` L${pts[pts.length-1][0].toFixed(1)},${H} L${pts[0][0].toFixed(1)},${H} Z`;
+  return `
+    <path d="${areaD}" fill="${al.color}" opacity=".12"/>
+    <path d="${d}" stroke="${al.color}" stroke-width="1.5" fill="none" opacity=".7"/>`;
+}
+
+/* ── Scroll sync between ruler, track head, and canvas ── */
+function syncScroll() {
+  const rulerCanvas = document.getElementById('ruler-canvas');
+  const tracksBody  = document.getElementById('tracks-body');
+  const tracksHead  = document.getElementById('tracks-head');
+  if (!rulerCanvas || !tracksBody) return;
+
+  tracksBody.onscroll = () => {
+    rulerCanvas.scrollLeft = tracksBody.scrollLeft;
+    tracksHead.scrollTop   = tracksBody.scrollTop;
+    document.getElementById('ruler-inner').style.transform = `translateX(-${tracksBody.scrollLeft}px)`;
+    updatePlayheadPos();
+  };
+}
+
+/* ── Step Sequencer ── */
+function renderStepPatterns() {
+  const listEl = document.getElementById('sp-patterns');
+  const gridEl = document.getElementById('sp-grid');
+  const countEl = document.getElementById('step-count-lbl');
+  countEl.textContent = patterns.length + ' pattern' + (patterns.length !== 1 ? 's' : '');
+
+  listEl.innerHTML = patterns.map(p => `
+    <div class="sp-pat-item ${p.id===selectedPatId?'active-pat':''}" 
+      style="--p-color:${p.color}"
+      onclick="selectPattern('${p.id}')">
+      <div class="sp-pat-dot" style="background:${p.color}"></div>
+      ${p.name}
+    </div>`).join('') + `<button class="sp-add-pat" onclick="openModal('pattern')">+ Pattern</button>`;
+
+  const pat = patterns.find(p => p.id === selectedPatId) || patterns[0];
+  if (!pat) { gridEl.innerHTML = '<div class="insp-empty" style="padding:20px">Select or create a pattern</div>'; return; }
+
+  gridEl.innerHTML = `<div class="step-grid">
+    <div class="step-row">
+      <div class="step-row-lbl">${pat.name}</div>
+      <div class="step-cells">
+        ${Array.from({length: pat.steps}, (_, i) => {
+          const isOn = pat.active[i];
+          const evName = pat.events[i] || '';
+          return `<div class="step-cell ${isOn?'on':''} ${stepPlayStep===i&&playing?'active-step':''}" 
+            id="step-${pat.id}-${i}"
+            style="--sc:${pat.color}"
+            onclick="toggleStep('${pat.id}',${i})"
+            title="${evName || 'Step '+(i+1)}">
+            <div class="step-vel" style="height:${(pat.velocity[i]||1)*100}%"></div>
+            ${evName ? `<span style="font-size:.35rem;position:absolute;bottom:1px;left:1px;right:1px;text-align:center;color:rgba(255,255,255,.7);overflow:hidden;white-space:nowrap;font-family:var(--fcode)">${evName.substring(0,4)}</span>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="step-controls">
+      <span class="sc-lbl">Steps</span>
+      <select class="sc-select" onchange="setPatternSteps('${pat.id}',this.value)">
+        ${[8,16,32].map(n=>`<option value="${n}" ${pat.steps===n?'selected':''}>${n}</option>`).join('')}
+      </select>
+      <span class="sc-lbl" style="margin-left:8px">Interval</span>
+      <select class="sc-select" onchange="setPatternInterval('${pat.id}',this.value)">
+        ${['chapter','scene','act','beat'].map(v=>`<option value="${v}" ${pat.interval===v?'selected':''}>${v}</option>`).join('')}
+      </select>
+      <span class="sc-lbl" style="margin-left:8px">Meter</span>
+      <select class="sc-select" onchange="updatePattern('${pat.id}','meter',this.value)">
+        ${['4/4','3/4','6/8','5/4','7/8','free'].map(m=>`<option value="${m}" ${(pat.meter||'4/4')===m?'selected':''}>${m}</option>`).join('')}
+      </select>
+      <span class="sc-lbl" style="margin-left:8px">Color</span>
+      <input type="color" value="${pat.color}" style="width:28px;height:22px;border:1px solid rgba(255,255,255,.1);border-radius:3px;cursor:pointer;background:none;padding:1px"
+        oninput="updatePattern('${pat.id}','color',this.value)">
+      <button class="tb-btn" style="padding:2px 8px;font-size:.42rem;margin-left:auto" 
+        onclick="clearPattern('${pat.id}')">Clear</button>
+      <button class="tb-btn" style="padding:2px 8px;font-size:.42rem;color:rgba(255,80,80,.5);border-color:rgba(255,80,80,.2)"
+        onclick="deletePattern('${pat.id}')">✕</button>
+    </div>
+  </div>`;
+}
+
+/* ── Inspector ── */
+function renderInspector() {
+  const titleEl = document.getElementById('insp-title');
+  const bodyEl  = document.getElementById('insp-body');
+
+  const clip = selectedClipId ? findClip(selectedClipId) : null;
+  const track = selectedTrackId ? tracks.find(t => t.id === selectedTrackId) : null;
+
+  if (clip) {
+    const t = tracks.find(t => t.clips.some(c => c.id === clip.id));
+    const def = TRACK_TYPES[t?.type] || {};
+    titleEl.textContent = 'Clip Inspector';
+    bodyEl.innerHTML = `
+      <div class="insp-sec">
+        <div class="insp-sec-lbl">Identity</div>
+        <div class="insp-row"><div class="insp-lbl">Name</div>
+          <input class="insp-input" value="${clip.name}" onchange="updateClip('${clip.id}','name',this.value)"></div>
+        <div class="insp-row"><div class="insp-lbl">Type</div>
+          <span class="insp-val">${def.label || t?.type || '—'}</span></div>
+        <div class="insp-row"><div class="insp-lbl">Color</div>
+          <input type="color" class="insp-color-swatch" value="${clip.color}" oninput="updateClip('${clip.id}','color',this.value)"></div>
+      </div>
+      <div class="insp-sec">
+        <div class="insp-sec-lbl">Position</div>
+        <div class="insp-row"><div class="insp-lbl">Start Ch.</div>
+          <input class="insp-input" type="number" min="1" value="${clip.startCh}" onchange="updateClip('${clip.id}','startCh',parseInt(this.value)||1)"></div>
+        <div class="insp-row"><div class="insp-lbl">End Ch.</div>
+          <input class="insp-input" type="number" min="1" value="${clip.endCh}" onchange="updateClip('${clip.id}','endCh',parseInt(this.value)||2)"></div>
+        <div class="insp-row"><div class="insp-lbl">Duration</div>
+          <span class="insp-val">${clip.endCh - clip.startCh} ch.</span></div>
+      </div>
+      <div class="insp-sec">
+        <div class="insp-sec-lbl">Envelope</div>
+        <div class="insp-row"><div class="insp-lbl">Fade In</div>
+          <input class="insp-input" type="range" min="0" max="1" step=".1" value="${clip.fadeIn}" 
+            oninput="updateClip('${clip.id}','fadeIn',parseFloat(this.value))" style="flex:1;accent-color:${clip.color}">
+          <span class="insp-val" style="min-width:24px">${clip.fadeIn||0}</span></div>
+        <div class="insp-row"><div class="insp-lbl">Fade Out</div>
+          <input class="insp-input" type="range" min="0" max="1" step=".1" value="${clip.fadeOut}"
+            oninput="updateClip('${clip.id}','fadeOut',parseFloat(this.value))" style="flex:1;accent-color:${clip.color}">
+          <span class="insp-val" style="min-width:24px">${clip.fadeOut||0}</span></div>
+        <div class="insp-row"><div class="insp-lbl">Prose Weight</div>
+          <input class="insp-input" type="range" min="0" max="1" step=".05" value="${clip.prose_weight??0.5}"
+            oninput="updateClip('${clip.id}','prose_weight',parseFloat(this.value))" style="flex:1;accent-color:${clip.color}">
+          <span class="insp-val" style="min-width:24px">${((clip.prose_weight??0.5)*100).toFixed(0)}%</span></div>
+      </div>
+      ${propArcs.length ? `<div class="insp-sec">
+        <div class="insp-sec-lbl">Propagation at Start</div>
+        ${propArcs.map(p => {
+          const v = computeArcVal(p, clip.startCh);
+          const pct = Math.min(100, (v / Math.max(p.maxValue, 1)) * 100);
+          return `<div class="prop-arc-row" style="--p-color:${p.color}">
+            <div class="par-dot" style="background:${p.color}"></div>
+            <div class="par-name" style="color:${p.color}">${p.name}</div>
+            <div class="par-val" style="color:${p.color}">${v.toFixed(1)}</div>
+            <div style="width:40px;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden">
+              <div style="width:${pct}%;height:3px;background:${p.color};border-radius:2px"></div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>` : ''}
+      <button onclick="deleteClipById('${clip.id}')" style="width:100%;font-family:var(--fm);font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;padding:5px;border-radius:3px;border:1px solid rgba(255,60,60,.2);background:transparent;color:rgba(255,80,80,.4);cursor:pointer;margin-top:4px;transition:all .12s" onmouseover="this.style.background='rgba(255,0,0,.08)';this.style.color='#ff3344'" onmouseout="this.style.background='transparent';this.style.color='rgba(255,80,80,.4)'">✕ Delete Clip</button>`;
+  } else if (track) {
+    const def = TRACK_TYPES[track.type] || {};
+    titleEl.textContent = 'Track Inspector';
+    bodyEl.innerHTML = `
+      <div class="insp-sec">
+        <div class="insp-sec-lbl">${def.icon||'◈'} ${def.label||track.type}</div>
+        <div class="insp-row"><div class="insp-lbl">Name</div>
+          <input class="insp-input" value="${track.name}" onchange="updateTrack('${track.id}','name',this.value)"></div>
+        <div class="insp-row"><div class="insp-lbl">Clips</div>
+          <span class="insp-val">${track.clips.length}</span></div>
+        <div class="insp-row"><div class="insp-lbl">Muted</div>
+          <span class="insp-val">${track.muted?'Yes':'No'}</span></div>
+      </div>
+      <div class="insp-sec">
+        <div class="insp-sec-lbl">Automation Lanes</div>
+        ${propArcs.length ? propArcs.map(p => {
+          const has = track.autoLanes?.find(al => al.propId === p.id);
+          return `<div class="prop-arc-row">
+            <div class="par-dot" style="background:${p.color}"></div>
+            <div class="par-name" style="color:${p.color}">${p.name}</div>
+            <button style="font-family:var(--fm);font-size:.4rem;padding:1px 6px;border-radius:2px;border:1px solid ${has?'rgba(255,80,80,.3)':'rgba(177,208,240,.3)'};background:transparent;color:${has?'rgba(255,80,80,.6)':'rgba(177,208,240,.5)'};cursor:pointer"
+              onclick="${has?`removeAutoLane('${track.id}','${p.id}')`:` addAutoLane('${track.id}','${p.id}','${p.name}','${p.color}')`}">${has?'Remove':'+ Add'}</button>
+          </div>`;
+        }).join('') : '<div class="insp-empty" style="padding:4px 0;font-size:.65rem">No propagation arcs defined<br>in Scene Manager</div>'}
+      </div>`;
+  } else {
+    titleEl.textContent = 'Inspector';
+    bodyEl.innerHTML = '<div class="insp-empty">Select a clip or track<br>to view its properties.<br><br>Drag capsules from the<br>library onto any track.<br><br>Double-click a clip<br>to edit it.</div>';
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   TRANSPORT
+════════════════════════════════════════════════════════════════ */
+let beat = 0;
+let _lastBroadcastCh = -1;
+function togglePlay() {
+  playing = !playing;
+  const btn = document.getElementById('btn-play');
+  if (playing) {
+    btn.textContent = '⏸'; btn.classList.add('playing');
+    playInterval = setInterval(tickPlay, 60000 / bpm / 4);
+    if (stepInterval) clearInterval(stepInterval);
+    stepInterval = setInterval(tickStep, 60000 / bpm * 4);
+    toast('▶ Playback started');
+    window.parent?.postMessage({ type:'ql:play:start', chapter: Math.round(playPos)||1, bpm }, '*');
+  } else {
+    btn.textContent = '▶'; btn.classList.remove('playing');
+    window.parent?.postMessage({ type:'ql:play:stop', chapter: Math.round(playPos)||0 }, '*');
+    clearInterval(playInterval); clearInterval(stepInterval);
+  }
+}
+
+function stopPlayback() {
+  playing = false; beat = 0; playPos = 0; stepPlayStep = 0;
+  const btn = document.getElementById('btn-play');
+  btn.textContent = '▶'; btn.classList.remove('playing');
+  clearInterval(playInterval); clearInterval(stepInterval);
+  document.getElementById('btn-play').classList.remove('playing');
+  updatePlayheadPos(); updateTransportDisplay();
+  renderStepPatterns();
+}
+
+function tickPlay() {
+  beat++;
+  const totalBeats = (60 / bpm) * chCount * 4; // 4 beats per chapter
+  playPos = (beat / 4) % chCount;
+  if (looping && playPos >= loopEnd) { beat = loopStart * 4; playPos = loopStart; }
+  updatePlayheadPos();
+  updateTransportDisplay();
+  // Broadcast chapter to Vault via hub
+  const ch = Math.round(playPos);
+  if (ch !== _lastBroadcastCh) {
+    _lastBroadcastCh = ch;
+    window.parent?.postMessage({ type:'ql:chapter:tick', chapter: ch, bpm }, '*');
+  }
+  // Highlight active clips
+  highlightActiveClips();
+}
+
+function tickStep() {
+  const pat = patterns.find(p => p.id === selectedPatId) || patterns[0];
+  if (!pat) return;
+  stepPlayStep = (stepPlayStep + 1) % pat.steps;
+  // Flash the active step cell
+  const cell = document.getElementById(`step-${pat.id}-${stepPlayStep}`);
+  if (cell && pat.active[stepPlayStep]) {
+    cell.style.animation = 'none';
+    void cell.offsetWidth;
+    cell.style.animation = 'step-hit .3s ease';
+  }
+  // Update step labels
+  document.querySelectorAll('[id^="step-"]').forEach(el => el.classList.remove('active-step'));
+  if (cell) cell.classList.add('active-step');
+}
+
+function highlightActiveClips() {
+  tracks.forEach(t => {
+    t.clips.forEach(cl => {
+      const el = document.getElementById('clip-' + cl.id);
+      if (!el) return;
+      const active = playPos >= cl.startCh - 1 && playPos < cl.endCh;
+      el.style.filter = active ? `brightness(1.4) drop-shadow(0 0 8px ${cl.color})` : '';
+    });
+  });
+}
+
+function updatePlayheadPos() {
+  const cw = chapterWidth();
+  const x  = playPos * cw;
+  const ph = document.getElementById('playhead');
+  if (ph) ph.style.left = x + 'px';
+}
+
+function updateTransportDisplay() {
+  const ch    = Math.floor(playPos) + 1;
+  const beat_ = Math.floor((playPos % 1) * 4) + 1;
+  const tick  = Math.floor(((playPos % 1) * 4 % 1) * 1000);
+  document.getElementById('tp-pos').textContent =
+    String(ch).padStart(2,'0') + ' · ' + beat_ + '.' + String(tick).padStart(3,'0');
+  document.getElementById('tp-chapter').textContent = ch;
+  const sceneAt = scenes.find(s => s.chapter === ch);
+  const nameEl = document.getElementById('tp-scene-name');
+  if (nameEl) nameEl.textContent = sceneAt ? `— ${sceneAt.name}` : '';
+}
+
+function toggleRecord() {
+  recording = !recording;
+  document.getElementById('btn-record').classList.toggle('active', recording);
+  toast(recording ? '⏺ Recording armed' : '⏺ Record off');
+}
+
+function toggleLoop() {
+  looping = !looping;
+  document.getElementById('btn-loop').classList.toggle('loop-on', looping);
+  toast(looping ? `⟲ Loop: Ch.${loopStart}–${loopEnd}` : '⟲ Loop off');
+}
+
+function setBPM(v) {
+  bpm = parseInt(v);
+  document.getElementById('bpm-val').textContent = bpm;
+  if (playing) { clearInterval(playInterval); playInterval = setInterval(tickPlay, 60000/bpm/4); }
+}
+
+function rulerSeek(e) {
+  const rulerCanvas = document.getElementById('ruler-canvas');
+  const rect = rulerCanvas.getBoundingClientRect();
+  const x = e.clientX - rect.left + rulerCanvas.scrollLeft;
+  playPos = x / chapterWidth();
+  beat = Math.floor(playPos * 4);
+  updatePlayheadPos(); updateTransportDisplay();
+}
+
+function setZoom(dir) {
+  const steps = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4];
+  const idx = steps.findIndex(z => Math.abs(z - zoom) < 0.01);
+  const newIdx = Math.max(0, Math.min(steps.length - 1, (idx === -1 ? 3 : idx) + dir));
+  zoom = steps[newIdx];
+  document.getElementById('zoom-val').textContent = Math.round(zoom * 100) + '%';
+  renderRuler(); renderTracks();
+}
+
+function chapterWidth() { return CH_W_BASE * zoom; }
+
+/* ════════════════════════════════════════════════════════════════
+   DRAG & DROP — Library → Lane
+════════════════════════════════════════════════════════════════ */
+function libDragStart(e, capId) {
+  dragSrc = { type: 'capsule', capId };
+  e.dataTransfer.effectAllowed = 'copy';
+  e.dataTransfer.setData('capId', capId);
+}
+
+function laneDragOver(e, trackId) {
+  e.preventDefault(); e.dataTransfer.dropEffect = 'copy';
+  document.getElementById('tl-' + trackId)?.classList.add('drop-target');
+}
+
+function laneDragLeave(trackId) {
+  document.getElementById('tl-' + trackId)?.classList.remove('drop-target');
+}
+
+function laneDrop(e, trackId) {
+  e.preventDefault();
+  document.getElementById('tl-' + trackId)?.classList.remove('drop-target');
+  const capId = e.dataTransfer.getData('capId') || dragSrc?.capId;
+  if (!capId) return;
+  const cap = capsules.find(c => c.id === capId);
+  if (!cap) return;
+  const t = tracks.find(t => t.id === trackId);
+  if (!t) return;
+
+  // Compute chapter from drop position
+  const lane = document.getElementById('tl-' + trackId);
+  const rect = lane.getBoundingClientRect();
+  const scrollLeft = document.getElementById('tracks-body').scrollLeft;
+  const x = e.clientX - rect.left + scrollLeft;
+  const startCh = Math.max(1, Math.round(x / chapterWidth()) + 1);
+  const endCh = startCh + 2;
+
+  const newClip = {
+    id: 'cl-' + Date.now(), capId, name: cap.name, color: cap.color,
+    startCh, endCh, fadeIn: 0, fadeOut: 0,
+  };
+  t.clips.push(newClip);
+  selectedClipId = newClip.id;
+  save(); renderTracks(); renderInspector();
+  toast(`✓ "${cap.name}" → Ch.${startCh}`);
+}
+
+function trackBodyDragOver(e) { e.preventDefault(); }
+function trackBodyDrop(e) {
+  // Drop to canvas without a specific lane — add to first track
+  if (dragSrc?.type === 'capsule' && tracks.length) {
+    const fakeE = { ...e, currentTarget: document.getElementById('tl-' + tracks[0].id), preventDefault: () => {} };
+    laneDrop(e, tracks[0].id);
+  }
+}
+
+function quickAddClip(capId) {
+  const t = tracks.find(tt => tt.id === selectedTrackId) || tracks[0];
+  if (!t) { toast('Add a track first'); return; }
+  const cap = capsules.find(c => c.id === capId);
+  if (!cap) return;
+  const lastCh = t.clips.length ? Math.max(...t.clips.map(c => c.endCh)) : 0;
+  const startCh = Math.max(1, lastCh + 1);
+  const newClip = { id: 'cl-' + Date.now(), capId, name: cap.name, color: cap.color, startCh, endCh: startCh + 2, fadeIn: 0, fadeOut: 0 };
+  t.clips.push(newClip);
+  selectedClipId = newClip.id;
+  save(); renderTracks(); renderInspector();
+  toast(`✓ "${cap.name}" appended after Ch.${startCh - 1}`);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   CLIP DRAG MOVE + EDGE RESIZE
+════════════════════════════════════════════════════════════════ */
+let clipDragState = null;
+
+function clipMousedown(e, clipId) {
+  if (e.button !== 0) return;
+  if (e.target.classList.contains('clip-resize-l') || e.target.classList.contains('clip-resize-r')) return;
+  e.stopPropagation();
+  const cl = findClip(clipId);
+  if (!cl) return;
+  const cw = chapterWidth();
+  const startX = e.clientX;
+  const origStart = cl.startCh, origEnd = cl.endCh;
+
+  clipDragState = { clipId, startX, origStart, origEnd, cw, mode: 'move' };
+  document.getElementById('clip-' + clipId)?.classList.add('dragging-clip');
+
+  const onMove = (ev) => {
+    if (!clipDragState) return;
+    const dx = ev.clientX - clipDragState.startX;
+    const dCh = Math.round(dx / clipDragState.cw);
+    const dur = origEnd - origStart;
+    cl.startCh = Math.max(1, origStart + dCh);
+    cl.endCh   = cl.startCh + dur;
+    // Live update just this clip's position
+    const el = document.getElementById('clip-' + clipId);
+    if (el) {
+      el.style.left  = ((cl.startCh - 1) * cw) + 'px';
+      el.querySelector('.clip-type').textContent = `${cl.startCh}→${cl.endCh}`;
+    }
+    if (selectedClipId === clipId) updateInspectorPos(cl);
+  };
+
+  const onUp = () => {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    document.getElementById('clip-' + clipId)?.classList.remove('dragging-clip');
+    clipDragState = null;
+    save(); renderInspector();
+    toast(`"${cl.name}" → Ch.${cl.startCh}`);
+  };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function clipEdgeMousedown(e, clipId, side) {
+  e.stopPropagation();
+  const cl = findClip(clipId);
+  if (!cl) return;
+  const cw = chapterWidth();
+  const startX = e.clientX;
+  const origStart = cl.startCh, origEnd = cl.endCh;
+
+  const onMove = (ev) => {
+    const dx = ev.clientX - startX;
+    const dCh = Math.round(dx / cw);
+    if (side === 'left') {
+      cl.startCh = Math.max(1, Math.min(origStart + dCh, cl.endCh - 1));
+    } else {
+      cl.endCh = Math.max(cl.startCh + 1, origEnd + dCh);
+    }
+    const el = document.getElementById('clip-' + clipId);
+    if (el) {
+      el.style.left  = ((cl.startCh - 1) * cw) + 'px';
+      el.style.width = Math.max(20, (cl.endCh - cl.startCh) * cw) + 'px';
+      el.querySelector('.clip-type').textContent = `${cl.startCh}→${cl.endCh}`;
+    }
+  };
+  const onUp = () => {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    save(); renderInspector();
+  };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function updateInspectorPos(cl) {
+  const startEl = document.querySelector('.insp-input[type=number]');
+  if (startEl) startEl.value = cl.startCh;
+}
+
+function laneMousedown(e, trackId) {
+  if (e.target === document.getElementById('tl-' + trackId)) selectTrack(trackId);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   TRACK RESIZE
+════════════════════════════════════════════════════════════════ */
+function trackResizeStart(e, trackId) {
+  e.stopPropagation();
+  const t = tracks.find(tt => tt.id === trackId);
+  if (!t) return;
+  const startY = e.clientY, origH = t.height;
+  const onMove = (ev) => {
+    t.height = Math.max(48, origH + (ev.clientY - startY));
+    const headRow = document.getElementById('th-' + trackId);
+    const laneRow = document.getElementById('tl-' + trackId);
+    if (headRow) headRow.style.height = t.height + 'px';
+    if (laneRow) laneRow.style.height = t.height + 'px';
+  };
+  const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); save(); };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SELECTION & MUTATION
+════════════════════════════════════════════════════════════════ */
+function selectClip(e, clipId) {
+  e.stopPropagation();
+  selectedClipId = clipId;
+  selectedTrackId = null;
+  selectedArcClipId = null;
+  renderTracks(); renderInspector();
+}
+
+function selectTrack(trackId) {
+  selectedTrackId = trackId;
+  selectedClipId = null;
+  selectedArcClipId = null;
+  renderInspector();
+}
+
+function updateClip(clipId, field, val) {
+  const cl = findClip(clipId);
+  if (!cl) return;
+  cl[field] = val;
+  save(); renderTracks(); renderInspector();
+}
+
+function updateTrack(trackId, field, val) {
+  const t = tracks.find(t => t.id === trackId);
+  if (!t) return;
+  t[field] = val;
+  save(); renderTracks(); renderInspector();
+}
+
+function deleteClip(e, clipId) {
+  e.preventDefault();
+  deleteClipById(clipId);
+}
+function deleteClipById(clipId) {
+  const cl = findClip(clipId);
+  const name = cl?.name || 'Clip';
+  tracks.forEach(t => { t.clips = t.clips.filter(c => c.id !== clipId); });
+  if (selectedClipId === clipId) selectedClipId = null;
+  save(); renderTracks(); renderInspector();
+  toast(`✕ "${name}" removed`);
+}
+
+function toggleMute(trackId) {
+  const t = tracks.find(t => t.id === trackId);
+  if (!t) return;
+  t.muted = !t.muted;
+  save(); renderTracks();
+}
+function toggleSolo(trackId) {
+  const t = tracks.find(t => t.id === trackId);
+  if (!t) return;
+  t.solo = !t.solo;
+  save(); renderTracks(); renderInspector();
+  const soloed = tracks.filter(t => t.solo).length;
+  toast(t.solo ? `S Solo: ${t.name}` : `S ${soloed ? 'Others still soloed' : 'Solo off'}`);
+}
+function toggleRecord2(trackId) {
+  const t = tracks.find(t => t.id === trackId);
+  if (!t) return;
+  t.recording = !t.recording;
+  save(); renderTracks();
+}
+function deleteTrack(e, trackId) {
+  e.stopPropagation();
+  const t = tracks.find(t => t.id === trackId);
+  if (!confirm(`Delete track "${t?.name}"?`)) return;
+  tracks = tracks.filter(t => t.id !== trackId);
+  if (selectedTrackId === trackId) selectedTrackId = null;
+  save(); renderAll();
+}
+function inlineRenameTrack(e, trackId) {
+  e.stopPropagation();
+  const span = document.getElementById('thn-' + trackId);
+  if (!span || span.querySelector('input')) return;
+  const t = tracks.find(t => t.id === trackId);
+  if (!t) return;
+  const orig = t.name;
+  const input = document.createElement('input');
+  input.className = 'th-name-input';
+  input.value = t.name;
+  span.textContent = '';
+  span.appendChild(input);
+  input.focus(); input.select();
+  const commit = () => {
+    const val = input.value.trim();
+    if (val) { t.name = val; save(); renderTracks(); renderInspector(); toast(`Track renamed: "${val}"`); }
+    else { span.textContent = orig; }
+  };
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') { ev.preventDefault(); input.blur(); }
+    if (ev.key === 'Escape') { input.value = orig; input.blur(); }
+    ev.stopPropagation();
+  });
+}
+
+function addAutoLane(trackId, propId, name, color) {
+  const t = tracks.find(t => t.id === trackId);
+  if (!t) return;
+  if (!t.autoLanes) t.autoLanes = [];
+  const prop = propArcs.find(p => p.id === propId);
+  const startCh = prop?.startChapter || 1;
+  const endCh   = chCount;
+  t.autoLanes.push({ propId, name, color, startCh, endCh });
+  save(); renderTracks(); renderInspector();
+  toast(`Auto lane added: ${name}`);
+}
+function removeAutoLane(trackId, propId) {
+  const t = tracks.find(t => t.id === trackId);
+  if (!t) return;
+  t.autoLanes = (t.autoLanes || []).filter(al => al.propId !== propId);
+  save(); renderTracks(); renderInspector();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   STEP SEQUENCER ACTIONS
+════════════════════════════════════════════════════════════════ */
+function selectPattern(id) {
+  selectedPatId = (selectedPatId === id) ? null : id;
+  renderStepPatterns();
+}
+function toggleStep(patId, idx) {
+  const p = patterns.find(p => p.id === patId);
+  if (!p) return;
+  p.active[idx] = !p.active[idx];
+  save(); renderStepPatterns();
+}
+function setPatternSteps(patId, n) {
+  const p = patterns.find(p => p.id === patId);
+  if (!p) return;
+  const num = parseInt(n);
+  p.steps = num;
+  while (p.active.length < num) { p.active.push(false); p.velocity.push(1); p.events.push(''); }
+  p.active = p.active.slice(0, num); p.velocity = p.velocity.slice(0, num); p.events = p.events.slice(0, num);
+  save(); renderStepPatterns();
+}
+function setPatternInterval(patId, val) { updatePattern(patId, 'interval', val); }
+function updatePattern(patId, field, val) {
+  const p = patterns.find(p => p.id === patId);
+  if (!p) return;
+  p[field] = val;
+  save(); renderStepPatterns();
+}
+function clearPattern(patId) {
+  const p = patterns.find(p => p.id === patId);
+  if (!p) return;
+  p.active = Array(p.steps).fill(false);
+  save(); renderStepPatterns();
+}
+function deletePattern(patId) {
+  if (!confirm('Delete pattern?')) return;
+  patterns = patterns.filter(p => p.id !== patId);
+  if (selectedPatId === patId) selectedPatId = patterns[0]?.id || null;
+  save(); renderStepPatterns();
+}
+
+function toggleStepPanel() {
+  const panel = document.getElementById('step-panel');
+  const toggle = document.getElementById('step-toggle');
+  const arrow  = document.getElementById('step-toggle-arrow');
+  const isOpen = panel.classList.toggle('open');
+  toggle.classList.toggle('open', isOpen);
+  arrow.textContent = isOpen ? '▾' : '▴';
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PERFORMANCE MODE
+════════════════════════════════════════════════════════════════ */
+function togglePerformance() {
+  performMode = !performMode;
+  const btn = document.getElementById('perf-btn');
+  btn.textContent = performMode ? '⚡ Exit Performance' : '⚡ Performance';
+  btn.classList.toggle('hot', !performMode);
+  if (performMode) { if (!playing) togglePlay(); }
+  toast(performMode ? '⚡ Performance mode — DJ the story live' : 'Performance mode off');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   MODAL
+════════════════════════════════════════════════════════════════ */
+let modalClipId = null;
+function openModal(mode, id) {
+  modalMode = mode; modalClipId = id || null;
+  const overlay = document.getElementById('modal-overlay');
+  const title   = document.getElementById('modal-title');
+  const body    = document.getElementById('modal-body');
+  const confirm = document.getElementById('modal-confirm');
+
+  if (mode === 'track') {
+    title.textContent = 'New Track'; confirm.textContent = 'Add Track';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-lbl">Track Name</div>
+        <input class="form-input" id="f-tname" placeholder="e.g. Kael's Arc, Weather Layer…"></div>
+      <div class="form-group"><div class="form-lbl">Type</div>
+        <div class="type-grid">${Object.entries(TRACK_TYPES).map(([k,v])=>`
+          <button class="type-btn ${k==='character'?'selected-type':''}" id="tt-${k}" style="--tc:${v.color}"
+            onclick="selectType('${k}')">${v.icon}<span class="type-btn-name">${v.label}</span></button>`).join('')}
+        </div></div>`;
+  } else if (mode === 'pattern') {
+    title.textContent = 'New Step Pattern'; confirm.textContent = 'Create Pattern';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-lbl">Pattern Name</div>
+        <input class="form-input" id="f-pname" placeholder="e.g. Morning Ritual, Plague Cycle…"></div>
+      <div class="form-group"><div class="form-lbl">Recurring Event (what happens on each active step?)</div>
+        <input class="form-input" id="f-pevent" placeholder="e.g. The princess makes a wish at the fountain"></div>
+      <div class="form-group"><div class="form-lbl">Steps</div>
+        <select class="form-select" id="f-psteps">
+          <option value="8">8 steps</option><option value="16" selected>16 steps</option><option value="32">32 steps</option>
+        </select></div>
+      <div class="form-group"><div class="form-lbl">Interval — one cycle per:</div>
+        <select class="form-select" id="f-pinterval">
+          <option value="chapter" selected>Chapter</option>
+          <option value="scene">Scene</option>
+          <option value="act">Act</option>
+          <option value="beat">Beat (fastest)</option>
+        </select></div>
+      <div class="form-group"><div class="form-lbl">Color</div>
+        <input type="color" id="f-pcolor" value="#e8b84b" style="width:48px;height:32px;border:1px solid rgba(255,255,255,.1);border-radius:4px;cursor:pointer;background:none;padding:2px"></div>`;
+  } else if (mode === 'clip') {
+    const cl = findClip(id);
+    if (!cl) return;
+    title.textContent = 'Edit Clip'; confirm.textContent = 'Save';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-lbl">Name</div>
+        <input class="form-input" id="f-cname" value="${cl.name}"></div>
+      <div class="form-group"><div class="form-lbl">Start Chapter</div>
+        <input class="form-input" id="f-cstart" type="number" min="1" value="${cl.startCh}"></div>
+      <div class="form-group"><div class="form-lbl">End Chapter</div>
+        <input class="form-input" id="f-cend" type="number" min="1" value="${cl.endCh}"></div>
+      <div class="form-group"><div class="form-lbl">Color</div>
+        <input type="color" id="f-ccolor" value="${cl.color}" style="width:48px;height:32px;border:1px solid rgba(255,255,255,.1);border-radius:4px;cursor:pointer;background:none;padding:2px"></div>`;
+  }
+  overlay.classList.remove('hidden');
+  setTimeout(() => document.querySelector('#modal-body input')?.focus(), 80);
+}
+
+let selectedModalType = 'character';
+function selectType(k) {
+  selectedModalType = k;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected-type'));
+  document.getElementById('tt-' + k)?.classList.add('selected-type');
+}
+
+function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); modalMode = null; }
+
+function confirmModal() {
+  if (modalMode === 'track') {
+    const name = document.getElementById('f-tname').value.trim();
+    if (!name) { toast('Name required'); return; }
+    const def = TRACK_TYPES[selectedModalType];
+    tracks.push({
+      id: 't-' + Date.now(), name, type: selectedModalType,
+      muted: false, solo: false, recording: false, height: 72,
+      clips: [], autoLanes: [],
+    });
+    selectedTrackId = tracks[tracks.length - 1].id;
+    save(); closeModal(); renderAll();
+    toast(`✓ Track "${name}" added`);
+
+  } else if (modalMode === 'pattern') {
+    const name  = document.getElementById('f-pname').value.trim();
+    const event = document.getElementById('f-pevent').value.trim();
+    const steps = parseInt(document.getElementById('f-psteps').value);
+    const interval = document.getElementById('f-pinterval').value;
+    const color = document.getElementById('f-pcolor').value;
+    if (!name) { toast('Name required'); return; }
+    const newPat = {
+      id: 'pat-' + Date.now(), name, color, steps, interval,
+      events: Array(steps).fill('').map((_, i) => i === 0 ? event : ''),
+      active: Array(steps).fill(false).map((_, i) => i === 0),
+      velocity: Array(steps).fill(1.0),
+    };
+    patterns.push(newPat);
+    selectedPatId = newPat.id;
+    const panel = document.getElementById('step-panel');
+    if (!panel.classList.contains('open')) toggleStepPanel();
+    save(); closeModal(); renderAll();
+    toast(`✓ Pattern "${name}" — ${steps} steps, per ${interval}`);
+
+  } else if (modalMode === 'clip') {
+    const cl = findClip(modalClipId);
+    if (!cl) return;
+    cl.name    = document.getElementById('f-cname').value.trim() || cl.name;
+    cl.startCh = parseInt(document.getElementById('f-cstart').value) || cl.startCh;
+    cl.endCh   = parseInt(document.getElementById('f-cend').value) || cl.endCh;
+    cl.color   = document.getElementById('f-ccolor').value;
+    save(); closeModal(); renderAll();
+    toast(`✓ Clip updated`);
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PROPAGATION ARC (from ql-propagations)
+════════════════════════════════════════════════════════════════ */
+function computeArcVal(p, chapter) {
+  const t = Math.max(0, chapter - (p.startChapter || 1));
+  let v = p.startValue || 1;
+  switch (p.shape) {
+    case 'linear':      v = p.startValue + p.rate * t; break;
+    case 'exponential': v = p.startValue * Math.pow(p.rate, t); break;
+    case 'decay':       v = p.startValue * Math.pow(Math.max(0, 1 - p.rate * 0.08), t); break;
+    case 'sigmoid':     v = (p.minValue||0) + (p.maxValue - (p.minValue||0)) / (1 + Math.exp(-(t - 10) * p.rate * 0.3)); break;
+    case 'cyclical':    v = p.startValue + p.rate * Math.sin(t * Math.PI * 0.4); break;
+  }
+  return Math.min(p.maxValue || 100, Math.max(p.minValue || 0, v));
+}
+
+/* ════════════════════════════════════════════════════════════════
+   EXPORT
+════════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════
+   ARC-CLIP INTERACTIONS (propagation arc range blocks)
+════════════════════════════════════════════════════════════════ */
+function selectArcClip(e, arcId) {
+  e.stopPropagation();
+  selectedArcClipId = arcId;
+  selectedClipId    = null;
+  selectedTrackId   = null;
+  renderTracks(); renderInspectorArc(arcId);
+}
+
+function renderInspectorArc(arcId) {
+  if (!arcId) return;
+  const [trackId, propId] = arcId.split('__');
+  const t = tracks.find(t => t.id === trackId);
+  const al = t?.autoLanes?.find(a => a.propId === propId);
+  const prop = propArcs.find(p => p.id === propId);
+  if (!al || !prop) return;
+  document.getElementById('insp-title').textContent = 'Arc Inspector';
+  document.getElementById('insp-body').innerHTML = `
+    <div class="insp-sec">
+      <div class="insp-sec-lbl" style="color:${al.color}">${prop.name}</div>
+      <div class="insp-row"><div class="insp-lbl">Shape</div><span class="insp-val">${prop.shape}</span></div>
+      <div class="insp-row"><div class="insp-lbl">Rate</div><span class="insp-val">${prop.rate}</span></div>
+    </div>
+    <div class="insp-sec">
+      <div class="insp-sec-lbl">Active Range</div>
+      <div class="insp-row"><div class="insp-lbl">Start Ch.</div>
+        <input class="insp-input" type="number" min="1" value="${al.startCh||1}" 
+          onchange="updateArcClipRange('${trackId}','${propId}','startCh',parseInt(this.value)||1)"></div>
+      <div class="insp-row"><div class="insp-lbl">End Ch.</div>
+        <input class="insp-input" type="number" min="1" value="${al.endCh||chCount}"
+          onchange="updateArcClipRange('${trackId}','${propId}','endCh',parseInt(this.value)||chCount)"></div>
+    </div>
+    <div class="insp-sec">
+      <div class="insp-sec-lbl">Propagation Values</div>
+      ${[al.startCh, Math.round((al.startCh+al.endCh)/2), al.endCh].map(ch => {
+        const v = computeArcVal(prop, ch);
+        const pct = Math.min(100, (v / Math.max(prop.maxValue, 1)) * 100);
+        return `<div class="prop-arc-row">
+          <div class="par-dot" style="background:${al.color}"></div>
+          <div class="par-name">Ch.${ch}</div>
+          <div class="par-val" style="color:${al.color}">${v.toFixed(1)}</div>
+          <div style="width:40px;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden">
+            <div style="width:${pct}%;height:3px;background:${al.color};border-radius:2px"></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <button onclick="removeAutoLane('${trackId}','${propId}')" 
+      style="width:100%;font-family:var(--fm);font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;padding:5px;border-radius:3px;border:1px solid rgba(255,60,60,.2);background:transparent;color:rgba(255,80,80,.45);cursor:pointer;margin-top:4px;transition:all .12s"
+      onmouseover="this.style.background='rgba(255,0,0,.08)';this.style.color='#ff3344'" 
+      onmouseout="this.style.background='transparent';this.style.color='rgba(255,80,80,.45)'">
+      ✕ Remove Arc from Track
+    </button>`;
+}
+
+function updateArcClipRange(trackId, propId, field, val) {
+  const t = tracks.find(t => t.id === trackId);
+  const al = t?.autoLanes?.find(a => a.propId === propId);
+  if (!al) return;
+  al[field] = val;
+  save(); renderTracks();
+}
+
+function arcClipMousedown(e, trackId, propId) {
+  if (e.button !== 0) return;
+  if (e.target.classList.contains('arc-clip-resize-l') || e.target.classList.contains('arc-clip-resize-r')) return;
+  if (e.target.classList.contains('arc-clip-del')) return;
+  e.stopPropagation();
+  const t = tracks.find(t => t.id === trackId);
+  const al = t?.autoLanes?.find(a => a.propId === propId);
+  if (!al) return;
+  const cw = chapterWidth();
+  const startX = e.clientX, origStart = al.startCh||1, origEnd = al.endCh||chCount;
+  const dur = origEnd - origStart;
+  const el = document.getElementById(`arccl-${trackId}__${propId}`);
+  if (el) el.style.cursor = 'grabbing';
+
+  const onMove = (ev) => {
+    const dCh = Math.round((ev.clientX - startX) / cw);
+    al.startCh = Math.max(1, origStart + dCh);
+    al.endCh   = al.startCh + dur;
+    if (el) {
+      el.style.left  = ((al.startCh - 1) * cw) + 'px';
+      el.querySelector('.arc-clip-ch').textContent = `Ch.${al.startCh}→${al.endCh}`;
+    }
+  };
+  const onUp = () => {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    if (el) el.style.cursor = 'grab';
+    save(); renderTracks();
+    toast(`"${al.name}" → Ch.${al.startCh}`);
+  };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function arcClipEdgeMousedown(e, trackId, propId, side) {
+  e.stopPropagation();
+  const t = tracks.find(t => t.id === trackId);
+  const al = t?.autoLanes?.find(a => a.propId === propId);
+  if (!al) return;
+  const cw = chapterWidth();
+  const startX = e.clientX, origStart = al.startCh||1, origEnd = al.endCh||chCount;
+  const el = document.getElementById(`arccl-${trackId}__${propId}`);
+
+  const onMove = (ev) => {
+    const dCh = Math.round((ev.clientX - startX) / cw);
+    if (side === 'left') {
+      al.startCh = Math.max(1, Math.min(origStart + dCh, (al.endCh||chCount) - 1));
+    } else {
+      al.endCh = Math.max((al.startCh||1) + 1, origEnd + dCh);
+    }
+    if (el) {
+      el.style.left  = ((al.startCh - 1) * cw) + 'px';
+      el.style.width = Math.max(24, (al.endCh - al.startCh) * cw) + 'px';
+      el.querySelector('.arc-clip-ch').textContent = `Ch.${al.startCh}→${al.endCh}`;
+    }
+  };
+  const onUp = () => {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    save(); renderTracks();
+  };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function removeAutoLaneCtx(e, trackId, propId) {
+  e.preventDefault(); e.stopPropagation();
+  const t = tracks.find(t => t.id === trackId);
+  const al = t?.autoLanes?.find(a => a.propId === propId);
+  if (!al) return;
+  if (!confirm(`Remove "${al.name}" arc from this track?`)) return;
+  t.autoLanes = t.autoLanes.filter(a => a.propId !== propId);
+  if (selectedArcClipId === `${trackId}__${propId}`) {
+    selectedArcClipId = null;
+    renderInspector();
+  }
+  save(); renderTracks();
+  toast(`Arc removed from track`);
+}
+
+function exportProject() {
+  const data = { tracks, patterns, zoom, bpm, propArcs };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'quantum-loom-sequencer.json'; a.click();
+  toast('↓ Project exported');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   UTILS
+════════════════════════════════════════════════════════════════ */
+function findClip(clipId) {
+  for (const t of tracks) { const c = t.clips.find(c => c.id === clipId); if (c) return c; }
+  return null;
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.remove('show');
+  void el.offsetWidth; el.classList.add('show');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); selectedClipId = null; renderTracks(); renderInspector(); }
+  if ((e.metaKey||e.ctrlKey) && e.key === ' ') { e.preventDefault(); togglePlay(); }
+  if (e.key === ' ' && !e.target.matches('input,textarea')) { e.preventDefault(); togglePlay(); }
+  if (e.key === 'Delete' && selectedClipId && !e.target.matches('input,textarea')) { deleteClipById(selectedClipId); }
+  if ((e.metaKey||e.ctrlKey) && e.key === 'z') { /* undo placeholder */ }
+  if ((e.metaKey||e.ctrlKey) && e.key === '+') { e.preventDefault(); setZoom(1); }
+  if ((e.metaKey||e.ctrlKey) && e.key === '-') { e.preventDefault(); setZoom(-1); }
+});
+window.addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║         QUANTUM LOOM ADDON RUNTIME  v1.0                        ║
+   ║  Extends the Vault addon manifest/capabilities pattern           ║
+   ║  Addons load via: LOOM.register(manifest, factory)              ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+
+window.LOOM = (function () {
+
+  /* ── Registry & state ─────────────────────────────────────────── */
+  const _registry  = {};   // id → { manifest, instance }
+  const _listeners = {};   // event → [{ addonId, cb }]
+  const _processors = [];  // capsule/clip processors in order
+  const _inspPanes = {};   // addonId → { tab, pane } DOM refs
+  const _dockPanels = {};  // addonId → DOM ref
+  const _nodeTypes  = {};  // id → node type definition (for Graph Compilation)
+
+  /* ── Event bus ────────────────────────────────────────────────── */
+  function emit(event, data) {
+    (_listeners[event] || []).forEach(({ cb }) => {
+      try { cb(data); } catch (e) { console.warn(`[LOOM] Addon error on ${event}:`, e); }
+    });
+    // Wildcard listeners
+    (_listeners['*'] || []).forEach(({ cb }) => {
+      try { cb(event, data); } catch (e) {}
+    });
+  }
+
+  function on(event, cb, addonId) {
+    if (!_listeners[event]) _listeners[event] = [];
+    // Prevent duplicates from same addon
+    _listeners[event] = _listeners[event].filter(l => l.addonId !== addonId || l.event !== event);
+    _listeners[event].push({ addonId: addonId || '_anon', cb });
+  }
+
+  function off(addonId) {
+    Object.keys(_listeners).forEach(ev => {
+      _listeners[ev] = _listeners[ev].filter(l => l.addonId !== addonId);
+    });
+  }
+
+  /* ── Mount: Step Dock ─────────────────────────────────────────── */
+  function mountStepDock(addonId, manifest, html) {
+    const dock = document.getElementById('addon-step-dock');
+    if (!dock) return;
+    const panelId = `addon-dock-${addonId}`;
+    if (_dockPanels[addonId]) _dockPanels[addonId].remove();
+
+    const panel = document.createElement('div');
+    panel.className = 'addon-dock-panel';
+    panel.id = panelId;
+    panel.dataset.addonId = addonId;
+    panel.innerHTML = `
+      <div class="addon-dock-head" onclick="this.parentElement.querySelector('.addon-dock-body').classList.toggle('hidden');this.querySelector('.addon-dock-arrow').classList.toggle('open')">
+        <span class="addon-dock-icon">${manifest.icon || '⊞'}</span>
+        <span class="addon-dock-name">${manifest.name}</span>
+        <span class="addon-dock-badge">${manifest.version}</span>
+        <span class="addon-dock-arrow open">▾</span>
+      </div>
+      <div class="addon-dock-body">${typeof html === 'function' ? html() : html}</div>`;
+    dock.appendChild(panel);
+    dock.classList.add('has-addons');
+    _dockPanels[addonId] = panel;
+  }
+
+  /* ── Mount: Inspector Tab ─────────────────────────────────────── */
+  function mountInspectorTab(addonId, manifest, renderFn) {
+    const tabBar = document.getElementById('addon-insp-tabs');
+    const body   = document.getElementById('insp-body');
+    if (!tabBar || !body) return;
+
+    // Remove existing
+    if (_inspPanes[addonId]) {
+      _inspPanes[addonId].tab.remove();
+      _inspPanes[addonId].pane.remove();
+    }
+
+    const tab = document.createElement('button');
+    tab.className = 'addon-insp-tab';
+    tab.textContent = manifest.inspectorLabel || manifest.name.substring(0, 6);
+    tab.dataset.addonId = addonId;
+    tab.onclick = () => activateInspTab(addonId);
+    tabBar.appendChild(tab);
+    tabBar.classList.add('has-tabs');
+
+    const pane = document.createElement('div');
+    pane.className = 'addon-insp-pane';
+    pane.dataset.addonId = addonId;
+    pane.id = `addon-insp-pane-${addonId}`;
+    body.appendChild(pane);
+
+    _inspPanes[addonId] = { tab, pane, renderFn };
+  }
+
+  function activateInspTab(addonId) {
+    Object.entries(_inspPanes).forEach(([id, refs]) => {
+      refs.tab.classList.toggle('active', id === addonId);
+      refs.pane.classList.toggle('active', id === addonId);
+      if (id === addonId && refs.renderFn) {
+        refs.pane.innerHTML = typeof refs.renderFn === 'function' ? refs.renderFn() : refs.renderFn;
+      }
+    });
+  }
+
+  /* ── Mount: Toolbar Button ────────────────────────────────────── */
+  function mountToolbarButton(addonId, manifest, onClick) {
+    const slots = document.getElementById('addon-toolbar-slots');
+    if (!slots) return;
+    const existing = document.getElementById(`addon-tb-${addonId}`);
+    if (existing) existing.remove();
+    const btn = document.createElement('button');
+    btn.className = 'tb-btn';
+    btn.id = `addon-tb-${addonId}`;
+    btn.innerHTML = `${manifest.icon || '⊞'} ${manifest.toolbarLabel || manifest.name.substring(0, 5)}`;
+    btn.onclick = onClick;
+    slots.appendChild(btn);
+  }
+
+  /* ── Capsule / Clip Processors ────────────────────────────────── */
+  // Processors run during buildClip — can add badges, modify display properties
+  // Signature: processor(clip, context) → { ...overrides } | null
+  function addCapsuleProcessor(addonId, fn) {
+    _processors.push({ addonId, fn });
+  }
+
+  // Called by buildClip to get merged overrides
+  function runProcessors(clip, context) {
+    let result = {};
+    for (const { fn } of _processors) {
+      try {
+        const out = fn({ ...clip }, context);
+        if (out && typeof out === 'object') Object.assign(result, out);
+      } catch (e) { console.warn('[LOOM] Processor error:', e); }
+    }
+    return result;
+  }
+
+  /* ── Node Type Registry (for Graph Compilation) ───────────────── */
+  function registerNodeType(def) {
+    if (!def.id) { console.warn('[LOOM] registerNodeType: missing id'); return; }
+    _nodeTypes[def.id] = {
+      id: def.id,
+      label: def.label || def.id,
+      category: def.category || 'addon',
+      icon: def.icon || '⬡',
+      color: def.color || '#b1d0f0',
+      inputs: def.inputs || [],
+      outputs: def.outputs || [],
+      defaultData: def.defaultData || {},
+      addonId: def.addonId,
+      compute: def.compute || null,   // fn(inputs, data) → outputs
+    };
+    emit('nodeType:registered', _nodeTypes[def.id]);
+  }
+
+  /* ── Track Type Registry ──────────────────────────────────────── */
+  function registerTrackType(def) {
+    if (!def.id) return;
+    TRACK_TYPES[def.id] = {
+      label: def.label || def.id,
+      icon:  def.icon  || '◈',
+      color: def.color || '#b1d0f0',
+      addonId: def.addonId,
+    };
+    if (typeof renderIconStrips === 'function') renderIconStrips();
+    if (typeof renderLibrary    === 'function') renderLibrary();
+    emit('trackType:registered', def);
+  }
+
+  /* ── Controlled API surface ───────────────────────────────────── */
+  const api = {
+    // ── Read ──
+    getTracks:       ()  => JSON.parse(JSON.stringify(tracks)),
+    getTrack:        (id) => JSON.parse(JSON.stringify(tracks.find(t => t.id === id) || null)),
+    getCapsules:     ()  => JSON.parse(JSON.stringify(capsules)),
+    getScenes:       ()  => JSON.parse(JSON.stringify(scenes)),
+    getPropArcs:     ()  => JSON.parse(JSON.stringify(propArcs)),
+    getPatterns:     ()  => JSON.parse(JSON.stringify(patterns)),
+    getSelectedClip: ()  => {
+      const cl = tracks.flatMap(t => t.clips).find(c => c.id === selectedClipId);
+      return cl ? JSON.parse(JSON.stringify(cl)) : null;
+    },
+    getSelectedTrack: () => {
+      const t = tracks.find(t => t.id === selectedTrackId);
+      return t ? JSON.parse(JSON.stringify(t)) : null;
+    },
+    getPlayState:    ()  => ({ playing, bpm, playPos, beat, looping }),
+    getChapterCount: ()  => chCount,
+    getZoom:         ()  => zoom,
+
+    // ── Write (controlled) ──
+    addClip(trackId, clipDef) {
+      const t = tracks.find(t => t.id === trackId);
+      if (!t) return null;
+      const cl = {
+        id: 'cl-addon-' + Date.now(),
+        name: clipDef.name || 'Addon Clip',
+        startCh: clipDef.startCh || 1,
+        endCh: clipDef.endCh || 3,
+        color: clipDef.color || '#b1d0f0',
+        fadeIn: 0, fadeOut: 0,
+        addonId: clipDef.addonId,
+        ...clipDef,
+      };
+      t.clips.push(cl);
+      if (typeof save === 'function') save();
+      if (typeof renderTracks === 'function') renderTracks();
+      emit('clip:add', { clip: cl, trackId });
+      return cl.id;
+    },
+
+    updateClip(clipId, props) {
+      const cl = tracks.flatMap(t => t.clips).find(c => c.id === clipId);
+      if (!cl) return false;
+      Object.assign(cl, props);
+      if (typeof save === 'function') save();
+      if (typeof renderTracks === 'function') renderTracks();
+      if (typeof renderInspector === 'function') renderInspector();
+      emit('clip:update', { clipId, props });
+      return true;
+    },
+
+    addTrack(def) {
+      const newTrack = {
+        id: 't-addon-' + Date.now(),
+        name: def.name || 'Addon Track',
+        type: def.type || 'effect',
+        muted: false, solo: false, recording: false,
+        height: def.height || 72,
+        clips: [], autoLanes: [],
+        addonId: def.addonId,
+      };
+      tracks.push(newTrack);
+      if (typeof save === 'function') save();
+      if (typeof renderAll === 'function') renderAll();
+      emit('track:add', newTrack);
+      return newTrack.id;
+    },
+
+    addCapsule(def) {
+      const cap = {
+        id: 'cap-addon-' + Date.now(),
+        name: def.name || 'Addon Capsule',
+        type: def.type || 'effect',
+        color: def.color || '#b1d0f0',
+        sym: def.sym || '◈',
+        addonId: def.addonId,
+        ...def,
+      };
+      capsules.push(cap);
+      if (typeof renderLibrary === 'function') renderLibrary();
+      emit('capsule:add', cap);
+      return cap.id;
+    },
+
+    setBPM(val) {
+      if (typeof setBPM === 'function') setBPM(val);
+      else { bpm = Math.max(40, Math.min(240, val)); }
+    },
+
+    // ── UI ──
+    toast,
+    mountStepDock,
+    mountInspectorTab,
+    activateInspTab,
+    mountToolbarButton,
+    refreshInspTab(addonId) {
+      const refs = _inspPanes[addonId];
+      if (refs && refs.pane.classList.contains('active') && refs.renderFn) {
+        refs.pane.innerHTML = typeof refs.renderFn === 'function' ? refs.renderFn() : refs.renderFn;
+      }
+    },
+    refreshDockPanel(addonId) {
+      const panel = _dockPanels[addonId];
+      if (!panel) return;
+      const body = panel.querySelector('.addon-dock-body');
+      if (body) body.innerHTML = typeof _registry[addonId]?.instance?.render === 'function'
+        ? _registry[addonId].instance.render()
+        : body.innerHTML;
+    },
+
+    // ── Registry ──
+    registerNodeType,
+    registerTrackType,
+    addCapsuleProcessor,
+
+    // ── Events ──
+    on(event, cb) {
+      // Convenience: auto-detect addonId from call context not possible, use anon
+      on(event, cb, '_ext');
+    },
+    off,
+    emit,
+    getNodeTypes: () => ({ ..._nodeTypes }),
+  };
+
+  /* ── Register an addon ────────────────────────────────────────── */
+  function register(manifest, factory) {
+    if (!manifest?.id) { console.warn('[LOOM] register: manifest.id required'); return; }
+    if (_registry[manifest.id]) {
+      console.warn(`[LOOM] Addon "${manifest.id}" already registered — skipping`);
+      return;
+    }
+
+    // Validate against Vault contract
+    const required = ['id', 'name', 'version'];
+    const missing = required.filter(k => !manifest[k]);
+    if (missing.length) {
+      console.warn(`[LOOM] Addon "${manifest.id}" missing required fields: ${missing.join(', ')}`);
+      return;
+    }
+
+    console.log(`[LOOM] Registering addon: ${manifest.name} v${manifest.version}`);
+
+    let instance = null;
+    try {
+      instance = factory ? factory(api, manifest) : {};
+    } catch (e) {
+      console.error(`[LOOM] Addon "${manifest.id}" factory error:`, e);
+      return;
+    }
+
+    _registry[manifest.id] = { manifest, instance };
+
+    // Auto-mount declared slots
+    if (manifest.mounts) {
+      if (manifest.mounts.includes('step-dock') && instance?.renderDock) {
+        mountStepDock(manifest.id, manifest, instance.renderDock);
+      }
+      if (manifest.mounts.includes('inspector') && instance?.renderInspector) {
+        mountInspectorTab(manifest.id, manifest, instance.renderInspector);
+      }
+      if (manifest.mounts.includes('toolbar') && instance?.onToolbarClick) {
+        mountToolbarButton(manifest.id, manifest, instance.onToolbarClick);
+      }
+    }
+
+    // Auto-register custom track types
+    if (manifest.trackTypes) {
+      manifest.trackTypes.forEach(tt => registerTrackType({ ...tt, addonId: manifest.id }));
+    }
+
+    // Auto-register custom node types
+    if (manifest.nodeTypes) {
+      manifest.nodeTypes.forEach(nt => registerNodeType({ ...nt, addonId: manifest.id }));
+    }
+
+    // Auto-register capsule processor
+    if (instance?.processClip) {
+      addCapsuleProcessor(manifest.id, instance.processClip);
+    }
+
+    // Auto-register event listeners declared in manifest
+    if (manifest.listens) {
+      manifest.listens.forEach(evt => {
+        if (instance?.onEvent) {
+          on(evt, (data) => instance.onEvent(evt, data), manifest.id);
+        }
+      });
+    }
+
+    // Call addon init
+    if (instance?.init) {
+      try { instance.init(); } catch(e) { console.warn('[LOOM] Addon init error:', e); }
+    }
+
+    emit('addon:registered', { id: manifest.id, manifest });
+    if (typeof toast === 'function') toast(`⊞ Addon loaded: ${manifest.name}`);
+  }
+
+  /* ── Unregister ───────────────────────────────────────────────── */
+  function unregister(addonId) {
+    const entry = _registry[addonId];
+    if (!entry) return;
+    const { manifest, instance } = entry;
+    // Cleanup
+    if (instance?.destroy) { try { instance.destroy(); } catch(e) {} }
+    if (_dockPanels[addonId]) { _dockPanels[addonId].remove(); delete _dockPanels[addonId]; }
+    if (_inspPanes[addonId])  {
+      _inspPanes[addonId].tab.remove();
+      _inspPanes[addonId].pane.remove();
+      delete _inspPanes[addonId];
+    }
+    const tbBtn = document.getElementById(`addon-tb-${addonId}`);
+    if (tbBtn) tbBtn.remove();
+    off(addonId);
+    // Remove processors
+    const pidx = _processors.findIndex(p => p.addonId === addonId);
+    if (pidx > -1) _processors.splice(pidx, 1);
+    delete _registry[addonId];
+    const dock = document.getElementById('addon-step-dock');
+    if (dock && !dock.children.length) dock.classList.remove('has-addons');
+    const tabs = document.getElementById('addon-insp-tabs');
+    if (tabs && !tabs.children.length) tabs.classList.remove('has-tabs');
+    emit('addon:unregistered', { id: addonId });
+  }
+
+  /* ── Public ───────────────────────────────────────────────────── */
+  return {
+    register,
+    unregister,
+    api,
+    emit,          // so Loom internals can emit without going through api
+    runProcessors, // called by buildClip
+    getRegistry: () => ({ ..._registry }),
+    getNodeTypes: () => ({ ..._nodeTypes }),
+  };
+
+})(); // end LOOM IIFE
+
+/* ── Wire LOOM emissions into existing Loom functions ──────────── */
+// These patches run after LOOM is defined but before DOMContentLoaded
+
+const _origSelectClip    = selectClip;
+selectClip = function(e, clipId) {
+  _origSelectClip(e, clipId);
+  const cl = tracks.flatMap(t => t.clips).find(c => c.id === clipId);
+  if (cl) LOOM.emit('clip:select', cl);
+};
+
+const _origSelectTrack   = selectTrack;
+selectTrack = function(trackId) {
+  _origSelectTrack(trackId);
+  const t = tracks.find(t => t.id === trackId);
+  if (t) LOOM.emit('track:select', t);
+};
+
+const _origDeleteClipById = deleteClipById;
+deleteClipById = function(clipId) {
+  LOOM.emit('clip:delete', { clipId });
+  _origDeleteClipById(clipId);
+};
+
+const _origTogglePlay = togglePlay;
+togglePlay = function() {
+  _origTogglePlay();
+  LOOM.emit(playing ? 'transport:play' : 'transport:pause', { bpm, playPos });
+};
+
+const _origStopPlayback = stopPlayback;
+stopPlayback = function() {
+  _origStopPlayback();
+  LOOM.emit('transport:stop', { bpm });
+};
+
+const _origTickPlay = tickPlay;
+tickPlay = function() {
+  _origTickPlay();
+  LOOM.emit('transport:beat', { beat, playPos, bpm });
+};
+
+const _origSave = save;
+save = function() {
+  _origSave();
+  LOOM.emit('project:save', { tracks: tracks.length, patterns: patterns.length });
+};
+
+// Patch buildClip to run addon processors and inject badges
+const _origBuildClip = buildClip;
+buildClip = function(cl, cw, trackH) {
+  let html = _origBuildClip(cl, cw, trackH);
+  // Run processors — they can return { badge, glowColor, dimmed } etc.
+  const overrides = LOOM.runProcessors(cl, { cw, trackH, scenes, propArcs, playPos });
+  if (overrides.badge) {
+    // Inject badge into clip-type span
+    html = html.replace(
+      `>${cl.startCh}→${cl.endCh}</div>`,
+      `>${cl.startCh}→${cl.endCh} <span class="addon-cap-badge">${overrides.badge}</span></div>`
+    );
+  }
+  if (overrides.glowColor) {
+    html = html.replace('class="clip ', `class="clip addon-glow `);
+    html = html.replace(/style="(left:\d+px;width:\d+px;)/, `style="$1box-shadow:0 0 12px ${overrides.glowColor};`);
+  }
+  return html;
+};
+
+/* ── Emit scene:change when scenes update from storage ─────────── */
+const _origLoad = loadFromStorage;
+loadFromStorage = function() {
+  _origLoad();
+  LOOM.emit('scenes:loaded', { scenes, propArcs, chCount });
+};
+
+
+/* ════════════════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════════════════ */
+/* ── Hub storage relay listener ─────────────────────── */
+window.addEventListener('message', e => {
+  const d = e.data; if(!d||typeof d!=='object') return;
+  if(d.type==='hub:storage:updated') {
+    if(d.key==='ql-scenes'||d.key==='ql-propagations'||d.key==='ql-library') {
+      loadFromStorage(); renderAll();
+    }
+  }
+  if(d.type==='hub:init') { loadFromStorage(); renderAll(); }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadFromStorage();
+  seedTracks();
+  selectedPatId = patterns[0]?.id || null;
+  renderAll();
+  setTimeout(() => {
+    toast('🎛 Track Sequencer ready — drag capsules onto tracks, ▶ to play, ⊞ Step Sequencer for recurring events');
+    // Auto-open step panel to show it off
+    setTimeout(() => toggleStepPanel(), 1200);
+  }, 500);
+});
+
+/* ── Cross-layer navigation via hub postMessage ── */
+function navTo(layerId) {
+  window.parent.postMessage({ type: 'ql:switchLayer', layer: layerId }, '*');
+}
+
+
+/* ── Quantum Loom Theme System ──────────────────────────────── */
+(function initQLTheme() {
+  const MAP = {
+    'c-bg':'--bg',
+    'c-surf':'--panel',
+    'c-surf2':'--panel-hi',
+    'c-surf3':'--panel-mid',
+    'c-edge':'--edge',
+    'c-accent1':'--venturan',
+    'c-accent2':'--amber',
+    'c-accent3':'--emerald',
+    'c-accent4':'--fusion',
+    'c-danger':'--blood',
+    'c-warm':'--solari'
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([canonical, varName]) => {
+      if (tokens[canonical] !== undefined)
+        root.style.setProperty(varName, tokens[canonical]);
+    });
+  }
+  // Apply saved theme on load
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  // Listen for live theme broadcasts from hub
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens)
+      applyTokens(e.data.tokens);
+  });
+})();
+
+</script>
+</body>
+</html>

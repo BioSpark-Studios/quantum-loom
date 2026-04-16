@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Loom — Output Renderer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #0b0c0f;
+  --surface:  rgba(13,14,18,.98);
+  --surface2: rgba(18,19,24,.97);
+  --edge:     rgba(255,255,255,.06);
+  --edge-hi:  rgba(255,255,255,.12);
+  --ink:      #f0ece4;
+  --ink-dim:  rgba(240,236,228,.45);
+  --ink-faint:rgba(240,236,228,.2);
+  --amber:    #c8973a;
+  --amber-lo: rgba(200,151,58,.18);
+  --teal:     #4dc8a0;
+  --venturan: #b1d0f0;
+  --blood:    #c85a5a;
+  --fm: 'Playfair Display', Georgia, serif;
+  --fd: 'EB Garamond', Georgia, serif;
+  --fc: 'JetBrains Mono', monospace;
+  --sidebar-w: 260px;
+  --rail-w:    200px;
+  --col-w:     640px;
+}
+
+html,body{ height:100%;background:var(--bg);color:var(--ink);font-family:var(--fd);overflow:hidden; }
+
+/* ── Shell ─────────────────────────────────────────────── */
+#shell{ display:flex;flex-direction:column;height:100vh; }
+
+/* ── Top bar ───────────────────────────────────────────── */
+#top-bar{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  z-index:20;
+}
+.tb-logo{
+  display:flex;align-items:center;gap:8px;
+  padding:0 16px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{ font-size:1rem;color:var(--amber);opacity:.8 }
+.tb-name{
+  font-family:var(--fc);font-size:.38rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--ink-dim);
+}
+.tb-title{
+  font-family:var(--fm);font-size:.75rem;font-style:italic;
+  color:var(--ink);padding:0 16px;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+#tb-format-badge{
+  font-family:var(--fc);font-size:.36rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:3px 10px;border-radius:10px;margin-right:8px;
+  background:var(--amber-lo);border:1px solid rgba(200,151,58,.35);color:var(--amber);
+}
+.tb-actions{ display:flex;gap:4px;padding:0 12px;border-left:1px solid var(--edge); }
+.tb-btn{
+  font-family:var(--fc);font-size:.36rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:4px 10px;border-radius:4px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:var(--ink-dim);
+}
+.tb-btn:hover{ background:rgba(255,255,255,.05);color:var(--ink);border-color:var(--edge-hi); }
+.tb-btn.hot{
+  border-color:rgba(77,200,160,.35);background:rgba(77,200,160,.07);color:var(--teal);
+}
+.tb-btn.hot:hover{ background:rgba(77,200,160,.14);box-shadow:0 0 10px rgba(77,200,160,.12); }
+.tb-btn.copy-flash{ animation:flash-copy .5s ease; }
+#tb-stats{
+  font-family:var(--fc);font-size:.36rem;letter-spacing:.06em;
+  color:var(--ink-faint);padding:0 14px;border-right:1px solid var(--edge);
+  white-space:nowrap;
+}
+
+/* ── Body: sidebar + scroll + rail ────────────────────── */
+#body{ flex:1;display:flex;overflow:hidden; }
+
+/* ── Left sidebar ──────────────────────────────────────── */
+#sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  display:flex;flex-direction:column;
+  background:var(--surface);border-right:1px solid var(--edge);
+  overflow-y:auto;overflow-x:hidden;
+}
+#sidebar::-webkit-scrollbar{ width:2px }
+#sidebar::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.07) }
+
+.sb-section{
+  border-bottom:1px solid var(--edge);padding:12px 14px;
+}
+.sb-label{
+  font-family:var(--fc);font-size:.32rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:8px;
+}
+
+/* Format tiles */
+.fmt-tile{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;border-radius:5px;cursor:pointer;
+  border:1px solid transparent;transition:all .12s;margin-bottom:3px;
+}
+.fmt-tile:hover{ background:rgba(255,255,255,.04);border-color:var(--edge); }
+.fmt-tile.active{
+  background:var(--amber-lo);border-color:rgba(200,151,58,.35);
+}
+.fmt-tile.active .ft-name{ color:var(--amber); }
+.ft-icon{ font-size:.85rem;flex-shrink:0 }
+.ft-name{
+  font-family:var(--fc);font-size:.38rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-dim);transition:color .12s;
+}
+.ft-desc{ font-family:var(--fd);font-size:.52rem;color:var(--ink-faint);line-height:1.3 }
+
+/* Options */
+.opt-row{ margin-bottom:10px; }
+.opt-label{
+  font-family:var(--fc);font-size:.34rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:4px;display:block;
+}
+.opt-input{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  border-radius:4px;color:var(--ink);font-family:var(--fd);font-size:.65rem;
+  padding:5px 8px;outline:none;transition:border .12s;
+}
+.opt-input:focus{ border-color:var(--edge-hi); }
+.opt-range{
+  width:100%;accent-color:var(--amber);cursor:pointer;margin-top:2px;
+}
+.opt-row-inline{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:8px;
+}
+.opt-toggle{
+  width:28px;height:15px;border-radius:8px;border:1px solid var(--edge);
+  background:rgba(255,255,255,.05);cursor:pointer;position:relative;
+  transition:all .2s;flex-shrink:0;
+}
+.opt-toggle.on{ background:rgba(200,151,58,.3);border-color:rgba(200,151,58,.5); }
+.opt-toggle::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.3);
+  transition:all .2s;
+}
+.opt-toggle.on::after{ left:15px;background:var(--amber); }
+.opt-value{
+  font-family:var(--fc);font-size:.34rem;color:var(--ink-faint);
+  min-width:28px;text-align:right;
+}
+
+/* Character checkboxes */
+.char-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 7px;border-radius:10px;margin:2px;cursor:pointer;
+  border:1px solid var(--edge);background:transparent;
+  font-family:var(--fc);font-size:.34rem;color:var(--ink-faint);
+  transition:all .12s;
+}
+.char-chip.selected{
+  background:rgba(177,208,240,.1);border-color:rgba(177,208,240,.35);color:var(--venturan);
+}
+
+/* Warnings */
+.warn-item{
+  font-family:var(--fd);font-size:.52rem;color:rgba(200,151,58,.7);
+  padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03);
+  line-height:1.4;
+}
+.warn-item:last-child{ border-bottom:none; }
+
+/* Stats */
+.stat-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:3px 0;border-bottom:1px solid var(--edge);
+}
+.stat-row:last-child{ border-bottom:none; }
+.stat-key{ font-family:var(--fc);font-size:.34rem;color:var(--ink-faint);letter-spacing:.06em; }
+.stat-val{ font-family:var(--fc);font-size:.38rem;color:var(--ink-dim); }
+
+/* Re-render btn */
+.sb-render-btn{
+  width:100%;font-family:var(--fc);font-size:.4rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:9px;border-radius:5px;cursor:pointer;
+  border:1px solid rgba(200,151,58,.35);background:var(--amber-lo);
+  color:var(--amber);transition:all .13s;
+}
+.sb-render-btn:hover{ background:rgba(200,151,58,.28);box-shadow:0 0 12px rgba(200,151,58,.12); }
+
+/* ── Main scroll area ──────────────────────────────────── */
+#scroll-area{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  display:flex;justify-content:center;
+  padding:48px 24px;
+}
+#scroll-area::-webkit-scrollbar{ width:4px }
+#scroll-area::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.06);border-radius:2px }
+#scroll-area::-webkit-scrollbar-thumb:hover{ background:rgba(255,255,255,.12) }
+
+#doc-column{
+  width:100%;max-width:var(--col-w);
+  animation:fade-in .4s ease;
+}
+
+/* ── Document typography ─────────────────────────────── */
+.doc-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:60vh;gap:16px;
+}
+.doc-empty-glyph{ font-size:2.5rem;opacity:.15;animation:breathe 4s ease-in-out infinite; }
+.doc-empty-msg{
+  font-family:var(--fc);font-size:.42rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+
+/* Generic document sections */
+.ds-h1{
+  font-family:var(--fm);font-size:2rem;font-weight:600;
+  color:var(--ink);letter-spacing:.02em;margin:0 0 8px;
+  border-bottom:1px solid rgba(240,236,228,.1);padding-bottom:12px;
+}
+.ds-h2{
+  font-family:var(--fm);font-size:1.1rem;font-weight:600;font-style:italic;
+  color:var(--ink-dim);margin:32px 0 10px;
+}
+.ds-body{
+  font-family:var(--fd);font-size:1.05rem;line-height:1.9;
+  color:rgba(240,236,228,.8);margin:0 0 14px;white-space:pre-wrap;
+}
+.ds-divider{
+  border:none;border-top:1px solid rgba(240,236,228,.07);
+  margin:28px 0;
+}
+
+/* Novel specific */
+.format-novel .ds-h1{ font-size:2.4rem;text-align:center;border:none;padding-bottom:4px; }
+.format-novel .ds-h2{ font-size:1.3rem;text-align:center;letter-spacing:.06em; }
+.format-novel .ds-body{ font-size:1.08rem;line-height:2; }
+.format-novel .cast-block{
+  font-family:var(--fc);font-size:.55rem;letter-spacing:.1em;
+  color:var(--ink-faint);border-left:2px solid rgba(200,151,58,.25);
+  padding-left:12px;margin:8px 0 18px;line-height:1.8;
+}
+.format-novel .arc-pulse{
+  font-family:var(--fc);font-size:.55rem;letter-spacing:.08em;
+  color:rgba(200,151,58,.55);text-align:right;margin:6px 0;font-style:normal;
+}
+.format-novel .action-beat{
+  font-family:var(--fd);font-size:.95rem;font-style:italic;
+  color:rgba(240,236,228,.55);margin:6px 0 14px;line-height:1.75;
+}
+
+/* Screenplay specific */
+.format-screenplay{ max-width:520px;margin:0 auto; }
+.format-screenplay .ds-h1{ font-family:var(--fc);font-size:1rem;letter-spacing:.2em;text-transform:uppercase;text-align:center;border-none; }
+.format-screenplay .slugline{
+  font-family:var(--fc);font-size:.72rem;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink);margin:28px 0 8px;
+}
+.format-screenplay .screen-action{
+  font-family:var(--fd);font-size:.95rem;line-height:1.85;
+  color:rgba(240,236,228,.8);margin:0 0 12px;
+}
+.format-screenplay .char-name{
+  font-family:var(--fc);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink);margin:18px auto 4px;padding-left:30%;
+}
+.format-screenplay .parens{
+  font-family:var(--fd);font-size:.85rem;font-style:italic;
+  color:var(--ink-faint);padding-left:24%;margin:0 0 4px;
+}
+.format-screenplay .dialogue-line{
+  font-family:var(--fd);font-size:.95rem;line-height:1.7;
+  color:rgba(240,236,228,.75);padding:0 14%;margin:0 0 16px;
+}
+.format-screenplay .tension-flag{
+  font-family:var(--fc);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--blood);opacity:.6;text-align:center;margin:4px 0;
+}
+.beat-pause{
+  font-family:var(--fc);font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--ink-faint);text-align:center;margin:10px 0 14px;opacity:.45;
+}
+.format-screenplay .cut-line{
+  font-family:var(--fc);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-faint);text-align:right;margin:14px 0 4px;
+}
+
+/* Song specific */
+.format-song .ds-h1{ font-family:var(--fm);font-size:2rem;text-align:center;border:none; }
+.format-song .song-meta{
+  text-align:center;font-family:var(--fc);font-size:.45rem;letter-spacing:.14em;
+  color:var(--ink-faint);margin-bottom:32px;text-transform:uppercase;
+}
+.format-song .section-head{
+  font-family:var(--fc);font-size:.55rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--amber);margin:28px 0 10px;
+  border-top:1px solid rgba(200,151,58,.2);padding-top:10px;
+}
+.format-song .lyric-block{
+  font-family:var(--fm);font-size:1.15rem;font-style:italic;line-height:2.1;
+  color:rgba(240,236,228,.85);margin:0 0 8px;white-space:pre-wrap;
+}
+.format-song .lyric-hint{
+  font-family:var(--fd);font-size:.8rem;color:var(--ink-faint);
+  border-left:2px solid rgba(200,151,58,.2);padding-left:10px;
+  line-height:1.6;margin:4px 0 14px;
+}
+.format-song .pattern-grid{
+  font-family:var(--fc);font-size:.7rem;letter-spacing:.12em;
+  color:rgba(77,200,160,.6);background:rgba(255,255,255,.02);
+  border:1px solid var(--edge);border-radius:4px;padding:8px 12px;margin:8px 0;
+}
+
+/* Manual/World Bible */
+.format-manual .ds-h1{ font-size:2rem;text-align:left;border-bottom:1px solid var(--amber);padding-bottom:10px;color:var(--amber); }
+.format-manual .ds-h2{ color:var(--amber);font-style:normal;border-bottom:1px solid rgba(200,151,58,.15);padding-bottom:6px; }
+.format-manual .entry-block{
+  background:rgba(255,255,255,.02);border:1px solid var(--edge);border-radius:6px;
+  padding:12px 14px;margin:0 0 10px;
+}
+.format-manual .entry-block pre{
+  font-family:var(--fc);font-size:.6rem;color:rgba(77,200,160,.7);
+  white-space:pre-wrap;margin-top:6px;border-top:1px solid var(--edge);padding-top:6px;
+}
+
+/* Session Sheet */
+.format-session .ds-h1{ font-family:var(--fc);font-size:1.1rem;letter-spacing:.18em;text-transform:uppercase;border:none; }
+.format-session .session-meta{
+  font-family:var(--fc);font-size:.48rem;letter-spacing:.1em;color:var(--teal);margin-bottom:24px;
+}
+.format-session .track-row{
+  display:flex;align-items:center;gap:12px;padding:7px 0;
+  border-bottom:1px solid var(--edge);
+}
+.format-session .track-name{ font-family:var(--fd);font-size:.9rem;flex:1;color:var(--ink-dim); }
+.format-session .track-role{
+  font-family:var(--fc);font-size:.4rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--teal);opacity:.7;
+}
+.format-session .pat-grid{
+  font-family:var(--fc);font-size:.75rem;letter-spacing:.15em;
+  color:rgba(77,200,160,.7);padding:6px 0;
+}
+
+/* Game Script */
+.format-game .quest-head{
+  font-family:var(--fc);font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--venturan);margin:24px 0 6px;padding:8px 12px;
+  background:rgba(177,208,240,.04);border-left:3px solid rgba(177,208,240,.35);
+}
+.format-game .npc-block{
+  border:1px solid var(--edge);border-radius:5px;padding:10px 12px;margin:0 0 8px;
+}
+.format-game .npc-name{
+  font-family:var(--fc);font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--venturan);margin-bottom:4px;
+}
+.format-game .dialogue-node{
+  border-left:2px solid rgba(177,208,240,.2);padding-left:10px;margin:8px 0;
+}
+.format-game .trigger-line{
+  font-family:var(--fc);font-size:.5rem;letter-spacing:.08em;
+  color:rgba(200,91,91,.7);padding:4px 0;
+}
+
+/* ── Right rail ────────────────────────────────────────── */
+#rail{
+  width:var(--rail-w);flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--edge);
+  overflow-y:auto;padding:14px 0;
+}
+#rail::-webkit-scrollbar{ width:2px }
+#rail::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.06) }
+.rail-label{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);padding:0 12px;margin-bottom:6px;
+}
+.rail-item{
+  padding:5px 12px;cursor:pointer;transition:all .1s;
+  border-left:2px solid transparent;
+}
+.rail-item:hover{ background:rgba(255,255,255,.03); }
+.rail-item.active{ border-left-color:var(--amber); }
+.rail-item.h1{
+  font-family:var(--fm);font-size:.65rem;font-weight:600;color:var(--ink-dim);
+}
+.rail-item.h2{
+  font-family:var(--fd);font-size:.58rem;font-style:italic;color:var(--ink-faint);
+  padding-left:20px;
+}
+.rail-item.divider{
+  border-top:1px solid var(--edge);margin:4px 12px;padding:0;cursor:default;
+  border-left:none;
+}
+
+/* ── Loading state ─────────────────────────────────────── */
+#loading-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg);gap:16px;z-index:50;
+  transition:opacity .35s ease;
+}
+#loading-overlay.gone{ opacity:0;pointer-events:none; }
+.lo-glyph{ font-size:2rem;color:var(--amber);animation:spin 2s linear infinite; }
+.lo-msg{
+  font-family:var(--fc);font-size:.42rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+
+/* ── Toast ─────────────────────────────────────────────── */
+#toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:rgba(5,5,8,.97);border:1px solid rgba(200,151,58,.25);
+  backdrop-filter:blur(12px);padding:7px 16px;border-radius:5px;
+  font-family:var(--fc);font-size:.42rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--amber);pointer-events:none;opacity:0;z-index:300;white-space:nowrap;
+}
+#toast.show{ animation:toast-in 2.8s ease forwards; }
+
+/* ── Keyframes ─────────────────────────────────────────── */
+@keyframes breathe{ 0%,100%{opacity:.15}50%{opacity:.4} }
+@keyframes spin{ to{transform:rotate(360deg)} }
+@keyframes fade-in{ from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none} }
+@keyframes flash-copy{ 0%,100%{background:transparent}50%{background:rgba(77,200,160,.15)} }
+@keyframes toast-in{
+  0%{opacity:0;transform:translateX(-50%) translateY(8px)}
+  12%{opacity:1;transform:translateX(-50%) translateY(0)}
+  75%{opacity:1}100%{opacity:0}
+}
+
+/* ── AI Draft mode ───────────────────────────────────────────── */
+.ai-draft-bar{
+  display:flex;align-items:center;gap:8px;padding:10px 16px;
+  border-top:1px solid rgba(255,255,255,.05);flex-shrink:0;
+}
+.ai-draft-btn{
+  font-family:var(--fm);font-size:.38rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:6px 14px;border-radius:5px;cursor:pointer;transition:all .15s;
+  border:1px solid rgba(200,151,58,.4);background:rgba(200,151,58,.12);
+  color:#c8973a;
+}
+.ai-draft-btn:hover{background:rgba(200,151,58,.24);box-shadow:0 0 12px rgba(200,151,58,.15)}
+.ai-draft-btn:disabled{opacity:.35;cursor:not-allowed}
+.ai-draft-btn.stop{border-color:rgba(212,91,91,.4);background:rgba(212,91,91,.1);color:#d45b5b}
+.ai-status{
+  font-family:var(--fc);font-size:.38rem;color:rgba(255,255,255,.3);
+  flex:1;letter-spacing:.06em;
+}
+.ai-status.active{color:rgba(200,151,58,.7)}
+.ai-status.done{color:rgba(77,200,160,.7)}
+.ai-status.err{color:rgba(212,91,91,.7)}
+.ai-token-count{font-family:var(--fc);font-size:.34rem;color:rgba(255,255,255,.2)}
+
+/* Streaming cursor */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.stream-cursor::after{
+  content:'▋';animation:blink .8s ease-in-out infinite;
+  color:rgba(200,151,58,.6);font-size:.8em;
+}
+</style>
+</head>
+<body>
+
+<div id="loading-overlay">
+  <div class="lo-glyph">⎘</div>
+  <div class="lo-msg">Loading Snapshot</div>
+</div>
+
+<div id="shell">
+  <!-- TOP BAR -->
+  <div id="top-bar">
+    <div class="tb-logo">
+      <span class="tb-glyph">⎘</span>
+      <span class="tb-name">Output</span>
+    </div>
+    <div class="tb-title" id="tb-title">—</div>
+    <span id="tb-format-badge">—</span>
+    <div id="tb-stats"></div>
+    <div class="ai-draft-bar" id="ai-draft-bar" style="display:none">
+      <button class="ai-draft-btn" id="ai-btn" onclick="doAIDraft()">🤖 AI Draft</button>
+      <span class="ai-status" id="ai-status">Ready</span>
+      <span class="ai-token-count" id="ai-tokens"></span>
+    </div>
+    <div class="tb-actions">
+      <button class="tb-btn" onclick="copyAll()" id="btn-copy">⊞ Copy</button>
+      <button class="tb-btn" onclick="exportTxt()">↓ .txt</button>
+      <button class="tb-btn hot" onclick="exportHtml()">↓ .html</button>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div id="body">
+
+    <!-- SIDEBAR -->
+    <div id="sidebar">
+
+      <!-- Format selector -->
+      <div class="sb-section">
+        <div class="sb-label">Format</div>
+        <div id="fmt-list"></div>
+      </div>
+
+      <!-- Render options -->
+      <div class="sb-section">
+        <div class="sb-label">Options</div>
+
+        <div class="opt-row">
+          <label class="opt-label">Chapter Range</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input class="opt-input" id="opt-ch-start" type="number" min="1" value="1" style="width:54px;text-align:center">
+            <span style="color:var(--ink-faint);font-family:var(--fc);font-size:.5rem">–</span>
+            <input class="opt-input" id="opt-ch-end" type="number" min="1" value="24" style="width:54px;text-align:center">
+          </div>
+        </div>
+
+        <div class="opt-row-inline">
+          <span class="opt-label" style="margin:0">Include Sealed</span>
+          <div class="opt-toggle on" id="tog-sealed" onclick="toggleOpt('sealed')"></div>
+        </div>
+
+        <div class="opt-row-inline">
+          <span class="opt-label" style="margin:0">All Acts</span>
+          <div class="opt-toggle on" id="tog-allacts" onclick="toggleOpt('allacts')"></div>
+        </div>
+
+        <div class="opt-row-inline">
+          <span class="opt-label" style="margin:0">All Characters</span>
+          <div class="opt-toggle on" id="tog-allchars" onclick="toggleOpt('allchars')"></div>
+        </div>
+
+        <div id="char-filter-wrap" style="display:none;margin-top:6px">
+          <div class="sb-label">Characters</div>
+          <div id="char-chips"></div>
+        </div>
+
+        <div id="act-filter-wrap" style="display:none;margin-top:6px">
+          <div class="sb-label">Acts</div>
+          <div id="act-chips"></div>
+        </div>
+      </div>
+
+      <!-- Re-render -->
+      <div class="sb-section">
+        <button class="sb-render-btn" onclick="doRender()">⎘ Render</button>
+        <button class="sb-render-btn" onclick="doAIDraft()" id="ai-draft-btn" style="background:rgba(200,151,58,.12);border-color:rgba(200,151,58,.4);color:#c8973a;margin-top:6px">🤖 AI Draft</button>
+      </div>
+
+      <!-- Warnings -->
+      <div class="sb-section" id="warn-section" style="display:none">
+        <div class="sb-label">Warnings</div>
+        <div id="warn-list"></div>
+      </div>
+
+      <!-- Stats -->
+      <div class="sb-section">
+        <div class="sb-label">Snapshot</div>
+        <div id="stat-list"></div>
+      </div>
+
+    </div>
+
+    <!-- MAIN COLUMN -->
+    <div id="scroll-area">
+      <div id="doc-column">
+        <div class="doc-empty" id="doc-empty">
+          <div class="doc-empty-glyph">⎘</div>
+          <div class="doc-empty-msg">Select a format and click Render</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT RAIL -->
+    <div id="rail">
+      <div class="rail-label">Contents</div>
+      <div id="rail-contents"></div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   QUANTUM LOOM — OUTPUT RENDERER LAYER  v1.0
+   Loads LoomSnapshot, renders any format live, exports .txt/.html
+══════════════════════════════════════════════════════════════════════ */
+
+/* ── State ─────────────────────────────────────────────────────────── */
+let snapshot      = null;
+let currentOutput = null;
+let selectedFmt   = 'novel';
+const opts = {
+  sealed:   true,
+  allacts:  true,
+  allchars: true,
+  chStart:  1,
+  chEnd:    24,
+  actIds:   null,
+  charIds:  null,
+};
+
+/* ── Format registry ───────────────────────────────────────────────── */
+const FORMATS = [
+  { id:'novel',      icon:'✍',  name:'Novel',        desc:'Chapter-by-chapter prose' },
+  { id:'screenplay', icon:'🎬', name:'Screenplay',   desc:'Sluglines, action, dialogue' },
+  { id:'song',       icon:'♪',  name:'Song',         desc:'Arc-mapped lyrics' },
+  { id:'manual',     icon:'📖', name:'World Bible',  desc:'Laws, characters, timeline' },
+  { id:'game',       icon:'⚔',  name:'Game Script',  desc:'Quests, NPCs, branches' },
+  { id:'session',    icon:'🎛',  name:'Session Sheet',desc:'BPM, patterns, roles' },
+];
+
+/* ── Load LoomSnapshot ─────────────────────────────────────────────── */
+function loadSnapshotLib() {
+  return new Promise((resolve, reject) => {
+    if (typeof LoomSnapshot !== 'undefined') { resolve(); return; }
+    const script = document.createElement('script');
+    script.src = 'loom-snapshot.js';
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('loom-snapshot.js not found alongside this file'));
+    document.head.appendChild(script);
+  });
+}
+
+/* ── Init ──────────────────────────────────────────────────────────── */
+async function init() {
+  try {
+    await loadSnapshotLib();
+    snapshot = LoomSnapshot.build();
+    populateSidebar();
+    populateOptions();
+    hideLoader();
+    // Auto-render on first load if data present
+    if (snapshot.stats.sceneCount > 0 || snapshot.stats.characterCount > 0) {
+      setTimeout(doRender, 300);
+    }
+  } catch(e) {
+    console.error(e);
+    hideLoader();
+    showDocError('Could not load loom-snapshot.js. Place it in the same folder as this file and reload.');
+  }
+}
+
+function hideLoader() {
+  setTimeout(() => {
+    const lo = document.getElementById('loading-overlay');
+    if (lo) { lo.classList.add('gone'); setTimeout(() => lo.remove(), 400); }
+  }, 200);
+}
+
+/* ── Hub listener ──────────────────────────────────────────────────── */
+window.addEventListener('message', e => {
+  const d = e.data; if (!d || typeof d !== 'object') return;
+  // Any storage write → rebuild snapshot, re-render if active
+  if (d.type === 'hub:storage:write' || d.type === 'hub:storage:updated') {
+    if (typeof LoomSnapshot !== 'undefined') {
+      snapshot = LoomSnapshot.build();
+      updateStats();
+      populateOptions();
+      if (currentOutput) doRender();
+    }
+  }
+  if (d.type === 'hub:layer:activate' && d.layerId === 'output') {
+    if (typeof LoomSnapshot !== 'undefined') {
+      snapshot = LoomSnapshot.build();
+      populateSidebar();
+      populateOptions();
+      if (!currentOutput) doRender();
+    }
+  }
+  if (d.type === 'hub:init') { init(); }
+});
+
+/* ── Sidebar ───────────────────────────────────────────────────────── */
+function populateSidebar() {
+  const list = document.getElementById('fmt-list');
+  list.innerHTML = FORMATS.map(f => `
+    <div class="fmt-tile ${f.id === selectedFmt ? 'active' : ''}" onclick="selectFmt('${f.id}')">
+      <span class="ft-icon">${f.icon}</span>
+      <div>
+        <div class="ft-name">${f.name}</div>
+        <div class="ft-desc">${f.desc}</div>
+      </div>
+    </div>`).join('');
+
+  updateStats();
+}
+
+function selectFmt(id) {
+  selectedFmt = id;
+  document.querySelectorAll('.fmt-tile').forEach(el => {
+    el.classList.toggle('active', el.onclick?.toString().includes(`'${id}'`));
+  });
+  document.getElementById('tb-format-badge').textContent = FORMATS.find(f => f.id === id)?.name || id;
+  doRender();
+}
+
+function updateStats() {
+  if (!snapshot) return;
+  const s = snapshot.stats;
+  const statEl = document.getElementById('stat-list');
+  statEl.innerHTML = [
+    ['Characters', s.characterCount],
+    ['Capsules',   s.capsuleCount],
+    ['Scenes',     s.sceneCount],
+    ['Tracks',     s.trackCount],
+    ['PropArcs',   s.propagationCount],
+    ['Compiled',   s.compiledCount],
+    ['BPM',        s.bpm],
+    ['Chapters',   s.chapterSpan],
+  ].map(([k,v]) => `<div class="stat-row"><span class="stat-key">${k}</span><span class="stat-val">${v}</span></div>`).join('');
+}
+
+/* ── Options ───────────────────────────────────────────────────────── */
+function populateOptions() {
+  if (!snapshot) return;
+
+  // Update chapter range max
+  const endInput = document.getElementById('opt-ch-end');
+  if (endInput && +endInput.value === 24) endInput.value = snapshot.chCount;
+
+  // Character chips
+  const chipsEl = document.getElementById('char-chips');
+  if (chipsEl) {
+    chipsEl.innerHTML = snapshot.characters.map(c =>
+      `<span class="char-chip selected" data-id="${c.id}" onclick="toggleChar(this,'${c.id}')">${c.name}</span>`
+    ).join('');
+  }
+
+  // Act chips
+  const actEl = document.getElementById('act-chips');
+  if (actEl) {
+    actEl.innerHTML = snapshot.acts.map(a =>
+      `<span class="char-chip selected" data-id="${a.id}" onclick="toggleAct(this,'${a.id}')">${a.name}</span>`
+    ).join('');
+  }
+}
+
+function toggleOpt(key) {
+  opts[key] = !opts[key];
+  document.getElementById('tog-' + key).classList.toggle('on', opts[key]);
+  if (key === 'allchars') document.getElementById('char-filter-wrap').style.display = opts.allchars ? 'none' : 'block';
+  if (key === 'allacts')  document.getElementById('act-filter-wrap').style.display  = opts.allacts  ? 'none' : 'block';
+}
+
+function toggleChar(el, id) {
+  el.classList.toggle('selected');
+  opts.charIds = [...document.querySelectorAll('#char-chips .char-chip.selected')].map(c => c.dataset.id);
+  if (!opts.charIds.length) opts.charIds = null;
+}
+
+function toggleAct(el, id) {
+  el.classList.toggle('selected');
+  opts.actIds = [...document.querySelectorAll('#act-chips .char-chip.selected')].map(c => c.dataset.id);
+  if (!opts.actIds.length) opts.actIds = null;
+}
+
+/* ── Render ────────────────────────────────────────────────────────── */
+function doRender() {
+  if (!snapshot || typeof LoomSnapshot === 'undefined') return;
+
+  // Re-build snapshot in case storage changed
+  snapshot = LoomSnapshot.build();
+
+  opts.chStart       = parseInt(document.getElementById('opt-ch-start').value) || 1;
+  opts.chEnd         = parseInt(document.getElementById('opt-ch-end').value) || snapshot.chCount;
+  opts.includeSealed = opts.sealed;
+
+  const renderOpts = {
+    includeSealed:  opts.includeSealed,
+    actIds:         opts.allacts  ? undefined : opts.actIds,
+    characterIds:   opts.allchars ? undefined : opts.charIds,
+    chapterRange:   [opts.chStart, opts.chEnd],
+  };
+
+  currentOutput = LoomSnapshot.render(selectedFmt, renderOpts);
+
+  renderDocument(currentOutput);
+  renderRail(currentOutput);
+  renderWarnings(currentOutput.warnings || []);
+
+  const fmt = FORMATS.find(f => f.id === selectedFmt);
+  document.getElementById('tb-title').textContent = currentOutput.title;
+  document.getElementById('tb-format-badge').textContent = fmt?.name || selectedFmt;
+
+  const meta = currentOutput.metadata || {};
+  document.getElementById('tb-stats').textContent =
+    `${meta.sceneCount || 0} scenes · ${meta.characterCount || 0} characters · ${meta.clipCount || 0} clips`;
+}
+
+/* ── Document renderer ─────────────────────────────────────────────── */
+function renderDocument(output) {
+  const col = document.getElementById('doc-column');
+  document.getElementById('doc-empty')?.remove();
+
+  const fmtClass = 'format-' + output.format;
+
+  let html = `<div class="${fmtClass}">`;
+
+  output.sections.forEach(sec => {
+    html += sectionToHTML(sec, output.format);
+  });
+
+  html += '</div>';
+  col.innerHTML = html;
+
+  // Scroll to top
+  document.getElementById('scroll-area').scrollTop = 0;
+}
+
+function sectionToHTML(sec, fmt) {
+  const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+
+  switch(sec.type) {
+    case 'heading':
+      return `<h1 class="ds-h1" data-nav="${esc(sec.content)}">${esc(sec.content)}</h1>\n`;
+
+    case 'subheading':
+      if (fmt === 'screenplay') return `<div class="slugline" data-nav="${esc(sec.content)}">${esc(sec.content)}</div>\n`;
+      if (fmt === 'song')       return `<div class="section-head" data-nav="${esc(sec.content)}">${esc(sec.content)}</div>\n`;
+      if (fmt === 'game')       return `<div class="quest-head" data-nav="${esc(sec.content)}">${esc(sec.content)}</div>\n`;
+      if (fmt === 'manual')     return `<h2 class="ds-h2" data-nav="${esc(sec.content)}">${esc(sec.content)}</h2>\n`;
+      return `<h2 class="ds-h2" data-nav="${esc(sec.content)}">${esc(sec.content)}</h2>\n`;
+
+    case 'body':
+      if (sec.meta?.type === 'beat_pause')
+        return `<p class="beat-pause">${esc(sec.content)}</p>\n`;
+      if (fmt === 'novel' && sec.label === 'Cast')
+        return `<div class="cast-block">${esc(sec.content)}</div>\n`;
+      if ((fmt === 'screenplay' || fmt === 'novel') && sec.meta?.type === 'parenthetical')
+        return `<div class="parens">${esc(sec.content)}</div>\n`;
+      if (fmt === 'song')
+        return `<div class="lyric-hint">${esc(sec.content)}</div>\n`;
+      if (fmt === 'manual' && sec.content.includes('\n'))
+        return `<div class="entry-block"><p class="ds-body">${esc(sec.content)}</p></div>\n`;
+      return `<p class="ds-body">${esc(sec.content)}</p>\n`;
+
+    case 'action':
+      if (fmt === 'screenplay') return `<p class="screen-action">${esc(sec.content)}</p>\n`;
+      if (fmt === 'novel')      return `<p class="action-beat">${esc(sec.content)}</p>\n`;
+      return `<p class="ds-body">${esc(sec.content)}</p>\n`;
+
+    case 'dialogue':
+      if (fmt === 'screenplay') return `
+        <div class="char-name">${esc(sec.label||'')}</div>
+        <div class="dialogue-line">${esc(sec.content)}</div>\n`;
+      if (fmt === 'game') return `
+        <div class="dialogue-node">
+          <div class="npc-name">${esc(sec.label||'')}</div>
+          <p class="ds-body">${esc(sec.content)}</p>
+        </div>\n`;
+      return `<div style="padding-left:20px;border-left:2px solid rgba(200,151,58,.2);margin:8px 0">
+        <div style="font-family:var(--fc);font-size:.5rem;letter-spacing:.1em;color:var(--amber)">${esc(sec.label||'')}</div>
+        <p class="ds-body">${esc(sec.content)}</p></div>\n`;
+
+    case 'divider':
+      return `<hr class="ds-divider">\n`;
+
+    default:
+      return `<p class="ds-body">${esc(sec.content)}</p>\n`;
+  }
+}
+
+/* ── Rail TOC ──────────────────────────────────────────────────────── */
+function renderRail(output) {
+  const rail = document.getElementById('rail-contents');
+  const items = output.sections
+    .filter(s => s.type === 'heading' || s.type === 'subheading' || s.type === 'divider')
+    .map((s, i) => {
+      if (s.type === 'divider') return `<div class="rail-item divider"></div>`;
+      const cls = s.type === 'heading' ? 'h1' : 'h2';
+      const label = (s.content || '').substring(0, 28) + (s.content?.length > 28 ? '…' : '');
+      return `<div class="rail-item ${cls}" onclick="scrollToSection(${i})">${label}</div>`;
+    });
+  rail.innerHTML = items.join('');
+}
+
+function scrollToSection(idx) {
+  const col = document.getElementById('doc-column');
+  const targets = col.querySelectorAll('[data-nav]');
+  // Map idx to nav target — sections before idx that are headings
+  let navIdx = 0;
+  const output = currentOutput;
+  for (let i = 0; i <= idx && i < output.sections.length; i++) {
+    const s = output.sections[i];
+    if (s.type === 'heading' || s.type === 'subheading') {
+      if (i === idx) {
+        targets[navIdx]?.scrollIntoView({ behavior:'smooth', block:'start' });
+        return;
+      }
+      navIdx++;
+    }
+  }
+}
+
+/* ── Warnings ──────────────────────────────────────────────────────── */
+function renderWarnings(warns) {
+  const sec = document.getElementById('warn-section');
+  const list = document.getElementById('warn-list');
+  if (!warns.length) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  list.innerHTML = warns.slice(0,8).map(w => `<div class="warn-item">⚠ ${w}</div>`).join('');
+}
+
+/* ── Error state ───────────────────────────────────────────────────── */
+function showDocError(msg) {
+  document.getElementById('doc-column').innerHTML =
+    `<div class="doc-empty"><div class="doc-empty-glyph">⚠</div><div class="doc-empty-msg">${msg}</div></div>`;
+}
+
+/* ── Export ────────────────────────────────────────────────────────── */
+function exportTxt() {
+  if (!currentOutput) { toast('Render first'); return; }
+  const text = LoomSnapshot.renderToText(currentOutput);
+  const name = (currentOutput.title || 'output').replace(/\s+/g,'_').toLowerCase() + '.txt';
+  download(text, name, 'text/plain');
+  toast('↓ ' + name);
+}
+
+function exportHtml() {
+  if (!currentOutput) { toast('Render first'); return; }
+  const html = LoomSnapshot.renderToHTML(currentOutput);
+  const name = (currentOutput.title || 'output').replace(/\s+/g,'_').toLowerCase() + '.html';
+  download(html, name, 'text/html');
+  toast('↓ ' + name);
+}
+
+function copyAll() {
+  if (!currentOutput) { toast('Render first'); return; }
+  const text = LoomSnapshot.renderToText(currentOutput);
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btn-copy');
+    btn.classList.add('copy-flash');
+    setTimeout(() => btn.classList.remove('copy-flash'), 500);
+    toast('⊞ Copied to clipboard');
+  }).catch(() => toast('⚠ Copy failed — browser may not allow'));
+}
+
+function download(content, filename, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ── Toast ─────────────────────────────────────────────────────────── */
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+}
+
+/* ── Keyboard shortcuts ────────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'r') { e.preventDefault(); doRender(); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'e') { e.preventDefault(); exportHtml(); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'c' && !window.getSelection().toString()) {
+    e.preventDefault(); copyAll();
+  }
+});
+
+/* ── Start ─────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', init);
+
+/* ── Quantum Loom Theme System ──────────────────────────────── */
+(function initQLTheme() {
+  const MAP = {
+    'c-bg':'--bg',
+    'c-surf':'--surface',
+    'c-surf2':'--surface2',
+    'c-edge':'--edge',
+    'c-edge-hi':'--edge-hi',
+    'c-accent1':'--venturan',
+    'c-accent2':'--amber',
+    'c-danger':'--blood'
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([canonical, varName]) => {
+      if (tokens[canonical] !== undefined)
+        root.style.setProperty(varName, tokens[canonical]);
+    });
+  }
+  // Apply saved theme on load
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  // Listen for live theme broadcasts from hub
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens)
+      applyTokens(e.data.tokens);
+  });
+})();
+
+
+/* ══════════════════════════════════════════════════════════════
+   OUTPUT RENDERER — AI DRAFT MODE
+   Uses LoomLLM.chatStream() to generate actual prose/screenplay
+   streamed directly into the document column.
+══════════════════════════════════════════════════════════════ */
+let aiStreaming   = false;
+let aiAbort       = false;
+let aiTokenCount  = 0;
+
+function aiSetStatus(state, msg) {
+  const bar = document.getElementById('ai-draft-bar');
+  const st  = document.getElementById('ai-status');
+  const btn = document.getElementById('ai-btn');
+  const tk  = document.getElementById('ai-tokens');
+  if (!bar) return;
+  bar.style.display = 'flex';
+  if (st)  { st.className = 'ai-status ' + (state || ''); st.textContent = msg; }
+  if (btn) { btn.textContent = state === 'active' ? '⏹ Stop' : '🤖 AI Draft';
+             btn.className = 'ai-draft-btn' + (state === 'active' ? ' stop' : '');
+             btn.onclick = state === 'active' ? stopAIDraft : doAIDraft; }
+  if (tk)  tk.textContent = aiTokenCount > 0 ? aiTokenCount + ' tokens' : '';
+}
+
+function stopAIDraft() {
+  aiAbort = true;
+  aiSetStatus('', 'Stopped');
+}
+
+async function doAIDraft() {
+  if (aiStreaming) { stopAIDraft(); return; }
+  if (!snapshot) {
+    snapshot = typeof LoomSnapshot !== 'undefined' ? LoomSnapshot.build() : null;
+    if (!snapshot) { toast('Render first to load snapshot data'); return; }
+  }
+
+  // Load LoomLLM
+  await new Promise((resolve, reject) => {
+    if (typeof LoomLLM !== 'undefined') { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'loom-llm.js';
+    s.onload  = () => typeof LoomLLM !== 'undefined' ? resolve() : reject(new Error('LoomLLM not found'));
+    s.onerror = () => reject(new Error('loom-llm.js not found — make sure it is in your app folder'));
+    document.head.appendChild(s);
+  }).catch(e => { toast('⚠ ' + e.message); throw e; });
+
+  // Check config
+  const cfg = JSON.parse(localStorage.getItem('ql-llm-config') || '{}');
+  if (!cfg.provider) {
+    toast('⚠ Configure an AI provider first — click 🤖 in the hub header');
+    return;
+  }
+
+  LoomLLM.init(cfg);
+
+  aiStreaming  = true;
+  aiAbort      = false;
+  aiTokenCount = 0;
+
+  const fmt    = selectedFmt || 'novel';
+  const chStart = opts.chStart || 1;
+  const chEnd   = opts.chEnd   || snapshot.chCount || 24;
+
+  aiSetStatus('active', `Drafting ${fmt} (Ch ${chStart}–${chEnd})…`);
+
+  // Build prompt from snapshot
+  const { system, user } = LoomLLM.buildNarrativePrompt(snapshot, fmt, { chStart, chEnd });
+
+  // Set up streaming output area
+  const col = document.getElementById('doc-column');
+  col.innerHTML = '';
+  const fmtDiv = document.createElement('div');
+  fmtDiv.className = 'format-' + fmt + ' stream-cursor';
+  fmtDiv.style.cssText = 'white-space:pre-wrap;font-family:var(--fd);font-size:.75rem;line-height:1.8;color:rgba(255,255,255,.82);padding:0 8px';
+  col.appendChild(fmtDiv);
+
+  let fullText = '';
+
+  try {
+    await LoomLLM.chatStream(
+      [{ role:'system', content: system }, { role:'user', content: user }],
+      { temperature: cfg.temperature || 0.8, maxTokens: cfg.maxTokens || 8192 },
+      (chunk) => {
+        if (aiAbort) return;
+        fullText     += chunk;
+        aiTokenCount += chunk.split(/\s+/).length;
+        fmtDiv.textContent = fullText;
+        // Auto scroll
+        const scroll = document.getElementById('scroll-area');
+        if (scroll) scroll.scrollTop = scroll.scrollHeight;
+        aiSetStatus('active', `Drafting… (≈${aiTokenCount} words)`);
+      },
+      (full) => {
+        fmtDiv.classList.remove('stream-cursor');
+        aiStreaming = false;
+        currentOutput = { format: fmt, text: full };
+        if (aiAbort) {
+          aiSetStatus('', 'Draft stopped — ' + aiTokenCount + ' words');
+        } else {
+          aiSetStatus('done', '✓ Draft complete — ' + aiTokenCount + ' words');
+          toast('🤖 AI draft complete — ' + aiTokenCount + ' words');
+        }
+      }
+    );
+  } catch(e) {
+    fmtDiv.classList.remove('stream-cursor');
+    fmtDiv.textContent += '\n\n⚠ Error: ' + e.message;
+    aiStreaming = false;
+    aiSetStatus('err', '⚠ ' + e.message.slice(0,60));
+  }
+}
+
+/* Override exportTxt / exportHtml to also work with AI draft text */
+const _origExportTxt = exportTxt;
+exportTxt = function() {
+  if (currentOutput?.text) {
+    const blob = new Blob([currentOutput.text], { type:'text/plain' });
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = (snapshot?.meta?.name||'quantum-loom') + '-' + (selectedFmt||'draft') + '.txt';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    return;
+  }
+  _origExportTxt?.();
+};
+
+</script>
+</body>
+</html>

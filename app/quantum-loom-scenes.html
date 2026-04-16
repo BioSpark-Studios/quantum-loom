@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Quantum Loom — Scene Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#08090a; --panel:#0f1012; --panel-hi:#151719; --panel-mid:#18191c;
+  --edge:rgba(255,255,255,.06); --deep:rgba(0,0,0,.5);
+  --venturan:#b1d0f0; --solari:#f98f3b; --fusion:#9b7fd4;
+  --totem:#7fd4c8; --blood:#d45b5b; --emerald:#4caf7d; --amber:#e8b84b;
+  --led-green:#00ff88; --led-amber:#ffaa00; --led-red:#ff3344; --led-cyan:#00d4ff;
+  --brass:#c8973a; --brass-dim:#8a6422; --brass-glow:rgba(200,151,58,.15);
+  --seal-gold:#e8c04a;
+  --fm:'Orbitron',monospace; --fd:'Space Grotesk',sans-serif; --fcode:'JetBrains Mono',monospace;
+}
+@keyframes led-pulse  {0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes breathe    {0%,100%{opacity:.3}50%{opacity:.85}}
+@keyframes toast-in   {0%{opacity:0;transform:translateY(8px)}15%,80%{opacity:1;transform:translateY(0)}100%{opacity:0}}
+@keyframes unfurl     {from{opacity:0;transform:scaleY(.94);transform-origin:top}to{opacity:1;transform:scaleY(1)}}
+@keyframes scene-in   {from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer    {0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes arc-draw   {from{stroke-dashoffset:600}to{stroke-dashoffset:0}}
+@keyframes standard-pulse{0%,100%{box-shadow:0 0 0 2px var(--led-amber),0 0 12px rgba(255,170,0,.3)}50%{box-shadow:0 0 0 3px var(--led-amber),0 0 24px rgba(255,170,0,.5)}}
+
+body{background:var(--bg);font-family:var(--fd);color:#fff;height:100vh;overflow:hidden;display:flex;flex-direction:column;
+  background-image:radial-gradient(ellipse at 15% 60%,rgba(177,208,240,.02),transparent 55%),radial-gradient(ellipse at 85% 20%,rgba(155,127,212,.02),transparent 55%)}
+
+/* ══ TOP BAR ══════════════════════════════════════════════════════ */
+#topbar{height:44px;flex-shrink:0;background:rgba(6,6,8,.98);border-bottom:1px solid var(--edge);display:flex;align-items:center;padding:0 16px;gap:10px;z-index:200}
+.logo{font-family:var(--fm);font-size:.6rem;font-weight:700;letter-spacing:.28em;color:var(--venturan);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.logo-mark{width:22px;height:22px;border:1.5px solid var(--venturan);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:breathe 4s ease-in-out infinite}
+.tb-sep{width:1px;height:18px;background:rgba(255,255,255,.1)}
+.tb-tab{font-family:var(--fm);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;padding:5px 12px;border-radius:3px;border:1px solid transparent;cursor:pointer;transition:all .15s;color:rgba(255,255,255,.3);background:none}
+.tb-tab:hover{color:rgba(255,255,255,.6)}
+.tb-tab.active{color:var(--solari);border-color:rgba(249,143,59,.3);background:rgba(249,143,59,.06)}
+.tb-right{display:flex;align-items:center;gap:7px;margin-left:auto}
+.tb-btn{font-family:var(--fm);font-size:.48rem;letter-spacing:.15em;text-transform:uppercase;padding:5px 12px;border-radius:3px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.45);cursor:pointer;transition:all .15s}
+.tb-btn:hover{border-color:var(--venturan);color:var(--venturan)}
+.tb-btn.hot{background:linear-gradient(135deg,var(--solari),#ffd89e);border-color:var(--solari);color:#1a1200;font-weight:700}
+.tb-btn.hot:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(249,143,59,.3)}
+.tb-btn.seal-mode{background:rgba(200,151,58,.12);border-color:var(--brass);color:var(--brass)}
+
+/* ── DRAG-DROP REORDER ── */
+.scene-node.dragging{opacity:.35;transform:scale(.97)!important;box-shadow:none!important;cursor:grabbing}
+.scene-node.drag-over-left {box-shadow:-3px 0 0 0 var(--led-amber)!important}
+.scene-node.drag-over-right{box-shadow: 3px 0 0 0 var(--led-amber)!important}
+.scene-node{cursor:grab}
+
+/* ── INLINE EDIT ── */
+.inline-edit{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);
+  border-radius:3px;outline:none;color:inherit;font:inherit;
+  letter-spacing:inherit;text-transform:inherit;
+  padding:1px 4px;min-width:60px;width:90%;
+}
+.inline-edit:focus{border-color:var(--venturan);background:rgba(177,208,240,.08)}
+.edit-pencil{
+  opacity:0;font-size:.6rem;color:rgba(255,255,255,.25);cursor:pointer;
+  padding:1px 4px;border-radius:2px;transition:all .12s;flex-shrink:0;
+  background:none;border:none;
+}
+.act-header:hover .edit-pencil{opacity:1}
+.edit-pencil:hover{color:var(--venturan);background:rgba(177,208,240,.08)}
+
+/* ══ TIMELINE STRIP ══════════════════════════════════════════════ */
+#timeline{
+  height:128px;flex-shrink:0;background:rgba(6,6,8,.9);
+  border-bottom:1px solid var(--edge);
+  overflow-x:auto;overflow-y:hidden;
+  display:flex;align-items:stretch;
+  position:relative;
+  background-image:linear-gradient(rgba(255,255,255,.018)1px,transparent 1px);
+  background-size:100% 20px;
+}
+#timeline::-webkit-scrollbar{height:4px}
+#timeline::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+#timeline-inner{display:flex;align-items:stretch;padding:0 20px;min-width:max-content;gap:0}
+
+/* Act group */
+.act-group{display:flex;flex-direction:column;padding:0;position:relative;flex-shrink:0}
+.act-header{
+  height:24px;padding:0 12px;
+  display:flex;align-items:center;gap:6px;
+  background:rgba(0,0,0,.4);
+  border-right:1px solid rgba(255,255,255,.04);
+  position:relative;
+}
+.act-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--act-color,rgba(255,255,255,.08))}
+.act-name{font-family:var(--fm);font-size:.45rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--act-color,rgba(255,255,255,.25))}
+.act-emblem{font-size:.8rem}
+.act-sealed-icon{font-size:.7rem;opacity:.6}
+.act-scenes{display:flex;align-items:center;gap:6px;padding:6px 10px;flex:1}
+.act-add-btn{
+  width:28px;height:60px;border-radius:4px;border:1px dashed rgba(255,255,255,.1);
+  background:transparent;color:rgba(255,255,255,.2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.9rem;
+  transition:all .15s;flex-shrink:0;
+}
+.act-add-btn:hover{border-color:var(--venturan);color:var(--venturan);background:rgba(177,208,240,.04)}
+
+/* Scene node in timeline */
+.scene-node{
+  width:90px;height:70px;border-radius:7px;flex-shrink:0;
+  border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);
+  cursor:pointer;transition:all .15s;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;padding:6px 7px;gap:3px;
+  animation:scene-in .2s ease;
+}
+.scene-node::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--sc-color,var(--venturan));opacity:.7}
+.scene-node:hover{border-color:var(--sc-color,var(--venturan));transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.6)}
+.scene-node.active-scene{
+  border-color:var(--led-amber)!important;
+  animation:standard-pulse 2s ease-in-out infinite;
+}
+.scene-node.sealed-scene{
+  border-color:var(--seal-gold)!important;
+  background:rgba(200,151,58,.05)!important;
+  opacity:.75;cursor:default;
+}
+.scene-node.selected-scene{
+  border-color:var(--sc-color,var(--venturan))!important;
+  box-shadow:0 0 0 2px var(--sc-color,var(--venturan))55,0 6px 20px rgba(0,0,0,.7)!important;
+  animation:none!important;
+}
+.sn-chapter{font-family:var(--fcode);font-size:.44rem;color:rgba(255,255,255,.25)}
+.sn-name{font-family:var(--fm);font-size:.44rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--sc-color,var(--venturan));line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sn-badges{display:flex;gap:3px;flex-wrap:wrap;margin-top:auto}
+.sn-badge{font-size:.6rem}
+.scene-connector{
+  width:16px;height:70px;display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.12);font-size:.6rem;flex-shrink:0;position:relative;
+}
+.scene-connector::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:1px;background:rgba(255,255,255,.1)}
+
+/* ══ WORKSPACE ══════════════════════════════════════════════════ */
+#workspace{flex:1;display:flex;overflow:hidden}
+
+/* ══ LEFT SIDEBAR ══════════════════════════════════════════════ */
+#scene-sidebar{width:220px;flex-shrink:0;background:rgba(8,8,10,.98);border-right:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden}
+.sb-head{padding:11px 12px 9px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sb-title{font-family:var(--fm);font-size:.52rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.sb-act-list{flex:1;overflow-y:auto;padding:6px}
+.sb-act-list::-webkit-scrollbar{width:3px}
+.sb-act-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+
+.act-tree-item{margin-bottom:4px}
+.act-tree-head{
+  display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:5px;
+  cursor:pointer;transition:all .12s;border:1px solid transparent;
+}
+.act-tree-head:hover{background:rgba(255,255,255,.03)}
+.act-tree-head.active-act{border-color:rgba(255,255,255,.06);background:rgba(255,255,255,.03)}
+.at-arrow{font-size:.6rem;color:rgba(255,255,255,.2);transition:transform .15s;flex-shrink:0}
+.at-arrow.open{transform:rotate(90deg)}
+.at-name{font-family:var(--fm);font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;flex:1}
+.at-count{font-family:var(--fcode);font-size:.44rem;color:rgba(255,255,255,.2);background:rgba(255,255,255,.04);padding:1px 5px;border-radius:8px}
+
+.scene-tree-items{padding-left:14px;display:flex;flex-direction:column;gap:2px;overflow:hidden;max-height:0;transition:max-height .2s ease}
+.scene-tree-items.open{max-height:400px}
+.st-item{
+  display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:4px;
+  cursor:pointer;transition:all .12s;border:1px solid transparent;
+}
+.st-item:hover{background:rgba(255,255,255,.03)}
+.st-item.selected{background:rgba(255,255,255,.05);border-color:var(--sc-color,rgba(255,255,255,.08))}
+.st-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.st-name{font-family:var(--fm);font-size:.46rem;letter-spacing:.07em;text-transform:uppercase;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st-ch{font-family:var(--fcode);font-size:.42rem;color:rgba(255,255,255,.2)}
+.st-standard{font-size:.55rem;animation:shimmer 2s ease-in-out infinite}
+.st-seal{font-size:.55rem;color:var(--seal-gold);opacity:.7}
+
+/* Prop arc mini list */
+.sb-props{border-top:1px solid rgba(255,255,255,.04);padding:8px 6px;flex-shrink:0;max-height:180px;overflow-y:auto}
+.sb-props-head{font-family:var(--fm);font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:0 6px 6px}
+.prop-mini{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:4px;cursor:pointer;transition:all .12s;border:1px solid transparent}
+.prop-mini:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06)}
+.prop-mini.selected-prop{background:rgba(255,255,255,.05);border-color:var(--p-color,rgba(255,255,255,.1))}
+.pm-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.pm-name{font-family:var(--fm);font-size:.46rem;letter-spacing:.07em;text-transform:uppercase;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pm-shape{font-family:var(--fcode);font-size:.42rem;color:rgba(255,255,255,.2)}
+
+/* ══ SCENE DETAIL CENTER ════════════════════════════════════════ */
+#scene-detail{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+#scene-detail::-webkit-scrollbar{width:4px}
+#scene-detail::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.detail-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:100%;opacity:.3}
+.de-icon{font-size:2.5rem}
+.de-text{font-family:var(--fd);font-size:.85rem;color:rgba(255,255,255,.4);font-style:italic;text-align:center;line-height:1.6}
+
+/* Scene header card */
+.scene-header-card{
+  background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:16px 18px;
+  position:relative;overflow:hidden;
+}
+.scene-header-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--sc-color,var(--venturan)),transparent)}
+.shc-row{display:flex;align-items:center;gap:12px}
+.shc-chapter{font-family:var(--fcode);font-size:.7rem;color:rgba(255,255,255,.2);flex-shrink:0}
+.shc-name{font-family:var(--fm);font-size:.85rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:var(--sc-color,var(--venturan));flex:1}
+.shc-badges{display:flex;gap:7px;align-items:center}
+.shc-badge{font-family:var(--fm);font-size:.42rem;letter-spacing:.18em;text-transform:uppercase;padding:3px 9px;border-radius:3px;border:1px solid;display:flex;align-items:center;gap:5px}
+.badge-standard{border-color:var(--led-amber);color:var(--led-amber);background:rgba(255,170,0,.08);animation:shimmer 2s ease-in-out infinite}
+.badge-sealed{border-color:var(--seal-gold);color:var(--seal-gold);background:rgba(200,151,58,.08)}
+.shc-meta{display:flex;gap:16px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.04)}
+.shc-meta-item{font-family:var(--fd);font-size:.72rem;color:rgba(255,255,255,.35);display:flex;align-items:center;gap:5px}
+.shc-meta-val{color:rgba(255,255,255,.65)}
+
+/* Heraldic strip */
+.heraldic-strip{background:var(--panel);border:1px solid var(--edge);border-radius:8px;padding:11px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hs-label{font-family:var(--fm);font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);flex-shrink:0}
+.hs-chip{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:4px;border:1px solid;cursor:pointer;transition:all .12s}
+.hs-chip:hover{filter:brightness(1.3)}
+.hs-sym{font-size:.9rem}
+.hs-info{display:flex;flex-direction:column;gap:1px}
+.hs-type{font-family:var(--fm);font-size:.38rem;letter-spacing:.15em;text-transform:uppercase;opacity:.6}
+.hs-name{font-family:var(--fd);font-size:.68rem}
+.hs-add{width:26px;height:26px;border-radius:4px;border:1px dashed rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.2);cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.hs-add:hover{border-color:var(--venturan);color:var(--venturan)}
+
+/* Two-column layout for zones+actors */
+.detail-columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.detail-card{background:var(--panel);border:1px solid var(--edge);border-radius:8px;overflow:hidden}
+.dc-head{padding:9px 12px;background:rgba(0,0,0,.25);border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between}
+.dc-title{font-family:var(--fm);font-size:.48rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.dc-body{padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-height:60px}
+.dc-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);cursor:default}
+.dc-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;animation:led-pulse 2s ease-in-out infinite}
+.dc-name{font-family:var(--fm);font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;flex:1}
+.dc-sub{font-family:var(--fd);font-size:.65rem;color:rgba(255,255,255,.3)}
+.dc-empty{font-family:var(--fd);font-size:.72rem;color:rgba(255,255,255,.2);font-style:italic;padding:4px 0}
+
+/* I/O Bridge strip */
+.io-bridge{background:var(--panel);border:1px solid var(--edge);border-radius:8px;overflow:hidden}
+.iob-head{padding:9px 14px;background:rgba(0,0,0,.25);border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:8px}
+.iob-body{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch;min-height:72px}
+.iob-col{padding:10px 12px;display:flex;flex-direction:column;gap:5px}
+.iob-col.out-col{align-items:flex-end;text-align:right}
+.iob-center{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 8px;gap:4px;border-left:1px solid rgba(255,255,255,.04);border-right:1px solid rgba(255,255,255,.04)}
+.iob-flow{font-size:.8rem;color:rgba(255,255,255,.2)}
+.iob-col-lbl{font-family:var(--fm);font-size:.42rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.18);margin-bottom:3px}
+.iob-item{font-family:var(--fcode);font-size:.55rem;padding:3px 8px;border-radius:3px;border:1px solid;display:flex;align-items:center;gap:5px}
+.iob-dot{width:5px;height:5px;border-radius:50%}
+.iob-add{font-family:var(--fm);font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:3px;border:1px dashed rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.2);cursor:pointer;transition:all .12s;margin-top:3px;width:max-content}
+.iob-add:hover{border-color:var(--venturan);color:var(--venturan)}
+
+/* Scene notes */
+.notes-card{background:var(--panel);border:1px solid var(--edge);border-radius:8px;overflow:hidden}
+.notes-body{padding:10px 14px}
+.notes-body textarea{width:100%;background:transparent;border:none;outline:none;font-family:var(--fd);font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.6;resize:none;min-height:60px}
+
+/* ══ RIGHT INSPECTOR — Propagation Arcs ══════════════════════════ */
+#prop-inspector{width:320px;flex-shrink:0;background:rgba(8,8,10,.98);border-left:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden}
+.pi-head{padding:11px 14px 9px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.pi-title{font-family:var(--fm);font-size:.52rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.pi-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:12px}
+.pi-body::-webkit-scrollbar{width:3px}
+.pi-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+
+/* Arc card */
+.arc-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:8px;overflow:hidden;transition:all .15s}
+.arc-card:hover{border-color:rgba(255,255,255,.1)}
+.arc-card.selected-arc{border-color:var(--p-color,var(--venturan));box-shadow:0 0 0 1px var(--p-color,var(--venturan))33}
+.ac-head{padding:8px 10px;display:flex;align-items:center;gap:7px;cursor:pointer}
+.ac-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;animation:led-pulse 2.5s ease-in-out infinite}
+.ac-name{font-family:var(--fm);font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;flex:1}
+.ac-shape{font-family:var(--fcode);font-size:.44rem;padding:1px 6px;border-radius:10px;border:1px solid;flex-shrink:0}
+.ac-expand{font-size:.55rem;color:rgba(255,255,255,.25);transition:transform .15s}
+.arc-card.expanded .ac-expand{transform:rotate(180deg)}
+
+.ac-body{padding:0 10px 10px;display:flex;flex-direction:column;gap:8px}
+
+/* SVG Arc visualizer */
+.arc-vis{width:100%;height:90px;background:rgba(0,0,0,.3);border-radius:5px;overflow:hidden;position:relative}
+.arc-vis-labels{position:absolute;bottom:3px;left:5px;right:5px;display:flex;justify-content:space-between;pointer-events:none}
+.arc-vis-lbl{font-family:var(--fcode);font-size:.4rem;color:rgba(255,255,255,.2)}
+.arc-vis svg{width:100%;height:100%}
+.arc-scene-markers g text{font-family:var(--fcode);font-size:7px;fill:rgba(255,255,255,.35)}
+
+/* Arc controls */
+.ac-row{display:flex;align-items:center;gap:6px}
+.ac-lbl{font-family:var(--fm);font-size:.44rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);width:72px;flex-shrink:0}
+.ac-input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:4px 7px;font-family:var(--fcode);font-size:.68rem;color:#fff;outline:none;transition:border-color .12s}
+.ac-input:focus{border-color:rgba(255,255,255,.2)}
+.ac-select{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:4px 7px;font-family:var(--fcode);font-size:.62rem;color:#fff;outline:none;cursor:pointer}
+.ac-select option{background:#1a1b1e;color:#fff}
+
+/* Chapter projection table */
+.proj-table{width:100%;border-collapse:collapse}
+.proj-table th{font-family:var(--fm);font-size:.4rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:3px 6px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05)}
+.proj-table td{font-family:var(--fcode);font-size:.58rem;padding:3px 6px;border-bottom:1px solid rgba(255,255,255,.03)}
+.proj-table tr:hover td{background:rgba(255,255,255,.02)}
+.proj-scene-row td:first-child{color:var(--p-color,var(--venturan));font-weight:700}
+
+/* Heraldic conditions on arc */
+.condition-row{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:5px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);font-family:var(--fcode);font-size:.54rem}
+.cond-symbol{font-size:.85rem;width:20px;text-align:center}
+.cond-name{flex:1;color:rgba(255,255,255,.6)}
+.cond-effect{padding:1px 6px;border-radius:2px;font-size:.5rem;font-weight:700}
+.cond-suppress{color:var(--led-amber);border:1px solid rgba(255,170,0,.3);background:rgba(255,170,0,.08)}
+.cond-cancel{color:var(--blood);border:1px solid rgba(212,91,91,.3);background:rgba(212,91,91,.08)}
+.cond-accelerate{color:var(--emerald);border:1px solid rgba(76,175,125,.3);background:rgba(76,175,125,.08)}
+.cond-remove{background:none;border:none;color:rgba(255,80,80,.3);cursor:pointer;font-size:.65rem;padding:0 3px;transition:color .1s}
+.cond-remove:hover{color:#ff3344}
+
+/* Add Arc button */
+.add-arc-btn{font-family:var(--fm);font-size:.46rem;letter-spacing:.15em;text-transform:uppercase;padding:7px;border-radius:5px;border:1px dashed rgba(177,208,240,.2);background:transparent;color:rgba(177,208,240,.3);cursor:pointer;width:100%;text-align:center;transition:all .15s}
+.add-arc-btn:hover{border-color:var(--venturan);color:var(--venturan);background:rgba(177,208,240,.04)}
+
+/* Inspector section dividers */
+.pi-sec-lbl{font-family:var(--fm);font-size:.44rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.04)}
+
+/* ══ MODAL ══════════════════════════════════════════════════════ */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center}
+#modal-overlay.hidden{display:none}
+.modal{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:10px;width:440px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.9);animation:unfurl .2s ease}
+.modal-head{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-family:var(--fm);font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--venturan)}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.3);font-size:1rem;cursor:pointer;padding:3px 6px;border-radius:3px;transition:all .1s}
+.modal-close:hover{background:rgba(255,255,255,.06);color:#fff}
+.modal-body{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.modal-body::-webkit-scrollbar{width:3px}
+.modal-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.modal-foot{padding:10px 16px;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:flex-end;gap:7px;flex-shrink:0}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-lbl{font-family:var(--fm);font-size:.46rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.form-input,.form-select,.form-textarea{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:7px 10px;font-family:var(--fd);font-size:.8rem;color:#fff;outline:none;transition:border-color .12s;width:100%}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(255,255,255,.22)}
+.form-select option{background:#1a1b1e}
+.form-textarea{resize:vertical;min-height:70px;font-size:.76rem;line-height:1.5}
+
+/* Toast */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(6,6,8,.97);border:1px solid rgba(177,208,240,.2);backdrop-filter:blur(12px);padding:7px 16px;border-radius:5px;font-family:var(--fm);font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--venturan);pointer-events:none;opacity:0;z-index:1000;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.8)}
+#toast.show{animation:toast-in 2.5s ease forwards}
+
+/* ── Dialogue rows ─────────────────────────────────────────────── */
+.dl-line-row {
+  display:flex;align-items:flex-start;gap:6px;padding:5px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.dl-line-row:last-child { border-bottom:none }
+.dl-beat {
+  font-family:var(--fcode);font-size:.42rem;color:rgba(255,255,255,.25);
+  min-width:16px;padding-top:3px;
+}
+.dl-line-body { flex:1 }
+.dl-direction {
+  font-family:var(--fd);font-size:.6rem;font-style:italic;
+  color:rgba(255,255,255,.3);margin-bottom:2px;
+}
+.dl-text {
+  font-family:var(--fd);font-size:.82rem;line-height:1.6;
+  color:rgba(255,255,255,.75);outline:none;
+  border-bottom:1px solid transparent;min-height:1.2em;
+}
+.dl-text:focus { border-bottom-color:rgba(255,255,255,.15); }
+.dl-text:empty::before { content:attr(data-placeholder);color:rgba(255,255,255,.2);font-style:italic }
+.dl-del {
+  font-size:.55rem;padding:1px 4px;border-radius:2px;
+  border:1px solid rgba(255,80,80,.15);background:transparent;
+  color:rgba(255,80,80,.3);cursor:pointer;transition:all .12s;flex-shrink:0;
+}
+.dl-del:hover { background:rgba(255,0,0,.08);color:rgba(255,80,80,.7); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo"><div class="logo-mark">⬡</div>Quantum Loom</div>
+  <div class="tb-sep"></div>
+  <button class="tb-tab" onclick="navTo('ionodes')">◈ Node Graph</button>
+  <button class="tb-tab" onclick="navTo('subgraph')">⟁ Sub-Graph</button>
+  <button class="tb-tab" onclick="navTo('zones')">◫ Zone Canvas</button>
+  <button class="tb-tab active" onclick="navTo('scenes')">⌚ Scene Manager</button>
+  <button class="tb-tab" onclick="navTo('rack')">⚙ Rack</button>
+  <button class="tb-tab" onclick="navTo('library')">⊞ Library</button>
+  <div class="tb-right">
+    <button class="tb-btn seal-mode" id="seal-btn" onclick="toggleSealMode()">🔒 Seal Mode</button>
+    <button class="tb-btn" onclick="exportScenes()">↓ Export</button>
+    <button class="tb-btn" onclick="openModal('act')">+ New Act</button>
+    <button class="tb-btn hot" onclick="openModal('scene')">+ New Scene</button>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div id="timeline">
+  <div id="timeline-inner"></div>
+</div>
+
+<div id="workspace">
+  <!-- SIDEBAR -->
+  <div id="scene-sidebar">
+    <div class="sb-head">
+      <div class="sb-title">Story Structure</div>
+    </div>
+    <div class="sb-act-list" id="sb-act-list"></div>
+    <div class="sb-props">
+      <div class="sb-props-head">Propagation Arcs</div>
+      <div id="prop-mini-list"></div>
+    </div>
+  </div>
+
+  <!-- SCENE DETAIL -->
+  <div id="scene-detail">
+    <div class="detail-empty" id="detail-empty">
+      <div class="de-icon">⌚</div>
+      <div class="de-text">Select a scene from the timeline or sidebar<br>to view and edit its heraldic context,<br>zone assignments, and I/O bridges.</div>
+    </div>
+    <div id="detail-content" style="display:none;flex-direction:column;gap:14px"></div>
+  </div>
+
+  <!-- PROPAGATION INSPECTOR -->
+  <div id="prop-inspector">
+    <div class="pi-head">
+      <div class="pi-title">Propagation Arcs</div>
+      <button class="tb-btn" style="padding:3px 8px;font-size:.44rem" onclick="openModal('arc')">+ Arc</button>
+    </div>
+    <div class="pi-body" id="pi-body">
+      <div class="pi-sec-lbl">Temporal Propagation</div>
+      <div style="font-family:var(--fd);font-size:.72rem;color:rgba(255,255,255,.25);line-height:1.6;font-style:italic">
+        Propagation Arcs define how entities change over time. A sapling in Chapter 1 may be an ancient oak by Chapter 20. An unchecked insect colony spreads exponentially — unless a Venturan Crest cancels it.
+      </div>
+      <div id="arc-list"></div>
+      <button class="add-arc-btn" onclick="openModal('arc')">+ Define New Propagation Arc</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">New Scene</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot">
+      <button class="tb-btn" onclick="closeModal()">Cancel</button>
+      <button class="tb-btn hot" id="modal-confirm" onclick="confirmModal()">Create</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   QUANTUM LOOM — SCENE MANAGER ENGINE
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Shared Library reference (reads from ql-library) ── */
+const LIB_SEEDS = {
+  'seal-1':   {id:'seal-1',   type:'seal',   name:'Seal of the Concluded Arc', symbol:'◉', color:'#c8973a'},
+  'std-1':    {id:'std-1',    type:'standard',name:'Standard of the Active Arc',symbol:'⚑', color:'#ffaa00'},
+  'glyph-th': {id:'glyph-th', type:'glyph',  name:'Glyph of Threshold',        symbol:'⚡', color:'#f7dc6f'},
+  'glyph-rv': {id:'glyph-rv', type:'glyph',  name:'Glyph of Revelation',       symbol:'👁', color:'#b1d0f0'},
+  'rune-p':   {id:'rune-p',   type:'rune',   name:'Rune of Passage',            symbol:'🗝', color:'#f7dc6f'},
+  'embl-1':   {id:'embl-1',   type:'emblem', name:'Emblem of the Rising Tide',  symbol:'🌊', color:'#f0b27a'},
+  'crest-av': {id:'crest-av', type:'crest',  name:'Crest of the Ashen Veil',    symbol:'🌑', color:'#9b7fd4'},
+  'crest-vt': {id:'crest-vt', type:'crest',  name:'Crest of the Venturan',      symbol:'💨', color:'#b1d0f0'},
+  'crest-sy': {id:'crest-sy', type:'crest',  name:'Crest of the Sylvania',      symbol:'🌿', color:'#82e0aa'},
+  'totem-se': {id:'totem-se', type:'totem',  name:'Totem of the Serpent',       symbol:'🐍', color:'#7fd4c8'},
+};
+
+let LIB_MAP = {...LIB_SEEDS};
+function loadLibrary() {
+  try {
+    const raw = localStorage.getItem('ql-library');
+    if (raw) JSON.parse(raw).forEach(e => { LIB_MAP[e.id] = e; });
+  } catch(e) {}
+}
+window.addEventListener('storage', e => { if (e.key==='ql-library') { loadLibrary(); renderAll(); } });
+
+/* ── DATA MODEL ── */
+let acts = [];
+let propagations = [];
+let selectedSceneId = null;
+let selectedPropId  = null;
+let sealMode = false;
+let modalMode = null;
+
+/* ── CRESTS WITH KNOWN BEHAVIORS (used in propagation conditions) ── */
+const CREST_BEHAVIORS = [
+  {id:'sylvania', name:'Sylvania', symbol:'🌿', color:'#82e0aa', defaultEffect:'suppress'},
+  {id:'venturan', name:'Venturan', symbol:'💨', color:'#b1d0f0', defaultEffect:'cancel'},
+  {id:'ashen',    name:'Ashen Order',symbol:'🌑',color:'#9b7fd4', defaultEffect:'accelerate'},
+  {id:'merchant', name:'Iron Merchant',symbol:'⚙',color:'#f0b27a', defaultEffect:'suppress'},
+];
+
+/* ═══ SEED DATA ══════════════════════════════════════════════ */
+function seedData() {
+  acts = [
+    {
+      id:'act-1', name:'Act I — The Arrival',
+      color:'#b1d0f0', emblemId:'embl-1', sealed:false,
+      scenes:[
+        {
+          id:'sc-1-1', name:'The Awakening', chapter:1,
+          color:'#b1d0f0', isActive:true, sealed:false,
+          zones:['Ashfall Swamp','Highland Citadel'],
+          actors:['Kael Voryn','World State'],
+          heraldry:{ standard:'std-1', seal:null, glyphs:['glyph-rv'], runes:[], emblem:null },
+          ioIn:[{name:'WORLD_SEED', type:'DATA', color:'#7fd4c8'}],
+          ioOut:[{name:'KAEL_STATE', type:'EMIT', color:'#f98f3b'},{name:'ZONE_CONTEXT', type:'DATA', color:'#7fd4c8'}],
+          notes:'Opening scene. Kael regains consciousness in the Ashfall Swamp. World State initializes. The Glyph of Revelation makes the Serpent Totem visible immediately.',
+        },
+        {
+          id:'sc-1-2', name:'The Odd Insect', chapter:2,
+          color:'#82e0aa', isActive:false, sealed:false,
+          zones:['Ashfall Swamp'],
+          actors:['Kael Voryn'],
+          heraldry:{ standard:null, seal:null, glyphs:['glyph-th'], runes:[], emblem:null },
+          ioIn:[{name:'KAEL_STATE', type:'EMIT', color:'#f98f3b'},{name:'ZONE_CONTEXT', type:'DATA', color:'#7fd4c8'}],
+          ioOut:[{name:'INSECT_OBSERVED', type:'EMIT', color:'#82e0aa'},{name:'KAEL_STATE', type:'PASS', color:'#f98f3b'}],
+          notes:'Kael notices a single unusually large insect. The Glyph of Threshold triggers a branch: kill it, observe it, or ignore it. The Insect Colony propagation arc begins.',
+        },
+        {
+          id:'sc-1-3', name:'First Contact', chapter:3,
+          color:'#f98f3b', isActive:false, sealed:true,
+          zones:['Merchant Quarter'],
+          actors:['Kael Voryn','World State'],
+          heraldry:{ standard:null, seal:'seal-1', glyphs:[], runes:['rune-p'], emblem:null },
+          ioIn:[{name:'KAEL_STATE', type:'PASS', color:'#f98f3b'},{name:'INSECT_OBSERVED', type:'EMIT', color:'#82e0aa'}],
+          ioOut:[{name:'FACTION_CONTACT', type:'EMIT', color:'#9b7fd4'},{name:'KAEL_STATE', type:'PASS', color:'#f98f3b'}],
+          notes:'Sealed. Kael reaches the Merchant Quarter via the Rune of Passage. First contact with the Rising Tide emblem faction. Sealed — history is locked.',
+        },
+      ]
+    },
+    {
+      id:'act-2', name:'Act II — The Spreading Dark',
+      color:'#9b7fd4', emblemId:'crest-av', sealed:false,
+      scenes:[
+        {
+          id:'sc-2-1', name:'The Colony Grows', chapter:5,
+          color:'#d45b5b', isActive:false, sealed:false,
+          zones:['Ashfall Swamp'],
+          actors:['Plague of Ash','Kael Voryn'],
+          heraldry:{ standard:null, seal:null, glyphs:['glyph-th'], runes:[], emblem:null },
+          ioIn:[{name:'INSECT_OBSERVED', type:'EMIT', color:'#82e0aa'},{name:'KAEL_STATE', type:'PASS', color:'#f98f3b'}],
+          ioOut:[{name:'PLAGUE_STATE', type:'DATA', color:'#9b7fd4'},{name:'INFESTATION_LEVEL', type:'CV', color:'#d45b5b'}],
+          notes:'If Kael ignored the insect in chapter 2, the colony has grown exponentially. Plague of Ash actor now active. Sylvania Crest would have suppressed growth; Venturan would have eliminated it entirely.',
+        },
+        {
+          id:'sc-2-2', name:'The Ashen Decree', chapter:7,
+          color:'#9b7fd4', isActive:false, sealed:false,
+          zones:['Highland Citadel','Merchant Quarter'],
+          actors:['World State','Kael Voryn'],
+          heraldry:{ standard:null, seal:null, glyphs:[], runes:[], emblem:'embl-1' },
+          ioIn:[{name:'PLAGUE_STATE', type:'DATA', color:'#9b7fd4'},{name:'FACTION_CONTACT', type:'EMIT', color:'#9b7fd4'}],
+          ioOut:[{name:'WORLD_STATE_V2', type:'DATA', color:'#7fd4c8'},{name:'DECREE_SIGNAL', type:'EMIT', color:'#9b7fd4'}],
+          notes:'The Rising Tide faction issues a decree. World State version 2 initialized with faction tension elevated by insect crisis propagation modifier.',
+        },
+      ]
+    },
+  ];
+
+  propagations = [
+    {
+      id:'prop-1', name:'Insect Colony',
+      color:'#82e0aa', symbol:'🐛',
+      shape:'exponential', rate:1.6, startValue:1, minValue:0, maxValue:500,
+      unit:'chapter', startChapter:2,
+      conditions:[
+        {crestId:'sylvania', crestName:'Sylvania',  symbol:'🌿', color:'#82e0aa', effect:'suppress',   modifier:0},
+        {crestId:'venturan', crestName:'Venturan',  symbol:'💨', color:'#b1d0f0', effect:'cancel',     modifier:-999},
+        {crestId:'ashen',    crestName:'Ashen Order',symbol:'🌑',color:'#9b7fd4', effect:'accelerate', modifier:2.2},
+      ],
+      desc:'A single strange insect noticed by Kael in chapter 2. If unchecked, spreads exponentially through the Ashfall Swamp. Heraldic crests of nearby zones modify or eliminate growth.',
+    },
+    {
+      id:'prop-2', name:'The Ancient Oak (Sapling)',
+      color:'#4caf7d', symbol:'🌱',
+      shape:'linear', rate:8, startValue:5, minValue:0, maxValue:100,
+      unit:'chapter', startChapter:1,
+      conditions:[
+        {crestId:'sylvania', crestName:'Sylvania', symbol:'🌿', color:'#82e0aa', effect:'accelerate', modifier:1.5},
+        {crestId:'ashen',    crestName:'Ashen Order',symbol:'🌑',color:'#9b7fd4', effect:'suppress',  modifier:0.4},
+      ],
+      desc:'A sapling in chapter 1. Grows linearly with chapters. By chapter 12 it becomes recognizable, by chapter 20 it is an ancient oak landmark. Sylvania Crest accelerates growth.',
+    },
+    {
+      id:'prop-3', name:'Faction Tension',
+      color:'#d45b5b', symbol:'⚔',
+      shape:'sigmoid', rate:1.0, startValue:10, minValue:0, maxValue:100,
+      unit:'chapter', startChapter:1,
+      conditions:[
+        {crestId:'merchant', crestName:'Iron Merchant', symbol:'⚙', color:'#f0b27a', effect:'suppress', modifier:0.5},
+      ],
+      desc:'World political tension. Starts low, accelerates through the midpoint of the story, then plateaus as factions entrench. Merchant Crest in zone dampens tension growth.',
+    },
+  ];
+  save();
+}
+
+function save() {
+  localStorage.setItem('ql-scenes', JSON.stringify(acts));
+  localStorage.setItem('ql-propagations', JSON.stringify(propagations));
+  try {
+    window.parent.postMessage({ type:'hub:storage:write', key:'ql-scenes', value:JSON.stringify(acts) }, '*');
+    window.parent.postMessage({ type:'hub:storage:write', key:'ql-propagations', value:JSON.stringify(propagations) }, '*');
+  } catch(e) {}
+}
+
+/* ═══ INIT ══════════════════════════════════════════════════ */
+function init() {
+  loadLibrary();
+  const savedActs = localStorage.getItem('ql-scenes');
+  const savedProps = localStorage.getItem('ql-propagations');
+  if (savedActs) {
+    acts = JSON.parse(savedActs);
+    propagations = savedProps ? JSON.parse(savedProps) : [];
+  } else {
+    seedData();
+  }
+  // Default selection
+  const firstScene = acts[0]?.scenes?.[0];
+  if (firstScene) selectedSceneId = firstScene.id;
+  renderAll();
+  setTimeout(() => toast('Scene Manager ready — select a scene to edit, assign heraldry, manage propagation arcs'), 700);
+}
+
+/* ═══ HELPERS ═══════════════════════════════════════════════ */
+function allScenes() { return acts.flatMap(a => a.scenes); }
+function findScene(id) { return allScenes().find(s => s.id === id) || null; }
+function findAct(id) { return acts.find(a => a.id === id) || null; }
+function findActForScene(sceneId) { return acts.find(a => a.scenes.some(s => s.id === sceneId)); }
+function getSelectedScene() { return selectedSceneId ? findScene(selectedSceneId) : null; }
+function sceneColor(s) { return s.color || '#b1d0f0'; }
+
+/* ═══ RENDER ALL ════════════════════════════════════════════ */
+function renderAll() {
+  renderTimeline();
+  renderSidebar();
+  renderPropMiniList();
+  renderDetail();
+  renderPropInspector();
+}
+
+/* ═══ TIMELINE ══════════════════════════════════════════════ */
+function renderTimeline() {
+  const inner = document.getElementById('timeline-inner');
+  inner.innerHTML = acts.map(act => buildActGroup(act)).join('');
+}
+
+function buildActGroup(act) {
+  const scenes = act.scenes;
+  const sealIcon = act.sealed ? '<span class="act-sealed-icon">🔒</span>' : '';
+  const emblem = act.emblemId ? (LIB_MAP[act.emblemId]?.symbol || '') : '';
+  const sceneNodes = scenes.map((s, i) => {
+    const connector = i < scenes.length - 1 ? '<div class="scene-connector">→</div>' : '';
+    return buildSceneNode(s) + connector;
+  }).join('');
+
+  const actWidth = Math.max(scenes.length * 108, 140);
+  return `
+    <div class="act-group" style="--act-color:${act.color};width:${actWidth}px">
+      <div class="act-header" id="ah-${act.id}">
+        <span class="act-emblem">${emblem}</span>
+        <span class="act-name" id="an-${act.id}" style="color:${act.color}"
+          ondblclick="inlineEditAct(event,'${act.id}')"
+          title="Double-click to rename">${act.name}</span>
+        ${sealIcon}
+        <button class="edit-pencil" onclick="inlineEditAct(event,'${act.id}')" title="Rename act">✎</button>
+      </div>
+      <div class="act-scenes">
+        ${sceneNodes}
+        <button class="act-add-btn" onclick="openModal('scene','${act.id}')" title="Add scene to ${act.name}">+</button>
+      </div>
+    </div>`;
+}
+
+function buildSceneNode(s) {
+  const sel = s.id === selectedSceneId ? 'selected-scene' : '';
+  const active = s.isActive ? 'active-scene' : '';
+  const sealed = s.sealed ? 'sealed-scene' : '';
+  const badges = [];
+  if (s.isActive) badges.push('<span class="sn-badge" title="Standard — Active Scene">⚑</span>');
+  if (s.sealed)   badges.push('<span class="sn-badge" title="Sealed">🔒</span>');
+  if (s.heraldry?.glyphs?.length) badges.push(`<span class="sn-badge" title="${s.heraldry.glyphs.length} Glyph(s)">◈</span>`);
+  if (s.heraldry?.runes?.length)  badges.push('<span class="sn-badge" title="Rune active">🗝</span>');
+
+  return `<div class="scene-node ${sel} ${active} ${sealed}" 
+      id="sn-${s.id}"
+      style="--sc-color:${sceneColor(s)}"
+      draggable="true"
+      onclick="selectScene('${s.id}')"
+      ondblclick="inlineEditScene(event,'${s.id}')"
+      ondragstart="sceneDragStart(event,'${s.id}')"
+      ondragover="sceneDragOver(event,'${s.id}')"
+      ondragleave="sceneDragLeave('${s.id}')"
+      ondrop="sceneDrop(event,'${s.id}')"
+      ondragend="sceneDragEnd()"
+      title="Ch.${s.chapter} — ${s.name} (dblclick to rename, drag to reorder)">
+    <div class="sn-chapter">Ch.${s.chapter}</div>
+    <div class="sn-name" id="sn-name-${s.id}" style="color:${s.sealed?'var(--seal-gold)':sceneColor(s)}">${s.name}</div>
+    <div class="sn-badges">${badges.join('')}</div>
+  </div>`;
+}
+
+/* ═══ SIDEBAR ═══════════════════════════════════════════════ */
+function renderSidebar() {
+  const el = document.getElementById('sb-act-list');
+  el.innerHTML = acts.map(act => {
+    const activeAct = act.scenes.some(s => s.id === selectedSceneId);
+    return `<div class="act-tree-item">
+      <div class="act-tree-head ${activeAct?'active-act':''}" onclick="toggleActTree('${act.id}')">
+        <span class="at-arrow ${activeAct?'open':''}" id="at-arr-${act.id}">▶</span>
+        <span class="at-name" style="color:${act.color}">${act.name}</span>
+        ${act.sealed?'<span style="font-size:.6rem;color:var(--seal-gold)">🔒</span>':''}
+        <span class="at-count">${act.scenes.length}</span>
+      </div>
+      <div class="scene-tree-items ${activeAct?'open':''}" id="sti-${act.id}">
+        ${act.scenes.map(s => `
+          <div class="st-item ${s.id===selectedSceneId?'selected':''}" 
+            style="--sc-color:${sceneColor(s)}"
+            onclick="selectScene('${s.id}')"
+            ondblclick="inlineEditSceneSidebar(event,'${s.id}')">
+            <div class="st-dot" style="background:${s.sealed?'var(--seal-gold)':sceneColor(s)}"></div>
+            <div class="st-name" id="sb-sn-${s.id}" style="color:${s.id===selectedSceneId?sceneColor(s):'rgba(255,255,255,.5)'}">${s.name}</div>
+            <div class="st-ch">Ch.${s.chapter}</div>
+            ${s.isActive?'<span class="st-standard">⚑</span>':''}
+            ${s.sealed?'<span class="st-seal">🔒</span>':''}
+            ${!s.sealed?`<button class="edit-pencil" onclick="inlineEditSceneSidebar(event,'${s.id}')" title="Rename">✎</button>`:''}
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleActTree(actId) {
+  const container = document.getElementById('sti-' + actId);
+  const arrow = document.getElementById('at-arr-' + actId);
+  if (!container) return;
+  container.classList.toggle('open');
+  if (arrow) arrow.classList.toggle('open');
+}
+
+function renderPropMiniList() {
+  const el = document.getElementById('prop-mini-list');
+  if (!propagations.length) { el.innerHTML = '<div style="font-family:var(--fd);font-size:.65rem;color:rgba(255,255,255,.2);font-style:italic;padding:4px 6px">No arcs defined</div>'; return; }
+  el.innerHTML = propagations.map(p => `
+    <div class="prop-mini ${p.id===selectedPropId?'selected-prop':''}" 
+      style="--p-color:${p.color}"
+      onclick="selectProp('${p.id}')">
+      <div class="pm-dot" style="background:${p.color}"></div>
+      <div class="pm-name">${p.symbol} ${p.name}</div>
+      <div class="pm-shape">${p.shape}</div>
+    </div>`).join('');
+}
+
+/* ═══ SCENE DETAIL ══════════════════════════════════════════ */
+function selectScene(id) {
+  if (sealMode) { toggleSceneSeal(id); return; }
+  selectedSceneId = id;
+  renderAll();
+}
+
+function renderDetail() {
+  const s = getSelectedScene();
+  const empty = document.getElementById('detail-empty');
+  const content = document.getElementById('detail-content');
+  if (!s) {
+    empty.style.display = 'flex';
+    content.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  content.style.display = 'flex';
+  content.innerHTML = buildSceneDetail(s);
+}
+
+/* ── Dialogue management ────────────────────────────────────────── */
+function buildActorDialogueRows(s) {
+  if (!s.actors.length) return '<div class="dc-empty">No actors in this scene</div>';
+  const actorColors = {'Kael Voryn':'#f98f3b','Tornado \u2014 Ashfall':'#b1d0f0','Plague of Ash':'#9b7fd4','World State':'#7fd4c8'};
+  const dialogue = s.dialogue || [];
+  return s.actors.map(a => {
+    const color = actorColors[a] || '#aaa';
+    const lines = dialogue.filter(d => d.actorName === a || d.actorId === a)
+      .sort((x,y) => x.beat - y.beat);
+    const lineRows = lines.map(d => `
+      <div class="dl-line-row" data-did="${d.id}">
+        <div class="dl-beat">${d.beat}</div>
+        <div class="dl-line-body">
+          ${d.direction ? `<div class="dl-direction">(${d.direction})</div>` : ''}
+          <div class="dl-text" contenteditable="true"
+            onblur="updateDialogueLine('${s.id}','${d.id}','line',this.textContent.trim())"
+          >${d.line}</div>
+        </div>
+        <button class="dl-del" onclick="deleteDialogueLine('${s.id}','${d.id}')" title="Remove line">✕</button>
+      </div>`).join('');
+
+    return `<div class="dl-actor-block" style="border-left:2px solid ${color}44;padding-left:8px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+        <div class="dc-dot" style="background:${color};box-shadow:0 0 4px ${color}"></div>
+        <div class="dc-name" style="color:${color};flex:1">${a}</div>
+        <button class="dl-add-btn" onclick="addDialogueLine('${s.id}','${a}')"
+          style="font-family:var(--fm);font-size:.38rem;padding:1px 6px;border-radius:2px;
+          border:1px solid ${color}44;background:transparent;color:${color};cursor:pointer;opacity:.7">+ Line</button>
+      </div>
+      ${lineRows || '<div style=\'font-family:var(--fd);font-size:.6rem;color:rgba(255,255,255,.2);font-style:italic;padding:2px 0\'>No lines yet — click + Line</div>'}
+    </div>`;
+  }).join('');
+}
+
+function addDialogueLine(sceneId, actorName) {
+  const s = findScene(sceneId);
+  if (!s) return;
+  if (!s.dialogue) s.dialogue = [];
+  const maxBeat = s.dialogue.filter(d => d.actorName === actorName).reduce((m,d) => Math.max(m, d.beat), 0);
+  s.dialogue.push({
+    id:         'dl-' + Date.now(),
+    actorName,
+    actorId:    '',
+    line:       '',
+    direction:  '',
+    beat:       maxBeat + 1,
+  });
+  save(); renderAll();
+}
+
+function updateDialogueLine(sceneId, lineId, field, val) {
+  const s = findScene(sceneId);
+  if (!s || !s.dialogue) return;
+  const dl = s.dialogue.find(d => d.id === lineId);
+  if (dl) { dl[field] = val; save(); }
+}
+
+function deleteDialogueLine(sceneId, lineId) {
+  const s = findScene(sceneId);
+  if (!s || !s.dialogue) return;
+  s.dialogue = s.dialogue.filter(d => d.id !== lineId);
+  save(); renderAll();
+}
+
+function buildSceneDetail(s) {
+  const act = findActForScene(s.id);
+  const libEmblem = s.heraldry?.emblem ? LIB_MAP[s.heraldry.emblem] : null;
+
+  // Heraldic chips
+  const glyphChips = (s.heraldry?.glyphs || []).map(id => {
+    const g = LIB_MAP[id];
+    return g ? `<div class="hs-chip" style="border-color:${g.color}44;color:${g.color}" onclick="removeHeraldry('glyph','${s.id}','${id}')">
+      <span class="hs-sym">${g.symbol}</span>
+      <div class="hs-info"><div class="hs-type">GLYPH</div><div class="hs-name">${g.name}</div></div>
+    </div>` : '';
+  }).join('');
+
+  const runeChips = (s.heraldry?.runes || []).map(id => {
+    const r = LIB_MAP[id];
+    return r ? `<div class="hs-chip" style="border-color:${r.color}44;color:${r.color}" onclick="removeHeraldry('rune','${s.id}','${id}')">
+      <span class="hs-sym">${r.symbol}</span>
+      <div class="hs-info"><div class="hs-type">RUNE</div><div class="hs-name">${r.name}</div></div>
+    </div>` : '';
+  }).join('');
+
+  const emblemChip = libEmblem ? `<div class="hs-chip" style="border-color:${libEmblem.color}44;color:${libEmblem.color}">
+    <span class="hs-sym">${libEmblem.symbol}</span>
+    <div class="hs-info"><div class="hs-type">EMBLEM</div><div class="hs-name">${libEmblem.name}</div></div>
+  </div>` : '';
+
+  // Zones
+  const zoneItems = s.zones.map(z => `
+    <div class="dc-item">
+      <div class="dc-dot" style="background:#7fd4c8;box-shadow:0 0 4px #7fd4c8"></div>
+      <div><div class="dc-name" style="color:#7fd4c8">◫ ${z}</div></div>
+    </div>`).join('') || '<div class="dc-empty">No zones assigned</div>';
+
+  // Actors
+  const actorColors = {'Kael Voryn':'#f98f3b','Tornado — Ashfall':'#b1d0f0','Plague of Ash':'#9b7fd4','World State':'#7fd4c8'};
+  const actorItems = s.actors.map(a => `
+    <div class="dc-item">
+      <div class="dc-dot" style="background:${actorColors[a]||'#fff'};box-shadow:0 0 4px ${actorColors[a]||'#fff'}"></div>
+      <div><div class="dc-name" style="color:${actorColors[a]||'#fff'}">${a}</div></div>
+    </div>`).join('') || '<div class="dc-empty">No actors in this scene</div>';
+
+  // I/O
+  const inJacks = s.ioIn.map(j => `
+    <div class="iob-item" style="border-color:${j.color}44;color:${j.color}">
+      <div class="iob-dot" style="background:${j.color}"></div>${j.name}
+      <span style="font-size:.45rem;color:rgba(255,255,255,.25)">${j.type}</span>
+    </div>`).join('');
+  const outJacks = s.ioOut.map(j => `
+    <div class="iob-item" style="border-color:${j.color}44;color:${j.color};flex-direction:row-reverse">
+      <div class="iob-dot" style="background:${j.color}"></div>${j.name}
+      <span style="font-size:.45rem;color:rgba(255,255,255,.25)">${j.type}</span>
+    </div>`).join('');
+
+  // Active propagation previews for this chapter
+  const chPropRows = propagations.map(p => {
+    const v = computeArcValue(p, s.chapter);
+    return `<div style="display:flex;align-items:center;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03)">
+      <span style="font-size:.75rem">${p.symbol}</span>
+      <div style="flex:1;font-family:var(--fm);font-size:.44rem;letter-spacing:.08em;text-transform:uppercase;color:${p.color}">${p.name}</div>
+      <div style="font-family:var(--fcode);font-size:.62rem;color:${p.color}">${v.toFixed(1)}</div>
+      <div style="width:60px;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden">
+        <div style="height:4px;width:${Math.min(100,(v/computeArcMax(p))*100)}%;background:${p.color};border-radius:2px"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+    <!-- Scene Header -->
+    <div class="scene-header-card" style="--sc-color:${sceneColor(s)}">
+      <div class="shc-row">
+        <div class="shc-chapter">CH.${s.chapter}</div>
+        <input class="shc-name" value="${s.name}" 
+          style="background:transparent;border:none;outline:none;font-family:var(--fm);font-size:.85rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:${sceneColor(s)};flex:1"
+          onchange="updateScene('${s.id}','name',this.value)"
+          oninput="renameSceneFromDetail('${s.id}',this.value)"
+          ${s.sealed ? 'readonly title="Scene is sealed"' : 'title="Edit scene name"'}>
+        <div class="shc-badges">
+          ${s.isActive ? '<div class="shc-badge badge-standard">⚑ Active Scene</div>' : `<button class="tb-btn" onclick="setActiveScene('${s.id}')" style="font-size:.44rem;padding:3px 9px">Set Active ⚑</button>`}
+          ${s.sealed ? '<div class="shc-badge badge-sealed">🔒 Sealed</div>' : `<button class="tb-btn" onclick="toggleSceneSeal('${s.id}')" style="font-size:.44rem;padding:3px 9px">Seal 🔒</button>`}
+        </div>
+      </div>
+      <div class="shc-meta">
+        <div class="shc-meta-item">Act: <span class="shc-meta-val" style="color:${act?.color||'#fff'}">${act?.name||'—'}</span></div>
+        <div class="shc-meta-item">Zones: <span class="shc-meta-val">${s.zones.length}</span></div>
+        <div class="shc-meta-item">Actors: <span class="shc-meta-val">${s.actors.length}</span></div>
+        <div class="shc-meta-item">I/O In: <span class="shc-meta-val">${s.ioIn.length}</span> → Out: <span class="shc-meta-val">${s.ioOut.length}</span></div>
+        <div class="shc-meta-item">
+          Location:
+          <select style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:3px;color:#fff;font-family:var(--fm);font-size:.42rem;padding:2px 5px;cursor:pointer;margin-left:3px"
+            onchange="updateScene('${s.id}','scene_type',this.value)">
+            <option value="INT" ${s.scene_type==='INT'?'selected':''}>INT</option>
+            <option value="EXT" ${s.scene_type==='EXT'?'selected':''}>EXT</option>
+            <option value="INT/EXT" ${s.scene_type==='INT/EXT'?'selected':''}>INT/EXT</option>
+          </select>
+        </div>
+        <div class="shc-meta-item">
+          Time:
+          <select style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:3px;color:#fff;font-family:var(--fm);font-size:.42rem;padding:2px 5px;cursor:pointer;margin-left:3px"
+            onchange="updateScene('${s.id}','time_of_day',this.value)">
+            <option value="DAY"       ${s.time_of_day==='DAY'?'selected':''}>DAY</option>
+            <option value="NIGHT"     ${s.time_of_day==='NIGHT'?'selected':''}>NIGHT</option>
+            <option value="DUSK"      ${s.time_of_day==='DUSK'?'selected':''}>DUSK</option>
+            <option value="DAWN"      ${s.time_of_day==='DAWN'?'selected':''}>DAWN</option>
+            <option value="CONTINUOUS"${s.time_of_day==='CONTINUOUS'?'selected':''}>CONTINUOUS</option>
+          </select>
+        </div>
+        <div class="shc-meta-item">Color: <input type="color" value="${sceneColor(s)}" style="width:22px;height:18px;border:none;background:none;cursor:pointer;padding:0;vertical-align:middle" oninput="updateScene('${s.id}','color',this.value)"></div>
+      </div>
+    </div>
+
+    <!-- Heraldic Strip -->
+    <div class="heraldic-strip">
+      <div class="hs-label">Heraldry</div>
+      ${glyphChips}${runeChips}${emblemChip}
+      ${(!s.heraldry?.glyphs?.length && !s.heraldry?.runes?.length && !libEmblem) ? '<span style="font-family:var(--fd);font-size:.72rem;color:rgba(255,255,255,.2);font-style:italic">No heraldic elements — add below</span>' : ''}
+      <div style="margin-left:auto;display:flex;gap:5px">
+        <button class="hs-add" onclick="quickAddHeraldry('${s.id}','glyph')" title="Add Glyph">+◈</button>
+        <button class="hs-add" onclick="quickAddHeraldry('${s.id}','rune')" title="Add Rune">+🗝</button>
+      </div>
+    </div>
+
+    <!-- Zones & Actors -->
+    <div class="detail-columns">
+      <div class="detail-card">
+        <div class="dc-head">
+          <div class="dc-title">◫ Zones in Scene</div>
+          <button class="tb-btn" style="padding:2px 7px;font-size:.42rem" onclick="quickAddZone('${s.id}')">+ Zone</button>
+        </div>
+        <div class="dc-body">${zoneItems}</div>
+      </div>
+      <div class="detail-card">
+        <div class="dc-head">
+          <div class="dc-title">◈ Actors &amp; Dialogue</div>
+          <button class="tb-btn" style="padding:2px 7px;font-size:.42rem" onclick="quickAddActor('${s.id}')">+ Actor</button>
+        </div>
+        <div class="dc-body" id="actors-dialogue-${s.id}">
+          ${buildActorDialogueRows(s)}
+        </div>
+      </div>
+    </div>
+
+    <!-- I/O Bridge -->
+    <div class="io-bridge">
+      <div class="iob-head">
+        <div class="dc-title">⟁ Scene I/O Bridge</div>
+        <span style="font-family:var(--fd);font-size:.68rem;color:rgba(255,255,255,.25)">Data flowing in and out between scenes</span>
+      </div>
+      <div class="iob-body">
+        <div class="iob-col">
+          <div class="iob-col-lbl">← Inputs from prev scene</div>
+          ${inJacks || '<div class="dc-empty" style="padding:4px 0">No inputs</div>'}
+          <button class="iob-add" onclick="addIOJack('${s.id}','in')">+ Input</button>
+        </div>
+        <div class="iob-center">
+          <div class="iob-flow">⇄</div>
+          <div style="font-family:var(--fm);font-size:.38rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.15);text-align:center">Ch.${s.chapter}</div>
+        </div>
+        <div class="iob-col out-col">
+          <div class="iob-col-lbl">Outputs to next scene →</div>
+          ${outJacks || '<div class="dc-empty" style="padding:4px 0;text-align:left">No outputs</div>'}
+          <button class="iob-add" onclick="addIOJack('${s.id}','out')">+ Output</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Propagation State at this Chapter -->
+    ${propagations.length ? `
+    <div class="detail-card">
+      <div class="dc-head">
+        <div class="dc-title">⟳ Propagation State at Ch.${s.chapter}</div>
+        <button class="tb-btn" style="padding:2px 7px;font-size:.42rem" onclick="openModal('arc')">+ Arc</button>
+      </div>
+      <div class="dc-body">${chPropRows}</div>
+    </div>` : ''}
+
+    <!-- Notes -->
+    <div class="notes-card">
+      <div class="dc-head" style="padding:9px 14px"><div class="dc-title">Director's Notes</div></div>
+      <div class="notes-body">
+        <textarea rows="3" placeholder="Scene notes, lore context, branch outcomes…" 
+          onchange="updateScene('${s.id}','notes',this.value)">${s.notes||''}</textarea>
+      </div>
+    </div>`;
+}
+
+/* ═══ PROPAGATION ════════════════════════════════════════════ */
+function computeArcValue(p, chapter) {
+  const t = Math.max(0, chapter - p.startChapter);
+  let v;
+  switch(p.shape) {
+    case 'linear':      v = p.startValue + p.rate * t; break;
+    case 'exponential': v = p.startValue * Math.pow(p.rate, t); break;
+    case 'decay':       v = p.startValue * Math.pow(Math.max(0,1 - p.rate * 0.08), t); break;
+    case 'sigmoid': {
+      const midT = 10;
+      v = p.minValue + (p.maxValue - p.minValue) / (1 + Math.exp(-(t - midT) * p.rate * 0.3));
+      break;
+    }
+    case 'cyclical':    v = p.startValue + p.rate * Math.sin(t * Math.PI * 0.4); break;
+    default:            v = p.startValue;
+  }
+  return Math.min(p.maxValue, Math.max(p.minValue, v));
+}
+
+function computeArcMax(p) {
+  // Compute max value across all chapters
+  const chapters = Array.from({length:25},(_,i)=>i+1);
+  return Math.max(...chapters.map(ch => computeArcValue(p, ch)));
+}
+
+function selectProp(id) {
+  selectedPropId = (selectedPropId === id) ? null : id;
+  renderPropMiniList();
+  renderPropInspector();
+}
+
+function renderPropInspector() {
+  const el = document.getElementById('pi-body');
+  const arcListEl = document.getElementById('arc-list');
+  if (!arcListEl) return;
+
+  arcListEl.innerHTML = propagations.map(p => buildArcCard(p)).join('');
+}
+
+function buildArcCard(p) {
+  const selected = p.id === selectedPropId;
+  const expanded = selected;
+  const chapters = Array.from({length:24},(_,i)=>i+1);
+
+  // SVG arc visualizer
+  const W=280, H=80, pad=10;
+  const maxV = Math.max(...chapters.map(ch => computeArcValue(p, ch)), p.startValue + 1);
+  const pts = chapters.map(ch => {
+    const v = computeArcValue(p, ch);
+    const x = pad + ((ch-1)/23)*(W-pad*2);
+    const y = H - pad - ((v - p.minValue)/(maxV - p.minValue || 1))*(H-pad*2);
+    return [x, y];
+  });
+  const pathD = pts.map((pt, i) => (i===0?'M':'L') + pt[0].toFixed(1) + ',' + pt[1].toFixed(1)).join(' ');
+
+  // Scene markers on the arc
+  const sceneMarkers = allScenes().map(s => {
+    const v = computeArcValue(p, s.chapter);
+    const x = pad + ((s.chapter-1)/23)*(W-pad*2);
+    const y = H - pad - ((v - p.minValue)/(maxV - p.minValue || 1))*(H-pad*2);
+    const isSel = s.id === selectedSceneId;
+    return `<g>
+      <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${isSel?4:2.5}" fill="${isSel?sceneColor(s):p.color}" opacity="${isSel?1:.6}"/>
+      ${isSel?`<text x="${x.toFixed(1)}" y="${(y-7).toFixed(1)}" text-anchor="middle" fill="${sceneColor(s)}" font-size="7" font-family="Orbitron,monospace">Ch.${s.chapter}</text>`:''}
+    </g>`;
+  }).join('');
+
+  // Projection table rows (scenes only)
+  const projRows = allScenes().map(s => {
+    const v = computeArcValue(p, s.chapter);
+    const isSel = s.id === selectedSceneId;
+    return `<tr class="${isSel?'proj-scene-row':''}" style="--p-color:${p.color}">
+      <td>${s.name}</td>
+      <td>${s.chapter}</td>
+      <td style="color:${p.color}">${v.toFixed(1)}</td>
+    </tr>`;
+  }).join('');
+
+  // Conditions
+  const condRows = (p.conditions||[]).map((c,ci) => `
+    <div class="condition-row">
+      <div class="cond-symbol">${c.symbol}</div>
+      <div class="cond-name">${c.crestName}</div>
+      <div class="cond-effect cond-${c.effect}">${c.effect.toUpperCase()}</div>
+      <button class="cond-remove" onclick="removeCondition('${p.id}',${ci})">✕</button>
+    </div>`).join('');
+
+  return `<div class="arc-card ${selected?'selected-arc':''} ${expanded?'expanded':''}" 
+      style="--p-color:${p.color}" id="arc-${p.id}">
+    <div class="ac-head" onclick="selectProp('${p.id}')">
+      <div class="ac-dot" style="background:${p.color};box-shadow:0 0 5px ${p.color}"></div>
+      <div class="ac-name">${p.symbol} ${p.name}</div>
+      <div class="ac-shape" style="border-color:${p.color}55;color:${p.color}">${p.shape}</div>
+      <div class="ac-expand" style="color:${p.color}">▾</div>
+    </div>
+    ${expanded ? `
+    <div class="ac-body">
+      <!-- Arc curve visualizer -->
+      <div class="arc-vis">
+        <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" width="100%" height="100%">
+          <!-- Grid lines -->
+          ${[0.25,0.5,0.75].map(f=>`<line x1="${pad}" y1="${pad+(H-pad*2)*f}" x2="${W-pad}" y2="${pad+(H-pad*2)*f}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>`).join('')}
+          <!-- Track -->
+          <path d="${pathD}" stroke="${p.color}30" stroke-width="1.5" fill="none"/>
+          <!-- Filled area -->
+          <path d="${pathD} L${pts[pts.length-1][0].toFixed(1)},${H-pad} L${pad},${H-pad} Z" fill="${p.color}" opacity=".08"/>
+          <!-- Main curve -->
+          <path d="${pathD}" stroke="${p.color}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"
+            stroke-dasharray="600" stroke-dashoffset="600" style="animation:arc-draw 1s ease forwards"/>
+          <!-- Scene dots -->
+          <g class="arc-scene-markers">${sceneMarkers}</g>
+        </svg>
+        <div class="arc-vis-labels">
+          <span class="arc-vis-lbl">Ch.1</span>
+          <span class="arc-vis-lbl">${p.name}</span>
+          <span class="arc-vis-lbl">Ch.24</span>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="ac-row">
+        <div class="ac-lbl">Shape</div>
+        <select class="ac-select" onchange="updateProp('${p.id}','shape',this.value)">
+          ${['linear','exponential','decay','sigmoid','cyclical'].map(sh=>`<option value="${sh}" ${p.shape===sh?'selected':''}>${sh}</option>`).join('')}
+        </select>
+      </div>
+      <div class="ac-row">
+        <div class="ac-lbl">Rate</div>
+        <input type="number" class="ac-input" value="${p.rate}" step="0.1" min="0.1" max="10" onchange="updateProp('${p.id}','rate',parseFloat(this.value)||1)">
+      </div>
+      <div class="ac-row">
+        <div class="ac-lbl">Start Value</div>
+        <input type="number" class="ac-input" value="${p.startValue}" onchange="updateProp('${p.id}','startValue',parseFloat(this.value)||0)">
+      </div>
+      <div class="ac-row">
+        <div class="ac-lbl">Start Ch.</div>
+        <input type="number" class="ac-input" value="${p.startChapter}" min="1" onchange="updateProp('${p.id}','startChapter',parseInt(this.value)||1)">
+      </div>
+      <div class="ac-row">
+        <div class="ac-lbl">Max Value</div>
+        <input type="number" class="ac-input" value="${p.maxValue}" onchange="updateProp('${p.id}','maxValue',parseFloat(this.value)||100)">
+      </div>
+
+      <!-- Heraldic Conditions -->
+      <div class="pi-sec-lbl" style="margin-top:4px">Heraldic Conditions</div>
+      <div style="font-family:var(--fd);font-size:.65rem;color:rgba(255,255,255,.25);font-style:italic;margin-bottom:4px">Crests in nearby zones modify or block this arc</div>
+      ${condRows}
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${CREST_BEHAVIORS.map(cb=>`<button 
+          style="font-family:var(--fm);font-size:.41rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:10px;border:1px solid ${cb.color}44;background:${cb.color}11;color:${cb.color};cursor:pointer;transition:all .1s"
+          onmouseover="this.style.background='${cb.color}22'" onmouseout="this.style.background='${cb.color}11'"
+          onclick="addCondition('${p.id}','${cb.id}','${cb.name}','${cb.symbol}','${cb.color}','${cb.defaultEffect}')"
+          title="Add ${cb.name} condition">${cb.symbol} ${cb.name}</button>`).join('')}
+      </div>
+
+      <!-- Chapter Projection Table -->
+      <div class="pi-sec-lbl" style="margin-top:4px">Scene Projection</div>
+      <table class="proj-table">
+        <thead><tr><th>Scene</th><th>Ch.</th><th>Value</th></tr></thead>
+        <tbody>${projRows}</tbody>
+      </table>
+
+      <!-- Delete arc -->
+      <button onclick="deleteProp('${p.id}')" style="font-family:var(--fm);font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;padding:5px;border-radius:4px;border:1px solid rgba(255,60,60,.2);background:transparent;color:rgba(255,80,80,.4);cursor:pointer;width:100%;margin-top:4px;transition:all .12s" onmouseover="this.style.background='rgba(255,0,0,.08)';this.style.color='#ff3344'" onmouseout="this.style.background='transparent';this.style.color='rgba(255,80,80,.4)'">✕ Delete Arc</button>
+    </div>` : ''}
+  </div>`;
+}
+
+/* ═══ SCENE ACTIONS ══════════════════════════════════════════ */
+function updateScene(id, field, val) {
+  const s = findScene(id);
+  if (!s) return;
+  s[field] = val;
+  save(); renderAll();
+}
+
+function setActiveScene(id) {
+  allScenes().forEach(s => s.isActive = (s.id === id));
+  save(); renderAll();
+  const s = findScene(id);
+  toast(`⚑ Standard moved to "${s?.name}"`);
+}
+
+function toggleSceneSeal(id) {
+  const s = findScene(id);
+  if (!s) return;
+  s.sealed = !s.sealed;
+  if (s.sealed) s.isActive = false;
+  save(); renderAll();
+  toast(s.sealed ? `🔒 "${s.name}" sealed — history locked` : `🔓 "${s.name}" unsealed`);
+}
+
+function removeHeraldry(type, sceneId, itemId) {
+  const s = findScene(sceneId);
+  if (!s || !s.heraldry) return;
+  if (type === 'glyph') s.heraldry.glyphs = s.heraldry.glyphs.filter(id => id !== itemId);
+  else if (type === 'rune') s.heraldry.runes = s.heraldry.runes.filter(id => id !== itemId);
+  else s.heraldry[type] = null;
+  save(); renderAll();
+  toast('Heraldic element removed');
+}
+
+function quickAddHeraldry(sceneId, type) {
+  const s = findScene(sceneId);
+  if (!s) return;
+  const entries = Object.values(LIB_MAP).filter(e => e.type === type);
+  if (!entries.length) { toast('No ' + type + ' entries in Library'); return; }
+  const pick = entries.find(e => !(s.heraldry?.glyphs||[]).includes(e.id)) || entries[0];
+  if (type === 'glyph') { if (!s.heraldry.glyphs.includes(pick.id)) s.heraldry.glyphs.push(pick.id); }
+  else if (type === 'rune') { if (!s.heraldry.runes.includes(pick.id)) s.heraldry.runes.push(pick.id); }
+  save(); renderAll();
+  toast(`${pick.symbol} ${pick.name} added`);
+}
+
+function quickAddZone(sceneId) {
+  const s = findScene(sceneId);
+  if (!s) return;
+  const name = prompt('Zone name to add to this scene:');
+  if (!name?.trim()) return;
+  s.zones.push(name.trim());
+  save(); renderAll();
+  toast('Zone added to scene');
+}
+
+function quickAddActor(sceneId) {
+  const s = findScene(sceneId);
+  if (!s) return;
+  const actors = ['Kael Voryn','Tornado — Ashfall','Plague of Ash','World State'];
+  const available = actors.filter(a => !s.actors.includes(a));
+  if (!available.length) { toast('All actors already in scene'); return; }
+  s.actors.push(available[0]);
+  save(); renderAll();
+  toast(`${available[0]} added to scene`);
+}
+
+function addIOJack(sceneId, dir) {
+  const s = findScene(sceneId);
+  if (!s) return;
+  const name = prompt(`${dir === 'in' ? 'Input' : 'Output'} signal name (e.g. KAEL_STATE):`);
+  if (!name?.trim()) return;
+  const jack = {name: name.trim().toUpperCase(), type:'DATA', color:'#7fd4c8'};
+  if (dir === 'in') s.ioIn.push(jack);
+  else s.ioOut.push(jack);
+  save(); renderAll();
+  toast(`I/O ${dir} added: ${jack.name}`);
+}
+
+function toggleSealMode() {
+  sealMode = !sealMode;
+  const btn = document.getElementById('seal-btn');
+  btn.textContent = sealMode ? '🔒 Click scene to seal' : '🔒 Seal Mode';
+  btn.style.background = sealMode ? 'rgba(200,151,58,.25)' : '';
+  btn.style.borderColor = sealMode ? 'var(--brass)' : '';
+  if (sealMode) toast('Seal mode ON — click any scene to toggle its seal');
+  else toast('Seal mode OFF');
+}
+
+/* ═══ PROPAGATION ACTIONS ════════════════════════════════════ */
+function updateProp(id, field, val) {
+  const p = propagations.find(x => x.id === id);
+  if (!p) return;
+  p[field] = val;
+  save(); renderPropInspector(); renderPropMiniList();
+  if (selectedSceneId) renderDetail();
+}
+
+function addCondition(pid, crestId, crestName, symbol, color, effect) {
+  const p = propagations.find(x => x.id === pid);
+  if (!p) return;
+  if (p.conditions.some(c => c.crestId === crestId)) { toast(`${crestName} condition already exists`); return; }
+  p.conditions.push({crestId, crestName, symbol, color, effect, modifier: effect === 'cancel' ? -999 : effect === 'suppress' ? 0 : 2});
+  save(); renderPropInspector();
+  toast(`${symbol} ${crestName} — ${effect} condition added`);
+}
+
+function removeCondition(pid, idx) {
+  const p = propagations.find(x => x.id === pid);
+  if (!p) return;
+  p.conditions.splice(idx, 1);
+  save(); renderPropInspector();
+  toast('Condition removed');
+}
+
+function deleteProp(id) {
+  if (!confirm('Delete this propagation arc?')) return;
+  propagations = propagations.filter(p => p.id !== id);
+  if (selectedPropId === id) selectedPropId = null;
+  save(); renderAll();
+  toast('Arc deleted');
+}
+
+/* ═══ MODAL ══════════════════════════════════════════════════ */
+let modalTargetActId = null;
+function openModal(mode, actId) {
+  modalMode = mode;
+  modalTargetActId = actId || acts[acts.length-1]?.id;
+  const overlay = document.getElementById('modal-overlay');
+  const title = document.getElementById('modal-title');
+  const body = document.getElementById('modal-body');
+  const confirm = document.getElementById('modal-confirm');
+
+  if (mode === 'scene') {
+    title.textContent = 'New Scene';
+    confirm.textContent = 'Create Scene';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-lbl">Scene Name</div>
+        <input class="form-input" id="f-sname" placeholder="e.g. The Awakening, First Contact…"></div>
+      <div class="form-group"><div class="form-lbl">Chapter Number</div>
+        <input class="form-input" id="f-chapter" type="number" min="1" value="${allScenes().length + 1}"></div>
+      <div class="form-group"><div class="form-lbl">Act</div>
+        <select class="form-select" id="f-act">
+          ${acts.map(a=>`<option value="${a.id}" ${a.id===modalTargetActId?'selected':''}>${a.name}</option>`).join('')}
+        </select></div>
+      <div class="form-group"><div class="form-lbl">Color</div>
+        <input type="color" id="f-scolor" value="#b1d0f0" style="width:48px;height:32px;border:1px solid rgba(255,255,255,.1);border-radius:4px;cursor:pointer;background:none;padding:2px"></div>
+      <div class="form-group"><div class="form-lbl">Notes</div>
+        <textarea class="form-textarea" id="f-snotes" placeholder="Director notes for this scene…"></textarea></div>`;
+  } else if (mode === 'act') {
+    title.textContent = 'New Act';
+    confirm.textContent = 'Create Act';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-lbl">Act Name</div>
+        <input class="form-input" id="f-aname" placeholder="e.g. Act II — The Spreading Dark…"></div>
+      <div class="form-group"><div class="form-lbl">Color</div>
+        <input type="color" id="f-acolor" value="#9b7fd4" style="width:48px;height:32px;border:1px solid rgba(255,255,255,.1);border-radius:4px;cursor:pointer;background:none;padding:2px"></div>`;
+  } else if (mode === 'arc') {
+    title.textContent = 'New Propagation Arc';
+    confirm.textContent = 'Create Arc';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-lbl">Entity Name</div>
+        <input class="form-input" id="f-pname" placeholder="e.g. Insect Colony, The Ancient Oak, Faction Tension…"></div>
+      <div class="form-group"><div class="form-lbl">Symbol (emoji)</div>
+        <input class="form-input" id="f-psymbol" placeholder="🐛" maxlength="2" style="font-size:1.2rem;width:60px"></div>
+      <div class="form-group"><div class="form-lbl">Arc Shape</div>
+        <select class="form-select" id="f-pshape">
+          <option value="linear">Linear — steady growth/change</option>
+          <option value="exponential">Exponential — accelerating spread</option>
+          <option value="decay">Decay — diminishing over time</option>
+          <option value="sigmoid">Sigmoid — slow start, fast mid, plateau</option>
+          <option value="cyclical">Cyclical — rises and falls rhythmically</option>
+        </select></div>
+      <div class="form-group"><div class="form-lbl">Rate (speed of change per chapter)</div>
+        <input class="form-input" id="f-prate" type="number" value="1.4" step="0.1" min="0.1" max="10"></div>
+      <div class="form-group"><div class="form-lbl">Starting Value</div>
+        <input class="form-input" id="f-pstart" type="number" value="1" min="0"></div>
+      <div class="form-group"><div class="form-lbl">Max Value</div>
+        <input class="form-input" id="f-pmax" type="number" value="100"></div>
+      <div class="form-group"><div class="form-lbl">Starts at Chapter</div>
+        <input class="form-input" id="f-pch" type="number" value="1" min="1"></div>
+      <div class="form-group"><div class="form-lbl">Color</div>
+        <input type="color" id="f-pcolor" value="#82e0aa" style="width:48px;height:32px;border:1px solid rgba(255,255,255,.1);border-radius:4px;cursor:pointer;background:none;padding:2px"></div>
+      <div class="form-group"><div class="form-lbl">Description</div>
+        <textarea class="form-textarea" id="f-pdesc" placeholder="What is this arc tracking? What does it mean narratively?"></textarea></div>`;
+  }
+  overlay.classList.remove('hidden');
+  setTimeout(() => document.querySelector('#modal-body input, #modal-body select')?.focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  modalMode = null;
+}
+
+function confirmModal() {
+  if (modalMode === 'scene') {
+    const name = document.getElementById('f-sname').value.trim();
+    const chapter = parseInt(document.getElementById('f-chapter').value) || 1;
+    const actId = document.getElementById('f-act').value;
+    const color = document.getElementById('f-scolor').value;
+    const notes = document.getElementById('f-snotes').value;
+    if (!name) { toast('Scene name required'); return; }
+    const act = findAct(actId);
+    if (!act) return;
+    const newScene = {
+      id: 'sc-' + Date.now(), name, chapter, color,
+      isActive: false, sealed: false,
+      scene_type: 'INT',
+      time_of_day: 'DAY',
+      zones: [], actors: [], dialogue: [],
+      heraldry: { standard: null, seal: null, glyphs: [], runes: [], emblem: null },
+      ioIn: [], ioOut: [], notes,
+    };
+    act.scenes.push(newScene);
+    act.scenes.sort((a, b) => a.chapter - b.chapter);
+    selectedSceneId = newScene.id;
+    save(); closeModal(); renderAll();
+    toast(`✓ "${name}" created in ${act.name}`);
+
+  } else if (modalMode === 'act') {
+    const name = document.getElementById('f-aname').value.trim();
+    const color = document.getElementById('f-acolor').value;
+    if (!name) { toast('Act name required'); return; }
+    const newAct = {
+      id: 'act-' + Date.now(), name, color,
+      emblemId: null, sealed: false, scenes: [],
+    };
+    acts.push(newAct);
+    save(); closeModal(); renderAll();
+    toast(`✓ "${name}" created`);
+
+  } else if (modalMode === 'arc') {
+    const name = document.getElementById('f-pname').value.trim();
+    const symbol = document.getElementById('f-psymbol').value.trim() || '◈';
+    const shape = document.getElementById('f-pshape').value;
+    const rate = parseFloat(document.getElementById('f-prate').value) || 1.4;
+    const startValue = parseFloat(document.getElementById('f-pstart').value) || 1;
+    const maxValue = parseFloat(document.getElementById('f-pmax').value) || 100;
+    const startChapter = parseInt(document.getElementById('f-pch').value) || 1;
+    const color = document.getElementById('f-pcolor').value;
+    const desc = document.getElementById('f-pdesc').value;
+    if (!name) { toast('Arc name required'); return; }
+    const newProp = {
+      id: 'prop-' + Date.now(), name, symbol, shape, rate,
+      startValue, minValue: 0, maxValue, startChapter, color,
+      conditions: [], desc,
+    };
+    propagations.push(newProp);
+    selectedPropId = newProp.id;
+    save(); closeModal(); renderAll();
+    toast(`✓ Propagation arc "${name}" created`);
+  }
+}
+
+/* ═══ EXPORT ═════════════════════════════════════════════════ */
+/* ═══ INLINE RENAME — Acts ═══════════════════════════════════ */
+function inlineEditAct(e, actId) {
+  e.stopPropagation();
+  const span = document.getElementById('an-' + actId);
+  if (!span || span.querySelector('input')) return;
+  const act = findAct(actId);
+  if (!act) return;
+
+  const input = document.createElement('input');
+  input.className = 'inline-edit';
+  input.value = act.name;
+  const orig = span.textContent;
+  span.textContent = '';
+  span.appendChild(input);
+  input.focus();
+  input.select();
+
+  const commit = () => {
+    const val = input.value.trim();
+    if (val && val !== orig) {
+      act.name = val;
+      save();
+      renderAll();
+      toast(`Act renamed: "${val}"`);
+    } else {
+      span.textContent = orig;
+    }
+  };
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') { ev.preventDefault(); input.blur(); }
+    if (ev.key === 'Escape') { input.value = orig; input.blur(); }
+    ev.stopPropagation();
+  });
+}
+
+/* ═══ INLINE RENAME — Scenes ═════════════════════════════════ */
+function inlineEditScene(e, sceneId) {
+  e.stopPropagation();
+  // Don't fire if already selected and clicking to open detail — 
+  // dblclick is distinct so this is always intentional
+  const nameEl = document.getElementById('sn-name-' + sceneId);
+  if (!nameEl || nameEl.querySelector('input')) return;
+  const s = findScene(sceneId);
+  if (!s || s.sealed) { toast('🔒 Scene is sealed — unseal to rename'); return; }
+
+  const input = document.createElement('input');
+  input.className = 'inline-edit';
+  input.value = s.name;
+  const orig = s.name;
+  nameEl.textContent = '';
+  nameEl.appendChild(input);
+  input.focus();
+  input.select();
+
+  const commit = () => {
+    const val = input.value.trim();
+    if (val && val !== orig) {
+      s.name = val;
+      save();
+      renderAll();
+      toast(`Scene renamed: "${val}"`);
+    } else {
+      nameEl.textContent = orig;
+    }
+  };
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') { ev.preventDefault(); input.blur(); }
+    if (ev.key === 'Escape') { input.value = orig; input.blur(); }
+    ev.stopPropagation();
+  });
+}
+
+/* Sidebar version — targets the sb-sn- span */
+function inlineEditSceneSidebar(e, sceneId) {
+  e.stopPropagation();
+  const nameEl = document.getElementById('sb-sn-' + sceneId);
+  if (!nameEl || nameEl.querySelector('input')) return;
+  const s = findScene(sceneId);
+  if (!s || s.sealed) { toast('🔒 Sealed — unseal to rename'); return; }
+
+  const input = document.createElement('input');
+  input.className = 'inline-edit';
+  input.value = s.name;
+  const orig = s.name;
+  nameEl.textContent = '';
+  nameEl.appendChild(input);
+  input.focus(); input.select();
+
+  const commit = () => {
+    const val = input.value.trim();
+    if (val && val !== orig) {
+      s.name = val; save(); renderAll();
+      toast(`Scene renamed: "${val}"`);
+    } else { nameEl.textContent = orig; }
+  };
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter')  { ev.preventDefault(); input.blur(); }
+    if (ev.key === 'Escape') { input.value = orig; input.blur(); }
+    ev.stopPropagation();
+  });
+}
+
+/* Also expose rename from the detail panel name input */
+function renameSceneFromDetail(sceneId, val) {
+  const s = findScene(sceneId);
+  if (!s || !val.trim()) return;
+  s.name = val.trim();
+  save();
+  // Update sidebar and timeline without full re-render (preserves input focus)
+  renderTimeline();
+  renderSidebar();
+}
+
+/* ═══ DRAG-TO-REORDER SCENES ON TIMELINE ══════════════════════ */
+let dragSrcSceneId = null;
+let dragSrcActId   = null;
+
+function sceneDragStart(e, sceneId) {
+  dragSrcSceneId = sceneId;
+  dragSrcActId   = findActForScene(sceneId)?.id || null;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('sceneId', sceneId);
+  setTimeout(() => document.getElementById('sn-' + sceneId)?.classList.add('dragging'), 0);
+}
+
+function sceneDragOver(e, targetSceneId) {
+  if (!dragSrcSceneId || dragSrcSceneId === targetSceneId) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+
+  // Determine left or right drop position based on cursor
+  const el = document.getElementById('sn-' + targetSceneId);
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const isLeft = e.clientX < rect.left + rect.width / 2;
+  el.classList.remove('drag-over-left', 'drag-over-right');
+  el.classList.add(isLeft ? 'drag-over-left' : 'drag-over-right');
+}
+
+function sceneDragLeave(targetSceneId) {
+  const el = document.getElementById('sn-' + targetSceneId);
+  el?.classList.remove('drag-over-left', 'drag-over-right');
+}
+
+function sceneDrop(e, targetSceneId) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!dragSrcSceneId || dragSrcSceneId === targetSceneId) { sceneDragEnd(); return; }
+
+  const srcScene  = findScene(dragSrcSceneId);
+  const tgtScene  = findScene(targetSceneId);
+  if (!srcScene || !tgtScene) { sceneDragEnd(); return; }
+
+  const tgtAct = findActForScene(targetSceneId);
+  const srcAct = findActForScene(dragSrcSceneId);
+  if (!tgtAct) { sceneDragEnd(); return; }
+
+  // Determine insert position
+  const el = document.getElementById('sn-' + targetSceneId);
+  const rect = el?.getBoundingClientRect();
+  const insertBefore = rect ? e.clientX < rect.left + rect.width / 2 : false;
+
+  // Remove from source act
+  if (srcAct) srcAct.scenes = srcAct.scenes.filter(s => s.id !== dragSrcSceneId);
+
+  // Insert into target act at correct position
+  const tgtIdx = tgtAct.scenes.findIndex(s => s.id === targetSceneId);
+  const insertIdx = insertBefore ? tgtIdx : tgtIdx + 1;
+  tgtAct.scenes.splice(insertIdx, 0, srcScene);
+
+  // Re-sequence chapter numbers within each act
+  resequenceChapters();
+
+  save();
+  renderAll();
+  sceneDragEnd();
+
+  const movedName = srcScene.name;
+  const moved = srcAct?.id !== tgtAct.id ? ` → moved to ${tgtAct.name}` : '';
+  toast(`"${movedName}" repositioned${moved}`);
+}
+
+function sceneDragEnd() {
+  dragSrcSceneId = null;
+  dragSrcActId   = null;
+  document.querySelectorAll('.scene-node').forEach(el => {
+    el.classList.remove('dragging', 'drag-over-left', 'drag-over-right');
+  });
+}
+
+function resequenceChapters() {
+  // Preserve chapter numbers but re-sort act groups by their first scene chapter
+  // Scenes within an act keep their chapter numbers — user can edit them in detail
+  // This just ensures the order is consistent after drag
+  acts.forEach(act => {
+    // Sort by current chapter number to maintain relative order
+    act.scenes.sort((a, b) => a.chapter - b.chapter);
+    // Re-assign sequential chapters across all acts
+  });
+  // Global re-sequence: make chapters sequential across all acts in order
+  let ch = 1;
+  acts.forEach(act => {
+    act.scenes.forEach(s => {
+      s.chapter = ch++;
+    });
+  });
+}
+
+function exportScenes() {
+  const blob = new Blob([JSON.stringify({acts, propagations}, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'quantum-loom-scenes.json'; a.click();
+  toast('↓ Scene structure exported');
+}
+
+/* ═══ KEYBOARD / EVENTS ══════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); if (sealMode) toggleSealMode(); }
+  if ((e.metaKey||e.ctrlKey) && e.key === 'n') { e.preventDefault(); openModal('scene'); }
+});
+window.addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+/* ═══ TOAST ══════════════════════════════════════════════════ */
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.remove('show');
+  void el.offsetWidth; el.classList.add('show');
+}
+
+/* ── Hub storage relay listener ─────────────────────── */
+window.addEventListener('message', e => {
+  const d = e.data; if(!d||typeof d!=='object') return;
+  if(d.type==='hub:storage:updated'&&d.key==='ql-library') {
+    loadLibrary(); renderAll();
+  }
+  if(d.type==='hub:init') {
+    loadLibrary(); renderAll();
+  }
+});
+
+document.addEventListener('DOMContentLoaded', init);
+
+/* ── Cross-layer navigation via hub postMessage ── */
+function navTo(layerId) {
+  window.parent.postMessage({ type: 'ql:switchLayer', layer: layerId }, '*');
+}
+
+
+/* ── Quantum Loom Theme System ──────────────────────────────── */
+(function initQLTheme() {
+  const MAP = {
+    'c-bg':'--bg',
+    'c-surf':'--panel',
+    'c-surf2':'--panel-hi',
+    'c-surf3':'--panel-mid',
+    'c-edge':'--edge',
+    'c-accent1':'--venturan',
+    'c-accent2':'--amber',
+    'c-accent3':'--emerald',
+    'c-accent4':'--fusion',
+    'c-danger':'--blood',
+    'c-warm':'--solari'
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([canonical, varName]) => {
+      if (tokens[canonical] !== undefined)
+        root.style.setProperty(varName, tokens[canonical]);
+    });
+  }
+  // Apply saved theme on load
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  // Listen for live theme broadcasts from hub
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens)
+      applyTokens(e.data.tokens);
+  });
+})();
+
+</script>
+</body>
+</html>

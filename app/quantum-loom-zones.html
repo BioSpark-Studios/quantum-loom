@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Quantum Loom — Zone Canvas</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080909; --panel:#0f1012; --panel-hi:#151719;
+  --panel-edge:rgba(255,255,255,.06); --panel-deep:rgba(0,0,0,.4);
+  --venturan:#b1d0f0; --solari:#f98f3b; --fusion:#9b7fd4;
+  --totem:#7fd4c8; --blood:#d45b5b; --emerald:#4caf7d; --amber:#e8b84b;
+  --led-green:#00ff88; --led-amber:#ffaa00; --led-red:#ff3344;
+  --led-cyan:#00d4ff; --led-pink:#ff6b9d;
+  --brass:#c8973a; --brass-dim:#8a6422; --brass-glow:rgba(200,151,58,.12);
+  --fm:'Orbitron',monospace; --fd:'Space Grotesk',sans-serif;
+  --fcode:'JetBrains Mono',monospace;
+}
+@keyframes led-pulse  {0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes breathe    {0%,100%{opacity:.3}50%{opacity:.85}}
+@keyframes zone-glow  {0%,100%{box-shadow:0 0 20px var(--z-glow,rgba(177,208,240,.06)),0 0 0 1px var(--z-border,rgba(177,208,240,.15))}50%{box-shadow:0 0 40px var(--z-glow,rgba(177,208,240,.1)),0 0 0 1px var(--z-border,rgba(177,208,240,.25))}}
+@keyframes toast-in   {0%{opacity:0;transform:translateY(8px)}15%,80%{opacity:1;transform:translateY(0)}100%{opacity:0}}
+@keyframes mod-flash  {0%{background:rgba(255,255,255,.15)}100%{background:transparent}}
+@keyframes actor-enter{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+@keyframes unfurl     {from{opacity:0;transform:scaleY(.92);transform-origin:top}to{opacity:1;transform:scaleY(1)}}
+@keyframes shimmer    {0%{opacity:.4}50%{opacity:.9}100%{opacity:.4}}
+
+body{background:var(--bg);font-family:var(--fd);color:#fff;height:100vh;overflow:hidden;display:flex;flex-direction:column;
+  background-image:radial-gradient(ellipse at 20% 50%,rgba(177,208,240,.02) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(155,127,212,.02) 0%,transparent 60%)}
+
+/* ── TOP BAR ── */
+#topbar{height:44px;flex-shrink:0;background:rgba(6,6,8,.98);border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;padding:0 16px;gap:10px;z-index:300}
+.logo{font-family:var(--fm);font-size:.6rem;font-weight:700;letter-spacing:.28em;color:var(--venturan);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.logo-mark{width:22px;height:22px;border:1.5px solid var(--venturan);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:breathe 4s ease-in-out infinite}
+.tb-sep{width:1px;height:18px;background:rgba(255,255,255,.1)}
+.tb-tab{font-family:var(--fm);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;padding:5px 12px;border-radius:3px;border:1px solid transparent;cursor:pointer;transition:all .15s;color:rgba(255,255,255,.3);background:none}
+.tb-tab:hover{color:rgba(255,255,255,.6)}
+.tb-tab.active{color:var(--solari);border-color:rgba(249,143,59,.3);background:rgba(249,143,59,.06)}
+.tb-right{display:flex;align-items:center;gap:7px;margin-left:auto}
+.tb-btn{font-family:var(--fm);font-size:.48rem;letter-spacing:.15em;text-transform:uppercase;padding:5px 12px;border-radius:3px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.45);cursor:pointer;transition:all .15s}
+.tb-btn:hover{border-color:var(--venturan);color:var(--venturan)}
+.tb-btn.hot{background:linear-gradient(135deg,var(--brass),#e8b84b);border-color:var(--brass);color:#1a1200;font-weight:700}
+.tb-btn.hot:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(200,151,58,.3)}
+
+/* ── WORKSPACE ── */
+#workspace{flex:1;display:flex;overflow:hidden}
+
+/* ── LEFT SIDEBAR — Zone list & controls ── */
+#zone-sidebar{width:210px;flex-shrink:0;background:rgba(8,8,10,.98);border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;overflow:hidden}
+.sb-head{padding:12px 12px 10px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.sb-title{font-family:var(--fm);font-size:.52rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.sb-new-btn{width:22px;height:22px;border-radius:3px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.3);cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.sb-new-btn:hover{border-color:var(--venturan);color:var(--venturan)}
+.zone-list{flex:1;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:3px}
+.zone-list::-webkit-scrollbar{width:3px}
+.zone-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.zl-item{padding:8px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.05);cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:7px}
+.zl-item:hover{background:rgba(255,255,255,.04)}
+.zl-item.active{background:rgba(255,255,255,.06);border-color:var(--z-color,rgba(177,208,240,.3))}
+.zl-led{width:7px;height:7px;border-radius:50%;flex-shrink:0;animation:led-pulse 2.5s ease-in-out infinite}
+.zl-info{flex:1;min-width:0}
+.zl-name{font-family:var(--fm);font-size:.52rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zl-meta{font-family:var(--fd);font-size:.58rem;color:rgba(255,255,255,.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zl-count{font-family:var(--fcode);font-size:.44rem;color:rgba(255,255,255,.2);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);padding:1px 5px;border-radius:10px;flex-shrink:0}
+
+/* Actor pool below zone list */
+.actor-pool{border-top:1px solid rgba(255,255,255,.05);padding:8px 6px;flex-shrink:0}
+.ap-title{font-family:var(--fm);font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:0 4px 6px}
+.ap-items{display:flex;flex-direction:column;gap:2px}
+.ap-actor{padding:5px 8px;border-radius:4px;border:1px solid rgba(255,255,255,.05);cursor:grab;transition:all .12s;display:flex;align-items:center;gap:6px;font-family:var(--fm);font-size:.48rem;letter-spacing:.08em;text-transform:uppercase}
+.ap-actor:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12)}
+.ap-actor.dragging{opacity:.4;cursor:grabbing}
+.ap-actor-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ap-actor.assigned{opacity:.35;cursor:default}
+
+/* ── CANVAS ── */
+#zone-canvas{
+  flex:1;overflow:auto;position:relative;
+  background:var(--bg);
+  background-image:
+    linear-gradient(rgba(255,255,255,.025)1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025)1px,transparent 1px);
+  background-size:32px 32px;
+}
+#canvas-inner{position:relative;min-width:1200px;min-height:900px;padding:32px}
+
+/* ── ZONE CONTAINER ── */
+.zone-container{
+  position:absolute;border-radius:12px;
+  border:1px solid var(--z-border,rgba(177,208,240,.18));
+  background:var(--z-bg,rgba(177,208,240,.03));
+  animation:zone-glow 4s ease-in-out infinite;
+  min-width:340px;min-height:240px;
+  transition:border-color .2s,box-shadow .2s;
+  overflow:visible;
+}
+.zone-container.selected{
+  border-color:var(--z-color,var(--venturan))!important;
+  box-shadow:0 0 0 2px var(--z-color,var(--venturan))44,0 8px 40px rgba(0,0,0,.6)!important;
+  animation:none;
+}
+.zone-container.drag-over{border-color:var(--led-amber)!important;border-style:dashed!important}
+
+/* Zone header */
+.zone-head{
+  padding:10px 14px 9px;
+  background:var(--z-header,rgba(0,0,0,.5));
+  border-radius:11px 11px 0 0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  cursor:move;user-select:none;
+  display:flex;align-items:center;gap:10px;
+  position:relative;overflow:hidden;
+}
+.zone-head::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--z-color,var(--venturan)),transparent);opacity:.6}
+.zone-power{width:9px;height:9px;border-radius:50%;flex-shrink:0;animation:led-pulse 2.5s ease-in-out infinite;border:1px solid rgba(255,255,255,.2)}
+.zone-name{font-family:var(--fm);font-size:.68rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;flex:1;color:var(--z-color,var(--venturan));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zone-type-badge{font-family:var(--fm);font-size:.4rem;letter-spacing:.2em;text-transform:uppercase;padding:2px 7px;border-radius:2px;border:1px solid;flex-shrink:0;opacity:.7}
+.zone-head-btn{width:22px;height:22px;border-radius:3px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:rgba(255,255,255,.3);font-size:.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.zone-head-btn:hover{border-color:rgba(255,255,255,.25);color:#fff}
+
+/* Zone heraldic strip */
+.zone-heraldry{
+  padding:8px 14px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  display:flex;align-items:center;gap:10px;
+  background:rgba(0,0,0,.2);
+  flex-wrap:wrap;
+}
+.zh-item{display:flex;align-items:center;gap:5px;padding:3px 8px;border-radius:4px;border:1px solid;cursor:pointer;transition:all .12s}
+.zh-item:hover{filter:brightness(1.3)}
+.zh-symbol{font-size:.85rem;line-height:1}
+.zh-label{font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase}
+.zh-name{font-family:var(--fd);font-size:.65rem;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zh-empty{font-family:var(--fd);font-size:.62rem;color:rgba(255,255,255,.2);font-style:italic;padding:3px 0}
+.zh-add{width:22px;height:22px;border-radius:4px;border:1px dashed rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.2);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.zh-add:hover{border-color:var(--z-color,var(--venturan));color:var(--z-color,var(--venturan))}
+
+/* Modifier broadcast strip */
+.zone-modifiers{
+  padding:6px 14px;
+  background:rgba(0,0,0,.15);
+  border-bottom:1px solid rgba(255,255,255,.03);
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:30px;
+}
+.mod-chip{
+  font-family:var(--fcode);font-size:.48rem;
+  padding:2px 8px;border-radius:3px;
+  border:1px solid;
+  display:flex;align-items:center;gap:4px;
+  animation:mod-flash .4s ease;
+}
+.mod-sign{font-weight:700;font-size:.55rem}
+.mod-zero{font-family:var(--fd);font-size:.6rem;color:rgba(255,255,255,.15);font-style:italic;padding:2px 0}
+
+/* Zone actor drop area */
+.zone-body{
+  padding:12px;min-height:140px;position:relative;
+  display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start;
+}
+.zone-drop-hint{
+  position:absolute;inset:12px;border:1.5px dashed rgba(255,255,255,.07);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;pointer-events:none;
+  font-family:var(--fd);font-size:.7rem;color:rgba(255,255,255,.12);font-style:italic;
+  transition:all .2s;
+}
+.zone-container.drag-over .zone-drop-hint{border-color:rgba(255,170,0,.4);color:rgba(255,170,0,.4)}
+.zone-container:has(.actor-node) .zone-drop-hint{display:none}
+
+/* Zone resize handle */
+.zone-resize{position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:se-resize;opacity:.3;display:flex;align-items:flex-end;justify-content:flex-end;padding:3px}
+.zone-resize::before{content:'⌟';font-size:.8rem;color:rgba(255,255,255,.5)}
+.zone-resize:hover{opacity:.8}
+
+/* ── ACTOR NODE inside zone ── */
+.actor-node{
+  background:var(--panel);border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;padding:10px;
+  width:150px;flex-shrink:0;
+  position:relative;cursor:pointer;
+  transition:all .15s;
+  animation:actor-enter .2s ease;
+}
+.actor-node::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:8px 8px 0 0;background:var(--a-color,var(--venturan))}
+.actor-node:hover{border-color:var(--a-color,var(--venturan));transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.5)}
+.actor-node.selected-actor{border-color:var(--a-color,var(--venturan));box-shadow:0 0 0 2px var(--a-color,var(--venturan))44}
+.an-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.an-led{width:7px;height:7px;border-radius:50%;flex-shrink:0;animation:led-pulse 2s ease-in-out infinite}
+.an-name{font-family:var(--fm);font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--a-color,var(--venturan));flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.an-type{font-family:var(--fm);font-size:.38rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.2)}
+.an-stats{display:flex;flex-direction:column;gap:3px}
+.an-stat{display:flex;align-items:center;gap:5px}
+.an-stat-lbl{font-family:var(--fcode);font-size:.44rem;color:rgba(255,255,255,.25);width:40px;flex-shrink:0}
+.an-stat-bar{flex:1;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.an-stat-fill{height:3px;border-radius:2px;transition:width .3s ease}
+.an-stat-val{font-family:var(--fcode);font-size:.44rem;color:rgba(255,255,255,.3);width:20px;text-align:right}
+/* Inherited modifier display */
+.an-mods{margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,.05);display:flex;flex-wrap:wrap;gap:3px}
+.an-mod{font-family:var(--fcode);font-size:.42rem;padding:1px 5px;border-radius:2px;border:1px solid;opacity:.8}
+.an-remove{position:absolute;top:5px;right:5px;width:16px;height:16px;border-radius:3px;background:transparent;border:none;color:rgba(255,255,255,.15);cursor:pointer;font-size:.65rem;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.an-remove:hover{background:rgba(255,0,0,.15);color:#ff3344}
+
+/* ── RIGHT INSPECTOR ── */
+#inspector{width:300px;flex-shrink:0;background:rgba(8,8,10,.98);border-left:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;overflow:hidden}
+.ins-head{padding:12px 14px 10px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ins-title{font-family:var(--fm);font-size:.55rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.ins-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:12px}
+.ins-body::-webkit-scrollbar{width:3px}
+.ins-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.ins-section{display:flex;flex-direction:column;gap:7px}
+.ins-sec-lbl{font-family:var(--fm);font-size:.46rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.2);padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,.04)}
+.ins-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.ins-lbl{font-family:var(--fm);font-size:.44rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.ins-val{font-family:var(--fcode);font-size:.6rem}
+.ins-input{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:5px 8px;font-family:var(--fd);font-size:.78rem;color:#fff;outline:none;width:100%;transition:border-color .12s}
+.ins-input:focus{border-color:rgba(255,255,255,.2)}
+.ins-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;flex:1;opacity:.3;padding:20px;text-align:center}
+.ins-empty-icon{font-size:1.8rem}
+.ins-empty-text{font-family:var(--fd);font-size:.78rem;color:rgba(255,255,255,.4);font-style:italic;line-height:1.5}
+
+/* Heraldic assignment rows in inspector */
+.herald-slot{
+  display:flex;align-items:center;gap:8px;padding:7px 9px;
+  border-radius:6px;border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.02);cursor:pointer;transition:all .12s;
+}
+.herald-slot:hover{border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.04)}
+.herald-slot.filled{border-color:var(--slot-color,rgba(255,255,255,.15));background:rgba(var(--slot-rgb,255,255,255),.05)}
+.hs-symbol{font-size:1rem;width:22px;text-align:center;flex-shrink:0}
+.hs-info{flex:1;min-width:0}
+.hs-type{font-family:var(--fm);font-size:.4rem;letter-spacing:.2em;text-transform:uppercase;color:var(--slot-color,rgba(255,255,255,.2))}
+.hs-name{font-family:var(--fd);font-size:.72rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hs-empty{font-family:var(--fd);font-size:.68rem;color:rgba(255,255,255,.2);font-style:italic}
+.hs-clear{width:16px;height:16px;border-radius:2px;border:none;background:transparent;color:rgba(255,255,255,.15);cursor:pointer;font-size:.6rem;display:flex;align-items:center;justify-content:center;transition:all .1s;flex-shrink:0}
+.hs-clear:hover{color:#ff3344;background:rgba(255,0,0,.1)}
+
+/* Modifier computed stack */
+.mod-stack{display:flex;flex-direction:column;gap:4px}
+.ms-row{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:4px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)}
+.ms-icon{font-size:.85rem;width:18px;text-align:center}
+.ms-key{font-family:var(--fm);font-size:.44rem;letter-spacing:.1em;text-transform:uppercase;flex:1}
+.ms-val{font-family:var(--fcode);font-size:.6rem}
+.ms-source{font-family:var(--fd);font-size:.55rem;color:rgba(255,255,255,.2);font-style:italic}
+
+/* Traits editor */
+.trait-row{display:flex;align-items:center;gap:6px;padding:4px 0}
+.trait-lbl{font-family:var(--fm);font-size:.44rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);width:80px;flex-shrink:0}
+.trait-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;cursor:ew-resize}
+.trait-bar-fill{height:6px;border-radius:3px;transition:width .15s ease}
+.trait-val{font-family:var(--fcode);font-size:.52rem;width:24px;text-align:right}
+
+/* Zone seal indicator */
+.seal-indicator{
+  display:flex;align-items:center;gap:8px;padding:8px 10px;
+  border-radius:6px;border:1px solid;cursor:pointer;transition:all .15s;
+}
+.seal-indicator.unlocked{border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.02);color:rgba(255,255,255,.3)}
+.seal-indicator.locked{border-color:rgba(200,151,58,.4);background:rgba(200,151,58,.08);color:var(--brass)}
+.seal-icon{font-size:1rem}
+.seal-txt{font-family:var(--fm);font-size:.48rem;letter-spacing:.15em;text-transform:uppercase;flex:1}
+.seal-status{font-family:var(--fcode);font-size:.5rem}
+
+/* ── HERALDIC PICKER MODAL ── */
+#picker-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center}
+#picker-modal.hidden{display:none}
+.picker{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:10px;width:480px;max-height:78vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.9);animation:unfurl .2s ease}
+.picker-head{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.picker-title{font-family:var(--fm);font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--venturan)}
+.picker-close{background:none;border:none;color:rgba(255,255,255,.3);font-size:1rem;cursor:pointer;padding:3px 6px;border-radius:3px;transition:all .1s}
+.picker-close:hover{background:rgba(255,255,255,.06);color:#fff}
+.picker-search{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);flex-shrink:0}
+.picker-search input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:6px 10px;font-family:var(--fd);font-size:.8rem;color:#fff;outline:none;transition:border-color .12s}
+.picker-search input:focus{border-color:rgba(177,208,240,.3)}
+.picker-filters{padding:6px 14px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+.pf-chip{font-family:var(--fm);font-size:.42rem;letter-spacing:.14em;text-transform:uppercase;padding:2px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:transparent;color:rgba(255,255,255,.3);cursor:pointer;transition:all .1s}
+.pf-chip:hover{border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.7)}
+.pf-chip.active{border-color:var(--venturan);background:rgba(177,208,240,.08);color:var(--venturan)}
+.picker-list{flex:1;overflow-y:auto;padding:10px}
+.picker-list::-webkit-scrollbar{width:3px}
+.picker-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.picker-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;transition:all .12s}
+.picker-item:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+.picker-item.selected-pick{border-color:var(--venturan);background:rgba(177,208,240,.06)}
+.pi-sym{font-size:1.2rem;width:28px;text-align:center}
+.pi-info{flex:1;min-width:0}
+.pi-type{font-family:var(--fm);font-size:.4rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.pi-name{font-family:var(--fm);font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pi-desc{font-family:var(--fd);font-size:.68rem;color:rgba(255,255,255,.35);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.picker-foot{padding:10px 14px;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:flex-end;gap:7px;flex-shrink:0}
+.picker-empty{padding:30px;text-align:center;font-family:var(--fd);font-style:italic;color:rgba(255,255,255,.2);font-size:.8rem}
+
+/* Toast */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(6,6,8,.97);border:1px solid rgba(177,208,240,.2);backdrop-filter:blur(12px);padding:7px 16px;border-radius:5px;font-family:var(--fm);font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--venturan);pointer-events:none;opacity:0;z-index:1000;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.8)}
+#toast.show{animation:toast-in 2.5s ease forwards}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo"><div class="logo-mark">⬡</div>Quantum Loom</div>
+  <div class="tb-sep"></div>
+  <button class="tb-tab" onclick="navTo('ionodes')">◈ Node Graph</button>
+  <button class="tb-tab" onclick="navTo('subgraph')">⟁ Sub-Graph</button>
+  <button class="tb-tab active" onclick="navTo('zones')">◫ Zone Canvas</button>
+  <button class="tb-tab" onclick="navTo('rack')">⚙ Rack</button>
+  <button class="tb-tab" onclick="navTo('library')">⊞ Library</button>
+  <div class="tb-right">
+    <button class="tb-btn" onclick="clearCanvas()">⌫ Clear</button>
+    <button class="tb-btn" onclick="exportZones()">↓ Export</button>
+    <button class="tb-btn" onclick="refreshLibrary()" title="Reload entries from Library panel">↻ Library</button>
+    <button class="tb-btn hot" onclick="createZone()">+ New Zone</button>
+  </div>
+</div>
+
+<div id="workspace">
+
+  <!-- LEFT SIDEBAR -->
+  <div id="zone-sidebar">
+    <div class="sb-head">
+      <div class="sb-title">Zones</div>
+      <button class="sb-new-btn" onclick="createZone()" title="New Zone">+</button>
+    </div>
+    <div class="zone-list" id="zone-list"></div>
+    <div class="actor-pool">
+      <div class="ap-title">Actor Pool</div>
+      <div class="ap-items" id="actor-pool"></div>
+    </div>
+  </div>
+
+  <!-- CANVAS -->
+  <div id="zone-canvas" onclick="deselectAll(event)">
+    <div id="canvas-inner"></div>
+  </div>
+
+  <!-- INSPECTOR -->
+  <div id="inspector">
+    <div class="ins-head">
+      <div class="ins-title">Inspector</div>
+      <div id="ins-actions" style="display:flex;gap:5px"></div>
+    </div>
+    <div class="ins-body" id="ins-body">
+      <div class="ins-empty">
+        <div class="ins-empty-icon">◫</div>
+        <div class="ins-empty-text">Select a Zone or Actor node to inspect its heraldic context and modifier stack.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HERALDIC PICKER MODAL -->
+<div id="picker-modal" class="hidden">
+  <div class="picker">
+    <div class="picker-head">
+      <div class="picker-title" id="picker-title">Assign Heraldic Element</div>
+      <button class="picker-close" onclick="closePicker()">✕</button>
+    </div>
+    <div class="picker-search"><input type="text" id="picker-search" placeholder="Search library…" oninput="renderPickerList()"></div>
+    <div class="picker-filters" id="picker-filters"></div>
+    <div class="picker-list" id="picker-list"></div>
+    <div class="picker-foot">
+      <button class="tb-btn" onclick="closePicker()">Cancel</button>
+      <button class="tb-btn hot" id="picker-confirm" onclick="confirmPick()" disabled>Assign</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   QUANTUM LOOM — ZONE CANVAS ENGINE
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Library entries (shared schema with Library panel) ── */
+/* ── Zone-side seed data — carries effect fields not yet in Library editor ── */
+const ZONE_SEEDS = [
+  { id:'seed-1',  type:'seal',   name:'Seal of the Concluded Arc',  symbol:'◉', color:'#c8973a', desc:'Locks a scene or zone as read-only history.', tags:['lock','completion'] },
+  { id:'seed-2',  type:'crest',  name:'Crest of the Ashen Order',   symbol:'🌑', color:'#7fb3d3', desc:'Identity: Ashen Order. All within share lineage and Despair modifier.', tags:['faction','despair'] },
+  { id:'seed-3',  type:'crest',  name:'Crest of the Verdant Wild',  symbol:'🌿', color:'#82e0aa', desc:'Racial crest — forest creatures. Nature affinity.', tags:['racial','nature'] },
+  { id:'seed-4',  type:'crest',  name:'Crest of the Iron Merchant', symbol:'⚙', color:'#f0b27a', desc:'Trade guild identity. Commerce bonuses.', tags:['trade','guild'] },
+  { id:'seed-5',  type:'glyph',  name:'Glyph of Despair',           symbol:'🌑', color:'#9b7fd4', desc:'Resolve −2, Fear +1.5. Stacks. Zone ambient.', tags:['emotion','stackable'], effect:{resolve:-2, fear:1.5} },
+  { id:'seed-6',  type:'glyph',  name:'Glyph of Abundance',         symbol:'🌸', color:'#82e0aa', desc:'Health regen ×1.3, Trade +15. Zone ambient.', tags:['prosperity','health'], effect:{healthRegen:0.3, trade:15} },
+  { id:'seed-7',  type:'glyph',  name:'Glyph of Threshold',         symbol:'⚡', color:'#f7dc6f', desc:'Triggers branch evaluation on actor entry.', tags:['decision','branch'], effect:{branchTrigger:true} },
+  { id:'seed-8',  type:'glyph',  name:'Glyph of Binding',           symbol:'⛓', color:'#d45b5b', desc:'Restricts movement and contracts. Zone lock.', tags:['contract','restrict'], effect:{movementRestrict:true} },
+  { id:'seed-9',  type:'glyph',  name:'Glyph of Revelation',        symbol:'👁', color:'#b1d0f0', desc:'All hidden states become visible within zone.', tags:['reveal','hidden'], effect:{hiddenReveal:true} },
+  { id:'seed-10', type:'totem',  name:'Totem of the Serpent',        symbol:'🐍', color:'#7fd4c8', desc:'Swamp patron. Venom resist, tunnel nav +2.', tags:['spirit','swamp'], effect:{venomResist:true, tunnelNav:2} },
+  { id:'seed-11', type:'totem',  name:'Totem of the Storm Eagle',   symbol:'🦅', color:'#f7dc6f', desc:'Highland warrior patron. Perception +3.', tags:['spirit','highland'], effect:{perception:3} },
+  { id:'seed-12', type:'totem',  name:'Totem of the Deep Root',     symbol:'🌲', color:'#4caf7d', desc:'Ancient forest patron. Stability +4, fear −1.', tags:['spirit','forest'], effect:{stability:4, fear:-1} },
+  { id:'seed-13', type:'emblem', name:'Emblem of the Rising Tide',  symbol:'🌊', color:'#f0b27a', desc:'Resistance faction. Spans multiple scenes.', tags:['faction','resistance'] },
+  { id:'seed-14', type:'rune',   name:'Rune of Passage',            symbol:'🗝', color:'#f7dc6f', desc:'Traversal through sealed gates. Burns on use.', tags:['traversal','gate'] },
+  { id:'seed-15', type:'ensign', name:'Ensign of the Free Cities',  symbol:'🏛', color:'#ec7063', desc:'Sovereign territory of the Free Cities Alliance.', tags:['sovereign','city'] },
+  { id:'seed-16', type:'token',  name:'Token of Safe Passage',      symbol:'🪬', color:'#d5d8dc', desc:'Temporary zone perimeter access. One crossing.', tags:['access','temporary'] },
+  { id:'seed-17', type:'trait',  name:'Passability',                symbol:'🚶', color:'#a9cce3', desc:'How difficult terrain movement is. 0=impassable, 10=open road.', tags:['terrain','movement'] },
+  { id:'seed-18', type:'trait',  name:'Threat Level',               symbol:'⚔',  color:'#d45b5b', desc:'Ambient danger rating. Affects NPC behavior and spawn.', tags:['danger','npc'] },
+  { id:'seed-19', type:'trait',  name:'Commerce Index',             symbol:'💰', color:'#f0b27a', desc:'Economic activity rating. Affects trade prices.', tags:['trade','economy'] },
+];
+
+/* ── Live library — reads from shared ql-library localStorage, falls back to seeds ──
+   Merge strategy:
+   1. Start with ZONE_SEEDS (carries effect fields)
+   2. Layer in anything from ql-library that isn't already present (by id)
+   3. For matching ids, Library version wins for display fields (name/desc/color/symbol/tags)
+      but Zone seed wins for effect (until Library editor gains effect support)
+   4. rebuildLibMap() refreshes LIB_MAP after any change                          */
+let LIBRARY = [];
+let LIB_MAP = {};
+
+function loadLibrary() {
+  const seedMap = Object.fromEntries(ZONE_SEEDS.map(s => [s.id, s]));
+  let fromStorage = [];
+  try {
+    const raw = localStorage.getItem('ql-library');
+    if (raw) fromStorage = JSON.parse(raw);
+  } catch(e) { /* storage unavailable */ }
+
+  // Build merged set: seeds first (carry effects), then non-seed library entries
+  const merged = [...ZONE_SEEDS];
+  const seenIds = new Set(ZONE_SEEDS.map(s => s.id));
+
+  fromStorage.forEach(entry => {
+    if (seenIds.has(entry.id)) {
+      // Merge: Library wins on display fields, seed wins on effect
+      const idx = merged.findIndex(m => m.id === entry.id);
+      if (idx >= 0) {
+        merged[idx] = {
+          ...merged[idx],          // keeps effect from seed
+          name:   entry.name   || merged[idx].name,
+          symbol: entry.symbol || merged[idx].symbol,
+          color:  entry.color  || merged[idx].color,
+          desc:   entry.desc   || merged[idx].desc,
+          tags:   entry.tags   || merged[idx].tags,
+          // effect from Library editor wins if it has one
+          ...(entry.effect ? { effect: entry.effect } : {}),
+        };
+      }
+    } else {
+      // New entry from Library — add it, parse effect from logic string if present
+      const entry2 = { ...entry };
+      if (!entry2.effect && entry2.logic) {
+        entry2.effect = parseEffectFromLogic(entry2.logic);
+      }
+      merged.push(entry2);
+      seenIds.add(entry.id);
+    }
+  });
+
+  LIBRARY = merged;
+  rebuildLibMap();
+}
+
+function rebuildLibMap() {
+  LIB_MAP = Object.fromEntries(LIBRARY.map(i => [i.id, i]));
+}
+
+/* Lightweight heuristic: parse simple numeric effects from a logic string.
+   e.g. "actor.resolve -= 2" → {resolve: -2}
+   This lets Library entries drive modifiers even without a full effect field. */
+function parseEffectFromLogic(logic) {
+  if (!logic) return null;
+  const effect = {};
+  const addPat  = /actor\.(\w+)\s*\+=\s*([\d.]+)/g;
+  const subPat  = /actor\.(\w+)\s*-=\s*([\d.]+)/g;
+  const mulPat  = /actor\.(\w+).*?\*=\s*([\d.]+)/g;
+  let m;
+  while ((m = addPat.exec(logic)) !== null) effect[m[1]] = parseFloat(m[2]);
+  while ((m = subPat.exec(logic)) !== null) effect[m[1]] = -parseFloat(m[2]);
+  while ((m = mulPat.exec(logic)) !== null) effect[m[1]+'Mult'] = parseFloat(m[2]);
+  return Object.keys(effect).length ? effect : null;
+}
+
+/* Call this after the Library panel saves a new entry to ql-library */
+function refreshLibrary() {
+  loadLibrary();
+  renderCanvas();
+  renderInspector();
+  renderPickerList();
+  toast('✓ Library refreshed — ' + LIBRARY.length + ' entries loaded');
+}
+
+/* Listen for storage events from the Library panel (same-origin, different tab/window) */
+window.addEventListener('storage', e => {
+  if (e.key === 'ql-library') refreshLibrary();
+});
+
+/* ── Actor definitions (linked to rack units) ── */
+const ACTORS = [
+  { id:'kael',    name:'Kael Voryn',       type:'AGENT',   color:'#f98f3b', stats:{resolve:8, fear:4, health:72} },
+  { id:'tornado', name:'Tornado — Ashfall',type:'WEATHER', color:'#b1d0f0', stats:{intensity:60, rotation:40} },
+  { id:'plague',  name:'Plague of Ash',    type:'EVENT',   color:'#9b7fd4', stats:{infection:14, spread:45} },
+  { id:'world',   name:'World State',      type:'WORLD',   color:'#7fd4c8', stats:{tension:35, timeOfDay:50} },
+];
+
+/* ── Zone state ── */
+let zones = [];
+let selectedZone = null;
+let selectedActor = null;
+let dragActor = null;
+let dragZone = null;
+let dragOffset = {x:0, y:0};
+let resizingZone = null;
+let resizeStart = {};
+
+let pickerCallback = null;
+let pickerFilter = 'all';
+let pickerSelectedId = null;
+
+/* ═══ INIT ════════════════════════════════════════════ */
+function init() {
+  loadLibrary();
+  const saved = localStorage.getItem('ql-zones');
+  if (saved) {
+    zones = JSON.parse(saved);
+  } else {
+    seedZones();
+  }
+  renderAll();
+  setTimeout(() => toast('Zone Canvas ready — ' + LIBRARY.length + ' library entries loaded'), 600);
+}
+
+function seedZones() {
+  zones = [
+    {
+      id:'z-1', name:'The Ashfall Swamp', color:'#7fd4c8', symbol:'🍄',
+      x:40, y:60, w:480, h:320,
+      heraldry:{ crest:'seed-2', glyphs:['seed-5'], totem:'seed-10', emblem:null, seal:null },
+      traits:{ passability:3, threatLevel:7, commerceIndex:1 },
+      actors:['tornado','plague'],
+      notes:'Decaying marshland. The Serpent Totem and Despair Glyph create a hostile, spiritually oppressive environment. Exiles hide here.',
+      sealed:false,
+    },
+    {
+      id:'z-2', name:'The Merchant Quarter', color:'#f0b27a', symbol:'🏛',
+      x:560, y:60, w:420, h:280,
+      heraldry:{ crest:'seed-4', glyphs:['seed-6'], totem:null, emblem:'seed-13', seal:null },
+      traits:{ passability:9, threatLevel:2, commerceIndex:9 },
+      actors:['world'],
+      notes:'Prosperous trade district. Abundance Glyph active. Faction politics simmer under the surface.',
+      sealed:false,
+    },
+    {
+      id:'z-3', name:'The Highland Citadel', color:'#f7dc6f', symbol:'🏔',
+      x:40, y:420, w:360, h:260,
+      heraldry:{ crest:null, glyphs:[], totem:'seed-11', emblem:null, seal:null },
+      traits:{ passability:6, threatLevel:4, commerceIndex:4 },
+      actors:['kael'],
+      notes:'Storm Eagle Totem grants perception to all within. Strategic vantage point.',
+      sealed:false,
+    },
+  ];
+  save();
+}
+
+function save() {
+  localStorage.setItem('ql-zones', JSON.stringify(zones));
+  try { window.parent.postMessage({ type:'hub:storage:write', key:'ql-zones', value:JSON.stringify(zones) }, '*'); } catch(e) {}
+}
+
+/* ═══ RENDER ALL ══════════════════════════════════════ */
+function renderAll() {
+  renderSidebar();
+  renderCanvas();
+  renderActorPool();
+  renderInspector();
+}
+
+/* ═══ SIDEBAR ═════════════════════════════════════════ */
+function renderSidebar() {
+  const list = document.getElementById('zone-list');
+  list.innerHTML = zones.map(z => `
+    <div class="zl-item ${selectedZone?.id===z.id?'active':''}" 
+      style="--z-color:${z.color}"
+      onclick="selectZone('${z.id}')">
+      <div class="zl-led" style="background:${z.color};box-shadow:0 0 5px ${z.color}"></div>
+      <div class="zl-info">
+        <div class="zl-name" style="${selectedZone?.id===z.id?'color:'+z.color:''}">${z.symbol} ${z.name}</div>
+        <div class="zl-meta">${getZoneModSummary(z)}</div>
+      </div>
+      <div class="zl-count">${z.actors.length}</div>
+    </div>`).join('');
+}
+
+function getZoneModSummary(z) {
+  const mods = computeModifiers(z);
+  if (!mods.length) return 'No active modifiers';
+  return mods.slice(0,2).map(m => `${m.key} ${m.val>0?'+':''}${m.val}`).join(', ');
+}
+
+/* ═══ ACTOR POOL ══════════════════════════════════════ */
+function renderActorPool() {
+  const pool = document.getElementById('actor-pool');
+  const assignedIds = new Set(zones.flatMap(z => z.actors));
+  pool.innerHTML = ACTORS.map(a => `
+    <div class="ap-actor ${assignedIds.has(a.id)?'assigned':''}" 
+      id="pool-${a.id}"
+      draggable="${!assignedIds.has(a.id)}"
+      ondragstart="startActorDrag(event,'${a.id}')"
+      style="color:${a.color};border-color:${a.color}22">
+      <div class="ap-actor-dot" style="background:${a.color}"></div>
+      ${a.name}
+    </div>`).join('');
+}
+
+/* ═══ CANVAS ══════════════════════════════════════════ */
+function renderCanvas() {
+  const inner = document.getElementById('canvas-inner');
+  inner.innerHTML = zones.map(z => buildZoneEl(z)).join('');
+  attachZoneEvents();
+}
+
+function buildZoneEl(z) {
+  const mods = computeModifiers(z);
+  const libCrest  = z.heraldry.crest  ? LIB_MAP[z.heraldry.crest]  : null;
+  const libTotem  = z.heraldry.totem  ? LIB_MAP[z.heraldry.totem]  : null;
+  const libEmblem = z.heraldry.emblem ? LIB_MAP[z.heraldry.emblem] : null;
+  const libSeal   = z.heraldry.seal   ? LIB_MAP[z.heraldry.seal]   : null;
+  const libGlyphs = (z.heraldry.glyphs||[]).map(id => LIB_MAP[id]).filter(Boolean);
+
+  // Heraldic strip items
+  const heraldicItems = [];
+  if (libCrest)  heraldicItems.push(`<div class="zh-item" style="border-color:${libCrest.color}44;color:${libCrest.color}" onclick="openPickerFor('${z.id}','crest')" title="Crest: ${libCrest.name}"><span class="zh-symbol">${libCrest.symbol}</span><div><div class="zh-label">CREST</div><div class="zh-name">${libCrest.name}</div></div></div>`);
+  libGlyphs.forEach(g => heraldicItems.push(`<div class="zh-item" style="border-color:${g.color}44;color:${g.color}" onclick="openPickerFor('${z.id}','glyph','${g.id}')" title="Glyph: ${g.name}"><span class="zh-symbol">${g.symbol}</span><div><div class="zh-label">GLYPH</div><div class="zh-name">${g.name}</div></div></div>`));
+  if (libTotem)  heraldicItems.push(`<div class="zh-item" style="border-color:${libTotem.color}44;color:${libTotem.color}" onclick="openPickerFor('${z.id}','totem')" title="Totem: ${libTotem.name}"><span class="zh-symbol">${libTotem.symbol}</span><div><div class="zh-label">TOTEM</div><div class="zh-name">${libTotem.name}</div></div></div>`);
+  if (libEmblem) heraldicItems.push(`<div class="zh-item" style="border-color:${libEmblem.color}44;color:${libEmblem.color}" onclick="openPickerFor('${z.id}','emblem')" title="Emblem: ${libEmblem.name}"><span class="zh-symbol">${libEmblem.symbol}</span><div><div class="zh-label">EMBLEM</div><div class="zh-name">${libEmblem.name}</div></div></div>`);
+  if (libSeal)   heraldicItems.push(`<div class="zh-item" style="border-color:var(--brass)66;color:var(--brass)" title="Seal: ${libSeal.name}"><span class="zh-symbol">${libSeal.symbol}</span><div><div class="zh-label">SEAL</div><div class="zh-name">${libSeal.name}</div></div></div>`);
+
+  // Modifier chips
+  const modChips = mods.map(m => `<div class="mod-chip" style="border-color:${m.color}66;color:${m.color};background:${m.color}10">
+    <span class="mod-sign">${m.val>0?'+':''}</span>${m.val} ${m.key}</div>`).join('');
+
+  // Actor nodes inside zone
+  const actorNodes = z.actors.map(aid => {
+    const a = ACTORS.find(x => x.id === aid);
+    if (!a) return '';
+    const mArr = mods;
+    const actorMods = mArr.map(m => `<div class="an-mod" style="border-color:${m.color}44;color:${m.color};background:${m.color}0d">${m.val>0?'+':''}${m.val} ${m.key}</div>`).join('');
+    const stats = Object.entries(a.stats).slice(0,3);
+    const statBars = stats.map(([k,v]) => {
+      const maxV = k==='health'?100:k==='infection'?50:200;
+      const pct = Math.min(100,(v/maxV)*100);
+      return `<div class="an-stat">
+        <div class="an-stat-lbl">${k.slice(0,4).toUpperCase()}</div>
+        <div class="an-stat-bar"><div class="an-stat-fill" style="width:${pct}%;background:${a.color}"></div></div>
+        <div class="an-stat-val">${v}</div>
+      </div>`;
+    }).join('');
+    return `<div class="actor-node ${selectedActor===aid?'selected-actor':''}" 
+        style="--a-color:${a.color}" id="an-${z.id}-${aid}"
+        onclick="selectActorNode(event,'${z.id}','${aid}')">
+      <button class="an-remove" onclick="removeActorFromZone(event,'${z.id}','${aid}')" title="Remove from zone">✕</button>
+      <div class="an-head">
+        <div class="an-led" style="background:${a.color};box-shadow:0 0 4px ${a.color}"></div>
+        <div><div class="an-name">${a.name}</div><div class="an-type">${a.type}</div></div>
+      </div>
+      <div class="an-stats">${statBars}</div>
+      ${mArr.length ? `<div class="an-mods">${actorMods}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  return `<div class="zone-container ${selectedZone?.id===z.id?'selected':''}" 
+      id="zone-${z.id}"
+      style="left:${z.x}px;top:${z.y}px;width:${z.w}px;height:${z.h}px;
+             --z-color:${z.color};--z-border:${z.color}40;
+             --z-glow:${z.color}18;--z-bg:${z.color}06;
+             --z-header:rgba(0,0,0,.55)"
+      ondragover="dragOver(event,'${z.id}')"
+      ondrop="dropActor(event,'${z.id}')"
+      ondragleave="dragLeave('${z.id}')"
+      onclick="selectZoneEl(event,'${z.id}')">
+    <div class="zone-head" id="zh-${z.id}" onmousedown="startZoneDrag(event,'${z.id}')">
+      <div class="zone-power" style="background:${z.color};box-shadow:0 0 5px ${z.color}"></div>
+      <div class="zone-name">${z.symbol} ${z.name}</div>
+      <div class="zone-type-badge" style="color:${z.color};border-color:${z.color}55">ZONE</div>
+      ${z.sealed ? `<div class="zone-head-btn" style="color:var(--brass)" title="Sealed">🔒</div>` : ''}
+      <button class="zone-head-btn" onclick="openPickerFor('${z.id}','glyph')" title="Add Glyph">+ Glyph</button>
+      <button class="zone-head-btn" onclick="deleteZone(event,'${z.id}')" title="Delete Zone" style="color:rgba(255,50,50,.4)">✕</button>
+    </div>
+    <div class="zone-heraldry">
+      ${heraldicItems.length ? heraldicItems.join('') : '<span class="zh-empty">No heraldry assigned — click inspector to add</span>'}
+      <button class="zh-add" onclick="selectZoneEl(event,'${z.id}');renderInspector()" title="Assign in Inspector">+</button>
+    </div>
+    <div class="zone-modifiers">
+      ${modChips || '<span class="mod-zero">No active modifiers</span>'}
+    </div>
+    <div class="zone-body" id="zb-${z.id}">
+      <div class="zone-drop-hint">Drop actors here to place them in this zone</div>
+      ${actorNodes}
+    </div>
+    <div class="zone-resize" id="zr-${z.id}" onmousedown="startResize(event,'${z.id}')"></div>
+  </div>`;
+}
+
+function computeModifiers(z) {
+  const mods = [];
+  const seen = {};
+  const addMod = (key, val, color, source) => {
+    if (val === 0 || val === false || val === undefined) return;
+    if (typeof val === 'boolean') val = val ? 1 : 0;
+    if (seen[key]) { seen[key].val += val; }
+    else { const m = {key, val, color, source}; mods.push(m); seen[key] = m; }
+  };
+  // Glyphs
+  (z.heraldry.glyphs||[]).forEach(id => {
+    const g = LIB_MAP[id]; if (!g || !g.effect) return;
+    Object.entries(g.effect).forEach(([k,v]) => addMod(k, typeof v==='boolean'?1:v, g.color, g.name));
+  });
+  // Totem
+  if (z.heraldry.totem) {
+    const t = LIB_MAP[z.heraldry.totem]; if (t?.effect) {
+      Object.entries(t.effect).forEach(([k,v]) => addMod(k, typeof v==='boolean'?1:v, t.color, t.name));
+    }
+  }
+  // Crest identity bonus
+  if (z.heraldry.crest) {
+    const c = LIB_MAP[z.heraldry.crest];
+    if (c?.tags?.includes('despair')) addMod('despair', 2, c.color, c.name);
+    if (c?.tags?.includes('trade'))   addMod('trade',  10, c.color, c.name);
+  }
+  return mods;
+}
+
+/* ═══ INSPECTOR ═══════════════════════════════════════ */
+function renderInspector() {
+  const body = document.getElementById('ins-body');
+  const actions = document.getElementById('ins-actions');
+
+  if (selectedActor && selectedZone) {
+    renderActorInspector(body, actions);
+  } else if (selectedZone) {
+    renderZoneInspector(body, actions);
+  } else {
+    actions.innerHTML = '';
+    body.innerHTML = `<div class="ins-empty"><div class="ins-empty-icon">◫</div><div class="ins-empty-text">Select a Zone or Actor node to inspect its heraldic context and modifier stack.</div></div>`;
+  }
+}
+
+function renderZoneInspector(body, actions) {
+  const z = selectedZone;
+  if (!z) return;
+  const mods = computeModifiers(z);
+  const libCrest  = z.heraldry.crest  ? LIB_MAP[z.heraldry.crest]  : null;
+  const libTotem  = z.heraldry.totem  ? LIB_MAP[z.heraldry.totem]  : null;
+  const libEmblem = z.heraldry.emblem ? LIB_MAP[z.heraldry.emblem] : null;
+  const libSeal   = z.heraldry.seal   ? LIB_MAP[z.heraldry.seal]   : null;
+  const libGlyphs = (z.heraldry.glyphs||[]).map(id => LIB_MAP[id]).filter(Boolean);
+
+  actions.innerHTML = `<button class="tb-btn" style="padding:3px 8px;font-size:.44rem" onclick="duplicateZone('${z.id}')">Dupe</button>`;
+
+  const heraldicSlot = (type, label, item, slotColor, allowMulti) => {
+    if (item) {
+      return `<div class="herald-slot filled" style="--slot-color:${item.color}" onclick="openPickerFor('${z.id}','${type}','${item.id}')">
+        <div class="hs-symbol">${item.symbol}</div>
+        <div class="hs-info"><div class="hs-type">${label}</div><div class="hs-name">${item.name}</div></div>
+        <button class="hs-clear" onclick="clearHeraldry(event,'${z.id}','${type}','${item.id}')" title="Remove">✕</button>
+      </div>`;
+    }
+    return `<div class="herald-slot" onclick="openPickerFor('${z.id}','${type}')">
+      <div class="hs-symbol">+</div>
+      <div class="hs-info"><div class="hs-type">${label}</div><div class="hs-empty">Not assigned</div></div>
+    </div>`;
+  };
+
+  const glyphSlots = libGlyphs.map(g => heraldicSlot('glyph', 'GLYPH', g, g.color, true)).join('');
+
+  body.innerHTML = `
+    <!-- Zone name & color -->
+    <div class="ins-section">
+      <div class="ins-sec-lbl" style="color:${z.color}">${z.symbol} ${z.name}</div>
+      <div class="ins-row">
+        <div class="ins-lbl">Name</div>
+        <input class="ins-input" style="max-width:160px" value="${z.name}" 
+          onchange="updateZoneField('${z.id}','name',this.value)">
+      </div>
+      <div class="ins-row">
+        <div class="ins-lbl">Color</div>
+        <input type="color" value="${z.color}" style="width:32px;height:24px;border:none;background:none;cursor:pointer;padding:0" 
+          oninput="updateZoneField('${z.id}','color',this.value)">
+      </div>
+      <div class="ins-row">
+        <div class="ins-lbl">Actors</div>
+        <div class="ins-val" style="color:${z.color}">${z.actors.length} assigned</div>
+      </div>
+    </div>
+
+    <!-- Heraldry -->
+    <div class="ins-section">
+      <div class="ins-sec-lbl">Heraldic Assignment</div>
+      ${heraldicSlot('crest', 'CREST — Identity', libCrest)}
+      ${glyphSlots}
+      <div class="herald-slot" onclick="openPickerFor('${z.id}','glyph')" style="border-style:dashed;opacity:.6">
+        <div class="hs-symbol">+</div>
+        <div class="hs-info"><div class="hs-type">GLYPH</div><div class="hs-empty">Add another glyph…</div></div>
+      </div>
+      ${heraldicSlot('totem', 'TOTEM — Spirit', libTotem)}
+      ${heraldicSlot('emblem', 'EMBLEM — Faction', libEmblem)}
+    </div>
+
+    <!-- Seal -->
+    <div class="ins-section">
+      <div class="ins-sec-lbl">Seal Status</div>
+      <div class="seal-indicator ${z.sealed?'locked':'unlocked'}" onclick="toggleSeal('${z.id}')">
+        <div class="seal-icon">${z.sealed?'🔒':'🔓'}</div>
+        <div class="seal-txt">${z.sealed?'Zone Sealed — Read Only':'Zone Unsealed — Active'}</div>
+        <div class="seal-status" style="color:${z.sealed?'var(--brass)':'rgba(255,255,255,.2)'}">${z.sealed?'LOCKED':'OPEN'}</div>
+      </div>
+    </div>
+
+    <!-- Modifier stack -->
+    <div class="ins-section">
+      <div class="ins-sec-lbl">Active Modifier Stack</div>
+      ${mods.length ? `<div class="mod-stack">${mods.map(m => `
+        <div class="ms-row">
+          <div class="ms-icon">${LIB_MAP[z.heraldry.totem]?.effect?.[m.key]?LIB_MAP[z.heraldry.totem].symbol:'◈'}</div>
+          <div class="ms-key" style="color:${m.color}">${m.key}</div>
+          <div class="ms-val" style="color:${m.val>0?'var(--led-green)':'var(--led-red)'}">${m.val>0?'+':''}${m.val}</div>
+          <div class="ms-source">${m.source}</div>
+        </div>`).join('')}</div>` 
+      : '<div style="font-family:var(--fd);font-size:.72rem;color:rgba(255,255,255,.2);font-style:italic">No modifiers — assign Glyphs or Totem above</div>'}
+    </div>
+
+    <!-- Zone traits -->
+    <div class="ins-section">
+      <div class="ins-sec-lbl">Zone Traits</div>
+      ${Object.entries(z.traits).map(([k,v]) => `
+        <div class="trait-row">
+          <div class="trait-lbl">${k.replace(/([A-Z])/g,' $1').toUpperCase().slice(0,10)}</div>
+          <div class="trait-bar-wrap" onmousedown="startTraitDrag(event,'${z.id}','${k}')">
+            <div class="trait-bar-fill" style="width:${v*10}%;background:${z.color}99"></div>
+          </div>
+          <div class="trait-val" style="color:${z.color}">${v}</div>
+        </div>`).join('')}
+    </div>
+
+    <!-- Notes -->
+    <div class="ins-section">
+      <div class="ins-sec-lbl">Notes</div>
+      <textarea class="ins-input" rows="3" style="resize:vertical;font-family:var(--fd);font-size:.75rem;line-height:1.5" 
+        onchange="updateZoneField('${z.id}','notes',this.value)">${z.notes||''}</textarea>
+    </div>
+
+    <!-- Logic output -->
+    <div class="ins-section">
+      <div class="ins-sec-lbl">Logic Output</div>
+      <div style="background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.06);border-radius:5px;padding:8px 10px;font-family:var(--fcode);font-size:.6rem;color:var(--brass);line-height:1.8">${buildLogicOutput(z)}</div>
+    </div>`;
+}
+
+function renderActorInspector(body, actions) {
+  const z = selectedZone;
+  const a = ACTORS.find(x => x.id === selectedActor);
+  if (!a || !z) return;
+  const mods = computeModifiers(z);
+  actions.innerHTML = `<button class="tb-btn" style="padding:3px 8px;font-size:.44rem;color:var(--blood);border-color:rgba(192,57,43,.3)" onclick="removeActorFromZone(null,'${z.id}','${a.id}')">Remove</button>`;
+  body.innerHTML = `
+    <div class="ins-section">
+      <div class="ins-sec-lbl" style="color:${a.color}">${a.name}</div>
+      <div class="ins-row"><div class="ins-lbl">Type</div><div class="ins-val" style="color:${a.color}">${a.type}</div></div>
+      <div class="ins-row"><div class="ins-lbl">Zone</div><div class="ins-val" style="color:${z.color}">${z.name}</div></div>
+    </div>
+    <div class="ins-section">
+      <div class="ins-sec-lbl">Base Stats</div>
+      ${Object.entries(a.stats).map(([k,v])=>`<div class="ins-row"><div class="ins-lbl">${k}</div><div class="ins-val">${v}</div></div>`).join('')}
+    </div>
+    <div class="ins-section">
+      <div class="ins-sec-lbl">Inherited Modifiers from "${z.name}"</div>
+      ${mods.length ? mods.map(m=>`<div class="ins-row">
+        <div class="ins-lbl" style="color:${m.color}">${m.key}</div>
+        <div class="ins-val" style="color:${m.val>0?'var(--led-green)':'var(--led-red)'}">${m.val>0?'+':''}${m.val} (${m.source})</div>
+      </div>`).join('') : '<div style="font-family:var(--fd);font-size:.72rem;color:rgba(255,255,255,.2);font-style:italic">No inherited modifiers</div>'}
+    </div>
+    <div class="ins-section">
+      <div class="ins-sec-lbl">Effective Stats (base + zone)</div>
+      ${Object.entries(a.stats).map(([k,v])=>{
+        const mod = mods.find(m=>m.key===k||m.key.toLowerCase()===k.toLowerCase());
+        const effective = v + (mod?.val||0);
+        return `<div class="ins-row">
+          <div class="ins-lbl">${k}</div>
+          <div class="ins-val" style="color:${mod?'var(--led-amber)':'rgba(255,255,255,.6)'}">${effective} ${mod?`<span style="color:${mod.color};font-size:.52rem">(${mod.val>0?'+':''}${mod.val})</span>`:''}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function buildLogicOutput(z) {
+  const lines = [];
+  lines.push(`<span style="color:rgba(255,255,255,.3)">// Zone: ${z.name}</span>`);
+  lines.push(`zone.id = <span style="color:#7fb3d3">"${z.id}"</span>;`);
+  if (z.heraldry.crest) {
+    const c = LIB_MAP[z.heraldry.crest];
+    lines.push(`zone.crest = <span style="color:#7fb3d3">"${c?.name}"</span>;`);
+  }
+  const glyphs = (z.heraldry.glyphs||[]).map(id=>LIB_MAP[id]?.name).filter(Boolean);
+  if (glyphs.length) lines.push(`zone.glyphs = [<span style="color:#82e0aa">${glyphs.map(g=>`"${g}"`).join(', ')}</span>];`);
+  if (z.heraldry.totem) lines.push(`zone.totem = <span style="color:#7fd4c8">"${LIB_MAP[z.heraldry.totem]?.name}"</span>;`);
+  const mods = computeModifiers(z);
+  mods.forEach(m => lines.push(`zone.applyModifier(<span style="color:#82e0aa">"${m.key}"</span>, <span style="color:#f7dc6f">${m.val}</span>);`));
+  lines.push(`zone.actors = [<span style="color:#b1d0f0">${z.actors.map(a=>`"${a}"`).join(', ')}</span>];`);
+  if (z.sealed) lines.push(`zone.sealed = <span style="color:#c8973a">true</span>;`);
+  return lines.join('<br>');
+}
+
+/* ═══ ZONE ACTIONS ════════════════════════════════════ */
+function createZone() {
+  const id = 'z-' + Date.now();
+  const colors = ['#7fd4c8','#b1d0f0','#f98f3b','#9b7fd4','#f0b27a','#82e0aa','#f7dc6f','#ec7063'];
+  const symbols = ['◫','🏛','🌲','🏔','🌊','🌋','🗺','🏰'];
+  const ci = zones.length % colors.length;
+  zones.push({
+    id, name:'New Zone', color:colors[ci], symbol:symbols[ci],
+    x:60 + Math.random()*200, y:60 + Math.random()*150,
+    w:380, h:260,
+    heraldry:{ crest:null, glyphs:[], totem:null, emblem:null, seal:null },
+    traits:{ passability:5, threatLevel:5, commerceIndex:5 },
+    actors:[], notes:'', sealed:false,
+  });
+  save();
+  selectZone(id);
+  renderAll();
+  toast('New Zone created — assign heraldry in the inspector');
+}
+
+function selectZone(id) {
+  selectedZone = zones.find(z => z.id === id) || null;
+  selectedActor = null;
+  renderSidebar();
+  renderCanvas();
+  renderInspector();
+}
+
+function selectZoneEl(e, id) {
+  e.stopPropagation();
+  selectZone(id);
+}
+
+function selectActorNode(e, zid, aid) {
+  e.stopPropagation();
+  selectedZone = zones.find(z => z.id === zid) || null;
+  selectedActor = aid;
+  renderSidebar();
+  renderCanvas();
+  renderInspector();
+}
+
+function deselectAll(e) {
+  if (e.target.id === 'zone-canvas' || e.target.id === 'canvas-inner') {
+    selectedZone = null; selectedActor = null;
+    renderSidebar(); renderCanvas(); renderInspector();
+  }
+}
+
+function deleteZone(e, id) {
+  e.stopPropagation();
+  if (!confirm('Delete this zone? Actors will return to the pool.')) return;
+  zones = zones.filter(z => z.id !== id);
+  if (selectedZone?.id === id) { selectedZone = null; selectedActor = null; }
+  save(); renderAll();
+  toast('Zone deleted');
+}
+
+function duplicateZone(id) {
+  const z = zones.find(x => x.id === id);
+  if (!z) return;
+  const copy = JSON.parse(JSON.stringify(z));
+  copy.id = 'z-' + Date.now();
+  copy.name = z.name + ' (copy)';
+  copy.x = z.x + 30; copy.y = z.y + 30;
+  copy.actors = [];
+  zones.push(copy);
+  save(); selectZone(copy.id); renderAll();
+  toast('Zone duplicated');
+}
+
+function updateZoneField(id, field, val) {
+  const z = zones.find(x => x.id === id);
+  if (!z) return;
+  z[field] = val;
+  if (field === 'name' || field === 'color') { selectedZone = z; renderAll(); }
+  else save();
+}
+
+function updateZoneTrait(id, key, val) {
+  const z = zones.find(x => x.id === id);
+  if (!z) return;
+  z.traits[key] = Math.min(10, Math.max(0, parseFloat(val)));
+  save(); renderCanvas(); renderInspector();
+}
+
+function toggleSeal(id) {
+  const z = zones.find(x => x.id === id);
+  if (!z) return;
+  z.sealed = !z.sealed;
+  save(); renderCanvas(); renderInspector();
+  toast(z.sealed ? '🔒 Zone sealed — read only' : '🔓 Zone unsealed');
+}
+
+/* ═══ HERALDRY ASSIGNMENT ═════════════════════════════ */
+function clearHeraldry(e, zid, type, itemId) {
+  e.stopPropagation();
+  const z = zones.find(x => x.id === zid);
+  if (!z) return;
+  if (type === 'glyph') {
+    z.heraldry.glyphs = z.heraldry.glyphs.filter(id => id !== itemId);
+  } else {
+    z.heraldry[type] = null;
+  }
+  save(); renderCanvas(); renderInspector();
+  toast('Heraldic element removed');
+}
+
+/* ── Trait drag ── */
+function startTraitDrag(e, zid, key) {
+  const startX = e.clientX;
+  const z = zones.find(x => x.id === zid);
+  const startVal = z.traits[key];
+  const onMove = ev => {
+    const delta = (ev.clientX - startX) / 12;
+    updateZoneTrait(zid, key, startVal + delta);
+  };
+  const onUp = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  e.preventDefault();
+}
+
+/* ═══ HERALDIC PICKER ═════════════════════════════════ */
+let pickerTarget = null; // { zid, slotType, replaceId }
+
+function openPickerFor(zid, slotType, replaceId) {
+  pickerTarget = { zid, slotType, replaceId };
+  pickerFilter = slotType === 'glyph' ? 'glyph' : slotType;
+  pickerSelectedId = null;
+  const typeLabels = { crest:'CREST', glyph:'GLYPH', totem:'TOTEM', emblem:'EMBLEM', seal:'SEAL' };
+  document.getElementById('picker-title').textContent = 'Assign ' + (typeLabels[slotType]||slotType.toUpperCase());
+  document.getElementById('picker-search').value = '';
+  document.getElementById('picker-confirm').disabled = true;
+  renderPickerFilters();
+  renderPickerList();
+  document.getElementById('picker-modal').classList.remove('hidden');
+}
+
+function closePicker() {
+  document.getElementById('picker-modal').classList.add('hidden');
+  pickerTarget = null; pickerSelectedId = null;
+}
+
+function renderPickerFilters() {
+  const relevant = ['all','glyph','crest','totem','emblem','seal','rune','token','trait'];
+  document.getElementById('picker-filters').innerHTML = relevant.map(f =>
+    `<button class="pf-chip ${pickerFilter===f?'active':''}" onclick="setPickerFilter('${f}')">${f.toUpperCase()}</button>`
+  ).join('');
+}
+
+function setPickerFilter(f) {
+  pickerFilter = f;
+  renderPickerFilters();
+  renderPickerList();
+}
+
+function renderPickerList() {
+  const q = document.getElementById('picker-search').value.toLowerCase();
+  let items = LIBRARY;
+  if (pickerFilter !== 'all') items = items.filter(i => i.type === pickerFilter);
+  if (q) items = items.filter(i => i.name.toLowerCase().includes(q) || (i.desc||'').toLowerCase().includes(q) || (i.tags||[]).some(t=>t.includes(q)));
+
+  const list = document.getElementById('picker-list');
+  if (!items.length) { list.innerHTML = '<div class="picker-empty">No matching entries. Try a different filter or search.</div>'; return; }
+  list.innerHTML = items.map(i => `
+    <div class="picker-item ${pickerSelectedId===i.id?'selected-pick':''}" onclick="pickItem('${i.id}')">
+      <div class="pi-sym">${i.symbol}</div>
+      <div class="pi-info">
+        <div class="pi-type" style="color:${i.color}">${i.type.toUpperCase()}</div>
+        <div class="pi-name">${i.name}</div>
+        <div class="pi-desc">${i.desc||''}</div>
+      </div>
+    </div>`).join('');
+}
+
+function pickItem(id) {
+  pickerSelectedId = id;
+  document.getElementById('picker-confirm').disabled = false;
+  renderPickerList();
+}
+
+function confirmPick() {
+  if (!pickerSelectedId || !pickerTarget) return;
+  const { zid, slotType, replaceId } = pickerTarget;
+  const z = zones.find(x => x.id === zid);
+  if (!z) return;
+
+  if (slotType === 'glyph') {
+    if (replaceId) z.heraldry.glyphs = z.heraldry.glyphs.map(id => id === replaceId ? pickerSelectedId : id);
+    else if (!z.heraldry.glyphs.includes(pickerSelectedId)) z.heraldry.glyphs.push(pickerSelectedId);
+  } else {
+    z.heraldry[slotType] = pickerSelectedId;
+  }
+
+  const item = LIB_MAP[pickerSelectedId];
+  save(); closePicker(); renderAll();
+  toast(`✓ ${item?.name} assigned as ${slotType.toUpperCase()}`);
+}
+
+/* ═══ DRAG — ACTORS INTO ZONES ═══════════════════════ */
+function startActorDrag(e, actorId) {
+  dragActor = actorId;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('actorId', actorId);
+  setTimeout(() => document.getElementById('pool-'+actorId)?.classList.add('dragging'), 0);
+}
+
+function dragOver(e, zid) {
+  if (!dragActor) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  document.getElementById('zone-'+zid)?.classList.add('drag-over');
+}
+
+function dragLeave(zid) {
+  document.getElementById('zone-'+zid)?.classList.remove('drag-over');
+}
+
+function dropActor(e, zid) {
+  e.preventDefault(); e.stopPropagation();
+  const aid = e.dataTransfer.getData('actorId') || dragActor;
+  if (!aid) return;
+  document.getElementById('zone-'+zid)?.classList.remove('drag-over');
+  document.getElementById('pool-'+aid)?.classList.remove('dragging');
+
+  const z = zones.find(x => x.id === zid);
+  if (!z || z.actors.includes(aid) || z.sealed) { dragActor = null; return; }
+
+  // Remove from other zones first
+  zones.forEach(oz => { oz.actors = oz.actors.filter(id => id !== aid); });
+  z.actors.push(aid);
+  dragActor = null;
+
+  const mods = computeModifiers(z);
+  const a = ACTORS.find(x => x.id === aid);
+  save(); renderAll();
+  toast(`${a?.name} entered ${z.name} — ${mods.length} modifier${mods.length!==1?'s':''} applied`);
+}
+
+function removeActorFromZone(e, zid, aid) {
+  if (e) e.stopPropagation();
+  const z = zones.find(x => x.id === zid);
+  if (!z || z.sealed) return;
+  z.actors = z.actors.filter(id => id !== aid);
+  if (selectedActor === aid) selectedActor = null;
+  save(); renderAll();
+  const a = ACTORS.find(x => x.id === aid);
+  toast(`${a?.name} removed from ${z.name}`);
+}
+
+/* ═══ DRAG — ZONES ON CANVAS ══════════════════════════ */
+function attachZoneEvents() { /* handled inline via onmousedown on zone-head */ }
+
+function startZoneDrag(e, zid) {
+  if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+  const z = zones.find(x => x.id === zid);
+  if (!z || z.sealed) return;
+  selectZone(zid);
+  const el = document.getElementById('zone-'+zid);
+  const rect = el.getBoundingClientRect();
+  dragZone = zid;
+  dragOffset = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+
+  const onMove = ev => {
+    const canvas = document.getElementById('zone-canvas');
+    const cr = canvas.getBoundingClientRect();
+    z.x = Math.max(0, ev.clientX - cr.left - dragOffset.x + canvas.scrollLeft);
+    z.y = Math.max(0, ev.clientY - cr.top  - dragOffset.y + canvas.scrollTop);
+    el.style.left = z.x + 'px';
+    el.style.top  = z.y + 'px';
+  };
+  const onUp = () => {
+    dragZone = null;
+    save();
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup', onUp);
+  };
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  e.preventDefault();
+}
+
+/* ═══ RESIZE ZONES ════════════════════════════════════ */
+function startResize(e, zid) {
+  e.stopPropagation();
+  const z = zones.find(x => x.id === zid);
+  if (!z || z.sealed) return;
+  const startX = e.clientX, startY = e.clientY;
+  const startW = z.w, startH = z.h;
+  const onMove = ev => {
+    z.w = Math.max(280, startW + ev.clientX - startX);
+    z.h = Math.max(200, startH + ev.clientY - startY);
+    const el = document.getElementById('zone-'+zid);
+    if (el) { el.style.width = z.w+'px'; el.style.height = z.h+'px'; }
+  };
+  const onUp = () => { save(); window.removeEventListener('mousemove',onMove); window.removeEventListener('mouseup',onUp); };
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  e.preventDefault();
+}
+
+/* ═══ EXPORT / CLEAR ══════════════════════════════════ */
+function exportZones() {
+  const blob = new Blob([JSON.stringify(zones, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'quantum-loom-zones.json'; a.click();
+  toast('↓ Zone layout exported');
+}
+
+function clearCanvas() {
+  if (!confirm('Clear all zones? This cannot be undone.')) return;
+  zones = []; selectedZone = null; selectedActor = null;
+  save(); renderAll();
+  toast('Canvas cleared');
+}
+
+/* ═══ KEYBOARD ════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closePicker(); deselectAll({target:{id:'zone-canvas'}}); }
+  if ((e.metaKey||e.ctrlKey) && e.key === 'z' && !e.shiftKey) toast('Undo not yet implemented');
+  if (e.key === 'Delete' && selectedZone && !selectedActor) deleteZone({stopPropagation:()=>{}}, selectedZone.id);
+});
+window.addEventListener('click', e => { if (e.target===document.getElementById('picker-modal')) closePicker(); });
+
+/* ═══ TOAST ═══════════════════════════════════════════ */
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.remove('show');
+  void el.offsetWidth; el.classList.add('show');
+}
+
+/* ── Hub storage relay listener ─────────────────────── */
+window.addEventListener('message', e => {
+  const d = e.data; if(!d||typeof d!=='object') return;
+  if(d.type==='hub:storage:updated'&&d.key==='ql-library') {
+    const raw = localStorage.getItem('ql-library');
+    if(raw) { try { LIBRARY = JSON.parse(raw); renderActorPool(); } catch(e2){} }
+  }
+  if(d.type==='hub:storage:updated'&&d.key==='ql-zones') {
+    try { zones = JSON.parse(d.value); renderAll(); } catch(e2){}
+  }
+  if(d.type==='hub:init') { init(); }
+});
+
+document.addEventListener('DOMContentLoaded', init);
+
+/* ── Cross-layer navigation via hub postMessage ── */
+function navTo(layerId) {
+  window.parent.postMessage({ type: 'ql:switchLayer', layer: layerId }, '*');
+}
+
+
+/* ── Quantum Loom Theme System ──────────────────────────────── */
+(function initQLTheme() {
+  const MAP = {
+    'c-bg':'--bg',
+    'c-surf':'--panel',
+    'c-surf2':'--panel-hi',
+    'c-edge':'--panel-edge',
+    'c-accent1':'--venturan',
+    'c-accent2':'--amber',
+    'c-accent3':'--emerald',
+    'c-accent4':'--fusion',
+    'c-danger':'--blood',
+    'c-warm':'--solari'
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([canonical, varName]) => {
+      if (tokens[canonical] !== undefined)
+        root.style.setProperty(varName, tokens[canonical]);
+    });
+  }
+  // Apply saved theme on load
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  // Listen for live theme broadcasts from hub
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens)
+      applyTokens(e.data.tokens);
+  });
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,2720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Loom — Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #04050a;
+  --surface:  rgba(8,11,18,.98);
+  --surface2: rgba(12,16,24,.97);
+  --edge:     rgba(255,255,255,.055);
+  --edge-hi:  rgba(255,255,255,.12);
+  --venturan: #b1d0f0;
+  --v-dim:    rgba(177,208,240,.35);
+  --amber:    #e8b84b;
+  --emerald:  #4dc8a0;
+  --solari:   #f98f3b;
+  --fusion:   #9b7fd4;
+  --blood:    #d45b5b;
+  --totem:    #7fd4c8;
+  --fm: 'Orbitron', monospace;
+  --fd: 'Space Grotesk', sans-serif;
+  --fc: 'JetBrains Mono', monospace;
+
+  /* Layer accent colors */
+  --c-workspace: #b1d0f0;
+  --c-library:   #9b7fd4;
+  --c-zones:     #7fd4c8;
+  --c-scenes:    #e8b84b;
+  --c-rack:      #f98f3b;
+  --c-sequencer: #4dc8a0;
+  --c-subgraph:  #d45b5b;
+  --c-ionodes:   #b1d0f0;
+  --c-output:    #c8973a;
+}
+
+html,body{
+  height:100%;overflow:hidden;
+  background:var(--bg);color:#fff;
+  font-family:var(--fd);font-size:13px;
+}
+
+/* ── Outer shell ─────────────────────────────────────── */
+#shell{
+  display:flex;flex-direction:column;height:100vh;overflow:hidden;
+}
+
+/* ── Top header bar ──────────────────────────────────── */
+#hub-header{
+  height:42px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;
+}
+.hh-logo{
+  display:flex;align-items:center;gap:8px;
+  padding:0 16px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.hh-glyph{
+  width:22px;height:22px;border:1.5px solid var(--venturan);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;color:var(--venturan);animation:breathe 4s ease-in-out infinite;
+  flex-shrink:0;
+}
+.hh-name{
+  font-family:var(--fm);font-size:.48rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--venturan);white-space:nowrap;
+}
+.hh-sep{
+  width:1px;height:18px;background:var(--edge);margin:0 8px;flex-shrink:0;
+}
+
+/* Project name */
+#proj-name{
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.15em;text-transform:uppercase;
+  color:rgba(255,255,255,.55);cursor:pointer;padding:2px 8px;border-radius:3px;
+  transition:all .12s;border:1px solid transparent;flex-shrink:0;
+}
+#proj-name:hover{color:#fff;border-color:var(--edge-hi);background:rgba(255,255,255,.04)}
+#proj-name-input{
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.15em;text-transform:uppercase;
+  color:#fff;background:rgba(255,255,255,.05);border:1px solid var(--edge-hi);
+  border-radius:3px;padding:2px 8px;outline:none;display:none;
+}
+
+.hh-spacer{flex:1}
+
+/* Status chips */
+#status-bar{
+  display:flex;align-items:center;gap:4px;padding:0 10px;
+}
+.sc{
+  display:flex;align-items:center;gap:4px;padding:2px 7px;
+  border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  font-family:var(--fc);font-size:.38rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.4);cursor:default;transition:all .2s;
+}
+.sc:hover{border-color:var(--edge-hi);color:rgba(255,255,255,.65)}
+.sc-dot{
+  width:5px;height:5px;border-radius:50%;background:currentColor;
+  opacity:.6;flex-shrink:0;
+}
+.sc.active-layer{border-color:var(--lc,var(--venturan));color:var(--lc,var(--venturan))}
+.sc.active-layer .sc-dot{opacity:1}
+
+/* Header actions */
+.hh-actions{
+  display:flex;gap:4px;padding:0 12px;border-left:1px solid var(--edge);height:100%;
+  align-items:center;
+}
+.hh-btn{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:3px 9px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);
+}
+.hh-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff}
+.hh-btn.hot{
+  border-color:rgba(77,200,160,.35);background:rgba(77,200,160,.06);color:var(--emerald);
+}
+.hh-btn.hot:hover{background:rgba(77,200,160,.14);box-shadow:0 0 10px rgba(77,200,160,.15)}
+
+/* ── Body: nav + content ─────────────────────────────── */
+#hub-body{
+  flex:1;display:flex;overflow:hidden;
+}
+
+/* ── Left nav ────────────────────────────────────────── */
+#hub-nav{
+  width:54px;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;
+  background:var(--surface);border-right:1px solid var(--edge);
+  padding:6px 0;gap:2px;z-index:10;overflow:hidden;
+  transition:width .22s cubic-bezier(.2,.8,.2,1);
+}
+#hub-nav.expanded{ width:190px;align-items:flex-start;padding:6px 8px }
+
+.nav-item{
+  width:42px;height:42px;border-radius:6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .13s;gap:2px;
+  border:1px solid transparent;background:transparent;
+  position:relative;flex-shrink:0;
+}
+.nav-item:hover{background:rgba(255,255,255,.05);border-color:var(--edge)}
+.nav-item.active{
+  background:rgba(255,255,255,.06);
+  border-color:var(--lc,var(--venturan));
+  box-shadow:0 0 0 1px var(--lc,var(--venturan)) inset,
+             0 0 14px color-mix(in srgb, var(--lc,var(--venturan)) 20%, transparent);
+}
+.nav-item.active .ni-icon{ color:var(--lc,var(--venturan)) }
+.ni-icon{font-size:.95rem;color:rgba(255,255,255,.4);transition:color .12s;flex-shrink:0}
+.ni-label{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.28);transition:color .12s;text-align:center;
+  white-space:nowrap;overflow:hidden;
+}
+.nav-item.active .ni-label{color:var(--lc,var(--venturan))}
+
+/* Expanded nav item */
+#hub-nav.expanded .nav-item{
+  width:100%;height:38px;flex-direction:row;justify-content:flex-start;
+  gap:10px;padding:0 10px;border-radius:5px;
+}
+#hub-nav.expanded .ni-label{font-size:.38rem;text-align:left}
+
+/* Nav divider */
+.nav-div{
+  width:30px;height:1px;background:var(--edge);margin:4px 0;flex-shrink:0;
+  transition:width .22s;
+}
+#hub-nav.expanded .nav-div{width:100%}
+
+/* Nav expand toggle */
+#nav-expand{
+  margin-top:auto;width:42px;height:30px;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:rgba(255,255,255,.25);font-size:.65rem;
+  transition:all .12s;border:1px solid transparent;flex-shrink:0;
+}
+#nav-expand:hover{color:rgba(255,255,255,.55);background:rgba(255,255,255,.04)}
+#hub-nav.expanded #nav-expand{
+  width:100%;padding:0 10px;justify-content:flex-end;
+}
+
+/* Nav badges (live counts) */
+.nav-badge{
+  position:absolute;top:5px;right:5px;
+  font-family:var(--fc);font-size:.3rem;
+  background:rgba(255,255,255,.12);color:rgba(255,255,255,.55);
+  padding:1px 4px;border-radius:8px;line-height:1.4;
+  pointer-events:none;
+}
+#hub-nav.expanded .nav-badge{
+  position:static;margin-left:auto;
+  background:rgba(255,255,255,.07);
+}
+
+/* ── Iframe content area ─────────────────────────────── */
+#hub-content{
+  flex:1;position:relative;overflow:hidden;
+}
+.layer-frame{
+  position:absolute;inset:0;
+  border:none;width:100%;height:100%;
+  opacity:0;pointer-events:none;
+  transition:opacity .18s ease;
+}
+.layer-frame.active{
+  opacity:1;pointer-events:all;
+}
+
+/* ── Loading overlay ─────────────────────────────────── */
+.frame-loader{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg);gap:14px;z-index:5;
+  transition:opacity .3s ease;
+}
+.frame-loader.gone{opacity:0;pointer-events:none}
+.loader-glyph{
+  font-size:1.8rem;color:var(--venturan);
+  animation:spin-slow 3s linear infinite;
+}
+.loader-lbl{
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.25em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);
+}
+.loader-bar{
+  width:160px;height:2px;background:rgba(255,255,255,.06);
+  border-radius:1px;overflow:hidden;
+}
+.loader-fill{
+  height:100%;background:var(--venturan);border-radius:1px;
+  animation:load-fill 1.2s ease forwards;
+  width:0;
+}
+
+/* ── Bottom status strip ─────────────────────────────── */
+#hub-footer{
+  height:22px;flex-shrink:0;
+  display:flex;align-items:center;
+  background:var(--surface);border-top:1px solid var(--edge);
+  padding:0 12px;gap:14px;
+}
+.hf-item{
+  font-family:var(--fc);font-size:.36rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.25);display:flex;align-items:center;gap:4px;
+}
+.hf-item b{color:rgba(255,255,255,.45);font-weight:400}
+#hf-layer-name{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.15em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);margin-left:auto;
+}
+
+/* ── Project modal ───────────────────────────────────── */
+#proj-modal{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;
+}
+#proj-modal.open{display:flex}
+.pm-box{
+  background:var(--surface2);border:1px solid var(--edge-hi);border-radius:10px;
+  width:420px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.8);
+}
+.pm-head{
+  padding:16px 20px;border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;gap:10px;
+}
+.pm-title{
+  font-family:var(--fm);font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--venturan);flex:1;
+}
+.pm-close{
+  background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;
+  font-size:.8rem;padding:2px 6px;border-radius:3px;transition:all .12s;
+}
+.pm-close:hover{color:#fff;background:rgba(255,255,255,.08)}
+.pm-body{padding:20px}
+.pm-row{
+  display:flex;flex-direction:column;gap:5px;margin-bottom:14px;
+}
+.pm-label{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.35);
+}
+.pm-input{
+  font-family:var(--fd);font-size:.75rem;padding:7px 10px;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  border-radius:5px;color:#fff;outline:none;transition:border .12s;
+}
+.pm-input:focus{border-color:var(--edge-hi)}
+.pm-actions{
+  display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--edge);
+}
+.pm-btn{
+  flex:1;font-family:var(--fm);font-size:.4rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:7px;border-radius:5px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.5);
+}
+.pm-btn:hover{background:rgba(255,255,255,.06);color:#fff}
+.pm-btn.primary{
+  border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.08);color:var(--emerald);
+}
+.pm-btn.primary:hover{background:rgba(77,200,160,.18);box-shadow:0 0 12px rgba(77,200,160,.15)}
+.pm-btn.danger{
+  border-color:rgba(212,91,91,.3);background:transparent;color:rgba(212,91,91,.6);
+}
+.pm-btn.danger:hover{background:rgba(212,91,91,.08);border-color:rgba(212,91,91,.6)}
+
+/* ── Toast ───────────────────────────────────────────── */
+#hub-toast{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+  background:rgba(5,5,8,.97);border:1px solid rgba(177,208,240,.18);
+  backdrop-filter:blur(12px);padding:7px 16px;border-radius:5px;
+  font-family:var(--fm);font-size:.44rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--venturan);pointer-events:none;opacity:0;z-index:300;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,.8);
+}
+#hub-toast.show{animation:toast-in 2.8s ease forwards}
+
+/* ── Keyframes ───────────────────────────────────────── */
+@keyframes breathe{0%,100%{opacity:.4}50%{opacity:.9}}
+@keyframes spin-slow{to{transform:rotate(360deg)}}
+@keyframes load-fill{to{width:100%}}
+@keyframes toast-in{
+  0%{opacity:0;transform:translateX(-50%) translateY(8px)}
+  12%{opacity:1;transform:translateX(-50%) translateY(0)}
+  75%{opacity:1}
+  100%{opacity:0;transform:translateX(-50%) translateY(-4px)}
+}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+
+/* ── Output panel ─────────────────────────────────────── */
+#output-panel{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;
+}
+#output-panel.open{display:flex}
+.op-box{
+  background:var(--surface2);border:1px solid var(--edge-hi);
+  border-radius:10px;width:520px;max-height:85vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 24px 80px rgba(0,0,0,.8);overflow:hidden;
+}
+.op-head{
+  padding:14px 18px;border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.op-title{font-family:var(--fm);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--venturan);flex:1}
+.op-close{background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.8rem;padding:2px 6px;border-radius:3px}
+.op-close:hover{color:#fff;background:rgba(255,255,255,.08)}
+.op-body{flex:1;overflow-y:auto;padding:16px 18px}
+.op-body::-webkit-scrollbar{width:3px}
+.op-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.op-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;
+}
+.op-stat{
+  padding:8px 10px;border-radius:6px;background:rgba(255,255,255,.03);
+  border:1px solid var(--edge);text-align:center;
+}
+.op-stat-n{font-family:var(--fc);font-size:.8rem;color:var(--venturan)}
+.op-stat-l{font-family:var(--fm);font-size:.3rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px}
+.op-format-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.op-fmt{
+  padding:10px 12px;border-radius:7px;cursor:pointer;transition:all .13s;
+  border:1px solid var(--edge);background:rgba(255,255,255,.02);
+  display:flex;flex-direction:column;gap:3px;
+}
+.op-fmt:hover{border-color:var(--edge-hi);background:rgba(255,255,255,.05)}
+.op-fmt.selected{border-color:rgba(177,208,240,.45);background:rgba(177,208,240,.07)}
+.op-fmt-icon{font-size:1rem}
+.op-fmt-name{font-family:var(--fm);font-size:.38rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65)}
+.op-fmt-desc{font-family:var(--fd);font-size:.42rem;color:rgba(255,255,255,.3)}
+.op-sec-lbl{font-family:var(--fm);font-size:.34rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3);margin:12px 0 6px}
+.op-warn{
+  padding:6px 10px;border-radius:4px;background:rgba(232,184,75,.07);
+  border:1px solid rgba(232,184,75,.2);font-family:var(--fd);font-size:.42rem;
+  color:#e8b84b;margin-bottom:4px;
+}
+.op-actions{
+  padding:12px 18px;border-top:1px solid var(--edge);
+  display:flex;gap:6px;flex-shrink:0;
+}
+.op-btn{
+  flex:1;font-family:var(--fm);font-size:.4rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:7px;border-radius:5px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.5);
+}
+.op-btn:hover{background:rgba(255,255,255,.06);color:#fff}
+.op-btn.primary{border-color:rgba(177,208,240,.4);background:rgba(177,208,240,.08);color:var(--venturan)}
+.op-btn.primary:hover{background:rgba(177,208,240,.18);box-shadow:0 0 12px rgba(177,208,240,.15)}
+
+/* ── Firebase modal ──────────────────────────────────────────────── */
+#fb-modal{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(10px);
+  align-items:center;justify-content:center;
+}
+#fb-modal.open{ display:flex }
+.fb-box{
+  background:var(--surface2);border:1px solid var(--edge-hi);border-radius:10px;
+  width:520px;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 24px 64px rgba(0,0,0,.6);
+}
+.fb-head{
+  padding:16px 20px;border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.fb-title{
+  font-family:var(--fm);font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.7);flex:1;
+}
+.fb-status-dot{
+  width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);
+  box-shadow:0 0 0 0 transparent;transition:all .3s;flex-shrink:0;
+}
+.fb-status-dot.connected{
+  background:#4dc8a0;box-shadow:0 0 8px rgba(77,200,160,.5);
+  animation:pulse-green 2.5s ease-in-out infinite;
+}
+.fb-status-dot.connecting{ background:#e8b84b;animation:pulse-amber 1s ease-in-out infinite; }
+.fb-status-dot.error{ background:#d45b5b; }
+@keyframes pulse-green{0%,100%{box-shadow:0 0 6px rgba(77,200,160,.4)}50%{box-shadow:0 0 14px rgba(77,200,160,.7)}}
+@keyframes pulse-amber{0%,100%{opacity:1}50%{opacity:.4}}
+.fb-status-lbl{
+  font-family:var(--fc);font-size:.36rem;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);
+}
+.fb-status-lbl.connected{ color:#4dc8a0 }
+.fb-status-lbl.connecting{ color:#e8b84b }
+.fb-status-lbl.error{ color:#d45b5b }
+.fb-close{
+  background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;
+  font-size:.85rem;padding:2px 6px;border-radius:3px;transition:color .12s;
+}
+.fb-close:hover{ color:rgba(255,255,255,.7) }
+.fb-tabs{
+  display:flex;border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.fb-tab{
+  font-family:var(--fc);font-size:.36rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:8px 16px;cursor:pointer;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;
+  transition:all .12s;
+}
+.fb-tab.active{ color:#c8973a;border-bottom-color:#c8973a }
+.fb-tab:hover:not(.active){ color:rgba(255,255,255,.55) }
+.fb-body{ padding:20px;overflow-y:auto;flex:1 }
+.fb-body::-webkit-scrollbar{ width:3px }
+.fb-body::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08) }
+.fb-row{ margin-bottom:14px }
+.fb-label{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);margin-bottom:5px;display:flex;align-items:center;gap:6px;
+}
+.fb-label span{ font-style:italic;letter-spacing:0;text-transform:none;opacity:.7 }
+.fb-input{
+  width:100%;font-family:var(--fc);font-size:.6rem;padding:7px 10px;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge-hi);
+  border-radius:5px;color:#fff;outline:none;transition:border .12s;
+}
+.fb-input:focus{ border-color:rgba(200,151,58,.5) }
+.fb-input.mono{ font-family:var(--fc);font-size:.55rem;color:rgba(255,255,255,.6) }
+.fb-row-inline{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 0;border-bottom:1px solid var(--edge);
+}
+.fb-row-inline:last-child{ border-bottom:none }
+.fb-toggle{
+  width:32px;height:17px;border-radius:9px;border:1px solid var(--edge);
+  background:rgba(255,255,255,.05);cursor:pointer;position:relative;transition:all .2s;
+}
+.fb-toggle.on{ background:rgba(200,151,58,.3);border-color:rgba(200,151,58,.5) }
+.fb-toggle::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.3);transition:all .2s;
+}
+.fb-toggle.on::after{ left:17px;background:#c8973a }
+.fb-stat-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:5px 0;border-bottom:1px solid var(--edge);font-family:var(--fc);
+}
+.fb-stat-row:last-child{ border-bottom:none }
+.fb-stat-key{ font-size:.34rem;color:rgba(255,255,255,.3);letter-spacing:.08em }
+.fb-stat-val{ font-size:.38rem;color:rgba(255,255,255,.55) }
+.fb-stat-val.ok{ color:#4dc8a0 }
+.fb-stat-val.warn{ color:#e8b84b }
+.fb-stat-val.err{ color:#d45b5b }
+.fb-key-row{
+  display:flex;align-items:center;gap:6px;padding:3px 0;
+  font-family:var(--fc);font-size:.36rem;
+}
+.fb-key-dot{ width:6px;height:6px;border-radius:50%;flex-shrink:0 }
+.fb-actions{
+  display:flex;gap:6px;padding:14px 20px;border-top:1px solid var(--edge);flex-shrink:0;flex-wrap:wrap;
+}
+.fb-act-btn{
+  flex:1;min-width:80px;font-family:var(--fm);font-size:.38rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:7px 10px;border-radius:5px;cursor:pointer;transition:all .13s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);
+}
+.fb-act-btn:hover{ background:rgba(255,255,255,.05);color:rgba(255,255,255,.8) }
+.fb-act-btn.primary{
+  border-color:rgba(200,151,58,.4);background:rgba(200,151,58,.12);color:#c8973a;
+}
+.fb-act-btn.primary:hover{ background:rgba(200,151,58,.22);box-shadow:0 0 12px rgba(200,151,58,.15) }
+.fb-act-btn.danger{
+  border-color:rgba(212,91,91,.3);color:rgba(212,91,91,.5);
+}
+.fb-act-btn.danger:hover{ background:rgba(212,91,91,.08);color:#d45b5b }
+.fb-act-btn:disabled{ opacity:.3;cursor:not-allowed }
+.fb-hint{
+  font-family:var(--fd);font-size:.6rem;font-style:italic;
+  color:rgba(255,255,255,.2);line-height:1.6;margin-top:4px;
+}
+.fb-log{
+  font-family:var(--fc);font-size:.48rem;line-height:1.7;
+  color:rgba(255,255,255,.35);max-height:120px;overflow-y:auto;
+  background:rgba(0,0,0,.2);border-radius:4px;padding:8px 10px;margin-top:10px;
+}
+.fb-log::-webkit-scrollbar{ width:2px }
+.fb-log::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08) }
+.fb-log-entry{ color:rgba(255,255,255,.3) }
+.fb-log-entry.ok{ color:rgba(77,200,160,.7) }
+.fb-log-entry.warn{ color:rgba(232,184,75,.6) }
+.fb-log-entry.err{ color:rgba(212,91,91,.7) }
+
+/* ── Theme Picker ─────────────────────────────────────────────── */
+#theme-modal{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(10px);
+  align-items:center;justify-content:center;
+}
+#theme-modal.open{display:flex}
+.tm-box{
+  background:var(--surface2);border:1px solid var(--edge-hi);border-radius:10px;
+  width:640px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 24px 64px rgba(0,0,0,.7);
+}
+.tm-head{
+  padding:16px 20px;border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.tm-title{
+  font-family:var(--fm);font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.7);flex:1;
+}
+.tm-close{
+  background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;
+  font-size:.85rem;padding:2px 6px;border-radius:3px;transition:color .12s;
+}
+.tm-close:hover{color:rgba(255,255,255,.7)}
+.tm-body{
+  padding:20px;overflow-y:auto;flex:1;
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+.tm-body::-webkit-scrollbar{width:3px}
+.tm-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.theme-card{
+  border:1px solid rgba(255,255,255,.07);border-radius:8px;
+  padding:14px;cursor:pointer;transition:all .18s;
+  background:rgba(255,255,255,.025);position:relative;overflow:hidden;
+}
+.theme-card:hover{
+  border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.05);
+  transform:translateY(-1px);
+}
+.theme-card.active{
+  border-color:var(--amber);
+  box-shadow:0 0 0 1px var(--amber), 0 0 20px rgba(232,184,75,.15);
+}
+.theme-card.active::after{
+  content:'✓ Active';position:absolute;top:8px;right:10px;
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.12em;
+  color:var(--amber);
+}
+.tc-emoji{font-size:1.2rem;margin-bottom:6px;display:block}
+.tc-name{
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.8);margin-bottom:3px;
+}
+.tc-desc{
+  font-family:var(--fd);font-size:.55rem;color:rgba(255,255,255,.3);
+  margin-bottom:10px;line-height:1.4;
+}
+.tc-swatches{
+  display:flex;gap:4px;height:8px;border-radius:4px;overflow:hidden;
+}
+.tc-swatch{flex:1;border-radius:2px}
+.tc-swatch.bg{flex:2}
+
+/* Active theme indicator in header */
+#theme-lbl{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.25);cursor:pointer;transition:color .15s;
+}
+#theme-lbl:hover{color:rgba(255,255,255,.5)}
+
+/* ── LLM Panel ───────────────────────────────────────────────── */
+#llm-panel{
+  position:fixed;right:0;top:0;bottom:0;width:380px;z-index:190;
+  background:var(--surface2);border-left:1px solid var(--edge-hi);
+  display:flex;flex-direction:column;transform:translateX(100%);
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+  box-shadow:-8px 0 32px rgba(0,0,0,.5);
+}
+#llm-panel.open{transform:translateX(0)}
+
+.lp-head{
+  padding:14px 16px;border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.lp-title{
+  font-family:var(--fm);font-size:.48rem;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.7);flex:1;
+}
+.lp-tabs{
+  display:flex;border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.lp-tab{
+  font-family:var(--fc);font-size:.34rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:7px 14px;cursor:pointer;color:rgba(255,255,255,.3);
+  border-bottom:2px solid transparent;transition:all .12s;
+}
+.lp-tab.active{color:#c8973a;border-bottom-color:#c8973a}
+.lp-tab:hover:not(.active){color:rgba(255,255,255,.55)}
+
+/* Config tab */
+.lp-body{padding:16px;overflow-y:auto;flex:1}
+.lp-body::-webkit-scrollbar{width:3px}
+.lp-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.lp-row{margin-bottom:12px}
+.lp-label{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);margin-bottom:4px;
+}
+.lp-input{
+  width:100%;font-family:var(--fc);font-size:.58rem;padding:6px 9px;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge-hi);
+  border-radius:4px;color:#fff;outline:none;transition:border .12s;
+}
+.lp-input:focus{border-color:rgba(200,151,58,.5)}
+.lp-select{
+  width:100%;font-family:var(--fc);font-size:.58rem;padding:6px 9px;
+  background:#0d0f14;border:1px solid var(--edge-hi);
+  border-radius:4px;color:rgba(255,255,255,.8);outline:none;cursor:pointer;
+}
+.lp-provider-grid{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px;
+}
+.lp-prov-card{
+  border:1px solid var(--edge);border-radius:6px;padding:8px 6px;text-align:center;
+  cursor:pointer;transition:all .15s;background:rgba(255,255,255,.02);
+}
+.lp-prov-card:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15)}
+.lp-prov-card.active{
+  border-color:rgba(200,151,58,.5);background:rgba(200,151,58,.08);
+}
+.lp-prov-emoji{font-size:1.1rem;display:block;margin-bottom:3px}
+.lp-prov-name{
+  font-family:var(--fm);font-size:.28rem;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);line-height:1.3;
+}
+.lp-prov-card.active .lp-prov-name{color:#c8973a}
+.lp-hint{
+  font-family:var(--fd);font-size:.58rem;font-style:italic;
+  color:rgba(255,255,255,.2);margin-top:4px;line-height:1.5;
+}
+.lp-status{
+  display:flex;align-items:center;gap:6px;padding:8px 10px;
+  border-radius:4px;background:rgba(0,0,0,.25);margin-bottom:12px;
+  font-family:var(--fc);font-size:.4rem;color:rgba(255,255,255,.4);
+}
+.lp-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.15)}
+.lp-dot.ok{background:#4dc8a0;box-shadow:0 0 6px rgba(77,200,160,.5)}
+.lp-dot.err{background:#d45b5b}
+.lp-dot.testing{background:#e8b84b;animation:led-pulse 1s infinite}
+
+/* Chat tab */
+.lp-chat-msgs{flex:1;overflow-y:auto;padding:14px 14px 0;display:flex;flex-direction:column;gap:10px}
+.lp-chat-msgs::-webkit-scrollbar{width:3px}
+.lp-chat-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.chat-msg{
+  max-width:92%;padding:8px 11px;border-radius:8px;
+  font-family:var(--fd);font-size:.62rem;line-height:1.6;
+}
+.chat-msg.user{
+  align-self:flex-end;background:rgba(200,151,58,.15);
+  border:1px solid rgba(200,151,58,.25);color:rgba(255,255,255,.85);
+}
+.chat-msg.ai{
+  align-self:flex-start;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.75);
+}
+.chat-msg.ai.streaming{border-color:rgba(200,151,58,.3)}
+.lp-chat-input-row{
+  display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--edge);flex-shrink:0;
+}
+.lp-chat-input{
+  flex:1;font-family:var(--fd);font-size:.62rem;padding:7px 10px;resize:none;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge-hi);
+  border-radius:6px;color:#fff;outline:none;height:60px;
+  transition:border .12s;
+}
+.lp-chat-input:focus{border-color:rgba(200,151,58,.4)}
+.lp-send-btn{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:0 12px;border-radius:5px;cursor:pointer;transition:all .13s;
+  border:1px solid rgba(200,151,58,.4);background:rgba(200,151,58,.12);
+  color:#c8973a;align-self:stretch;
+}
+.lp-send-btn:hover{background:rgba(200,151,58,.22)}
+.lp-send-btn:disabled{opacity:.3;cursor:not-allowed}
+
+.lp-actions{display:flex;gap:6px;padding:12px 16px;border-top:1px solid var(--edge);flex-shrink:0;flex-wrap:wrap}
+.lp-act-btn{
+  flex:1;min-width:70px;font-family:var(--fm);font-size:.34rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:6px 8px;border-radius:4px;cursor:pointer;
+  transition:all .13s;border:1px solid var(--edge);
+  background:transparent;color:rgba(255,255,255,.4);
+}
+.lp-act-btn:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.8)}
+.lp-act-btn.primary{
+  border-color:rgba(200,151,58,.4);background:rgba(200,151,58,.12);color:#c8973a;
+}
+.lp-act-btn.primary:hover{background:rgba(200,151,58,.22)}
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- TOP HEADER -->
+  <div id="hub-header">
+    <div class="hh-logo">
+      <div class="hh-glyph">⬡</div>
+      <div class="hh-name">Quantum Loom</div>
+    </div>
+    <div class="hh-sep"></div>
+    <span id="proj-name" onclick="openProjModal()" title="Click to rename project">Untitled Project</span>
+    <input id="proj-name-input" type="text" placeholder="Project name…" onblur="saveProjName()" onkeydown="if(event.key==='Enter')saveProjName()">
+
+    <div class="hh-spacer"></div>
+      <span id="theme-lbl" onclick="openThemeModal()" title="Change theme">🌌 Void-Tech</span>
+
+    <!-- Live storage status chips -->
+    <div id="status-bar">
+      <div class="sc" id="sc-capsules" style="--lc:var(--c-library)" title="Capsules in library">
+        <div class="sc-dot"></div>
+        <span id="sc-caps-n">0</span> capsules
+      </div>
+      <div class="sc" id="sc-scenes" style="--lc:var(--c-scenes)" title="Scenes / Acts">
+        <div class="sc-dot"></div>
+        <span id="sc-scenes-n">0</span> scenes
+      </div>
+      <div class="sc" id="sc-tracks" style="--lc:var(--c-sequencer)" title="Sequencer tracks">
+        <div class="sc-dot"></div>
+        <span id="sc-tracks-n">0</span> tracks
+      </div>
+      <div class="sc" id="sc-compiled" style="--lc:var(--c-subgraph)" title="Compiled graphs">
+        <div class="sc-dot"></div>
+        <span id="sc-comp-n">0</span> compiled
+      </div>
+    </div>
+
+    <div class="hh-actions">
+      <button class="hh-btn" onclick="openProjModal()">⊞ Project</button>
+      <button class="hh-btn" id="llm-btn" onclick="openLLMPanel()" title="AI Assistant">🤖</button>
+      <button class="hh-btn" id="theme-btn" onclick="openThemeModal()" title="Change theme" id="theme-header-btn">🎨</button>
+      <button class="hh-btn" id="fb-btn" onclick="openFBModal()">🔥 Cloud</button>
+      <button class="hh-btn" onclick="switchLayer('output')">⎘ Output</button>
+      <button class="hh-btn hot" onclick="saveProject()">↓ Save</button>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div id="hub-body">
+
+    <!-- LEFT NAV -->
+    <div id="hub-nav">
+      <!-- Layers -->
+      <div class="nav-item active" id="nav-workspace" data-layer="workspace"
+           style="--lc:var(--c-workspace)" onclick="switchLayer('workspace')" title="Character Workspace">
+        <span class="ni-icon">◈</span>
+        <span class="ni-label">Workspace</span>
+      </div>
+      <div class="nav-item" id="nav-library" data-layer="library"
+           style="--lc:var(--c-library)" onclick="switchLayer('library')" title="Capsule Library">
+        <span class="ni-icon">⊞</span>
+        <span class="ni-label">Library</span>
+        <span class="nav-badge" id="nb-library">0</span>
+      </div>
+      <div class="nav-item" id="nav-zones" data-layer="zones"
+           style="--lc:var(--c-zones)" onclick="switchLayer('zones')" title="Zone Canvas">
+        <span class="ni-icon">◫</span>
+        <span class="ni-label">Zones</span>
+        <span class="nav-badge" id="nb-zones">0</span>
+      </div>
+
+      <div class="nav-div"></div>
+
+      <div class="nav-item" id="nav-scenes" data-layer="scenes"
+           style="--lc:var(--c-scenes)" onclick="switchLayer('scenes')" title="Scene Manager">
+        <span class="ni-icon">⌚</span>
+        <span class="ni-label">Scenes</span>
+        <span class="nav-badge" id="nb-scenes">0</span>
+      </div>
+      <div class="nav-item" id="nav-rack" data-layer="rack"
+           style="--lc:var(--c-rack)" onclick="switchLayer('rack')" title="Instrument Rack">
+        <span class="ni-icon">⚙</span>
+        <span class="ni-label">Rack</span>
+      </div>
+      <div class="nav-item" id="nav-sequencer" data-layer="sequencer"
+           style="--lc:var(--c-sequencer)" onclick="switchLayer('sequencer')" title="Track Sequencer">
+        <span class="ni-icon">⧖</span>
+        <span class="ni-label">Sequencer</span>
+        <span class="nav-badge" id="nb-tracks">0</span>
+      </div>
+
+      <div class="nav-div"></div>
+
+      <div class="nav-item" id="nav-subgraph" data-layer="subgraph"
+           style="--lc:var(--c-subgraph)" onclick="switchLayer('subgraph')" title="Sub-Graph Canvas">
+        <span class="ni-icon">⬡</span>
+        <span class="ni-label">Graph</span>
+        <span class="nav-badge" id="nb-compiled">0</span>
+      </div>
+      <div class="nav-item" id="nav-ionodes" data-layer="ionodes"
+           style="--lc:var(--c-ionodes)" onclick="switchLayer('ionodes')" title="Signal Bus & I/O Nodes">
+        <span class="ni-icon">⇌</span>
+        <span class="ni-label">I/O Bus</span>
+      </div>
+
+      <div class="nav-item" id="nav-output" data-layer="output"
+           style="--lc:var(--c-output)" onclick="switchLayer('output')" title="Output Renderer">
+        <span class="ni-icon">⥘</span>
+        <span class="ni-label">Output</span>
+      </div>
+
+      <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div id="hub-content">
+
+      <!-- Workspace -->
+      <div class="frame-loader" id="loader-workspace">
+        <div class="loader-glyph">◈</div>
+        <div class="loader-lbl">Loading Workspace</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+      </div>
+      <iframe class="layer-frame active" id="frame-workspace"
+        src="quantum-loom-workspace.html"
+        onload="frameLoaded('workspace')"></iframe>
+
+      <!-- Library -->
+      <div class="frame-loader" id="loader-library">
+        <div class="loader-glyph">⊞</div>
+        <div class="loader-lbl">Loading Library</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-library"
+        src="quantum-loom-library.html"
+        onload="frameLoaded('library')"></iframe>
+
+      <!-- Zones -->
+      <div class="frame-loader" id="loader-zones">
+        <div class="loader-glyph">◫</div>
+        <div class="loader-lbl">Loading Zones</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-zones"
+        src="quantum-loom-zones.html"
+        onload="frameLoaded('zones')"></iframe>
+
+      <!-- Scenes -->
+      <div class="frame-loader" id="loader-scenes">
+        <div class="loader-glyph">⌚</div>
+        <div class="loader-lbl">Loading Scene Manager</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-scenes"
+        src="quantum-loom-scenes.html"
+        onload="frameLoaded('scenes')"></iframe>
+
+      <!-- Rack -->
+      <div class="frame-loader" id="loader-rack">
+        <div class="loader-glyph">⚙</div>
+        <div class="loader-lbl">Loading Instrument Rack</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-rack"
+        src="quantum-loom-rack.html"
+        onload="frameLoaded('rack')"></iframe>
+
+      <!-- Sequencer -->
+      <div class="frame-loader" id="loader-sequencer">
+        <div class="loader-glyph">⧖</div>
+        <div class="loader-lbl">Loading Track Sequencer</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-sequencer"
+        src="quantum-loom-sequencer.html"
+        onload="frameLoaded('sequencer')"></iframe>
+
+      <!-- Sub-Graph -->
+      <div class="frame-loader" id="loader-subgraph">
+        <div class="loader-glyph">⬡</div>
+        <div class="loader-lbl">Loading Node Graph</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-subgraph"
+        src="quantum-loom-subgraph.html"
+        onload="frameLoaded('subgraph')"></iframe>
+
+      <!-- I/O Nodes -->
+      <div class="frame-loader" id="loader-ionodes">
+        <div class="loader-glyph">⇌</div>
+        <div class="loader-lbl">Loading Signal Bus</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-ionodes"
+        src="quantum-loom-io-nodes.html"
+        onload="frameLoaded('ionodes')"></iframe>
+      <iframe class="layer-frame" id="frame-output"
+        src="quantum-loom-output.html"
+        onload="frameLoaded('output')"></iframe>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div id="hub-footer">
+    <div class="hf-item"><div class="sc-dot" style="background:var(--emerald);opacity:.6"></div><b id="hf-save-time">Not saved</b></div>
+    <div class="hf-item">keys: <b id="hf-keys">0</b></div>
+    <div class="hf-item">version <b>1.0.0</b></div>
+    <div id="hf-layer-name">Workspace</div>
+  </div>
+
+</div>
+
+<!-- PROJECT MODAL -->
+<div id="proj-modal">
+  <div class="pm-box">
+    <div class="pm-head">
+      <span class="pm-title">Project</span>
+      <button class="pm-close" onclick="closeProjModal()">✕</button>
+    </div>
+    <div class="pm-body">
+      <div class="pm-row">
+        <label class="pm-label">Project Name</label>
+        <input class="pm-input" id="pm-name" type="text" placeholder="My Story…">
+      </div>
+      <div class="pm-row">
+        <label class="pm-label">Description</label>
+        <input class="pm-input" id="pm-desc" type="text" placeholder="Optional description…">
+      </div>
+      <div class="pm-row" style="display:flex;gap:8px">
+        <div style="flex:1">
+          <label class="pm-label">Key Signature</label>
+          <input class="pm-input" id="pm-key" type="text" placeholder="e.g. Dm, F#m, C…" style="text-align:center">
+        </div>
+        <div style="flex:1">
+          <label class="pm-label">BPM</label>
+          <input class="pm-input" id="pm-bpm" type="number" min="40" max="300" value="120" style="text-align:center">
+        </div>
+        <div style="flex:1">
+          <label class="pm-label">Bars / Chapter</label>
+          <input class="pm-input" id="pm-bpc" type="number" min="1" max="64" value="4" style="text-align:center">
+        </div>
+      </div>
+      <div class="pm-row" id="pm-storage-info">
+        <label class="pm-label">Storage Keys</label>
+        <div id="pm-keys-list" style="font-family:var(--fc);font-size:.38rem;color:rgba(255,255,255,.35);line-height:1.8"></div>
+      </div>
+    </div>
+    <div class="pm-actions">
+      <button class="pm-btn danger" onclick="clearProject()">✕ Clear All</button>
+      <button class="pm-btn" onclick="loadProjectFile()">↑ Import</button>
+      <button class="pm-btn" onclick="exportProject()">↓ Export</button>
+      <button class="pm-btn primary" onclick="saveProjMeta()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- OUTPUT PANEL -->
+<div id="output-panel">
+  <div class="op-box">
+    <div class="op-head">
+      <span style="font-size:1rem">⎘</span>
+      <span class="op-title">Export Output</span>
+      <button class="op-close" onclick="closeOutputPanel()">✕</button>
+    </div>
+    <div class="op-body">
+      <div class="op-stats" id="op-stats"></div>
+      <div class="op-sec-lbl">Format</div>
+      <div class="op-format-grid" id="op-fmt-grid"></div>
+      <div class="op-sec-lbl">Warnings</div>
+      <div id="op-warnings"></div>
+    </div>
+    <div class="op-actions">
+      <button class="op-btn" onclick="closeOutputPanel()">Cancel</button>
+      <button class="op-btn" onclick="exportOutputTxt()" id="op-txt-btn">↓ .txt</button>
+      <button class="op-btn primary" onclick="exportOutputHTML()" id="op-html-btn">↓ .html</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="hub-toast"></div>
+
+<div id="fb-modal">
+  <div class="fb-box">
+    <div class="fb-head">
+      <div class="fb-status-dot" id="fb-dot"></div>
+      <span class="fb-title">Cloud Sync — Firebase</span>
+      <span class="fb-status-lbl" id="fb-status-lbl">Disconnected</span>
+      <button class="fb-close" onclick="closeFBModal()">✕</button>
+    </div>
+
+    <div class="fb-tabs">
+      <div class="fb-tab active" id="fb-tab-config" onclick="fbSwitchTab('config')">Config</div>
+      <div class="fb-tab" id="fb-tab-status" onclick="fbSwitchTab('status')">Status</div>
+      <div class="fb-tab" id="fb-tab-projects" onclick="fbSwitchTab('projects')">Projects</div>
+    </div>
+
+    <!-- CONFIG TAB -->
+    <div class="fb-body" id="fb-pane-config">
+      <div class="fb-row">
+        <div class="fb-label">API Key <span>(from Firebase console → Project Settings → Your apps)</span></div>
+        <input class="fb-input mono" id="fb-apiKey" placeholder="AIzaSy…" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="fb-row">
+        <div class="fb-label">Auth Domain</div>
+        <input class="fb-input mono" id="fb-authDomain" placeholder="your-project.firebaseapp.com" spellcheck="false">
+      </div>
+      <div class="fb-row">
+        <div class="fb-label">Project ID</div>
+        <input class="fb-input mono" id="fb-projectId" placeholder="your-project-id" spellcheck="false">
+      </div>
+      <div style="display:flex;gap:10px">
+        <div class="fb-row" style="flex:1">
+          <div class="fb-label">Storage Bucket</div>
+          <input class="fb-input mono" id="fb-storageBucket" placeholder="your-project.appspot.com" spellcheck="false">
+        </div>
+        <div class="fb-row" style="flex:1">
+          <div class="fb-label">Messaging Sender ID</div>
+          <input class="fb-input mono" id="fb-messagingSenderId" placeholder="123456789" spellcheck="false">
+        </div>
+      </div>
+      <div class="fb-row">
+        <div class="fb-label">App ID</div>
+        <input class="fb-input mono" id="fb-appId" placeholder="1:123456789:web:abc…" spellcheck="false">
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,.06);margin:14px 0 14px;padding-top:14px">
+        <div class="fb-row">
+          <div class="fb-label">Loom Project ID <span>(Firestore document key — one per story)</span></div>
+          <input class="fb-input" id="fb-loomProjectId" placeholder="my-story-2025" spellcheck="false">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <div class="fb-row-inline" style="flex:1;border:none;padding:0">
+          <span class="fb-label" style="margin:0">Auto-Sync</span>
+          <div class="fb-toggle on" id="fb-tog-autosync" onclick="fbToggle('autosync')"></div>
+        </div>
+        <div class="fb-row-inline" style="flex:1;border:none;padding:0;margin-left:16px">
+          <span class="fb-label" style="margin:0">Real-time</span>
+          <div class="fb-toggle on" id="fb-tog-realtime" onclick="fbToggle('realtime')"></div>
+        </div>
+      </div>
+      <p class="fb-hint">Your config is stored only in this browser's localStorage under <code>ql-firebase-config</code>. It is never sent anywhere except directly to Firebase.</p>
+      <div class="fb-log" id="fb-log" style="display:none"></div>
+    </div>
+
+    <!-- STATUS TAB -->
+    <div class="fb-body" id="fb-pane-status" style="display:none">
+      <div id="fb-stat-grid">
+        <div class="fb-stat-row"><span class="fb-stat-key">Connection</span><span class="fb-stat-val err" id="fbs-conn">Disconnected</span></div>
+        <div class="fb-stat-row"><span class="fb-stat-key">Loom Project</span><span class="fb-stat-val" id="fbs-proj">—</span></div>
+        <div class="fb-stat-row"><span class="fb-stat-key">Last Push</span><span class="fb-stat-val" id="fbs-push">Never</span></div>
+        <div class="fb-stat-row"><span class="fb-stat-key">Last Pull</span><span class="fb-stat-val" id="fbs-pull">Never</span></div>
+        <div class="fb-stat-row"><span class="fb-stat-key">Auto-Sync</span><span class="fb-stat-val" id="fbs-auto">Off</span></div>
+        <div class="fb-stat-row"><span class="fb-stat-key">Real-time</span><span class="fb-stat-val" id="fbs-rt">Off</span></div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="fb-label">Synced Keys</div>
+        <div id="fb-keys-audit" style="margin-top:8px"></div>
+      </div>
+    </div>
+
+    <!-- PROJECTS TAB -->
+    <div class="fb-body" id="fb-pane-projects" style="display:none">
+      <div class="fb-row">
+        <div class="fb-label">Switch Project</div>
+        <div style="display:flex;gap:6px">
+          <input class="fb-input" id="fb-switch-id" placeholder="project-id to switch to…" style="flex:1">
+          <button class="fb-act-btn primary" style="min-width:70px;flex:none" onclick="fbSwitchProject()">Switch</button>
+        </div>
+        <div class="fb-hint">Pulls the remote project into local storage, replacing current data.</div>
+      </div>
+      <div class="fb-row" style="margin-top:16px">
+        <div class="fb-label">Clone Current Project</div>
+        <div style="display:flex;gap:6px">
+          <input class="fb-input" id="fb-clone-id" placeholder="new-project-id…" style="flex:1">
+          <button class="fb-act-btn" style="min-width:70px;flex:none" onclick="fbCloneProject()">Clone</button>
+        </div>
+        <div class="fb-hint">Copies all current local data to a new Firestore document.</div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="fb-label">Remote Projects <button onclick="fbListProjects()" style="font-family:var(--fc);font-size:.3rem;padding:1px 6px;border-radius:2px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.4);cursor:pointer;margin-left:6px">↻ Refresh</button></div>
+        <div id="fb-project-list" style="margin-top:8px;font-family:var(--fc);font-size:.4rem;color:rgba(255,255,255,.25)">Connect first to list projects.</div>
+      </div>
+    </div>
+
+    <div class="fb-actions">
+      <button class="fb-act-btn primary" id="fb-btn-connect"  onclick="fbConnect()">⚡ Connect</button>
+      <button class="fb-act-btn" id="fb-btn-push"    onclick="fbPush()"    disabled>↑ Push</button>
+      <button class="fb-act-btn" id="fb-btn-pull"    onclick="fbPull()"    disabled>↓ Pull</button>
+      <button class="fb-act-btn danger" id="fb-btn-disconnect" onclick="fbDisconnect()" disabled>⊘ Disconnect</button>
+    </div>
+  </div>
+</div>
+
+<div id="theme-modal">
+  <div class="tm-box">
+    <div class="tm-head">
+      <span class="tm-title">🎨 Themes</span>
+      <button class="tm-close" onclick="closeThemeModal()">✕</button>
+    </div>
+    <div class="tm-body">
+      <div class="theme-card" id="tc-void-tech" onclick="applyTheme('void-tech')">
+      <span class="tc-emoji">🌌</span>
+      <div class="tc-name">Void-Tech</div>
+      <div class="tc-desc">Deep space darkness — the default</div>
+      <div class="tc-swatches"><div class="tc-swatch bg" style="background:#04050a"></div><div class="tc-swatch" style="background:#080b12"></div><div class="tc-swatch" style="background:#b1d0f0"></div><div class="tc-swatch" style="background:#e8b84b"></div><div class="tc-swatch" style="background:#4dc8a0"></div><div class="tc-swatch" style="background:#9b7fd4"></div></div>
+    </div>
+    <div class="theme-card" id="tc-cyber-arcane" onclick="applyTheme('cyber-arcane')">
+      <span class="tc-emoji">⚡</span>
+      <div class="tc-name">Cyber-Arcane Fusion</div>
+      <div class="tc-desc">Neon glyphs, holographic circuits</div>
+      <div class="tc-swatches"><div class="tc-swatch bg" style="background:#030308"></div><div class="tc-swatch" style="background:#07060f"></div><div class="tc-swatch" style="background:#00e5ff"></div><div class="tc-swatch" style="background:#ff00dd"></div><div class="tc-swatch" style="background:#00ff88"></div><div class="tc-swatch" style="background:#7b2fff"></div></div>
+    </div>
+    <div class="theme-card" id="tc-solar" onclick="applyTheme('solar')">
+      <span class="tc-emoji">☀️</span>
+      <div class="tc-name">Solar-Powered</div>
+      <div class="tc-desc">Radiant gold, energy cores, warm dark</div>
+      <div class="tc-swatches"><div class="tc-swatch bg" style="background:#0a0702"></div><div class="tc-swatch" style="background:#130e04"></div><div class="tc-swatch" style="background:#ffd700"></div><div class="tc-swatch" style="background:#ff8c00"></div><div class="tc-swatch" style="background:#ffb347"></div><div class="tc-swatch" style="background:#c8973a"></div></div>
+    </div>
+    <div class="theme-card" id="tc-infernal" onclick="applyTheme('infernal')">
+      <span class="tc-emoji">🔥</span>
+      <div class="tc-name">Infernal Mechanism</div>
+      <div class="tc-desc">Molten metal, ember glow, obsidian panels</div>
+      <div class="tc-swatches"><div class="tc-swatch bg" style="background:#070100"></div><div class="tc-swatch" style="background:#100400"></div><div class="tc-swatch" style="background:#ff4500"></div><div class="tc-swatch" style="background:#ff8c00"></div><div class="tc-swatch" style="background:#ffd700"></div><div class="tc-swatch" style="background:#8b0000"></div></div>
+    </div>
+    <div class="theme-card" id="tc-frost" onclick="applyTheme('frost')">
+      <span class="tc-emoji">❄️</span>
+      <div class="tc-name">Frost-Tech</div>
+      <div class="tc-desc">Frozen circuitry, crystalline ice panels</div>
+      <div class="tc-swatches"><div class="tc-swatch bg" style="background:#010810"></div><div class="tc-swatch" style="background:#041525"></div><div class="tc-swatch" style="background:#00d4ff"></div><div class="tc-swatch" style="background:#7fdbff"></div><div class="tc-swatch" style="background:#40e0d0"></div><div class="tc-swatch" style="background:#6c91c2"></div></div>
+    </div>
+    <div class="theme-card" id="tc-aurora" onclick="applyTheme('aurora')">
+      <span class="tc-emoji">🌈</span>
+      <div class="tc-name">Aurora Flow</div>
+      <div class="tc-desc">Northern lights — green, violet, cyan</div>
+      <div class="tc-swatches"><div class="tc-swatch bg" style="background:#010a05"></div><div class="tc-swatch" style="background:#041510"></div><div class="tc-swatch" style="background:#00ff88"></div><div class="tc-swatch" style="background:#7b2fff"></div><div class="tc-swatch" style="background:#00d4ff"></div><div class="tc-swatch" style="background:#ff6b9d"></div></div>
+    </div>
+    <div class="theme-card" id="tc-ancient" onclick="applyTheme('ancient')">
+      <span class="tc-emoji">📜</span>
+      <div class="tc-name">Ancient Relic</div>
+      <div class="tc-desc">Weathered artifacts, enchanted amber runes</div>
+      <div class="tc-swatches"><div class="tc-swatch bg" style="background:#0e0a04"></div><div class="tc-swatch" style="background:#1a1208"></div><div class="tc-swatch" style="background:#d4a843"></div><div class="tc-swatch" style="background:#c8733a"></div><div class="tc-swatch" style="background:#8b9355"></div><div class="tc-swatch" style="background:#6b4c2a"></div></div>
+    </div>
+    <div class="theme-card" id="tc-cathedral" onclick="applyTheme('cathedral')">
+      <span class="tc-emoji">⛪</span>
+      <div class="tc-name">Neon Cathedral</div>
+      <div class="tc-desc">Divine violet, stained glass neon</div>
+      <div class="tc-swatches"><div class="tc-swatch bg" style="background:#04010a"></div><div class="tc-swatch" style="background:#09031a"></div><div class="tc-swatch" style="background:#c084fc"></div><div class="tc-swatch" style="background:#f0abfc"></div><div class="tc-swatch" style="background:#818cf8"></div><div class="tc-swatch" style="background:#38bdf8"></div></div>
+    </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- LLM PANEL -->
+<div id="llm-panel">
+  <div class="lp-head">
+    <span style="font-size:1.1rem">🤖</span>
+    <span class="lp-title">AI Assistant</span>
+    <div class="lp-dot" id="llm-dot"></div>
+    <button class="fm-close" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.85rem;padding:2px 6px" onclick="closeLLMPanel()">✕</button>
+  </div>
+
+  <div class="lp-tabs">
+    <div class="lp-tab active" id="lpt-config" onclick="lpTab('config')">Config</div>
+    <div class="lp-tab" id="lpt-chat"   onclick="lpTab('chat')">Chat</div>
+    <div class="lp-tab" id="lpt-tools"  onclick="lpTab('tools')">Tools</div>
+  </div>
+
+  <!-- CONFIG TAB -->
+  <div class="lp-body" id="lp-pane-config">
+    <div class="lp-status" id="llm-status">
+      <div class="lp-dot" id="llm-status-dot"></div>
+      <span id="llm-status-txt">Not connected</span>
+    </div>
+
+    <div class="lp-label">Provider</div>
+    <div class="lp-provider-grid" id="lp-provider-grid">
+      <!-- filled by JS -->
+    </div>
+
+    <div class="lp-row" id="lp-base-row">
+      <div class="lp-label">Base URL</div>
+      <input class="lp-input" id="lp-base" placeholder="http://localhost:11434" spellcheck="false">
+    </div>
+    <div class="lp-row" id="lp-key-row">
+      <div class="lp-label">API Key</div>
+      <input class="lp-input" id="lp-key" type="password" placeholder="sk-…" spellcheck="false" autocomplete="off">
+    </div>
+    <div class="lp-row" id="lp-workspace-row" style="display:none">
+      <div class="lp-label">Workspace / Slug</div>
+      <input class="lp-input" id="lp-workspace" placeholder="my-workspace" spellcheck="false">
+    </div>
+    <div class="lp-row" id="lp-deployment-row" style="display:none">
+      <div class="lp-label">Deployment Name</div>
+      <input class="lp-input" id="lp-deployment" placeholder="gpt-4o" spellcheck="false">
+    </div>
+    <div class="lp-row">
+      <div class="lp-label">Model</div>
+      <select class="lp-select" id="lp-model">
+        <option value="">Connect first to load models…</option>
+      </select>
+    </div>
+    <div class="lp-row">
+      <div class="lp-label">Temperature <span id="lp-temp-lbl" style="color:rgba(200,151,58,.7)">0.8</span></div>
+      <input type="range" min="0" max="2" step="0.1" value="0.8" class="lp-input" style="padding:0;height:6px;cursor:pointer" id="lp-temp" oninput="document.getElementById('lp-temp-lbl').textContent=this.value">
+    </div>
+    <div id="lp-provider-hint" class="lp-hint"></div>
+
+    <div class="lp-actions">
+      <button class="lp-act-btn" onclick="llmLoadModels()">↻ Models</button>
+      <button class="lp-act-btn" onclick="llmTest()">⚡ Test</button>
+      <button class="lp-act-btn primary" onclick="llmSaveConfig()">Save</button>
+    </div>
+  </div>
+
+  <!-- CHAT TAB -->
+  <div id="lp-pane-chat" style="display:none;flex:1;flex-direction:column;overflow:hidden;display:none">
+    <div class="lp-chat-msgs" id="lp-msgs"></div>
+    <div class="lp-chat-input-row">
+      <textarea class="lp-chat-input" id="lp-chat-input" placeholder="Ask anything about your story…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();llmSend()}"></textarea>
+      <button class="lp-send-btn" id="lp-send-btn" onclick="llmSend()">↑ Send</button>
+    </div>
+  </div>
+
+  <!-- TOOLS TAB -->
+  <div class="lp-body" id="lp-pane-tools" style="display:none">
+    <div class="lp-label" style="margin-bottom:10px">Batch Generation</div>
+
+    <div class="lp-row">
+      <div class="lp-label">Concept / Theme</div>
+      <input class="lp-input" id="lp-concept" placeholder="e.g. ancient plague magic, Venturan sky tech…">
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <div style="flex:1">
+        <div class="lp-label">Count</div>
+        <input class="lp-input" id="lp-gen-count" type="number" value="10" min="1" max="50">
+      </div>
+      <div style="flex:2">
+        <div class="lp-label">Types</div>
+        <input class="lp-input" id="lp-gen-types" value="glyph,rune,event,cipher">
+      </div>
+    </div>
+    <button class="lp-act-btn primary" style="width:100%;margin-bottom:18px" onclick="llmGenerateLibrary()">⬡ Generate Library Batch</button>
+
+    <div class="lp-label" style="margin-bottom:10px">Lore Document Import</div>
+    <textarea class="lp-input" id="lp-lore-text" style="height:100px;resize:vertical" placeholder="Paste lore text, world-building notes, or a rough draft here…"></textarea>
+    <button class="lp-act-btn primary" style="width:100%;margin-top:8px" onclick="llmParseLore()">↑ Parse into Library</button>
+
+    <div class="lp-hint" style="margin-top:14px" id="lp-tools-status">Connect an AI provider first.</div>
+  </div>
+</div>
+
+<script>
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║            QUANTUM LOOM HUB — INTEGRATION SHELL                 ║
+   ║  Wraps all 8 layers, relays storage events, manages project      ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+
+/* ── Layer registry ───────────────────────────────────────────────── */
+const LAYERS = {
+  workspace: { label:'Character Workspace', icon:'◈',  color:'var(--c-workspace)', file:'quantum-loom-workspace.html' },
+  library:   { label:'Capsule Library',     icon:'⊞',  color:'var(--c-library)',   file:'quantum-loom-library.html'  },
+  zones:     { label:'Zone Canvas',         icon:'◫',  color:'var(--c-zones)',     file:'quantum-loom-zones.html'    },
+  scenes:    { label:'Scene Manager',       icon:'⌚',  color:'var(--c-scenes)',    file:'quantum-loom-scenes.html'   },
+  rack:      { label:'Instrument Rack',     icon:'⚙',  color:'var(--c-rack)',      file:'quantum-loom-rack.html'     },
+  sequencer: { label:'Track Sequencer',     icon:'⧖',  color:'var(--c-sequencer)', file:'quantum-loom-sequencer.html'},
+  subgraph:  { label:'Sub-Graph Canvas',    icon:'⬡',  color:'var(--c-subgraph)',  file:'quantum-loom-subgraph.html' },
+  ionodes:   { label:'Signal Bus & I/O',    icon:'⇌',  color:'var(--c-ionodes)',   file:'quantum-loom-io-nodes.html' },
+  output:    { label:'Output Renderer',    icon:'⎘',  color:'var(--c-output)',    file:'quantum-loom-output.html'   },
+};
+
+/* ── Storage keys to monitor ──────────────────────────────────────── */
+const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace'];
+
+/* ── State ────────────────────────────────────────────────────────── */
+let activeLayer  = 'workspace';
+let navExpanded  = false;
+let loadedFrames = new Set();
+let projectMeta  = { name:'Untitled Project', desc:'', key_signature:'', bars_per_chapter:4, bpm:120 };
+let lastSaved    = null;
+
+/* ── Layer switching ──────────────────────────────────────────────── */
+function switchLayer(layerId) {
+  if (activeLayer === layerId) return;
+
+  // Deactivate old
+  document.getElementById(`frame-${activeLayer}`)?.classList.remove('active');
+  document.getElementById(`nav-${activeLayer}`)?.classList.remove('active');
+
+  // Activate new
+  activeLayer = layerId;
+  const frame = document.getElementById(`frame-${layerId}`);
+  frame.classList.add('active');
+  document.getElementById(`nav-${layerId}`)?.classList.add('active');
+
+  // Update footer
+  document.getElementById('hf-layer-name').textContent = LAYERS[layerId]?.label || layerId;
+
+  // Update status chips
+  document.querySelectorAll('.sc').forEach(c => c.classList.remove('active-layer'));
+
+  // Notify iframe that it's now visible (some need to re-measure/re-render)
+  if (loadedFrames.has(layerId)) {
+    try {
+      frame.contentWindow.postMessage({ type:'hub:layer:activate', layerId }, '*');
+    } catch(e) {}
+  }
+
+  // Update status bar accent
+  updateStatusBar();
+}
+
+/* ── Frame load handler ───────────────────────────────────────────── */
+function frameLoaded(layerId) {
+  loadedFrames.add(layerId);
+  const loader = document.getElementById(`loader-${layerId}`);
+  if (loader) {
+    setTimeout(() => loader.classList.add('gone'), 200);
+    setTimeout(() => loader.remove(), 600);
+  }
+
+  // Send project context to newly loaded frame
+  const frame = document.getElementById(`frame-${layerId}`);
+  try {
+    frame.contentWindow.postMessage({
+      type:    'hub:init',
+      project: projectMeta,
+      layerId,
+    }, '*');
+  } catch(e) {}
+
+  updateStatusBar();
+  updateNavBadges();
+}
+
+/* ── Nav expand/collapse ──────────────────────────────────────────── */
+function toggleNav() {
+  navExpanded = !navExpanded;
+  const nav = document.getElementById('hub-nav');
+  const btn = document.getElementById('nav-expand');
+  nav.classList.toggle('expanded', navExpanded);
+  btn.textContent = navExpanded ? '◀' : '▶';
+}
+
+/* ── Storage relay ────────────────────────────────────────────────── */
+// When one iframe writes to localStorage, relay the change to all other iframes
+// so they pick up the new data on their next render cycle
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+
+  switch(d.type) {
+
+    case 'hub:storage:write':
+      // A layer wrote to a key — relay to other layers and update status
+      relayStorageUpdate(d.key, d.value, e.source);
+      updateStatusBar();
+      updateNavBadges();
+      break;
+
+    case 'hub:storage:refresh':
+      // A layer is asking for a full refresh of all ql-* keys
+      sendStorageSnapshot(e.source);
+      break;
+
+    case 'hub:toast':
+      toast(d.message);
+      break;
+
+    case 'hub:layer:request':
+      // A layer wants to open another layer
+      if (d.layerId) switchLayer(d.layerId);
+      break;
+
+    case 'hub:compiled:ready':
+      // Subgraph compiled something — update badge
+      updateNavBadges();
+      updateStatusBar();
+      toast(`⬡ Graph compiled: ${d.label}`);
+      break;
+  }
+});
+
+function relayStorageUpdate(key, value, sourceWindow) {
+  // Broadcast to all loaded iframes except sender
+  Object.keys(LAYERS).forEach(layerId => {
+    if (!loadedFrames.has(layerId)) return;
+    const frame = document.getElementById(`frame-${layerId}`);
+    if (!frame || frame.contentWindow === sourceWindow) return;
+    try {
+      frame.contentWindow.postMessage({
+        type: 'hub:storage:updated',
+        key,
+        value,
+      }, '*');
+    } catch(e) {}
+  });
+}
+
+function sendStorageSnapshot(targetWindow) {
+  const snapshot = {};
+  WATCHED_KEYS.forEach(k => {
+    const v = localStorage.getItem(k);
+    if (v) snapshot[k] = v;
+  });
+  try {
+    targetWindow.postMessage({ type:'hub:storage:snapshot', snapshot }, '*');
+  } catch(e) {}
+}
+
+/* ── Status bar ───────────────────────────────────────────────────── */
+function updateStatusBar() {
+  // Capsules
+  try {
+    const lib = JSON.parse(localStorage.getItem('ql-library') || '[]');
+    document.getElementById('sc-caps-n').textContent = lib.length;
+    document.getElementById('nb-library').textContent = lib.length;
+  } catch(e) {}
+
+  // Scenes
+  try {
+    const sc = JSON.parse(localStorage.getItem('ql-scenes') || '[]');
+    const count = sc.reduce((n,a) => n + (a.scenes?.length||0), 0);
+    document.getElementById('sc-scenes-n').textContent = count;
+    document.getElementById('nb-scenes').textContent = sc.length;
+  } catch(e) {}
+
+  // Tracks
+  try {
+    const seq = JSON.parse(localStorage.getItem('ql-sequencer') || '{}');
+    const tracks = seq.tracks?.length || 0;
+    document.getElementById('sc-tracks-n').textContent = tracks;
+    document.getElementById('nb-tracks').textContent = tracks;
+  } catch(e) {}
+
+  // Compiled graphs
+  try {
+    const comp = JSON.parse(localStorage.getItem('ql-compiled') || '{}');
+    const n = Object.keys(comp).length;
+    document.getElementById('sc-comp-n').textContent = n;
+    document.getElementById('nb-compiled').textContent = n;
+  } catch(e) {}
+
+  // Zones
+  try {
+    const zones = JSON.parse(localStorage.getItem('ql-zones') || '{}');
+    const n = (zones.zones||zones.nodes||[]).length;
+    document.getElementById('nb-zones').textContent = n;
+  } catch(e) {}
+
+  // Footer key count
+  const keyCount = WATCHED_KEYS.filter(k => localStorage.getItem(k)).length;
+  document.getElementById('hf-keys').textContent = keyCount;
+}
+
+function updateNavBadges() {
+  updateStatusBar(); // shares same logic
+}
+
+/* ── Project modal ────────────────────────────────────────────────── */
+function openProjModal() {
+  document.getElementById('pm-name').value = projectMeta.name;
+  document.getElementById('pm-desc').value = projectMeta.desc || '';
+  document.getElementById('pm-key').value  = projectMeta.key_signature || '';
+  document.getElementById('pm-bpc').value  = projectMeta.bars_per_chapter || 4;
+  document.getElementById('pm-bpm').value  = projectMeta.bpm || 120;
+
+  // Show storage key summary
+  const keysList = document.getElementById('pm-keys-list');
+  const lines = WATCHED_KEYS.map(k => {
+    const v = localStorage.getItem(k);
+    if (!v) return `<span style="opacity:.3">${k} — empty</span>`;
+    const size = Math.round(v.length / 1024 * 10) / 10;
+    return `<span style="color:rgba(255,255,255,.55)">${k}</span> <span style="color:rgba(255,255,255,.25)">— ${size}kb</span>`;
+  });
+  keysList.innerHTML = lines.join('<br>');
+
+  document.getElementById('proj-modal').classList.add('open');
+}
+
+function closeProjModal() {
+  document.getElementById('proj-modal').classList.remove('open');
+}
+
+function saveProjMeta() {
+  projectMeta.name           = document.getElementById('pm-name').value.trim() || 'Untitled Project';
+  projectMeta.desc           = document.getElementById('pm-desc').value.trim();
+  projectMeta.key_signature  = document.getElementById('pm-key').value.trim();
+  projectMeta.bars_per_chapter = parseInt(document.getElementById('pm-bpc').value) || 4;
+  projectMeta.bpm            = parseInt(document.getElementById('pm-bpm').value) || 120;
+  document.getElementById('proj-name').textContent = projectMeta.name;
+  localStorage.setItem('ql-workspace-meta', JSON.stringify(projectMeta));
+  try { window.parent?.postMessage({ type:'hub:storage:write', key:'ql-workspace-meta', value:JSON.stringify(projectMeta) }, '*'); } catch(e) {}
+  closeProjModal();
+  toast('✓ Project updated');
+}
+
+function openProjModal_rename() {
+  document.getElementById('proj-name').style.display = 'none';
+  const inp = document.getElementById('proj-name-input');
+  inp.style.display = 'block';
+  inp.value = projectMeta.name;
+  inp.focus(); inp.select();
+}
+
+function saveProjName() {
+  const inp = document.getElementById('proj-name-input');
+  const val = inp.value.trim();
+  if (val) {
+    projectMeta.name = val;
+    document.getElementById('proj-name').textContent = val;
+    localStorage.setItem('ql-workspace', JSON.stringify(projectMeta));
+  }
+  inp.style.display = 'none';
+  document.getElementById('proj-name').style.display = '';
+}
+
+/* ── Project save/load ────────────────────────────────────────────── */
+function saveProject() {
+  const bundle = {
+    meta:      projectMeta,
+    version:   '1.0.0',
+    savedAt:   new Date().toISOString(),
+    storage:   {},
+  };
+  WATCHED_KEYS.forEach(k => {
+    const v = localStorage.getItem(k);
+    if (v) bundle.storage[k] = v;
+  });
+
+  const blob = new Blob([JSON.stringify(bundle, null, 2)], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = (projectMeta.name || 'quantum-loom-project').replace(/\s+/g,'_').toLowerCase() + '.qlp.json';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  lastSaved = new Date();
+  document.getElementById('hf-save-time').textContent =
+    'Saved ' + lastSaved.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  toast('↓ Project saved');
+}
+
+function exportProject() { saveProject(); closeProjModal(); }
+
+function loadProjectFile() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,.qlp.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const bundle = JSON.parse(ev.target.result);
+        if (bundle.storage) {
+          Object.entries(bundle.storage).forEach(([k,v]) => localStorage.setItem(k,v));
+        }
+        if (bundle.meta) {
+          projectMeta = bundle.meta;
+          document.getElementById('proj-name').textContent = projectMeta.name;
+        }
+        // Reload all frames with new data
+        reloadAllFrames();
+        closeProjModal();
+        toast('↑ Project loaded: ' + (projectMeta.name || 'Imported'));
+      } catch(err) {
+        toast('✕ Invalid project file');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function clearProject() {
+  if (!confirm('Clear all project data? This cannot be undone.')) return;
+  WATCHED_KEYS.forEach(k => localStorage.removeItem(k));
+  projectMeta = { name:'Untitled Project', desc:'' };
+  document.getElementById('proj-name').textContent = 'Untitled Project';
+  reloadAllFrames();
+  closeProjModal();
+  updateStatusBar();
+  toast('✕ Project cleared');
+}
+
+function reloadAllFrames() {
+  Object.keys(LAYERS).forEach(layerId => {
+    const frame = document.getElementById(`frame-${layerId}`);
+    if (frame) {
+      loadedFrames.delete(layerId);
+      frame.src = frame.src; // force reload
+    }
+  });
+}
+
+/* ── Listen for localStorage changes from iframes ────────────────── */
+// Iframes share the same origin localStorage, so we poll for changes
+// and also listen for our custom hub:storage:write messages
+let _prevStorage = {};
+function pollStorage() {
+  WATCHED_KEYS.forEach(k => {
+    const v = localStorage.getItem(k);
+    if (v !== _prevStorage[k]) {
+      _prevStorage[k] = v;
+      updateStatusBar();
+    }
+  });
+}
+setInterval(pollStorage, 1200);
+
+/* ── Toast ────────────────────────────────────────────────────────── */
+function toast(msg) {
+  const el = document.getElementById('hub-toast');
+  el.textContent = msg;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+}
+
+/* ── Init ─────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  // Load project meta
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-workspace-meta') || '{}');
+    if (saved.name) {
+      projectMeta = { ...projectMeta, ...saved };
+      document.getElementById('proj-name').textContent = saved.name;
+    }
+  } catch(e) {}
+
+  updateStatusBar();
+  updateNavBadges();
+
+  // Click outside project modal to close
+  document.getElementById('proj-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('proj-modal')) closeProjModal();
+  });
+  document.getElementById('output-panel').addEventListener('click', e => {
+    if (e.target === document.getElementById('output-panel')) closeOutputPanel();
+  });
+
+  setTimeout(() => toast('⬡ Quantum Loom Hub — all layers loaded'), 1200);
+});
+
+/* ── Output panel ─────────────────────────────────────────────────── */
+const FORMATS = [
+  { id:'manual',     icon:'📖', name:'World Bible',    desc:'Characters, laws, forces, chronology' },
+  { id:'novel',      icon:'✍',  name:'Novel',          desc:'Chapter-by-chapter prose narrative' },
+  { id:'screenplay', icon:'🎬', name:'Screenplay',     desc:'Scene sluglines, action, dialogue' },
+  { id:'song',       icon:'♪',  name:'Song / Lyrics',  desc:'Verse/chorus mapped to arcs' },
+  { id:'game',       icon:'⚔',  name:'Game Script',    desc:'Branching quests, NPCs, conditions' },
+  { id:'session',    icon:'🎛',  name:'Session Sheet',  desc:'BPM, patterns, instrument roles' },
+];
+
+let selectedFormat = 'manual';
+
+function openOutputPanel() {
+  // Build stats from storage
+  const stats = _hubStats();
+  const statEl = document.getElementById('op-stats');
+  statEl.innerHTML = [
+    { n: stats.chars,    l: 'Characters' },
+    { n: stats.scenes,   l: 'Scenes' },
+    { n: stats.tracks,   l: 'Tracks' },
+    { n: stats.capsules, l: 'Capsules' },
+    { n: stats.props,    l: 'Arc Forces' },
+    { n: stats.compiled, l: 'Compiled' },
+  ].map(s => `<div class="op-stat"><div class="op-stat-n">${s.n}</div><div class="op-stat-l">${s.l}</div></div>`).join('');
+
+  // Build format grid
+  const fmtEl = document.getElementById('op-fmt-grid');
+  fmtEl.innerHTML = FORMATS.map(f => `
+    <div class="op-fmt ${f.id === selectedFormat ? 'selected' : ''}" onclick="selectFormat('${f.id}')">
+      <span class="op-fmt-icon">${f.icon}</span>
+      <span class="op-fmt-name">${f.name}</span>
+      <span class="op-fmt-desc">${f.desc}</span>
+    </div>`).join('');
+
+  // Warnings
+  const warns = _hubWarnings();
+  const warnEl = document.getElementById('op-warnings');
+  warnEl.innerHTML = warns.length
+    ? warns.map(w => `<div class="op-warn">⚠ ${w}</div>`).join('')
+    : '<div style="font-family:var(--fd);font-size:.42rem;color:rgba(255,255,255,.25)">No warnings — data looks complete</div>';
+
+  document.getElementById('output-panel').classList.add('open');
+}
+
+function closeOutputPanel() {
+  document.getElementById('output-panel').classList.remove('open');
+}
+
+function selectFormat(id) {
+  selectedFormat = id;
+  document.querySelectorAll('.op-fmt').forEach(el => {
+    el.classList.toggle('selected', el.onclick?.toString().includes(`'${id}'`));
+  });
+  // Re-render to update selection
+  openOutputPanel();
+}
+
+function _hubStats() {
+  let chars=0, scenes=0, tracks=0, capsules=0, props=0, compiled=0;
+  try { chars    = JSON.parse(localStorage.getItem('ql-workspace')||'[]').length; } catch(e){}
+  try { const a  = JSON.parse(localStorage.getItem('ql-scenes')||'[]'); scenes = a.reduce((n,act)=>n+(act.scenes?.length||0),0); } catch(e){}
+  try { tracks   = (JSON.parse(localStorage.getItem('ql-sequencer')||'{}').tracks||[]).length; } catch(e){}
+  try { capsules = JSON.parse(localStorage.getItem('ql-library')||'[]').length; } catch(e){}
+  try { props    = JSON.parse(localStorage.getItem('ql-propagations')||'[]').length; } catch(e){}
+  try { compiled = Object.keys(JSON.parse(localStorage.getItem('ql-compiled')||'{}')).length; } catch(e){}
+  return { chars, scenes, tracks, capsules, props, compiled };
+}
+
+function _hubWarnings() {
+  const w = [];
+  const stats = _hubStats();
+  if (!stats.chars)    w.push('No characters in Workspace');
+  if (!stats.scenes)   w.push('No scenes in Scene Manager');
+  if (!stats.tracks)   w.push('No tracks in Sequencer');
+  if (!stats.capsules) w.push('No capsules in Library');
+  try {
+    const chars = JSON.parse(localStorage.getItem('ql-workspace')||'[]');
+    if (chars.some(c => !c.dialogue_voice)) w.push('Some characters missing dialogue_voice');
+  } catch(e){}
+  try {
+    const seq = JSON.parse(localStorage.getItem('ql-sequencer')||'{}');
+    if (!seq.bpm) w.push('BPM not saved — open Sequencer and make a change to save it');
+  } catch(e){}
+  return w;
+}
+
+// These delegate to LoomSnapshot when it's loaded as a script sibling
+// For standalone hub use, we inline a minimal version
+function exportOutputTxt() {
+  const result = _runExport('text');
+  if (!result) return;
+  const blob = new Blob([result.content], {type:'text/plain'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = result.filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  closeOutputPanel();
+  toast('↓ Exported: ' + result.filename);
+}
+
+function exportOutputHTML() {
+  const result = _runExport('html');
+  if (!result) return;
+  const blob = new Blob([result.content], {type:'text/html'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = result.filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  closeOutputPanel();
+  toast('↓ Exported: ' + result.filename);
+}
+
+function _runExport(fmt) {
+  if (typeof LoomSnapshot === 'undefined') {
+    toast('⚠ Load loom-snapshot.js alongside this file to enable export');
+    return null;
+  }
+  const output   = LoomSnapshot.render(selectedFormat);
+  const projName = (projectMeta.name || 'project').replace(/\s+/g,'_').toLowerCase();
+  const ext      = fmt === 'html' ? '.html' : '.txt';
+  const content  = fmt === 'html' ? LoomSnapshot.renderToHTML(output) : LoomSnapshot.renderToText(output);
+  return { content, filename: `${projName}-${selectedFormat}${ext}` };
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   FIREBASE PANEL  — hub-side controller
+   Dynamically loads loom-firebase.js, manages connect/disconnect,
+   push/pull, config persistence, status polling, log display.
+══════════════════════════════════════════════════════════════════ */
+
+/* ── Firebase state ─────────────────────────────────────────────── */
+const FB_CONFIG_KEY  = 'ql-firebase-config';
+const FB_OPTS_KEY    = 'ql-firebase-opts';
+let   fbConnected    = false;
+let   fbConnecting   = false;
+let   fbLastPush     = null;
+let   fbLastPull     = null;
+let   fbStatusTimer  = null;
+let   fbActiveTab    = 'config';
+const FB_TOGGLS      = { autosync: true, realtime: true };
+
+/* ── Open / close ────────────────────────────────────────────────── */
+function openFBModal() {
+  fbLoadConfig();
+  fbUpdateUI();
+  if (fbConnected) { fbSwitchTab('status'); fbUpdateStatus(); }
+  document.getElementById('fb-modal').classList.add('open');
+  fbStartStatusPoll();
+}
+function closeFBModal() {
+  document.getElementById('fb-modal').classList.remove('open');
+  fbStopStatusPoll();
+}
+
+/* ── Tab switching ───────────────────────────────────────────────── */
+function fbSwitchTab(tab) {
+  ['config','status','projects'].forEach(t => {
+    document.getElementById('fb-pane-' + t).style.display = t === tab ? '' : 'none';
+    document.getElementById('fb-tab-'  + t).classList.toggle('active', t === tab);
+  });
+  fbActiveTab = tab;
+  if (tab === 'status') fbUpdateStatus();
+}
+
+/* ── Toggle switches ─────────────────────────────────────────────── */
+function fbToggle(key) {
+  FB_TOGGLS[key] = !FB_TOGGLS[key];
+  document.getElementById('fb-tog-' + key).classList.toggle('on', FB_TOGGLS[key]);
+}
+
+/* ── Config persistence ──────────────────────────────────────────── */
+function fbReadInputs() {
+  return {
+    apiKey:            document.getElementById('fb-apiKey').value.trim(),
+    authDomain:        document.getElementById('fb-authDomain').value.trim(),
+    projectId:         document.getElementById('fb-projectId').value.trim(),
+    storageBucket:     document.getElementById('fb-storageBucket').value.trim(),
+    messagingSenderId: document.getElementById('fb-messagingSenderId').value.trim(),
+    appId:             document.getElementById('fb-appId').value.trim(),
+  };
+}
+function fbLoadConfig() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(FB_CONFIG_KEY) || '{}');
+    const opts  = JSON.parse(localStorage.getItem(FB_OPTS_KEY)   || '{}');
+    ['apiKey','authDomain','projectId','storageBucket','messagingSenderId','appId'].forEach(k => {
+      const el = document.getElementById('fb-' + k);
+      if (el && saved[k]) el.value = saved[k];
+    });
+    if (opts.loomProjectId) document.getElementById('fb-loomProjectId').value = opts.loomProjectId;
+    if (opts.autosync  === false) { FB_TOGGLS.autosync = false;  document.getElementById('fb-tog-autosync').classList.remove('on'); }
+    if (opts.realtime  === false) { FB_TOGGLS.realtime = false;  document.getElementById('fb-tog-realtime').classList.remove('on'); }
+  } catch(e) {}
+}
+function fbSaveConfig() {
+  const cfg  = fbReadInputs();
+  const opts = {
+    loomProjectId: document.getElementById('fb-loomProjectId').value.trim() || 'default',
+    autosync:      FB_TOGGLS.autosync,
+    realtime:      FB_TOGGLS.realtime,
+  };
+  localStorage.setItem(FB_CONFIG_KEY, JSON.stringify(cfg));
+  localStorage.setItem(FB_OPTS_KEY,   JSON.stringify(opts));
+}
+
+/* ── Dynamic loader ──────────────────────────────────────────────── */
+function fbLoadLib() {
+  return new Promise((resolve, reject) => {
+    if (typeof LoomFirebase !== 'undefined') { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'loom-firebase.js';
+    s.onload  = () => { if (typeof LoomFirebase !== 'undefined') resolve(); else reject(new Error('LoomFirebase not defined after load')); };
+    s.onerror = () => reject(new Error('loom-firebase.js not found — place it alongside quantum-loom-hub.html'));
+    document.head.appendChild(s);
+  });
+}
+
+/* ── Connect ─────────────────────────────────────────────────────── */
+async function fbConnect() {
+  if (fbConnecting || fbConnected) return;
+  fbConnecting = true;
+  fbSetStatus('connecting');
+  fbSaveConfig();
+  fbLog('Loading loom-firebase.js…');
+
+  try {
+    await fbLoadLib();
+    fbLog('Library loaded ✓');
+  } catch(e) {
+    fbLog(e.message, 'err');
+    fbSetStatus('disconnected');
+    fbConnecting = false;
+    return;
+  }
+
+  const cfg  = fbReadInputs();
+  const opts = {
+    loomProjectId: document.getElementById('fb-loomProjectId').value.trim() || 'default',
+    autoSync:      FB_TOGGLS.autosync,
+    realtime:      FB_TOGGLS.realtime,
+    hubWindow:     window,  // relay to self — hub IS the top frame
+    onReady:       () => {
+      fbConnected  = true;
+      fbConnecting = false;
+      fbLastPush   = new Date();
+      fbSetStatus('connected');
+      fbLog('Connected to Firebase ✓', 'ok');
+      fbUpdateUI();
+      toast('🔥 Firebase connected');
+    },
+  };
+
+  // Wire event bus
+  LoomFirebase.on('push',   () => { fbLastPush = new Date(); fbUpdateStatus(); });
+  LoomFirebase.on('pull',   (e) => { fbLastPull = new Date(); fbUpdateStatus(); if (e.updated?.length) toast('↓ Pulled: ' + e.updated.length + ' keys updated'); });
+  LoomFirebase.on('update', (e) => { fbLastPull = new Date(); fbUpdateStatus(); toast('🔥 Remote update: ' + e.updated.join(', ')); });
+  LoomFirebase.on('error',  (e) => { fbLog('Error: ' + e.error, 'err'); if (!fbConnected) { fbSetStatus('error'); fbConnecting = false; } });
+  LoomFirebase.on('log',    (e) => fbLog(e.msg, e.level === 'error' ? 'err' : e.level === 'warn' ? 'warn' : ''));
+
+  // Wire hub storage writes → Firebase push (debounced inside loom-firebase.js)
+  LoomFirebase.wireToHub();
+
+  fbLog('Initializing Firebase…');
+  const result = await LoomFirebase.init(cfg, opts);
+
+  if (!result.ok && !fbConnected) {
+    fbLog('Init failed: ' + result.error, 'err');
+    fbSetStatus('error');
+    fbConnecting = false;
+  }
+}
+
+/* ── Disconnect ──────────────────────────────────────────────────── */
+function fbDisconnect() {
+  if (typeof LoomFirebase !== 'undefined') LoomFirebase.destroy();
+  fbConnected  = false;
+  fbConnecting = false;
+  fbSetStatus('disconnected');
+  fbUpdateUI();
+  fbLog('Disconnected', 'warn');
+  toast('⊘ Firebase disconnected');
+}
+
+/* ── Push / Pull ─────────────────────────────────────────────────── */
+async function fbPush() {
+  if (!fbConnected || typeof LoomFirebase === 'undefined') return;
+  const btn = document.getElementById('fb-btn-push');
+  btn.textContent = '↑ Pushing…'; btn.disabled = true;
+  const r = await LoomFirebase.push();
+  btn.textContent = '↑ Push'; btn.disabled = false;
+  if (r.ok) { toast('↑ Pushed to Firebase'); fbLastPush = new Date(); fbUpdateStatus(); }
+  else      { toast('⚠ Push failed: ' + r.error); fbLog('Push failed: ' + r.error, 'err'); }
+}
+
+async function fbPull() {
+  if (!fbConnected || typeof LoomFirebase === 'undefined') return;
+  const btn = document.getElementById('fb-btn-pull');
+  btn.textContent = '↓ Pulling…'; btn.disabled = true;
+  const r = await LoomFirebase.pull();
+  btn.textContent = '↓ Pull'; btn.disabled = false;
+  if (r.ok) { toast('↓ Pulled ' + (r.updated?.length||0) + ' keys'); fbLastPull = new Date(); fbUpdateStatus(); }
+  else      { toast('⚠ Pull failed: ' + (r.error === 'not_found' ? 'No remote document yet — Push first' : r.error)); }
+}
+
+/* ── Project actions ─────────────────────────────────────────────── */
+async function fbSwitchProject() {
+  if (!fbConnected || typeof LoomFirebase === 'undefined') { toast('Connect first'); return; }
+  const id = document.getElementById('fb-switch-id').value.trim();
+  if (!id) { toast('Enter a project ID'); return; }
+  const r = await LoomFirebase.switchProject(id);
+  if (r.ok) { toast('↔ Switched to: ' + id); document.getElementById('fb-loomProjectId').value = id; fbSaveConfig(); fbUpdateStatus(); }
+  else      { toast('⚠ Switch failed: ' + r.error); }
+}
+
+async function fbCloneProject() {
+  if (!fbConnected || typeof LoomFirebase === 'undefined') { toast('Connect first'); return; }
+  const id = document.getElementById('fb-clone-id').value.trim() || ('clone-' + Date.now());
+  const r = await LoomFirebase.cloneProject(id);
+  if (r.ok) { toast('⎘ Cloned to: ' + id); fbListProjects(); }
+  else      { toast('⚠ Clone failed: ' + r.error); }
+}
+
+async function fbListProjects() {
+  const listEl = document.getElementById('fb-project-list');
+  if (!fbConnected || typeof LoomFirebase === 'undefined') {
+    listEl.innerHTML = '<span style="color:rgba(255,255,255,.2)">Connect first to list projects.</span>';
+    return;
+  }
+  listEl.innerHTML = '<span style="color:rgba(255,255,255,.2)">Loading…</span>';
+  const r = await LoomFirebase.listProjects();
+  if (!r.ok) { listEl.innerHTML = '<span style="color:#d45b5b">Failed: ' + r.error + '</span>'; return; }
+  if (!r.projects.length) { listEl.innerHTML = '<span style="color:rgba(255,255,255,.2)">No projects found.</span>'; return; }
+  listEl.innerHTML = r.projects.map(p => `
+    <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+      <span style="font-family:var(--fc);font-size:.42rem;color:rgba(255,255,255,.6);flex:1">${p.id}</span>
+      <span style="font-family:var(--fc);font-size:.34rem;color:rgba(255,255,255,.25)">${p.keys} keys · ${p.savedAt.substring(0,10)}</span>
+      <button onclick="document.getElementById('fb-switch-id').value='${p.id}';fbSwitchTab('projects')"
+        style="font-family:var(--fc);font-size:.3rem;padding:1px 5px;border-radius:2px;border:1px solid rgba(200,151,58,.3);background:transparent;color:#c8973a;cursor:pointer">Load</button>
+    </div>`).join('');
+}
+
+/* ── Status display ──────────────────────────────────────────────── */
+function fbSetStatus(state) {
+  const dot = document.getElementById('fb-dot');
+  const lbl = document.getElementById('fb-status-lbl');
+  if (!dot || !lbl) return;
+  dot.className = 'fb-status-dot ' + (state === 'connected' ? 'connected' : state === 'connecting' ? 'connecting' : state === 'error' ? 'error' : '');
+  lbl.className = 'fb-status-lbl '+ (state === 'connected' ? 'connected' : state === 'connecting' ? 'connecting' : state === 'error' ? 'error' : '');
+  lbl.textContent = state.charAt(0).toUpperCase() + state.slice(1);
+  // Also update header button
+  const headerBtn = document.getElementById('fb-btn');
+  if (headerBtn) {
+    headerBtn.style.borderColor = state === 'connected' ? 'rgba(77,200,160,.4)' : state === 'connecting' ? 'rgba(232,184,75,.4)' : state === 'error' ? 'rgba(212,91,91,.4)' : '';
+    headerBtn.style.color       = state === 'connected' ? '#4dc8a0' : state === 'connecting' ? '#e8b84b' : state === 'error' ? '#d45b5b' : '';
+  }
+}
+
+function fbUpdateUI() {
+  const connected = fbConnected;
+  document.getElementById('fb-btn-connect')?.toggleAttribute('disabled', connected || fbConnecting);
+  document.getElementById('fb-btn-push')?.toggleAttribute('disabled', !connected);
+  document.getElementById('fb-btn-pull')?.toggleAttribute('disabled', !connected);
+  document.getElementById('fb-btn-disconnect')?.toggleAttribute('disabled', !connected);
+}
+
+function fbUpdateStatus() {
+  if (fbActiveTab !== 'status') return;
+  const fmt = d => d ? d.toLocaleTimeString() : 'Never';
+  const set = (id, txt, cls) => { const el = document.getElementById(id); if (el) { el.textContent = txt; el.className = 'fb-stat-val ' + (cls||''); } };
+
+  set('fbs-conn', fbConnected ? 'Connected' : fbConnecting ? 'Connecting…' : 'Disconnected',
+                  fbConnected ? 'ok' : fbConnecting ? 'warn' : 'err');
+
+  const opts = typeof LoomFirebase !== 'undefined' ? LoomFirebase.status() : null;
+  set('fbs-proj', opts?.projectId || (document.getElementById('fb-loomProjectId')?.value || '—'));
+  set('fbs-push', fmt(fbLastPush));
+  set('fbs-pull', fmt(fbLastPull));
+  set('fbs-auto', opts?.autoSync  ? 'Active' : 'Off', opts?.autoSync  ? 'ok' : '');
+  set('fbs-rt',   opts?.realtime  ? 'Active' : 'Off', opts?.realtime  ? 'ok' : '');
+
+  // Key audit
+  const auditEl = document.getElementById('fb-keys-audit');
+  if (auditEl && typeof LoomFirebase !== 'undefined') {
+    const localKeys = LoomFirebase.QL_KEYS;
+    auditEl.innerHTML = localKeys.map(k => {
+      const val = localStorage.getItem(k);
+      const kb  = val ? (val.length / 1024).toFixed(1) : null;
+      return `<div class="fb-key-row">
+        <div class="fb-key-dot" style="background:${val ? '#4dc8a0' : 'rgba(255,255,255,.1)'}"></div>
+        <span style="color:${val ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.2)'};flex:1">${k}</span>
+        <span style="color:rgba(255,255,255,.25)">${kb ? kb + ' kb' : 'empty'}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+function fbStartStatusPoll() {
+  fbStopStatusPoll();
+  fbStatusTimer = setInterval(() => { if (fbActiveTab === 'status') fbUpdateStatus(); }, 3000);
+}
+function fbStopStatusPoll() {
+  if (fbStatusTimer) { clearInterval(fbStatusTimer); fbStatusTimer = null; }
+}
+
+/* ── Log ─────────────────────────────────────────────────────────── */
+function fbLog(msg, level) {
+  const el = document.getElementById('fb-log');
+  if (!el) return;
+  el.style.display = 'block';
+  const ts   = new Date().toLocaleTimeString();
+  const cls  = level === 'ok' ? 'ok' : level === 'warn' ? 'warn' : level === 'err' ? 'err' : '';
+  const line = document.createElement('div');
+  line.className = 'fb-log-entry ' + cls;
+  line.textContent = ts + '  ' + msg;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+  // Cap log at 40 entries
+  while (el.children.length > 40) el.removeChild(el.firstChild);
+}
+
+/* ── Auto-restore on load ────────────────────────────────────────── */
+(function fbAutoLoad() {
+  try {
+    const saved = localStorage.getItem(FB_CONFIG_KEY);
+    if (saved) {
+      const cfg = JSON.parse(saved);
+      // Only show dot if config is present — don't auto-connect (user must click)
+      if (cfg.apiKey) {
+        const btn = document.getElementById('fb-btn');
+        if (btn) btn.title = 'Firebase config found — click to connect';
+      }
+    }
+  } catch(e) {}
+})();
+
+
+
+/* ══════════════════════════════════════════════════════════════
+   ELECTRON NATIVE INTEGRATION
+   When running as a desktop app, replaces browser file hacks
+   (blob downloads, hidden <input type=file>) with native OS
+   dialogs via the window.qlNative bridge in preload.js.
+   Falls back gracefully when running in a browser.
+══════════════════════════════════════════════════════════════ */
+
+const IS_DESKTOP = !!(window.qlNative && window.qlNative.isDesktop);
+
+if (IS_DESKTOP) {
+
+  /* ── Native File → Save Project ─────────────────────────── */
+  saveProject = async function() {
+    const bundle = {
+      meta:    projectMeta,
+      version: '1.0.0',
+      savedAt: new Date().toISOString(),
+      storage: {},
+    };
+    WATCHED_KEYS.forEach(k => {
+      const v = localStorage.getItem(k);
+      if (v) bundle.storage[k] = v;
+    });
+
+    const result = await window.qlNative.saveProject(projectMeta.name || 'My Story', bundle);
+    if (!result.ok) {
+      if (result.reason !== 'canceled') toast('✕ Save failed: ' + result.reason);
+      return;
+    }
+    lastSaved = new Date();
+    document.getElementById('hf-save-time').textContent =
+      'Saved ' + lastSaved.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    toast('↓ Project saved');
+  };
+
+  /* ── Native File → Open Project ─────────────────────────── */
+  loadProjectFile = async function() {
+    const result = await window.qlNative.openProject();
+    if (!result.ok) {
+      if (result.reason !== 'canceled') toast('✕ Could not open: ' + result.reason);
+      return;
+    }
+    try {
+      const bundle = result.data;
+      if (bundle.storage) {
+        Object.entries(bundle.storage).forEach(([k,v]) => localStorage.setItem(k, v));
+      }
+      if (bundle.meta) {
+        projectMeta = bundle.meta;
+        document.getElementById('proj-name').textContent = projectMeta.name;
+      }
+      reloadAllFrames();
+      closeProjModal();
+      toast('↑ Project loaded: ' + (projectMeta.name || 'Imported'));
+    } catch(err) {
+      toast('✕ Invalid project file');
+    }
+  };
+
+  /* ── Native Clear All (with confirm dialog) ──────────────── */
+  clearProject = async function() {
+    const r = await window.qlNative.confirm(
+      'Clear All',
+      'Delete all project data?',
+      'This cannot be undone. All characters, scenes, capsules, and sequences will be permanently removed from this device.'
+    );
+    if (!r.confirmed) return;
+    WATCHED_KEYS.forEach(k => localStorage.removeItem(k));
+    projectMeta = { name:'Untitled Project' };
+    document.getElementById('proj-name').textContent = projectMeta.name;
+    reloadAllFrames();
+    closeProjModal();
+    toast('✕ Project cleared');
+  };
+
+  /* ── Wire native menu events ─────────────────────────────── */
+  window.qlNative.onNewProject(  () => { clearProject(); });
+  window.qlNative.onSaveProject( () => { saveProject(); });
+  window.qlNative.onOpenProject( () => { loadProjectFile(); });
+  window.qlNative.onOpenManual(  () => { toast('📖 Manual is in your project folder'); window.qlNative.openFolder(); });
+
+  /* ── Patch Output Renderer export buttons ────────────────── */
+  // The output layer runs in an iframe — we relay its export
+  // requests through the hub's message relay.
+  window.addEventListener('message', async (e) => {
+    if (e.data?.type !== 'ql:export') return;
+    const { content, ext, name } = e.data;
+    const result = await window.qlNative.exportFile(content, ext, name);
+    if (!result.ok && result.reason !== 'canceled') toast('✕ Export failed: ' + result.reason);
+  });
+
+  /* ── Visual indicator that we're in the desktop app ─────── */
+  document.title = 'Quantum Loom';
+  const badge = document.createElement('div');
+  badge.style.cssText = [
+    'position:fixed','bottom:10px','right:12px','z-index:9999',
+    'font-family:monospace','font-size:9px','color:rgba(200,151,58,.3)',
+    'letter-spacing:.15em','text-transform:uppercase','pointer-events:none',
+  ].join(';');
+  badge.textContent = 'Desktop App';
+  document.body.appendChild(badge);
+}
+
+
+/* ── Cross-layer nav relay — layers postMessage to switch ── */
+window.addEventListener('message', (e) => {
+  if (!e.data || typeof e.data !== 'object') return;
+  switch (e.data.type) {
+    case 'ql:switchLayer':
+      if (e.data.layer) switchLayer(e.data.layer);
+      break;
+    case 'ql:export':
+      // Relay export requests to Electron native file dialog if available
+      if (window.qlNative) {
+        window.qlNative.exportFile(e.data.content, e.data.ext, e.data.name);
+      }
+      break;
+    case 'ql:toast':
+      if (e.data.msg) toast(e.data.msg);
+      break;
+  }
+});
+
+
+/* ══════════════════════════════════════════════════════════════
+   QUANTUM LOOM THEME SYSTEM
+══════════════════════════════════════════════════════════════ */
+const QL_THEMES = {"void-tech": {"name": "Void-Tech", "emoji": "\ud83c\udf0c", "desc": "Deep space darkness \u2014 the default", "c-bg": "#04050a", "c-surf": "#080b12", "c-surf2": "#0c1018", "c-surf3": "#1a1d24", "c-edge": "rgba(255,255,255,.055)", "c-edge-hi": "rgba(255,255,255,.12)", "c-accent1": "#b1d0f0", "c-accent2": "#e8b84b", "c-accent3": "#4dc8a0", "c-accent4": "#9b7fd4", "c-danger": "#d45b5b", "c-warm": "#f98f3b", "c-text": "rgba(255,255,255,.85)"}, "cyber-arcane": {"name": "Cyber-Arcane Fusion", "emoji": "\u26a1", "desc": "Neon glyphs, holographic circuits", "c-bg": "#030308", "c-surf": "#07060f", "c-surf2": "#0d0b1a", "c-surf3": "#15102a", "c-edge": "rgba(0,229,255,.12)", "c-edge-hi": "rgba(0,229,255,.28)", "c-accent1": "#00e5ff", "c-accent2": "#ff00dd", "c-accent3": "#00ff88", "c-accent4": "#7b2fff", "c-danger": "#ff3355", "c-warm": "#ff6b00", "c-text": "rgba(220,240,255,.9)"}, "solar": {"name": "Solar-Powered", "emoji": "\u2600\ufe0f", "desc": "Radiant gold, energy cores, warm dark", "c-bg": "#0a0702", "c-surf": "#130e04", "c-surf2": "#1c1506", "c-surf3": "#2a1e08", "c-edge": "rgba(255,215,0,.12)", "c-edge-hi": "rgba(255,215,0,.28)", "c-accent1": "#ffd700", "c-accent2": "#ff8c00", "c-accent3": "#ffb347", "c-accent4": "#c8973a", "c-danger": "#ff4444", "c-warm": "#ff6600", "c-text": "rgba(255,240,200,.88)"}, "infernal": {"name": "Infernal Mechanism", "emoji": "\ud83d\udd25", "desc": "Molten metal, ember glow, obsidian panels", "c-bg": "#070100", "c-surf": "#100400", "c-surf2": "#180700", "c-surf3": "#250c00", "c-edge": "rgba(255,69,0,.15)", "c-edge-hi": "rgba(255,69,0,.35)", "c-accent1": "#ff4500", "c-accent2": "#ff8c00", "c-accent3": "#ffd700", "c-accent4": "#8b0000", "c-danger": "#ff0000", "c-warm": "#ff6600", "c-text": "rgba(255,220,180,.88)"}, "frost": {"name": "Frost-Tech", "emoji": "\u2744\ufe0f", "desc": "Frozen circuitry, crystalline ice panels", "c-bg": "#010810", "c-surf": "#041525", "c-surf2": "#072038", "c-surf3": "#0a2d4a", "c-edge": "rgba(0,212,255,.12)", "c-edge-hi": "rgba(0,212,255,.28)", "c-accent1": "#00d4ff", "c-accent2": "#7fdbff", "c-accent3": "#40e0d0", "c-accent4": "#6c91c2", "c-danger": "#ff6b9d", "c-warm": "#ffd700", "c-text": "rgba(200,230,255,.88)"}, "aurora": {"name": "Aurora Flow", "emoji": "\ud83c\udf08", "desc": "Northern lights \u2014 green, violet, cyan", "c-bg": "#010a05", "c-surf": "#041510", "c-surf2": "#07201a", "c-surf3": "#0a2e24", "c-edge": "rgba(0,255,136,.1)", "c-edge-hi": "rgba(0,255,136,.25)", "c-accent1": "#00ff88", "c-accent2": "#7b2fff", "c-accent3": "#00d4ff", "c-accent4": "#ff6b9d", "c-danger": "#ff3355", "c-warm": "#ffaa00", "c-text": "rgba(200,255,230,.88)"}, "ancient": {"name": "Ancient Relic", "emoji": "\ud83d\udcdc", "desc": "Weathered artifacts, enchanted amber runes", "c-bg": "#0e0a04", "c-surf": "#1a1208", "c-surf2": "#241a0c", "c-surf3": "#2e2210", "c-edge": "rgba(212,168,67,.18)", "c-edge-hi": "rgba(212,168,67,.35)", "c-accent1": "#d4a843", "c-accent2": "#c8733a", "c-accent3": "#8b9355", "c-accent4": "#6b4c2a", "c-danger": "#8b2020", "c-warm": "#d4883a", "c-text": "rgba(255,240,200,.88)"}, "cathedral": {"name": "Neon Cathedral", "emoji": "\u26ea", "desc": "Divine violet, stained glass neon", "c-bg": "#04010a", "c-surf": "#09031a", "c-surf2": "#0e052a", "c-surf3": "#150840", "c-edge": "rgba(192,132,252,.12)", "c-edge-hi": "rgba(192,132,252,.28)", "c-accent1": "#c084fc", "c-accent2": "#f0abfc", "c-accent3": "#818cf8", "c-accent4": "#38bdf8", "c-danger": "#f43f5e", "c-warm": "#fb923c", "c-text": "rgba(245,240,255,.92)"}};
+let activeThemeId = 'void-tech';
+
+function openThemeModal() {
+  updateThemeCards();
+  document.getElementById('theme-modal').classList.add('open');
+}
+function closeThemeModal() {
+  document.getElementById('theme-modal').classList.remove('open');
+}
+
+function applyTheme(themeId) {
+  const theme = QL_THEMES[themeId];
+  if (!theme) return;
+  activeThemeId = themeId;
+
+  // Apply to hub's own :root
+  const root = document.documentElement;
+  const MAP = {
+    'c-bg':'--bg','c-surf':'--surface','c-surf2':'--surface2',
+    'c-edge':'--edge','c-edge-hi':'--edge-hi',
+    'c-accent1':'--venturan','c-accent2':'--amber','c-accent3':'--emerald',
+    'c-accent4':'--fusion','c-danger':'--blood','c-warm':'--solari',
+  };
+  Object.entries(MAP).forEach(([canon, varName]) => {
+    if (theme[canon]) root.style.setProperty(varName, theme[canon]);
+  });
+
+  // Broadcast to all layer iframes
+  const tokens = Object.fromEntries(
+    Object.entries(theme).filter(([k]) => k.startsWith('c-'))
+  );
+  document.querySelectorAll('iframe.layer-frame').forEach(iframe => {
+    try { iframe.contentWindow.postMessage({ type:'ql:theme', tokens }, '*'); } catch(e) {}
+  });
+
+  // Persist
+  localStorage.setItem('ql-theme', JSON.stringify({ id: themeId, tokens }));
+
+  // Update UI
+  updateThemeCards();
+  const lbl = document.getElementById('theme-lbl');
+  if (lbl) lbl.textContent = theme.emoji + ' ' + theme.name;
+  toast('🎨 ' + theme.name);
+  closeThemeModal();
+}
+
+function updateThemeCards() {
+  Object.keys(QL_THEMES).forEach(id => {
+    document.getElementById('tc-' + id)?.classList.toggle('active', id === activeThemeId);
+  });
+}
+
+// Apply saved theme on load
+(function() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.id && QL_THEMES[saved.id]) {
+      // Slight delay so iframes are loading
+      setTimeout(() => applyTheme(saved.id), 800);
+    }
+  } catch(e) {}
+})();
+
+// Re-broadcast theme when a new iframe finishes loading
+const _origFrameLoaded = typeof frameLoaded === 'function' ? frameLoaded : null;
+frameLoaded = function(layerId) {
+  if (_origFrameLoaded) _origFrameLoaded(layerId);
+  // Push current theme to newly loaded frame
+  setTimeout(() => {
+    const frame = document.getElementById('frame-' + layerId);
+    if (!frame) return;
+    try {
+      const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+      if (saved.tokens) {
+        frame.contentWindow.postMessage({ type:'ql:theme', tokens: saved.tokens }, '*');
+      }
+    } catch(e) {}
+  }, 100);
+};
+
+
+/* ══════════════════════════════════════════════════════════════
+   HUB — LLM PANEL CONTROLLER
+══════════════════════════════════════════════════════════════ */
+
+let llmReady = false;
+let lpActiveTab = 'config';
+let lpActiveProv = 'ollama';
+const LP_PROVIDERS = ['ollama','anythingllm','claude','openai','gemini','azure'];
+const LP_PROV_META = {
+  ollama:      { emoji:'🦙', name:'Ollama',       hint:'Local — no key needed. Great for privacy.' },
+  anythingllm: { emoji:'🗂',  name:'AnythingLLM',  hint:'Local RAG. Needs API key from its settings.' },
+  claude:      { emoji:'🔮', name:'Claude',        hint:'Best for long-form prose. Desktop app recommended.' },
+  openai:      { emoji:'🟢', name:'OpenAI',        hint:'ChatGPT models. Desktop app recommended.' },
+  gemini:      { emoji:'♊', name:'Gemini',         hint:'Works from browser. Get key at aistudio.google.com.' },
+  azure:       { emoji:'☁️',  name:'Azure',         hint:'Azure OpenAI endpoint. Desktop app recommended.' },
+};
+
+function openLLMPanel() {
+  lpBuildProviderGrid();
+  lpLoadConfig();
+  document.getElementById('llm-panel').classList.add('open');
+}
+function closeLLMPanel() {
+  document.getElementById('llm-panel').classList.remove('open');
+}
+
+function lpTab(tab) {
+  ['config','chat','tools'].forEach(t => {
+    document.getElementById('lp-pane-' + t).style.display = t === tab ? (t === 'chat' ? 'flex' : '') : 'none';
+    document.getElementById('lpt-' + t).classList.toggle('active', t === tab);
+  });
+  lpActiveTab = tab;
+  if (tab === 'chat') setTimeout(() => document.getElementById('lp-msgs').scrollTop = 9999, 50);
+}
+
+function lpBuildProviderGrid() {
+  const grid = document.getElementById('lp-provider-grid');
+  if (!grid) return;
+  grid.innerHTML = LP_PROVIDERS.map(id => {
+    const m = LP_PROV_META[id];
+    return `<div class="lp-prov-card${id === lpActiveProv ? ' active' : ''}" onclick="lpSelectProv('${id}')">
+      <span class="lp-prov-emoji">${m.emoji}</span>
+      <div class="lp-prov-name">${m.name}</div>
+    </div>`;
+  }).join('');
+}
+
+function lpSelectProv(id) {
+  lpActiveProv = id;
+  lpBuildProviderGrid();
+  // Show/hide fields
+  const needsKey      = ['anythingllm','claude','openai','gemini','azure'].includes(id);
+  const needsBase     = ['ollama','anythingllm','azure'].includes(id);
+  const needsWorkspace = id === 'anythingllm';
+  const needsDeployment = id === 'azure';
+  document.getElementById('lp-key-row').style.display        = needsKey       ? '' : 'none';
+  document.getElementById('lp-base-row').style.display       = needsBase      ? '' : 'none';
+  document.getElementById('lp-workspace-row').style.display  = needsWorkspace ? '' : 'none';
+  document.getElementById('lp-deployment-row').style.display = needsDeployment? '' : 'none';
+  document.getElementById('lp-provider-hint').textContent    = LP_PROV_META[id]?.hint || '';
+  // Default base URL
+  const defaults = { ollama:'http://localhost:11434', anythingllm:'http://localhost:3001' };
+  if (defaults[id]) document.getElementById('lp-base').value = defaults[id];
+}
+
+function lpLoadConfig() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem('ql-llm-config') || '{}');
+    if (cfg.provider) { lpActiveProv = cfg.provider; lpBuildProviderGrid(); lpSelectProv(cfg.provider); }
+    if (cfg.base)     document.getElementById('lp-base').value = cfg.base;
+    if (cfg.apiKey)   document.getElementById('lp-key').value  = cfg.apiKey;
+    if (cfg.workspace) document.getElementById('lp-workspace').value = cfg.workspace;
+    if (cfg.deployment) document.getElementById('lp-deployment').value = cfg.deployment;
+    if (cfg.temperature) document.getElementById('lp-temp').value = cfg.temperature;
+    if (cfg.model) {
+      const sel = document.getElementById('lp-model');
+      let opt = sel.querySelector(`option[value="${cfg.model}"]`);
+      if (!opt) { opt = document.createElement('option'); opt.value = cfg.model; opt.textContent = cfg.model; sel.appendChild(opt); }
+      sel.value = cfg.model;
+    }
+  } catch(e) {}
+}
+
+function llmSaveConfig() {
+  const cfg = {
+    provider:    lpActiveProv,
+    base:        document.getElementById('lp-base').value.trim(),
+    apiKey:      document.getElementById('lp-key').value.trim(),
+    workspace:   document.getElementById('lp-workspace').value.trim(),
+    deployment:  document.getElementById('lp-deployment').value.trim(),
+    model:       document.getElementById('lp-model').value,
+    temperature: parseFloat(document.getElementById('lp-temp').value) || 0.8,
+    maxTokens:   4096,
+  };
+  localStorage.setItem('ql-llm-config', JSON.stringify(cfg));
+  toast('🤖 LLM config saved');
+}
+
+async function llmLoadModels() {
+  lpSetStatus('testing', 'Loading models…');
+  llmSaveConfig();
+  try {
+    await llmEnsureLib();
+    LoomLLM.init();
+    const models = await LoomLLM.listModels();
+    const sel = document.getElementById('lp-model');
+    sel.innerHTML = models.map(m => `<option value="${m.id}">${m.label || m.id}</option>`).join('');
+    lpSetStatus('ok', models.length + ' models loaded');
+    llmReady = true;
+  } catch(e) {
+    lpSetStatus('err', 'Error: ' + e.message.slice(0,50));
+  }
+}
+
+async function llmTest() {
+  lpSetStatus('testing', 'Testing…');
+  llmSaveConfig();
+  try {
+    await llmEnsureLib();
+    LoomLLM.init();
+    const reply = await LoomLLM.chat([
+      { role:'user', content:'Reply with exactly: "Quantum Loom AI ready."' }
+    ]);
+    if (reply.toLowerCase().includes('quantum') || reply.length > 0) {
+      lpSetStatus('ok', 'Connected ✓');
+      llmReady = true;
+      toast('🤖 ' + reply.slice(0,60));
+    } else {
+      lpSetStatus('err', 'Unexpected response');
+    }
+  } catch(e) {
+    lpSetStatus('err', e.message.slice(0,60));
+  }
+}
+
+function lpSetStatus(state, msg) {
+  const dot = document.getElementById('llm-status-dot');
+  const txt = document.getElementById('llm-status-txt');
+  if (!dot || !txt) return;
+  dot.className = 'lp-dot ' + (state === 'ok' ? 'ok' : state === 'err' ? 'err' : 'testing');
+  txt.textContent = msg;
+  // Also update header dot
+  const hdot = document.getElementById('llm-dot');
+  if (hdot) hdot.className = 'lp-dot ' + (state === 'ok' ? 'ok' : '');
+}
+
+/* ── Chat ────────────────────────────────────────────────────── */
+const chatHistory = [];
+
+async function llmSend() {
+  const input = document.getElementById('lp-chat-input');
+  const msg   = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  lpAddMsg('user', msg);
+  chatHistory.push({ role:'user', content: msg });
+
+  const sendBtn = document.getElementById('lp-send-btn');
+  sendBtn.disabled = true;
+
+  const aiEl = lpAddMsg('ai', '', true);
+
+  try {
+    await llmEnsureLib();
+    LoomLLM.init();
+
+    const system = `You are a creative writing and world-building assistant for the Quantum Loom narrative system. You help authors brainstorm characters, plots, themes, and world details. Be concise, creative, and specific. Current project: ${(JSON.parse(localStorage.getItem('ql-workspace-meta')||'{}').name)||'Untitled'}.`;
+
+    const messages = [
+      { role:'system', content: system },
+      ...chatHistory.slice(-12),
+    ];
+
+    let full = '';
+    await LoomLLM.chatStream(messages, {}, chunk => {
+      full += chunk;
+      aiEl.textContent = full;
+      document.getElementById('lp-msgs').scrollTop = 9999;
+    }, () => {
+      aiEl.classList.remove('streaming');
+      chatHistory.push({ role:'assistant', content: full });
+    });
+  } catch(e) {
+    aiEl.textContent = '⚠ ' + e.message;
+    aiEl.classList.remove('streaming');
+    aiEl.style.color = '#d45b5b';
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+function lpAddMsg(role, text, streaming=false) {
+  const msgs = document.getElementById('lp-msgs');
+  const div  = document.createElement('div');
+  div.className = 'chat-msg ' + role + (streaming ? ' streaming' : '');
+  div.textContent = text || (streaming ? '…' : '');
+  msgs.appendChild(div);
+  msgs.scrollTop = 9999;
+  return div;
+}
+
+/* ── Tools ───────────────────────────────────────────────────── */
+async function llmGenerateLibrary() {
+  const concept = document.getElementById('lp-concept').value.trim();
+  const count   = parseInt(document.getElementById('lp-gen-count').value) || 10;
+  const types   = document.getElementById('lp-gen-types').value.split(',').map(s => s.trim());
+
+  if (!concept) { toast('Enter a concept first'); return; }
+
+  const statusEl = document.getElementById('lp-tools-status');
+  statusEl.textContent = 'Generating ' + count + ' capsules…';
+
+  try {
+    await llmEnsureLib();
+    LoomLLM.init();
+    const capsules = await LoomLLM.generateLibraryBatch(concept, count, types);
+    if (!capsules?.length) { statusEl.textContent = 'No capsules returned.'; return; }
+
+    // Merge into library
+    const lib = JSON.parse(localStorage.getItem('ql-library') || '[]');
+    const now = Date.now();
+    capsules.forEach((c, i) => {
+      lib.push({
+        id:          'ai-' + now + '-' + i,
+        name:        c.name || 'Unnamed',
+        type:        c.type || 'glyph',
+        desc:        c.description || '',
+        logic:       c.world_logic || '',
+        lyric_seed:  c.lyric_seed  || '',
+        tags:        c.tags || [],
+        color:       '#' + Math.floor(Math.random()*0xffffff).toString(16).padStart(6,'0'),
+        symbol:      '◆',
+        createdAt:   new Date().toISOString(),
+        source:      'ai-generated',
+      });
+    });
+    localStorage.setItem('ql-library', JSON.stringify(lib));
+    statusEl.textContent = '✓ ' + capsules.length + ' capsules added to Library';
+    toast('⬡ ' + capsules.length + ' AI capsules added to Library');
+  } catch(e) {
+    statusEl.textContent = '⚠ ' + e.message.slice(0,80);
+  }
+}
+
+async function llmParseLore() {
+  const text = document.getElementById('lp-lore-text').value.trim();
+  if (!text) { toast('Paste lore text first'); return; }
+
+  const statusEl = document.getElementById('lp-tools-status');
+  statusEl.textContent = 'Parsing document…';
+
+  try {
+    await llmEnsureLib();
+    LoomLLM.init();
+    const result = await LoomLLM.parseLoreDocument(text);
+    if (!result) { statusEl.textContent = 'Parse failed — check AI connection.'; return; }
+
+    let added = 0;
+    // Add characters to workspace
+    if (result.characters?.length) {
+      const ws = JSON.parse(localStorage.getItem('ql-workspace') || '[]');
+      result.characters.forEach((c, i) => {
+        ws.push({
+          id: 'ai-ch-' + Date.now() + i, name: c.name, role: c.role || 'neutral',
+          desc: c.description || '', traits: c.traits || [],
+          dialogue_voice: c.dialogue_voice || '',
+          x: 60 + (i % 4) * 200, y: 80 + Math.floor(i/4) * 180,
+        });
+        added++;
+      });
+      localStorage.setItem('ql-workspace', JSON.stringify(ws));
+    }
+    // Add locations as Zone capsules
+    if (result.locations?.length) {
+      const lib = JSON.parse(localStorage.getItem('ql-library') || '[]');
+      result.locations.forEach((loc, i) => {
+        lib.push({ id:'ai-loc-'+Date.now()+i, name:loc.name, type:'zone',
+          desc: loc.description + (loc.atmosphere ? ' ' + loc.atmosphere : ''),
+          color:'#7fd4c8', symbol:'◫', source:'ai-parsed' });
+        added++;
+      });
+      localStorage.setItem('ql-library', JSON.stringify(lib));
+    }
+    // Add events as capsules
+    if (result.events?.length) {
+      const lib = JSON.parse(localStorage.getItem('ql-library') || '[]');
+      result.events.forEach((ev, i) => {
+        lib.push({ id:'ai-ev-'+Date.now()+i, name:ev.name, type:'event',
+          desc:ev.description, color:'#e8b84b', symbol:'⚡', source:'ai-parsed' });
+        added++;
+      });
+      localStorage.setItem('ql-library', JSON.stringify(lib));
+    }
+
+    statusEl.textContent = `✓ Imported ${added} items (${result.characters?.length||0} characters, ${result.locations?.length||0} locations, ${result.events?.length||0} events)`;
+    toast('↑ Lore imported: ' + added + ' items');
+  } catch(e) {
+    statusEl.textContent = '⚠ ' + e.message.slice(0,80);
+  }
+}
+
+/* ── Dynamic library loader ──────────────────────────────────── */
+function llmEnsureLib() {
+  return new Promise((resolve, reject) => {
+    if (typeof LoomLLM !== 'undefined') { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'loom-llm.js';
+    s.onload  = () => typeof LoomLLM !== 'undefined' ? resolve() : reject(new Error('LoomLLM not defined'));
+    s.onerror = () => reject(new Error('loom-llm.js not found'));
+    document.head.appendChild(s);
+  });
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   LOOM BROADCAST — wires LoomBroadcast to hub events
+   Loads loom-broadcast.js dynamically, then fires events
+   whenever the sequencer plays, storage changes, or a
+   scene/chapter advances.
+══════════════════════════════════════════════════════════════ */
+
+let _broadcastReady = false;
+
+function broadcastEnsure() {
+  return new Promise((resolve) => {
+    if (typeof LoomBroadcast !== 'undefined') { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'loom-broadcast.js';
+    s.onload = () => { resolve(); };
+    s.onerror = () => { console.warn('[Loom] loom-broadcast.js not found'); resolve(); };
+    document.head.appendChild(s);
+  });
+}
+
+async function broadcastInit(socket) {
+  await broadcastEnsure();
+  if (typeof LoomBroadcast === 'undefined') return;
+  LoomBroadcast.init({ socket: socket || null });
+  _broadcastReady = true;
+  console.log('[Loom] Broadcaster ready');
+}
+
+/* Called by sequencer iframe when play starts */
+function broadcastPlayStart(chapter, bpm) {
+  if (!_broadcastReady || typeof LoomBroadcast === 'undefined') return;
+  LoomBroadcast.emitPlaybackStart(chapter || 1, bpm || projectMeta.bpm || 120,
+    parseInt(localStorage.getItem('ql-sequencer') ? JSON.parse(localStorage.getItem('ql-sequencer')).chCount : 24),
+    projectMeta.name || 'Untitled');
+}
+
+function broadcastPlayStop(chapter) {
+  if (!_broadcastReady || typeof LoomBroadcast === 'undefined') return;
+  LoomBroadcast.emitPlaybackStop(chapter || 0);
+}
+
+function broadcastChapter(chapter) {
+  if (!_broadcastReady || typeof LoomBroadcast === 'undefined') return;
+  LoomBroadcast.tick(chapter);
+}
+
+/* Hook into hub message relay — sequencer posts these */
+const _origMsgHandler = window.onmessage;
+window.addEventListener('message', async (e) => {
+  if (!e.data || typeof e.data !== 'object') return;
+  switch(e.data.type) {
+    case 'ql:play:start':
+      await broadcastEnsure();
+      broadcastPlayStart(e.data.chapter, e.data.bpm);
+      break;
+    case 'ql:play:stop':
+      broadcastPlayStop(e.data.chapter);
+      break;
+    case 'ql:chapter:tick':
+      broadcastChapter(e.data.chapter);
+      break;
+  }
+});
+
+/* Auto-init on load */
+broadcastInit();
+
+</script>
+</body>
+</html>
