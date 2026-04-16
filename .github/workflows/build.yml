@@ -2,15 +2,14 @@ name: Build/Release
 on:
   push:
     tags:
-      - 'v*' # Triggers when you push a tag starting with 'v' (e.g., v1.0.0)
+      - 'v*'
 
 jobs:
   release:
     runs-on: ${{ matrix.os }}
-
     strategy:
+      fail-fast: false # This prevents one failure from stopping the other builds
       matrix:
-        # This creates 3 parallel jobs: one for each OS
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
@@ -20,7 +19,13 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20 # Match your project's node version
+          node-version: 22 # Updated to Node 22 to resolve those warnings
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-dev libgpgme-dev
 
       - name: Install dependencies
         run: npm install
@@ -28,6 +33,5 @@ jobs:
       - name: Build and Release Electron App
         uses: samuelmeuli/action-electron-builder@v1
         with:
-          # This action handles the packaging and uploading to GitHub Releases
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release: true
