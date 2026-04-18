@@ -11,6 +11,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false  # <--- Change this from true to false
       matrix:
         include:
           - os: windows-latest
