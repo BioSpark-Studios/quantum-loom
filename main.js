@@ -14,17 +14,6 @@ const path  = require('path');
 const fs    = require('fs');
 const os    = require('os');
 
-// This pulls in your signaling logic so it runs inside the Electron process
-const broadcast = require('./app/loom-broadcast.js');
-
-app.whenReady().then(() => {
-  // Initialize the broadcast/signal logic
-  if (typeof broadcast.init === 'function') {
-    broadcast.init(); 
-  }
-  createWindow();
-});
-
 let mainWindow   = null;
 let splashWindow = null;
 let hubReady     = false;
