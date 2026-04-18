@@ -17,6 +17,7 @@
   --venturan:     #b1d0f0;
   --venturan-lt:  #e3f3ff;
   --umbraeth:     #4d4d4d;
+  --bg:           #0c0c0c;
   --void:         #1d1d1d;
   --fusion:       #9b7fd4;
   --totem:        #7fd4c8;
@@ -40,7 +41,7 @@
 @keyframes toast    { 0%{opacity:0;transform:translateY(10px)} 15%,80%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-6px)} }
 @keyframes glow-sel { 0%,100%{box-shadow:0 0 0 1px rgba(177,208,240,.5),0 8px 32px rgba(0,0,0,.5)} 50%{box-shadow:0 0 0 2px rgba(177,208,240,.8),0 0 20px rgba(177,208,240,.12)} }
 
-body { background:#0c0c0c; color:#fff; font-family:var(--font-d); height:100vh; overflow:hidden; display:flex; flex-direction:column; }
+body { background:var(--bg); color:#fff; font-family:var(--font-d); height:100vh; overflow:hidden; display:flex; flex-direction:column; }
 
 /* ─── TOP BAR ─────────────────────────────────────── */
 #topbar {
@@ -153,7 +154,7 @@ body { background:#0c0c0c; color:#fff; font-family:var(--font-d); height:100vh; 
 /* ─── CANVAS ─────────────────────────────────────── */
 #canvas {
   flex:1; position:relative; overflow:hidden; cursor:default;
-  background:#0c0c0c;
+  background:var(--bg);
   background-image:
     linear-gradient(rgba(177,208,240,.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(177,208,240,.05) 1px, transparent 1px),

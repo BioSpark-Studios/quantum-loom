@@ -445,11 +445,9 @@ body{background:var(--rack-bg);font-family:var(--fd);color:#fff;height:100vh;ove
 .ctrl-section { position:relative;z-index:1; }
 
 /* Rack background — less extreme darkness */
-body {
-  background: #141418 !important;
-}
+/* body bg handled by --rack-bg var */
 #rack-scroll, .rack-scroll, #rack-col, .rack-area {
-  background: #141418;
+  background: var(--rack-bg);
 }
 /* Tighter rack unit spacing */
 .rack-unit { margin-bottom:4px; }

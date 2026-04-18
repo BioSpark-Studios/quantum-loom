@@ -10,6 +10,7 @@
 
 :root{
   /* Core palette — aged brass & vellum against void */
+  --bg:          #07080a;
   --void:        #07080a;
   --void-2:      #0c0d10;
   --void-3:      #111318;
@@ -74,7 +75,7 @@
 @keyframes spin      {to{transform:rotate(360deg)}}
 
 body{
-  background:var(--void);
+  background:var(--bg);
   font-family:var(--fd);
   color:var(--ink);
   height:100vh;
@@ -1228,9 +1229,9 @@ document.addEventListener('DOMContentLoaded', init);
 /* ── Quantum Loom Theme System ──────────────────────────────── */
 (function initQLTheme() {
   const MAP = {
-    'c-bg':'--panel',
-    'c-surf':'--panel-hi',
-    'c-surf2':'--panel-edge',
+    'c-bg':'--bg',
+    'c-surf':'--panel',
+    'c-surf2':'--panel-hi',
     'c-accent3':'--emerald'
   };
   function applyTokens(tokens) {

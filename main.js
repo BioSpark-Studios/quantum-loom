@@ -73,10 +73,11 @@ function createMainWindow() {
     backgroundColor: '#04050a',
     icon:           path.join(__dirname, 'assets', 'icon.png'),
     webPreferences: {
-      preload:            path.join(__dirname, 'preload.js'),
-      contextIsolation:   true,
-      nodeIntegration:    false,
-      partition:          'persist:quantumloom',
+      preload:                    path.join(__dirname, 'preload.js'),
+      contextIsolation:           true,
+      nodeIntegration:            false,
+      webSecurity:                false,   // allows local file iframes
+      allowRunningInsecureContent: false,
     },
   });
 
