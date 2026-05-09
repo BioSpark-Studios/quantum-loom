@@ -79,24 +79,42 @@ function log(msg, level='info') {
 }
 
 /* ── Load Firebase SDK dynamically ───────────────────────────────── */
-function loadModule(url) {
+function loadModule() {
   return new Promise((resolve, reject) => {
-    // Check if already loaded via global
+    if (window._LoomFBModules) { resolve(window._LoomFBModules); return; }
+
+    const LOAD_TIMEOUT_MS = 15000;
+    let settled = false;
+
+    function settle(fn, arg) {
+      if (settled) return;
+      settled = true;
+      window.removeEventListener('loom:fb:loaded', onLoaded);
+      fn(arg);
+    }
+
+    function onLoaded() {
+      if (window._LoomFBModules) settle(resolve, window._LoomFBModules);
+      else settle(reject, new Error('Firebase modules event fired but _LoomFBModules not set'));
+    }
+
+    window.addEventListener('loom:fb:loaded', onLoaded);
+
     const script = document.createElement('script');
     script.type = 'module';
     script.textContent = `
       import { initializeApp } from '${FIREBASE_SDK_URL}';
       import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp } from '${FIRESTORE_SDK_URL}';
       window._LoomFBModules = { initializeApp, getFirestore, doc, setDoc, onSnapshot, serverTimestamp };
+      window.dispatchEvent(new CustomEvent('loom:fb:loaded'));
     `;
-    script.onload = () => resolve(window._LoomFBModules);
-    script.onerror = reject;
+    script.onerror = () => settle(reject, new Error('Firebase script failed to load — check network or SDK URL'));
     document.head.appendChild(script);
-    // Modules execute immediately, resolve after a tick
+
     setTimeout(() => {
-      if (window._LoomFBModules) resolve(window._LoomFBModules);
-      else reject(new Error('Firebase modules did not load'));
-    }, 800);
+      if (window._LoomFBModules) settle(resolve, window._LoomFBModules);
+      else settle(reject, new Error(`Firebase modules timed out after ${LOAD_TIMEOUT_MS}ms`));
+    }, LOAD_TIMEOUT_MS);
   });
 }
 
@@ -125,8 +143,17 @@ function writeToLocalStorage(remoteData) {
       const newVal = JSON.stringify(remoteData[fsKey]);
       const oldVal = localStorage.getItem(key);
       if (newVal !== oldVal) {
-        localStorage.setItem(key, newVal);
-        updated.push(key);
+        try {
+          localStorage.setItem(key, newVal);
+          updated.push(key);
+        } catch(e) {
+          if (e.name === 'QuotaExceededError') {
+            log(`Storage quota exceeded for key "${key}" — remote data not applied`, 'error');
+            emit('error', { op: 'quota', key });
+          } else {
+            log(`localStorage write failed for "${key}": ${e.message}`, 'error');
+          }
+        }
       }
     }
   });

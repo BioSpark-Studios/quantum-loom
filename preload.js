@@ -67,4 +67,18 @@ contextBridge.exposeInMainWorld('qlNative', {
     ipcRenderer.on('menu:open-manual', cb);
     return () => ipcRenderer.removeListener('menu:open-manual', cb);
   },
+
+  // ── Secure credential storage (OS keychain via safeStorage) ───
+
+  /** Encrypt and persist a secret — use for API keys instead of localStorage */
+  saveSecret: (key, value) =>
+    ipcRenderer.invoke('secret:save', { key, value }),
+
+  /** Retrieve a previously saved secret — returns { ok, value } */
+  loadSecret: (key) =>
+    ipcRenderer.invoke('secret:load', { key }),
+
+  /** Delete a stored secret */
+  deleteSecret: (key) =>
+    ipcRenderer.invoke('secret:delete', { key }),
 });

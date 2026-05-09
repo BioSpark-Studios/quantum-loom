@@ -130,6 +130,27 @@ let _cfg = {
 };
 let _listeners = {};
 
+function _log(level, msg) {
+  const prefix = '[LoomLLM]';
+  if (level === 'error') console.error(prefix, msg);
+  else if (level === 'warn') console.warn(prefix, msg);
+  else console.log(prefix, msg);
+  (_listeners['log'] || []).forEach(cb => { try { cb({ level, msg, ts: Date.now() }); } catch(e) {} });
+}
+
+function _storageSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch(e) {
+    if (e.name === 'QuotaExceededError') {
+      _log('error', `Storage quota exceeded writing "${key}" — data not saved`);
+      (_listeners['error'] || []).forEach(cb => { try { cb({ msg: 'Storage quota exceeded', key }); } catch(err) {} });
+    } else {
+      throw e;
+    }
+  }
+}
+
 /* ════════════════════════════════════════════════════════════════
    CORE API
 ════════════════════════════════════════════════════════════════ */
@@ -138,9 +159,16 @@ const LoomLLM = {
   PROVIDERS,
 
   /* ── Init from config object or localStorage ─────────────────── */
-  init(cfg) {
+  async init(cfg) {
     const saved = LoomLLM.loadConfig();
     _cfg = { ..._cfg, ...saved, ...(cfg || {}) };
+
+    // Load API key from safeStorage if available and not already provided
+    if (!_cfg.apiKey && global.qlNative?.loadSecret) {
+      const result = await global.qlNative.loadSecret('ql-apikey-' + _cfg.provider).catch(() => null);
+      if (result?.ok && result.value) _cfg.apiKey = result.value;
+    }
+
     LoomLLM.emit('ready', { provider: _cfg.provider });
     return LoomLLM;
   },
@@ -150,9 +178,24 @@ const LoomLLM = {
     catch(e) { return {}; }
   },
 
-  saveConfig(cfg) {
-    _cfg = { ..._cfg, ...(cfg || {}) };
-    localStorage.setItem('ql-llm-config', JSON.stringify(_cfg));
+  async saveConfig(cfg) {
+    const incoming = cfg || {};
+    _cfg = { ..._cfg, ...incoming };
+
+    // Store API key in safeStorage when running in Electron; strip from localStorage
+    if (incoming.apiKey !== undefined && global.qlNative?.saveSecret) {
+      try {
+        await global.qlNative.saveSecret('ql-apikey-' + _cfg.provider, _cfg.apiKey);
+        const cfgToStore = { ..._cfg, apiKey: '' };
+        _storageSet('ql-llm-config', JSON.stringify(cfgToStore));
+      } catch(e) {
+        _log('warn', 'safeStorage unavailable — API key stored in localStorage: ' + e.message);
+        _storageSet('ql-llm-config', JSON.stringify(_cfg));
+      }
+    } else {
+      _storageSet('ql-llm-config', JSON.stringify(_cfg));
+    }
+
     LoomLLM.emit('config', _cfg);
   },
 
@@ -177,6 +220,7 @@ const LoomLLM = {
     try {
       if (_cfg.provider === 'ollama') {
         const res = await fetch(`${_cfg.base || p.defaultBase}/api/tags`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
         const data = await res.json();
         return (data.models || []).map(m => ({ id: m.name, label: m.name }));
       }
@@ -184,6 +228,7 @@ const LoomLLM = {
         const res = await fetch(`${_cfg.base || p.defaultBase}/api/v1/workspaces`, {
           headers: { 'Authorization': `Bearer ${_cfg.apiKey}` },
         });
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
         const data = await res.json();
         return (data.workspaces || []).map(w => ({ id: w.slug, label: w.name }));
       }
@@ -265,6 +310,7 @@ const LoomLLM = {
         options:  { temperature: cfg.temperature || 0.8, num_predict: cfg.maxTokens || 4096 },
       }),
     });
+    if (!res.ok) throw new Error(`Ollama HTTP ${res.status}: ${res.statusText}`);
     const data = await res.json();
     return data.message?.content || '';
   },
@@ -280,6 +326,7 @@ const LoomLLM = {
         options:  { temperature: cfg.temperature || 0.8, num_predict: cfg.maxTokens || 4096 },
       }),
     });
+    if (!res.ok) throw new Error(`Ollama HTTP ${res.status}: ${res.statusText}`);
     const reader = res.body.getReader();
     const dec    = new TextDecoder();
     let full     = '';
@@ -292,7 +339,7 @@ const LoomLLM = {
           const obj = JSON.parse(line);
           if (obj.message?.content) { full += obj.message.content; onChunk(obj.message.content); }
           if (obj.done) { onDone?.(full); return; }
-        } catch(e) {}
+        } catch(e) { _log('warn', 'Ollama stream parse error: ' + e.message); }
       }
     }
     onDone?.(full);
@@ -307,12 +354,12 @@ const LoomLLM = {
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.apiKey}` },
       body:    JSON.stringify({ message: msg, mode: 'chat' }),
     });
+    if (!res.ok) throw new Error(`AnythingLLM HTTP ${res.status}: ${res.statusText}`);
     const data = await res.json();
     return data.textResponse || data.response || '';
   },
 
   async _streamAnythingLLM(messages, cfg, onChunk, onDone) {
-    // AnythingLLM streaming via SSE
     const ws  = cfg.workspace || cfg.model || 'default';
     const msg = messages[messages.length - 1]?.content || '';
     const res = await fetch(`${cfg.base || 'http://localhost:3001'}/api/v1/workspace/${ws}/stream-chat`, {
@@ -320,6 +367,7 @@ const LoomLLM = {
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.apiKey}` },
       body:    JSON.stringify({ message: msg, mode: 'chat' }),
     });
+    if (!res.ok) throw new Error(`AnythingLLM HTTP ${res.status}: ${res.statusText}`);
     const reader = res.body.getReader();
     const dec    = new TextDecoder();
     let full     = '';
@@ -332,7 +380,7 @@ const LoomLLM = {
           const obj = JSON.parse(chunk.trim());
           if (obj.textResponse) { full += obj.textResponse; onChunk(obj.textResponse); }
           if (obj.close) { onDone?.(full); return; }
-        } catch(e) {}
+        } catch(e) { _log('warn', 'AnythingLLM stream parse error: ' + e.message); }
       }
     }
     onDone?.(full);
@@ -356,6 +404,10 @@ const LoomLLM = {
         messages:   msgs,
       }),
     });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error?.message || `Claude HTTP ${res.status}: ${res.statusText}`);
+    }
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
     return data.content?.[0]?.text || '';
@@ -379,6 +431,10 @@ const LoomLLM = {
         messages:   msgs,
       }),
     });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error?.message || `Claude HTTP ${res.status}: ${res.statusText}`);
+    }
     const reader = res.body.getReader();
     const dec    = new TextDecoder();
     let full     = '';
@@ -394,7 +450,7 @@ const LoomLLM = {
             onChunk(obj.delta.text);
           }
           if (obj.type === 'message_stop') { onDone?.(full); return; }
-        } catch(e) {}
+        } catch(e) { _log('warn', 'Claude stream parse error: ' + e.message); }
       }
     }
     onDone?.(full);
@@ -412,6 +468,10 @@ const LoomLLM = {
         temperature: cfg.temperature || 0.8,
       }),
     });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error?.message || `OpenAI HTTP ${res.status}: ${res.statusText}`);
+    }
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
     return data.choices?.[0]?.message?.content || '';
@@ -429,6 +489,10 @@ const LoomLLM = {
         stream:      true,
       }),
     });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error?.message || `OpenAI HTTP ${res.status}: ${res.statusText}`);
+    }
     const reader = res.body.getReader();
     const dec    = new TextDecoder();
     let full     = '';
@@ -441,7 +505,7 @@ const LoomLLM = {
           const obj = JSON.parse(line.slice(6));
           const txt = obj.choices?.[0]?.delta?.content;
           if (txt) { full += txt; onChunk(txt); }
-        } catch(e) {}
+        } catch(e) { _log('warn', 'OpenAI stream parse error: ' + e.message); }
       }
     }
     onDone?.(full);
@@ -464,6 +528,10 @@ const LoomLLM = {
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cfg.apiKey}`,
       { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
     );
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error?.message || `Gemini HTTP ${res.status}: ${res.statusText}`);
+    }
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
     return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -485,6 +553,10 @@ const LoomLLM = {
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?key=${cfg.apiKey}&alt=sse`,
       { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
     );
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error?.message || `Gemini HTTP ${res.status}: ${res.statusText}`);
+    }
     const reader = res.body.getReader();
     const dec    = new TextDecoder();
     let full     = '';
@@ -497,7 +569,7 @@ const LoomLLM = {
           const obj = JSON.parse(line.slice(6));
           const txt = obj.candidates?.[0]?.content?.parts?.[0]?.text;
           if (txt) { full += txt; onChunk(txt); }
-        } catch(e) {}
+        } catch(e) { _log('warn', 'Gemini stream parse error: ' + e.message); }
       }
     }
     onDone?.(full);
@@ -516,6 +588,10 @@ const LoomLLM = {
         temperature: cfg.temperature || 0.8,
       }),
     });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error?.message || `Azure HTTP ${res.status}: ${res.statusText}`);
+    }
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
     return data.choices?.[0]?.message?.content || '';
@@ -534,6 +610,10 @@ const LoomLLM = {
         stream:      true,
       }),
     });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error?.message || `Azure HTTP ${res.status}: ${res.statusText}`);
+    }
     const reader = res.body.getReader();
     const dec    = new TextDecoder();
     let full     = '';
@@ -546,7 +626,7 @@ const LoomLLM = {
           const obj = JSON.parse(line.slice(6));
           const txt = obj.choices?.[0]?.delta?.content;
           if (txt) { full += txt; onChunk(txt); }
-        } catch(e) {}
+        } catch(e) { _log('warn', 'Azure stream parse error: ' + e.message); }
       }
     }
     onDone?.(full);
