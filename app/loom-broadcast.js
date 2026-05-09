@@ -18,14 +18,15 @@ let _socket     = null;
 let _lastChapter = -1;
 let _tickInterval = null;
 let _active     = false;
+let _emotionDebounce = null;
 
 const LoomBroadcast = {
 
   init(opts = {}) {
     _socket = opts.socket || null;
     if (opts.autoTick !== false) {
-      // Poll every 500ms — fast enough for smooth 3D, slow enough not to flood
-      _tickInterval = setInterval(() => LoomBroadcast.tick(), 500);
+      const tickMs = opts.tickInterval ?? 500;
+      _tickInterval = setInterval(() => LoomBroadcast.tick(), tickMs);
     }
     _active = true;
     console.log('[LoomBroadcast] initialized', _socket ? '+ socket.io' : '(postMessage only)');
@@ -264,7 +265,7 @@ window.addEventListener('message', e => {
 
   switch(type) {
     case 'AGENT_EMOTION': {
-      /* Update character vector in localStorage and re-broadcast */
+      /* Accumulate rapid emotion deltas and debounce the localStorage write */
       try {
         const ws = JSON.parse(localStorage.getItem('ql-workspace') || '[]');
         const ch = ws.find(c => c.id === data.agentId || c.name === data.agentName);
@@ -272,10 +273,23 @@ window.addEventListener('message', e => {
           ch.vectors[data.emotion] = Math.min(10, Math.max(0,
             (ch.vectors[data.emotion] || 5) + (data.delta || 0)
           ));
-          localStorage.setItem('ql-workspace', JSON.stringify(ws));
+          clearTimeout(_emotionDebounce);
+          _emotionDebounce = setTimeout(() => {
+            try {
+              localStorage.setItem('ql-workspace', JSON.stringify(ws));
+            } catch(storageErr) {
+              if (storageErr.name === 'QuotaExceededError') {
+                console.warn('[LoomBroadcast] Storage quota exceeded — emotion update not persisted');
+              } else {
+                console.error('[LoomBroadcast] Emotion storage error:', storageErr.message);
+              }
+            }
+          }, 200);
           console.log(`[LoomBroadcast] Agent emotion update: ${data.agentName}.${data.emotion} → ${ch.vectors[data.emotion]}`);
         }
-      } catch(err) {}
+      } catch(err) {
+        console.error('[LoomBroadcast] AGENT_EMOTION handler error:', err.message);
+      }
       break;
     }
     case 'AGENT_PORTAL_REQUEST': {
