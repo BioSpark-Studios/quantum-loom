@@ -848,6 +848,7 @@ function tickDay() {
   updateStatusBar();
   // drift pressure cells
   driftPressureCells();
+  saveSnapshot();
 }
 
 function updateSeasonChip() {
@@ -1636,6 +1637,33 @@ async function runSimulation() {
   setStatus('done', 'SIMULATION COMPLETE',
     `${pressureCells.length} cells · ${frontalLines.length} fronts · ${extremeEvents.length} extreme events`);
   updateStatusBar();
+  saveSnapshot();
+}
+
+function saveSnapshot() {
+  try {
+    const snap = {
+      system: 'Quantum Atlas',
+      module: '02 · Environment',
+      generated: new Date().toISOString(),
+      hour: state.hour,
+      day: state.day,
+      season: state.season,
+      moonPhase: state.moonPhase,
+      tidalMod: state.tidalMod,
+      tempModifier: state.tempModifier,
+      activeWeather: state.activeWeather,
+      skyColor: state.skyColor,
+      skyDescription: state.skyDescription,
+      pressure_cells: pressureCells.map(c => ({
+        x: c.x, y: c.y, type: c.type,
+        pressure_mb: c.pressure_mb, name: c.name,
+      })),
+      frontal_lines: frontalLines.length,
+      extreme_events: extremeEvents.length,
+    };
+    localStorage.setItem('qa-environ-snapshot', JSON.stringify(snap));
+  } catch(e) { console.warn('Could not save qa-environ-snapshot', e); }
 }
 
 // ============================================================
