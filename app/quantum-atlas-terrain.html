@@ -1177,6 +1177,13 @@ async function runPipeline(seed) {
   const resCount = hexes.reduce((s, h) => s + h.resources.length, 0);
 
   setStatus('done', 'COMPLETE', `631 hexes · ${riverCount} river nodes · ${resCount} resource nodes`);
+
+  // Persist snapshot for downstream modules (e.g. 02 · Environment)
+  try {
+    const snapshot = { system:'Quantum Atlas', module:'01 · Terrain', generated: new Date().toISOString(), seed: currentSeed, hex_count: hexes.length, hexes };
+    localStorage.setItem('qa-terrain-snapshot', JSON.stringify(snapshot));
+  } catch(e) { console.warn('Could not persist terrain snapshot:', e); }
+
   renderCanvas();
   updateInspector(null);
 }
