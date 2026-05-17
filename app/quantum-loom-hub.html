@@ -36,6 +36,7 @@
   --c-subgraph:  #d45b5b;
   --c-ionodes:   #b1d0f0;
   --c-output:    #c8973a;
+  --c-atlas:     #1e8cff;
 }
 
 html,body{
@@ -843,6 +844,14 @@ html,body{
         <span class="ni-label">Output</span>
       </div>
 
+      <div class="nav-div"></div>
+
+      <div class="nav-item" id="nav-atlas" data-layer="atlas"
+           style="--lc:var(--c-atlas)" onclick="switchLayer('atlas')" title="Quantum Atlas · 01 Terrain">
+        <span class="ni-icon">⬡</span>
+        <span class="ni-label">Atlas</span>
+      </div>
+
       <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
     </div>
 
@@ -931,6 +940,16 @@ html,body{
       <iframe class="layer-frame" id="frame-output"
         src="quantum-loom-output.html"
         onload="frameLoaded('output')"></iframe>
+
+      <!-- Atlas · 01 Terrain -->
+      <div class="frame-loader" id="loader-atlas">
+        <div class="loader-glyph" style="color:#1e8cff">⬡</div>
+        <div class="loader-lbl">Loading Quantum Atlas · Terrain</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#1e8cff"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-atlas"
+        src="quantum-atlas-terrain.html"
+        onload="frameLoaded('atlas')"></iframe>
 
     </div>
   </div>
@@ -1303,6 +1322,7 @@ const LAYERS = {
   subgraph:  { label:'Sub-Graph Canvas',    icon:'⬡',  color:'var(--c-subgraph)',  file:'quantum-loom-subgraph.html' },
   ionodes:   { label:'Signal Bus & I/O',    icon:'⇌',  color:'var(--c-ionodes)',   file:'quantum-loom-io-nodes.html' },
   output:    { label:'Output Renderer',    icon:'⎘',  color:'var(--c-output)',    file:'quantum-loom-output.html'   },
+  atlas:     { label:'Atlas · 01 Terrain', icon:'⬡',  color:'var(--c-atlas)',     file:'quantum-atlas-terrain.html' },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
