@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 04 · Lighting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #04050a;
+  --surface:  rgba(8,11,18,.98);
+  --surface2: rgba(12,16,24,.97);
+  --edge:     rgba(255,255,255,.055);
+  --edge-hi:  rgba(255,255,255,.12);
+  --venturan: #b1d0f0;
+  --amber:    #e8b84b;
+  --emerald:  #4dc8a0;
+  --solari:   #f98f3b;
+  --fusion:   #9b7fd4;
+  --blood:    #d45b5b;
+  --totem:    #7fd4c8;
+  --terrain:  #1e8cff;
+  --environ:  #4ecdc4;
+  --architect:#ffd166;
+  --lighting: #ff9f43;
+  --fm:'Orbitron',monospace;
+  --fd:'Space Grotesk',sans-serif;
+  --fc:'JetBrains Mono',monospace;
+}
+
+html,body{
+  height:100%;overflow:hidden;
+  background:var(--bg);color:#fff;
+  font-family:var(--fd);font-size:13px;
+}
+
+#shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;overflow:hidden;
+}
+
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--lighting);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--fm);font-size:.7rem;color:var(--lighting);
+  animation:breathe 4s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes breathe{
+  0%,100%{box-shadow:0 0 4px rgba(255,159,67,.2);}
+  50%{box-shadow:0 0 12px rgba(255,159,67,.5);}
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--lighting);white-space:nowrap;
+}
+
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:0 10px;height:100%;
+  display:flex;align-items:center;cursor:pointer;
+  color:rgba(255,255,255,.35);border-bottom:2px solid transparent;
+  transition:all .12s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03)}
+.tb-tab.active{color:var(--lighting);border-bottom-color:var(--lighting);}
+
+.tb-links{
+  display:flex;align-items:center;gap:5px;padding:0 10px;
+  border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-link-chip{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:10px;border:1px solid;cursor:default;
+  transition:all .15s;
+}
+.tb-link-chip.lit{
+  color:#4dc8a0;border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.07);
+}
+.tb-link-chip.dim{
+  color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.07);background:transparent;
+}
+
+.tb-hour-wrap{
+  display:flex;align-items:center;gap:7px;padding:0 12px;
+  border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-hour-label{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.35);text-transform:uppercase;
+}
+.tb-hour-val{
+  font-family:var(--fc);font-size:.38rem;color:var(--lighting);
+  min-width:20px;text-align:center;
+}
+#hour-slider{
+  -webkit-appearance:none;appearance:none;
+  width:90px;height:3px;background:rgba(255,255,255,.08);
+  border-radius:2px;outline:none;cursor:pointer;
+}
+#hour-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--lighting);cursor:pointer;
+  box-shadow:0 0 6px rgba(255,159,67,.4);
+}
+
+.tb-actions{
+  display:flex;gap:4px;padding:0 10px;height:100%;align-items:center;
+  flex-shrink:0;
+}
+.tb-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);
+  white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff}
+.tb-btn.hot{
+  border-color:rgba(255,159,67,.45);background:rgba(255,159,67,.08);color:var(--lighting);
+}
+.tb-btn.hot:hover{background:rgba(255,159,67,.16);box-shadow:0 0 12px rgba(255,159,67,.2);}
+.tb-btn.active-mode{
+  border-color:rgba(255,107,53,.6);background:rgba(255,107,53,.15);color:#ff6b35;
+  box-shadow:0 0 10px rgba(255,107,53,.25);
+}
+
+.tb-spacer{flex:1;}
+
+/* ── BODY ── */
+#body{flex:1;display:flex;overflow:hidden;}
+
+/* ── LEFT SIDEBAR ── */
+#left-sidebar{
+  width:240px;flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.ls-header{
+  padding:8px 10px 6px;border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.ls-header-title{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--lighting);opacity:.8;
+}
+.ls-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.ls-scroll::-webkit-scrollbar{width:3px;}
+.ls-scroll::-webkit-scrollbar-track{background:transparent;}
+.ls-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+.pillar-section{border-bottom:1px solid var(--edge);}
+.pillar-header{
+  display:flex;align-items:center;gap:6px;padding:7px 10px;
+  cursor:pointer;transition:background .1s;user-select:none;
+}
+.pillar-header:hover{background:rgba(255,255,255,.025);}
+.pillar-num{
+  font-family:var(--fm);font-size:.38rem;color:var(--lighting);
+  letter-spacing:.06em;flex-shrink:0;opacity:.75;
+}
+.pillar-name{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(255,255,255,.6);flex:1;
+}
+.pillar-count{
+  font-family:var(--fc);font-size:.32rem;
+  color:rgba(255,255,255,.3);padding:1px 5px;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  border-radius:8px;flex-shrink:0;
+}
+.pillar-chevron{
+  font-size:.5rem;color:rgba(255,255,255,.25);
+  transition:transform .18s;flex-shrink:0;
+}
+.pillar-section.collapsed .pillar-chevron{transform:rotate(-90deg);}
+.pillar-modules{overflow:hidden;transition:max-height .22s ease;}
+.pillar-section.collapsed .pillar-modules{max-height:0!important;}
+
+.module-row{
+  display:flex;align-items:center;gap:6px;padding:5px 10px 5px 14px;
+  cursor:pointer;transition:background .1s;position:relative;
+}
+.module-row:hover{background:rgba(255,255,255,.03);}
+.module-row.active{background:rgba(255,159,67,.07);border-right:2px solid var(--lighting);}
+.type-badge{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.05em;
+  padding:1px 4px;border-radius:2px;flex-shrink:0;font-weight:400;
+  border:1px solid currentColor;opacity:.85;
+}
+.type-SPA{color:#1e8cff;}
+.type-CTL{color:#4dc8a0;}
+.type-DAT{color:#9b7fd4;}
+.type-ENR{color:#f98f3b;}
+.type-UIX{color:#e8b84b;}
+.module-acronym{
+  font-family:var(--fc);font-size:.36rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.7);flex-shrink:0;min-width:26px;
+}
+.module-name{
+  font-family:var(--fd);font-size:.36rem;font-weight:300;
+  color:rgba(255,255,255,.4);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.module-row.active .module-acronym{color:#fff;}
+.module-row.active .module-name{color:rgba(255,255,255,.7);}
+
+/* Light source roster */
+.ls-roster{
+  border-top:1px solid var(--edge);flex-shrink:0;
+  background:var(--surface2);max-height:220px;display:flex;flex-direction:column;
+}
+.ls-roster-header{
+  padding:6px 10px;display:flex;align-items:center;gap:6px;
+  border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.ls-roster-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.15em;
+  text-transform:uppercase;color:rgba(255,255,255,.35);flex:1;
+}
+.ls-roster-count{
+  font-family:var(--fc);font-size:.32rem;color:var(--lighting);
+}
+.ls-roster-list{
+  flex:1;overflow-y:auto;padding:3px 0;
+}
+.ls-roster-list::-webkit-scrollbar{width:2px;}
+.ls-roster-list::-webkit-scrollbar-thumb{background:var(--edge);}
+.roster-row{
+  display:flex;align-items:center;gap:6px;padding:4px 10px;
+  transition:background .1s;cursor:pointer;
+}
+.roster-row:hover{background:rgba(255,255,255,.03);}
+.roster-row.selected{background:rgba(255,159,67,.07);}
+.roster-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+}
+.roster-type{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.5);text-transform:uppercase;flex-shrink:0;min-width:52px;
+}
+.roster-coords{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);flex:1;
+}
+.roster-radius{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);flex-shrink:0;
+}
+.roster-del{
+  font-size:.5rem;color:rgba(255,255,255,.2);cursor:pointer;
+  flex-shrink:0;padding:0 2px;transition:color .1s;line-height:1;
+}
+.roster-del:hover{color:var(--blood);}
+
+/* ── CANVAS AREA ── */
+#canvas-wrap{
+  flex:1;overflow:hidden;position:relative;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+}
+#lighting-canvas{
+  display:block;cursor:default;
+}
+#lighting-canvas.addlight-mode{cursor:crosshair;}
+
+/* Cursor ring for add-light mode */
+#cursor-ring{
+  position:absolute;pointer-events:none;
+  width:24px;height:24px;border-radius:50%;
+  border:2px solid var(--lighting);
+  box-shadow:0 0 8px rgba(255,159,67,.6);
+  transform:translate(-50%,-50%);
+  display:none;z-index:10;
+  transition:none;
+}
+#cursor-ring.visible{display:block;}
+
+/* Progress overlay */
+#gen-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;
+  background:rgba(4,5,10,.88);z-index:5;
+  pointer-events:none;opacity:0;transition:opacity .25s;
+}
+#gen-overlay.active{opacity:1;pointer-events:all;}
+.gen-title{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--lighting);
+}
+.gen-step{
+  font-family:var(--fc);font-size:.38rem;color:rgba(255,255,255,.5);
+  letter-spacing:.06em;min-height:16px;
+}
+.gen-bar-wrap{
+  width:240px;height:3px;background:rgba(255,255,255,.07);border-radius:2px;
+}
+.gen-bar{
+  height:100%;border-radius:2px;background:var(--lighting);
+  transition:width .25s ease;width:0%;
+  box-shadow:0 0 8px rgba(255,159,67,.4);
+}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:280px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.rp-header{
+  padding:8px 12px 6px;border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.rp-header-title{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--lighting);opacity:.8;
+}
+.rp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+.rp-section{border-bottom:1px solid var(--edge);}
+.rp-section-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);
+  padding:8px 12px 4px;
+}
+.rp-row{
+  display:flex;align-items:center;gap:8px;padding:4px 12px;
+}
+.rp-label{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.3);
+  letter-spacing:.05em;text-transform:uppercase;flex:1;
+}
+.rp-val{
+  font-family:var(--fc);font-size:.34rem;color:rgba(255,255,255,.8);
+  letter-spacing:.04em;text-align:right;
+}
+.rp-val.accent{color:var(--lighting);}
+.rp-bar-wrap{
+  flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;
+}
+.rp-bar{
+  height:100%;border-radius:2px;background:var(--lighting);
+  transition:width .3s ease;
+}
+
+/* Color swatch */
+.rp-swatch{
+  width:36px;height:16px;border-radius:2px;border:1px solid var(--edge-hi);
+  flex-shrink:0;
+}
+
+/* Type breakdown */
+.rp-breakdown{
+  padding:4px 12px 8px;
+  display:grid;grid-template-columns:1fr 1fr;gap:3px;
+}
+.rp-bk-item{
+  display:flex;align-items:center;gap:5px;padding:3px 6px;
+  background:rgba(255,255,255,.03);border-radius:3px;
+  border:1px solid var(--edge);
+}
+.rp-bk-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.rp-bk-label{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.4);flex:1;
+}
+.rp-bk-val{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.7);
+}
+
+/* Type selector for ADD LIGHT */
+.rp-type-sel{
+  padding:6px 12px 8px;display:flex;gap:4px;flex-wrap:wrap;
+}
+.type-sel-btn{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:3px;cursor:pointer;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.35);
+  transition:all .12s;
+}
+.type-sel-btn:hover{border-color:var(--edge-hi);color:rgba(255,255,255,.7);}
+.type-sel-btn.selected{
+  background:rgba(255,159,67,.12);border-color:rgba(255,159,67,.4);color:var(--lighting);
+}
+
+/* Toggle / checkbox */
+.rp-toggle-row{
+  display:flex;align-items:center;gap:8px;padding:5px 12px;
+}
+.rp-toggle-label{
+  font-family:var(--fd);font-size:.36rem;color:rgba(255,255,255,.5);flex:1;
+}
+.toggle-cb{
+  appearance:none;-webkit-appearance:none;
+  width:32px;height:16px;border-radius:8px;
+  background:rgba(255,255,255,.08);border:1px solid var(--edge);
+  cursor:pointer;position:relative;transition:all .15s;flex-shrink:0;
+}
+.toggle-cb::after{
+  content:'';position:absolute;width:10px;height:10px;
+  border-radius:50%;background:rgba(255,255,255,.3);
+  top:2px;left:2px;transition:all .15s;
+}
+.toggle-cb:checked{background:rgba(255,159,67,.2);border-color:rgba(255,159,67,.4);}
+.toggle-cb:checked::after{background:var(--lighting);left:18px;}
+
+/* Night vision indicator */
+.rp-nv-active{
+  font-family:var(--fc);font-size:.28rem;color:#4dc8a0;letter-spacing:.06em;
+  padding:2px 12px 6px;opacity:0;transition:opacity .2s;
+}
+.rp-nv-active.on{opacity:1;}
+
+/* Night vision canvas filter */
+.nv-on{filter:hue-rotate(100deg) saturate(0.3) brightness(2);}
+
+/* ── STATUS BAR ── */
+#status-bar{
+  height:26px;flex-shrink:0;
+  background:var(--surface);border-top:1px solid var(--edge);
+  display:flex;align-items:center;gap:0;padding:0 12px;
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.25);
+  letter-spacing:.06em;
+}
+.sb-item{
+  padding:0 10px;border-right:1px solid var(--edge);
+  display:flex;align-items:center;gap:5px;
+}
+.sb-item:first-child{padding-left:0;}
+.sb-item:last-child{border-right:none;}
+.sb-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--lighting);
+  box-shadow:0 0 4px rgba(255,159,67,.5);
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot{0%,100%{opacity:.5;}50%{opacity:1;}}
+.sb-accent{color:var(--lighting);}
+</style>
+</head>
+<body>
+<div id="shell">
+
+<!-- ── TOP BAR ── -->
+<div id="top-bar">
+  <div class="tb-module-chip">
+    <div class="tb-glyph">◐</div>
+    <div class="tb-module-id">04 · LIGHTING</div>
+  </div>
+
+  <div class="tb-tabs">
+    <div class="tb-tab active" data-tab="0">I-SOLAR</div>
+    <div class="tb-tab" data-tab="1">II-LUMINARY</div>
+    <div class="tb-tab" data-tab="2">III-SHADOW</div>
+    <div class="tb-tab" data-tab="3">IV-CHROMATIC</div>
+  </div>
+
+  <div class="tb-links" id="upstream-links">
+    <div class="tb-link-chip dim" id="link-terrain">TERRAIN</div>
+    <div class="tb-link-chip dim" id="link-environ">ENVIRON</div>
+    <div class="tb-link-chip dim" id="link-arch">ARCH</div>
+  </div>
+
+  <div class="tb-hour-wrap">
+    <div class="tb-hour-label">HOUR</div>
+    <input type="range" id="hour-slider" min="0" max="23" value="12">
+    <div class="tb-hour-val" id="hour-display">12</div>
+  </div>
+
+  <div class="tb-spacer"></div>
+
+  <div class="tb-actions">
+    <button class="tb-btn" id="btn-add-light">ADD LIGHT</button>
+    <button class="tb-btn" id="btn-clear">CLEAR LIGHTS</button>
+    <button class="tb-btn hot" id="btn-render">RENDER</button>
+  </div>
+</div>
+
+<!-- ── BODY ── -->
+<div id="body">
+
+  <!-- LEFT SIDEBAR -->
+  <div id="left-sidebar">
+    <div class="ls-header">
+      <div class="ls-header-title">Component Matrix</div>
+    </div>
+    <div class="ls-scroll" id="ls-scroll">
+
+      <!-- Pillar I -->
+      <div class="pillar-section" id="pillar-0">
+        <div class="pillar-header" onclick="togglePillar(0)">
+          <span class="pillar-num">I</span>
+          <span class="pillar-name">SOLAR</span>
+          <span class="pillar-count">4</span>
+          <span class="pillar-chevron">›</span>
+        </div>
+        <div class="pillar-modules" style="max-height:200px">
+          <div class="module-row active" onclick="selectModule(this)">
+            <span class="type-badge type-SPA">SPA</span>
+            <span class="module-acronym">SPA</span>
+            <span class="module-name">Solar Position Anchor</span>
+          </div>
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-CTL">CTL</span>
+            <span class="module-acronym">DNC</span>
+            <span class="module-name">Day/Night Cycle Controller</span>
+          </div>
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-SPA">SPA</span>
+            <span class="module-acronym">SAD</span>
+            <span class="module-name">Shadow Angle Director</span>
+          </div>
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-ENR">ENR</span>
+            <span class="module-acronym">UVR</span>
+            <span class="module-name">UV Radiation Evaluator</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pillar II -->
+      <div class="pillar-section" id="pillar-1">
+        <div class="pillar-header" onclick="togglePillar(1)">
+          <span class="pillar-num">II</span>
+          <span class="pillar-name">LUMINARY</span>
+          <span class="pillar-count">4</span>
+          <span class="pillar-chevron">›</span>
+        </div>
+        <div class="pillar-modules" style="max-height:200px">
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-SPA">SPA</span>
+            <span class="module-acronym">PLS</span>
+            <span class="module-name">Point Light Spawner</span>
+          </div>
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-DAT">DAT</span>
+            <span class="module-acronym">ALS</span>
+            <span class="module-name">Ambient Light Scheduler</span>
+          </div>
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-UIX">UIX</span>
+            <span class="module-acronym">MLG</span>
+            <span class="module-name">Magic Light Glyph Renderer</span>
+          </div>
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-ENR">ENR</span>
+            <span class="module-acronym">FSE</span>
+            <span class="module-name">Fire &amp; Smoke Emitter</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pillar III -->
+      <div class="pillar-section" id="pillar-2">
+        <div class="pillar-header" onclick="togglePillar(2)">
+          <span class="pillar-num">III</span>
+          <span class="pillar-name">SHADOW</span>
+          <span class="pillar-count">4</span>
+          <span class="pillar-chevron">›</span>
+        </div>
+        <div class="pillar-modules" style="max-height:200px">
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-SPA">SPA</span>
+            <span class="module-acronym">OCC</span>
+            <span class="module-name">Occlusion Mesh Calculator</span>
+          </div>
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-SPA">SPA</span>
+            <span class="module-acronym">VCS</span>
+            <span class="module-name">Visibility Cone Solver</span>
+          </div>
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-SPA">SPA</span>
+            <span class="module-acronym">FWR</span>
+            <span class="module-name">Fog of War Revealer</span>
+          </div>
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-UIX">UIX</span>
+            <span class="module-acronym">SRM</span>
+            <span class="module-name">Shadow Ray Marcher</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pillar IV -->
+      <div class="pillar-section" id="pillar-3">
+        <div class="pillar-header" onclick="togglePillar(3)">
+          <span class="pillar-num">IV</span>
+          <span class="pillar-name">CHROMATIC</span>
+          <span class="pillar-count">4</span>
+          <span class="pillar-chevron">›</span>
+        </div>
+        <div class="pillar-modules" style="max-height:200px">
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-SPA">SPA</span>
+            <span class="module-acronym">CTT</span>
+            <span class="module-name">Color Temperature Translator</span>
+          </div>
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-UIX">UIX</span>
+            <span class="module-acronym">NVS</span>
+            <span class="module-name">Night Vision Shader</span>
+          </div>
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-UIX">UIX</span>
+            <span class="module-acronym">GHF</span>
+            <span class="module-name">Ground Haze Filter</span>
+          </div>
+          <div class="module-row" onclick="selectModule(this)">
+            <span class="type-badge type-UIX">UIX</span>
+            <span class="module-acronym">LCE</span>
+            <span class="module-name">Light Color Exporter</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /ls-scroll -->
+
+    <!-- Light Source Roster -->
+    <div class="ls-roster">
+      <div class="ls-roster-header">
+        <div class="ls-roster-title">Light Source Roster</div>
+        <div class="ls-roster-count" id="roster-count">0</div>
+      </div>
+      <div class="ls-roster-list" id="roster-list">
+        <div style="padding:8px 12px;font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);">No lights. Press RENDER to generate.</div>
+      </div>
+    </div>
+  </div><!-- /left-sidebar -->
+
+  <!-- CANVAS WRAP -->
+  <div id="canvas-wrap">
+    <canvas id="lighting-canvas"></canvas>
+    <div id="cursor-ring"></div>
+
+    <!-- Progress overlay -->
+    <div id="gen-overlay">
+      <div class="gen-title">◐ LIGHTING PIPELINE</div>
+      <div class="gen-step" id="gen-step">Initializing…</div>
+      <div class="gen-bar-wrap"><div class="gen-bar" id="gen-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div id="right-panel">
+    <div class="rp-header">
+      <div class="rp-header-title">Luminance State</div>
+    </div>
+    <div class="rp-scroll">
+
+      <!-- 1. SOLAR -->
+      <div class="rp-section">
+        <div class="rp-section-title">I — SOLAR</div>
+        <div class="rp-row">
+          <span class="rp-label">Current Hour</span>
+          <span class="rp-val accent" id="rp-hour">12:00</span>
+        </div>
+        <div class="rp-row">
+          <span class="rp-label">Sunrise / Sunset</span>
+          <span class="rp-val">06:00 / 18:00</span>
+        </div>
+        <div class="rp-row">
+          <span class="rp-label">Sun Elevation</span>
+          <span class="rp-val" id="rp-elevation">90°</span>
+        </div>
+        <div class="rp-row">
+          <span class="rp-label">UV Index</span>
+          <span class="rp-val" id="rp-uv">10.0</span>
+        </div>
+        <div class="rp-row" style="align-items:center;gap:8px;">
+          <span class="rp-label">Ambient</span>
+          <div class="rp-bar-wrap"><div class="rp-bar" id="rp-ambient-bar" style="width:100%"></div></div>
+          <span class="rp-val" id="rp-ambient-pct">100%</span>
+        </div>
+        <div style="height:6px;"></div>
+      </div>
+
+      <!-- 2. LIGHT SOURCES -->
+      <div class="rp-section">
+        <div class="rp-section-title">II — LIGHT SOURCES</div>
+        <div class="rp-row">
+          <span class="rp-label">Total Count</span>
+          <span class="rp-val accent" id="rp-total-count">0</span>
+        </div>
+        <div class="rp-breakdown" id="rp-breakdown">
+          <div class="rp-bk-item">
+            <div class="rp-bk-dot" style="background:#fff5cc"></div>
+            <span class="rp-bk-label">Settlement</span>
+            <span class="rp-bk-val" id="bk-settlement">0</span>
+          </div>
+          <div class="rp-bk-item">
+            <div class="rp-bk-dot" style="background:#ff9f43"></div>
+            <span class="rp-bk-label">Torch</span>
+            <span class="rp-bk-val" id="bk-torch">0</span>
+          </div>
+          <div class="rp-bk-item">
+            <div class="rp-bk-dot" style="background:#ff6b35"></div>
+            <span class="rp-bk-label">Fire</span>
+            <span class="rp-bk-val" id="bk-fire">0</span>
+          </div>
+          <div class="rp-bk-item">
+            <div class="rp-bk-dot" style="background:#c77dff"></div>
+            <span class="rp-bk-label">Magic</span>
+            <span class="rp-bk-val" id="bk-magic">0</span>
+          </div>
+          <div class="rp-bk-item">
+            <div class="rp-bk-dot" style="background:#aac4ff"></div>
+            <span class="rp-bk-label">Moonlight</span>
+            <span class="rp-bk-val" id="bk-moonlight">0</span>
+          </div>
+        </div>
+        <div class="rp-row">
+          <span class="rp-label">Total Lumens</span>
+          <span class="rp-val" id="rp-lumens">0</span>
+        </div>
+        <div class="rp-row" style="align-items:center;gap:8px;">
+          <span class="rp-label">Coverage</span>
+          <div class="rp-bar-wrap"><div class="rp-bar" id="rp-coverage-bar" style="width:0%"></div></div>
+          <span class="rp-val" id="rp-coverage-pct">0%</span>
+        </div>
+        <div style="height:4px;"></div>
+
+        <!-- Place type selector -->
+        <div style="padding:4px 12px;font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.25);letter-spacing:.06em;text-transform:uppercase;">Place type</div>
+        <div class="rp-type-sel">
+          <button class="type-sel-btn selected" data-ltype="torch">Torch</button>
+          <button class="type-sel-btn" data-ltype="fire">Fire</button>
+          <button class="type-sel-btn" data-ltype="magic">Magic</button>
+        </div>
+      </div>
+
+      <!-- 3. COLOR TEMPERATURE -->
+      <div class="rp-section">
+        <div class="rp-section-title">III — COLOR TEMPERATURE</div>
+        <div class="rp-row">
+          <span class="rp-label">Tint Name</span>
+          <span class="rp-val" id="rp-tint-name">Neutral</span>
+        </div>
+        <div class="rp-row">
+          <span class="rp-label">RGB</span>
+          <span class="rp-val" id="rp-tint-rgb">—</span>
+        </div>
+        <div class="rp-row">
+          <span class="rp-label">Swatch</span>
+          <div class="rp-swatch" id="rp-swatch"></div>
+        </div>
+        <div style="height:6px;"></div>
+      </div>
+
+      <!-- 4. VISIBILITY -->
+      <div class="rp-section">
+        <div class="rp-section-title">IV — VISIBILITY</div>
+        <div class="rp-toggle-row">
+          <span class="rp-toggle-label">Fog of War</span>
+          <input type="checkbox" class="toggle-cb" id="fow-toggle">
+        </div>
+        <div class="rp-row">
+          <span class="rp-label">Visited Hexes</span>
+          <span class="rp-val" id="rp-visited">—</span>
+        </div>
+        <div class="rp-row">
+          <span class="rp-label">Darkest Hex</span>
+          <span class="rp-val" id="rp-darkest">—</span>
+        </div>
+        <div class="rp-row">
+          <span class="rp-label">Brightest Hex</span>
+          <span class="rp-val" id="rp-brightest">—</span>
+        </div>
+        <div class="rp-toggle-row">
+          <span class="rp-toggle-label">Night Vision</span>
+          <input type="checkbox" class="toggle-cb" id="nv-toggle">
+        </div>
+        <div class="rp-nv-active" id="rp-nv-label">NVS ACTIVE · GREEN TINT</div>
+        <div style="height:6px;"></div>
+      </div>
+
+    </div><!-- /rp-scroll -->
+  </div><!-- /right-panel -->
+
+</div><!-- /body -->
+
+<!-- STATUS BAR -->
+<div id="status-bar">
+  <div class="sb-item"><div class="sb-dot"></div><span class="sb-accent">LUMIS</span></div>
+  <div class="sb-item" id="sb-mode">MODE: OBSERVE</div>
+  <div class="sb-item" id="sb-hexes">HEXES: 0</div>
+  <div class="sb-item" id="sb-lights">LIGHTS: 0</div>
+  <div class="sb-item" id="sb-fps">FPS: —</div>
+  <div class="sb-item" id="sb-hour">HOUR: 12</div>
+  <div class="sb-item" id="sb-season">SEASON: —</div>
+</div>
+
+</div><!-- /shell -->
+
+<script>
+// ════════════════════════════════════════════════════════
+//  QUANTUM ATLAS — MODULE 04 · LIGHTING
+// ════════════════════════════════════════════════════════
+
+const LIGHT_TYPES = {
+  settlement: { color:'#fff5cc', radius:120, intensity:1.0, flicker:0.05 },
+  torch:      { color:'#ff9f43', radius:60,  intensity:0.8, flicker:0.15 },
+  fire:       { color:'#ff6b35', radius:90,  intensity:0.9, flicker:0.25 },
+  magic:      { color:'#c77dff', radius:80,  intensity:0.7, flicker:0.08 },
+  moonlight:  { color:'#aac4ff', radius:300, intensity:0.2, flicker:0.0  },
+};
+
+// ── State ──────────────────────────────────────────────
+let terrainData  = null;
+let environData  = null;
+let architectData = null;
+
+let lightSources = [];   // { id, type, wx, wy, cx, cy, radius, color, intensity, flicker }
+let selectedLight = null;
+let nextLightId  = 1;
+let fowVisited   = new Set(); // hex ids visited by light
+
+let addLightMode = false;
+let placeType    = 'torch';
+
+let hour = 12;
+let brightnessMultiplier = 1.0;
+let tintInfo = { name:'Neutral', color:null };
+let fowEnabled  = false;
+let nvEnabled   = false;
+let pipelineRan = false;
+
+// Camera
+let camX = 0, camY = 0, camZoom = 1.0;
+let isDragging = false, dragStartX = 0, dragStartY = 0, camStartX = 0, camStartY = 0;
+
+// Canvas
+const canvas = document.getElementById('lighting-canvas');
+const ctx    = canvas.getContext('2d');
+const wrap   = document.getElementById('canvas-wrap');
+
+// FPS tracking
+let fpsFrames = 0, fpsLast = performance.now(), fpsVal = 0;
+
+// ── Hex geometry ──────────────────────────────────────
+const HEX_SIZE = 18;
+function hexToPixel(q, r) {
+  const x = HEX_SIZE * (3/2 * q);
+  const y = HEX_SIZE * (Math.sqrt(3)/2 * q + Math.sqrt(3) * r);
+  return { x, y };
+}
+function hexCorners(cx, cy, size) {
+  const pts = [];
+  for (let i = 0; i < 6; i++) {
+    const a = Math.PI / 180 * (60 * i - 30);
+    pts.push({ x: cx + size * Math.cos(a), y: cy + size * Math.sin(a) });
+  }
+  return pts;
+}
+
+// ── Init ───────────────────────────────────────────────
+function init() {
+  resizeCanvas();
+  loadUpstream();
+  setupEvents();
+  updateHourDisplay();
+  updateRightPanel();
+
+  // Start rAF loop immediately (will draw empty state)
+  requestAnimationFrame(renderLoop);
+}
+
+function resizeCanvas() {
+  const rect = wrap.getBoundingClientRect();
+  canvas.width  = rect.width;
+  canvas.height = rect.height;
+}
+
+function loadUpstream() {
+  // Terrain
+  const ts = localStorage.getItem('qa-terrain-snapshot');
+  if (ts) { try { terrainData = JSON.parse(ts); } catch(e){} }
+  document.getElementById('link-terrain').className =
+    'tb-link-chip ' + (terrainData ? 'lit' : 'dim');
+
+  // Environ
+  const es = localStorage.getItem('qa-environ-snapshot');
+  if (es) { try { environData = JSON.parse(es); } catch(e){} }
+  document.getElementById('link-environ').className =
+    'tb-link-chip ' + (environData ? 'lit' : 'dim');
+
+  // Architect
+  const as = localStorage.getItem('qa-architect-snapshot');
+  if (as) { try { architectData = JSON.parse(as); } catch(e){} }
+  document.getElementById('link-arch').className =
+    'tb-link-chip ' + (architectData ? 'lit' : 'dim');
+
+  // Pull hour from environ if available
+  if (environData && environData.hour !== undefined) {
+    hour = environData.hour;
+    document.getElementById('hour-slider').value = hour;
+  }
+
+  // Season from environ
+  if (environData && environData.season) {
+    document.getElementById('sb-season').textContent = 'SEASON: ' + environData.season.toUpperCase();
+  }
+
+  // Auto-center camera on terrain
+  if (terrainData && terrainData.hexes && terrainData.hexes.length > 0) {
+    let sumX = 0, sumY = 0;
+    terrainData.hexes.forEach(h => {
+      const p = hexToPixel(h.q, h.r);
+      sumX += p.x; sumY += p.y;
+    });
+    const avgX = sumX / terrainData.hexes.length;
+    const avgY = sumY / terrainData.hexes.length;
+    camX = canvas.width/2 - avgX;
+    camY = canvas.height/2 - avgY;
+    document.getElementById('sb-hexes').textContent = 'HEXES: ' + terrainData.hexes.length;
+  }
+}
+
+// ── Solar helpers ──────────────────────────────────────
+function getSunPosition(h, W, H) {
+  const t = (h - 6) / 12;
+  const angle = Math.PI * t;
+  const cx = W * t;
+  const cy = H * 0.15 - Math.sin(angle) * H * 0.12;
+  return { x: cx, y: cy };
+}
+
+function getBrightness(h) {
+  if (h >= 10 && h <= 14) return 1.0;
+  if (h >= 7 && h < 10)   return lerp(0.6, 1.0, (h - 7) / 3);
+  if (h > 14 && h <= 17)  return lerp(1.0, 0.6, (h - 14) / 3);
+  if (h >= 5 && h < 7)    return lerp(0.3, 0.6, (h - 5) / 2);
+  if (h > 17 && h <= 19)  return lerp(0.6, 0.3, (h - 17) / 2);
+  // Night 0–5 / 19–24
+  if (h > 19) return lerp(0.3, 0.1, (h - 19) / 5);
+  if (h <= 5) return lerp(0.1, 0.3, h / 5);
+  return 0.1;
+}
+
+function lerp(a, b, t) { return a + (b - a) * Math.max(0, Math.min(1, t)); }
+
+function getTintInfo(h) {
+  if (h >= 10 && h <= 14) return { name:'Neutral', color:null };
+  if ((h >= 5 && h < 7) || (h > 17 && h <= 19)) {
+    const isDawn = h < 12;
+    return {
+      name: isDawn ? 'Dawn-Warm' : 'Dusk-Amber',
+      color:'rgba(255,120,30,0.15)',
+      rgb:'255,120,30'
+    };
+  }
+  return { name:'Night-Cold', color:'rgba(10,20,60,0.4)', rgb:'10,20,60' };
+}
+
+function getSunElevation(h) {
+  // 0 at 6 and 18, max at 12
+  if (h < 6 || h > 18) return 0;
+  return Math.sin(Math.PI * (h - 6) / 12) * 90;
+}
+
+function getUVIndex(h) {
+  const elev = getSunElevation(h);
+  return Math.max(0, (elev / 90) * 11).toFixed(1);
+}
+
+// ── Flicker ────────────────────────────────────────────
+function getFlickerRadius(baseRadius, flicker, t) {
+  return baseRadius
+    + Math.sin(t * 7.3 + baseRadius) * flicker * baseRadius
+    + Math.cos(t * 5.1 + baseRadius * 0.7) * flicker * 0.5 * baseRadius;
+}
+
+// ── World ↔ Canvas ─────────────────────────────────────
+function worldToCanvas(wx, wy) {
+  return { x: wx * camZoom + camX, y: wy * camZoom + camY };
+}
+function canvasToWorld(cx, cy) {
+  return { x: (cx - camX) / camZoom, y: (cy - camY) / camZoom };
+}
+
+// ── Hex color from terrain data ─────────────────────────
+function getHexColor(hex) {
+  const ecol = {
+    plains:'#4a6741', forest:'#2d5a27', desert:'#c8a96e',
+    tundra:'#8aa8aa', ocean:'#1a3a5c', lake:'#1e5a8c',
+    mountain:'#7a7a7a', swamp:'#3d5c3a', arctic:'#c8dde8',
+    jungle:'#1a6630', volcanic:'#4a2020', coast:'#3a7a8a',
+  };
+  if (hex.ecology && ecol[hex.ecology]) return ecol[hex.ecology];
+  if (hex.type === 'water' || hex.type === 'ocean') return '#1a3a5c';
+  if (hex.type === 'land' || hex.type === 'plains') return '#4a6741';
+  return '#3a4a3a';
+}
+
+// ── Hex draw ────────────────────────────────────────────
+function drawHex(hex, brightMult) {
+  const p = hexToPixel(hex.q, hex.r);
+  const cx = p.x * camZoom + camX;
+  const cy = p.y * camZoom + camY;
+  const size = HEX_SIZE * camZoom;
+
+  // Cull off-screen
+  if (cx < -size*2 || cx > canvas.width+size*2 ||
+      cy < -size*2 || cy > canvas.height+size*2) return;
+
+  const corners = hexCorners(cx, cy, size - 0.5);
+  ctx.beginPath();
+  ctx.moveTo(corners[0].x, corners[0].y);
+  for (let i = 1; i < 6; i++) ctx.lineTo(corners[i].x, corners[i].y);
+  ctx.closePath();
+
+  // Base color modulated by brightness
+  let baseColor = getHexColor(hex);
+  ctx.fillStyle = modulateColor(baseColor, brightMult);
+  ctx.fill();
+
+  // Border
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+  ctx.lineWidth = 0.5;
+  ctx.stroke();
+
+  return { cx, cy }; // return canvas center for FOW checks
+}
+
+function modulateColor(hex6, mult) {
+  // Parse hex color and apply brightness
+  let r = parseInt(hex6.slice(1,3),16);
+  let g = parseInt(hex6.slice(3,5),16);
+  let b = parseInt(hex6.slice(5,7),16);
+  r = Math.round(r * mult);
+  g = Math.round(g * mult);
+  b = Math.round(b * mult);
+  return `rgb(${r},${g},${b})`;
+}
+
+// ── Draw Glow ─────────────────────────────────────────
+function drawLightGlow(cx, cy, radius, color, intensity) {
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.globalAlpha = intensity * 0.35;
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+  g.addColorStop(0, color);
+  g.addColorStop(0.4, color + '88');
+  g.addColorStop(1, 'transparent');
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI*2);
+  ctx.fillStyle = g;
+  ctx.fill();
+  ctx.restore();
+}
+
+// ── Draw source icon ───────────────────────────────────
+function drawLightIcon(ls, t) {
+  const isSelected = selectedLight && selectedLight.id === ls.id;
+  switch(ls.type) {
+    case 'settlement': {
+      ctx.save();
+      ctx.font = '8px Orbitron, monospace';
+      ctx.fillStyle = isSelected ? '#fffde0' : 'rgba(255,255,255,0.85)';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('⊓', ls.cx, ls.cy);
+      if (isSelected) {
+        ctx.strokeStyle = '#fff5cc';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(ls.cx, ls.cy, 10, 0, Math.PI*2); ctx.stroke();
+      }
+      ctx.restore();
+      break;
+    }
+    case 'torch': {
+      const r = 3 + Math.sin(t * 200 / 1000 * Math.PI) * 1.5;
+      ctx.save();
+      ctx.fillStyle = isSelected ? '#ffb347' : '#ff9f43';
+      ctx.beginPath(); ctx.arc(ls.cx, ls.cy, r, 0, Math.PI*2); ctx.fill();
+      if (isSelected) {
+        ctx.strokeStyle='#ff9f43'; ctx.lineWidth=1.5;
+        ctx.beginPath(); ctx.arc(ls.cx, ls.cy, 8, 0, Math.PI*2); ctx.stroke();
+      }
+      ctx.restore();
+      break;
+    }
+    case 'fire': {
+      const rf = 4 + Math.sin(t * 300 / 1000 * Math.PI + 1) * 2;
+      ctx.save();
+      ctx.fillStyle = isSelected ? '#ff8c5a' : '#ff6b35';
+      ctx.beginPath(); ctx.arc(ls.cx, ls.cy, rf, 0, Math.PI*2); ctx.fill();
+      if (isSelected) {
+        ctx.strokeStyle='#ff6b35'; ctx.lineWidth=1.5;
+        ctx.beginPath(); ctx.arc(ls.cx, ls.cy, 10, 0, Math.PI*2); ctx.stroke();
+      }
+      ctx.restore();
+      break;
+    }
+    case 'magic': {
+      const pr = 6 + Math.sin(t / 600) * 3;
+      ctx.save();
+      ctx.strokeStyle = isSelected ? '#d89fff' : '#c77dff';
+      ctx.lineWidth = isSelected ? 2 : 1.5;
+      ctx.globalAlpha = 0.8 + Math.sin(t / 400) * 0.2;
+      ctx.beginPath(); ctx.arc(ls.cx, ls.cy, pr, 0, Math.PI*2); ctx.stroke();
+      ctx.globalAlpha = 0.5;
+      ctx.fillStyle = '#c77dff';
+      ctx.beginPath(); ctx.arc(ls.cx, ls.cy, 2, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+      break;
+    }
+    case 'moonlight': {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(170,196,255,0.4)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(ls.cx, ls.cy, 8, 0, Math.PI*2); ctx.stroke();
+      ctx.restore();
+      break;
+    }
+  }
+}
+
+// ── Draw sun / moon ────────────────────────────────────
+function drawCelestial(h, W, H) {
+  const isDay = h >= 6 && h <= 18;
+  const pos = getSunPosition(h, W, H);
+
+  ctx.save();
+  if (isDay) {
+    // Sun
+    const g = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 20);
+    g.addColorStop(0, '#fffacd');
+    g.addColorStop(0.5, '#ffd700');
+    g.addColorStop(1, 'rgba(255,200,0,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(pos.x, pos.y, 20, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fffde7';
+    ctx.beginPath(); ctx.arc(pos.x, pos.y, 7, 0, Math.PI*2); ctx.fill();
+  } else {
+    // Moon — opposite position
+    const moonT = ((h < 6 ? h + 12 : h - 6)) / 12;
+    const moonA = Math.PI * moonT;
+    const mx = W * moonT;
+    const my = H * 0.15 - Math.sin(moonA) * H * 0.12;
+    const g = ctx.createRadialGradient(mx, my, 0, mx, my, 16);
+    g.addColorStop(0, '#e8f0ff');
+    g.addColorStop(0.6, '#aac4ff');
+    g.addColorStop(1, 'rgba(170,196,255,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(mx, my, 16, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#dce8ff';
+    ctx.beginPath(); ctx.arc(mx, my, 5, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+// ── Full render loop ────────────────────────────────────
+let lastT = 0;
+function renderLoop(t) {
+  requestAnimationFrame(renderLoop);
+
+  // FPS
+  fpsFrames++;
+  if (t - fpsLast >= 1000) {
+    fpsVal = fpsFrames;
+    fpsFrames = 0;
+    fpsLast = t;
+    document.getElementById('sb-fps').textContent = 'FPS: ' + fpsVal;
+  }
+
+  brightnessMultiplier = getBrightness(hour);
+  tintInfo = getTintInfo(hour);
+
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // ── Layer 1: Hex base ──────────────────────────────
+  if (terrainData && terrainData.hexes) {
+    terrainData.hexes.forEach(hex => {
+      drawHex(hex, brightnessMultiplier);
+    });
+
+    // Color temperature tint
+    if (tintInfo.color) {
+      ctx.save();
+      ctx.fillStyle = tintInfo.color;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    }
+  } else {
+    // No terrain — draw placeholder grid
+    ctx.fillStyle = '#0a1020';
+    ctx.fillRect(0, 0, W, H);
+    ctx.font = '0.5rem Orbitron, monospace';
+    ctx.fillStyle = 'rgba(255,159,67,0.3)';
+    ctx.textAlign = 'center';
+    ctx.fillText('NO TERRAIN DATA — Press RENDER to proceed', W/2, H/2 - 16);
+    ctx.font = '0.4rem JetBrains Mono, monospace';
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.fillText('Load Module 01 first to populate qa-terrain-snapshot', W/2, H/2 + 8);
+  }
+
+  // Draw celestial body
+  drawCelestial(hour, W, H);
+
+  // ── Layer 2: Shadow mask ──────────────────────────
+  const darknessAlpha = Math.max(0, (1 - brightnessMultiplier) * 0.88);
+
+  if (darknessAlpha > 0.01) {
+    ctx.save();
+
+    // Draw darkness over entire canvas
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = `rgba(0,0,0,${darknessAlpha})`;
+    ctx.fillRect(0, 0, W, H);
+
+    // Punch holes for each light source
+    ctx.globalCompositeOperation = 'destination-out';
+    const tk = t / 1000;
+    lightSources.forEach(ls => {
+      // Update canvas position from world coords
+      const cp = worldToCanvas(ls.wx, ls.wy);
+      ls.cx = cp.x; ls.cy = cp.y;
+
+      const flickR = getFlickerRadius(ls.radius * camZoom, ls.flicker, tk);
+
+      const g = ctx.createRadialGradient(ls.cx, ls.cy, 0, ls.cx, ls.cy, flickR);
+      g.addColorStop(0, 'rgba(255,255,255,1)');
+      g.addColorStop(0.5, 'rgba(255,255,255,0.7)');
+      g.addColorStop(0.8, 'rgba(255,255,255,0.2)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.beginPath();
+      ctx.arc(ls.cx, ls.cy, flickR, 0, Math.PI*2);
+      ctx.fillStyle = g;
+      ctx.fill();
+    });
+
+    ctx.restore();
+  } else {
+    // Still update canvas positions
+    lightSources.forEach(ls => {
+      const cp = worldToCanvas(ls.wx, ls.wy);
+      ls.cx = cp.x; ls.cy = cp.y;
+    });
+  }
+
+  // ── Layer 3: Light glow (additive) ───────────────
+  const tk = t / 1000;
+  lightSources.forEach(ls => {
+    const flickR = getFlickerRadius(ls.radius * camZoom, ls.flicker, tk);
+    drawLightGlow(ls.cx, ls.cy, flickR, ls.color, ls.intensity);
+  });
+
+  // ── FOW: darken unvisited hexes ───────────────────
+  if (fowEnabled && terrainData && terrainData.hexes) {
+    // Update visited set
+    terrainData.hexes.forEach(hex => {
+      const p = hexToPixel(hex.q, hex.r);
+      const cx = p.x * camZoom + camX;
+      const cy = p.y * camZoom + camY;
+      // Check if any light source covers this hex
+      for (const ls of lightSources) {
+        const dist = Math.hypot(cx - ls.cx, cy - ls.cy);
+        if (dist < ls.radius * camZoom * 0.9) {
+          fowVisited.add(`${hex.q},${hex.r}`);
+          break;
+        }
+      }
+    });
+
+    // Draw fog over unvisited hexes
+    ctx.save();
+    terrainData.hexes.forEach(hex => {
+      const key = `${hex.q},${hex.r}`;
+      if (!fowVisited.has(key)) {
+        const p = hexToPixel(hex.q, hex.r);
+        const hcx = p.x * camZoom + camX;
+        const hcy = p.y * camZoom + camY;
+        const size = HEX_SIZE * camZoom;
+        if (hcx < -size*2 || hcx > W+size*2 || hcy < -size*2 || hcy > H+size*2) return;
+        const corners = hexCorners(hcx, hcy, size - 0.5);
+        ctx.beginPath();
+        ctx.moveTo(corners[0].x, corners[0].y);
+        for (let i = 1; i < 6; i++) ctx.lineTo(corners[i].x, corners[i].y);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(0,0,0,0.82)';
+        ctx.fill();
+      }
+    });
+    ctx.restore();
+  }
+
+  // ── Layer 4: Light source icons ───────────────────
+  lightSources.forEach(ls => drawLightIcon(ls, t));
+
+  // Update status bar light count
+  document.getElementById('sb-lights').textContent = 'LIGHTS: ' + lightSources.length;
+  document.getElementById('sb-hour').textContent = 'HOUR: ' + Math.floor(hour);
+
+  // Update right panel periodically
+  if (Math.floor(t / 500) !== Math.floor(lastT / 500)) {
+    updateRightPanel();
+  }
+  lastT = t;
+}
+
+// ── Right panel update ─────────────────────────────────
+function updateRightPanel() {
+  const h = hour;
+  // SOLAR
+  const hh = Math.floor(h).toString().padStart(2,'0');
+  const mm = Math.round((h % 1) * 60).toString().padStart(2,'0');
+  document.getElementById('rp-hour').textContent = `${hh}:${mm}`;
+  const elev = getSunElevation(h);
+  document.getElementById('rp-elevation').textContent = elev.toFixed(1) + '°';
+  document.getElementById('rp-uv').textContent = getUVIndex(h);
+  const bpct = Math.round(brightnessMultiplier * 100);
+  document.getElementById('rp-ambient-bar').style.width = bpct + '%';
+  document.getElementById('rp-ambient-pct').textContent = bpct + '%';
+
+  // LIGHT SOURCES
+  document.getElementById('rp-total-count').textContent = lightSources.length;
+  const byType = { settlement:0, torch:0, fire:0, magic:0, moonlight:0 };
+  let lumens = 0;
+  lightSources.forEach(ls => {
+    if (byType[ls.type] !== undefined) byType[ls.type]++;
+    lumens += ls.intensity * ls.radius * ls.radius;
+  });
+  document.getElementById('bk-settlement').textContent = byType.settlement;
+  document.getElementById('bk-torch').textContent = byType.torch;
+  document.getElementById('bk-fire').textContent = byType.fire;
+  document.getElementById('bk-magic').textContent = byType.magic;
+  document.getElementById('bk-moonlight').textContent = byType.moonlight;
+  document.getElementById('rp-lumens').textContent = Math.round(lumens).toLocaleString();
+
+  // Coverage estimate
+  const covPct = Math.min(100, lightSources.reduce((acc, ls) => {
+    return acc + Math.PI * ls.radius * ls.radius;
+  }, 0) / (canvas.width * canvas.height) * 100 * 8);
+  document.getElementById('rp-coverage-bar').style.width = Math.min(100, covPct) + '%';
+  document.getElementById('rp-coverage-pct').textContent = Math.min(100, covPct).toFixed(1) + '%';
+
+  // COLOR TEMPERATURE
+  const ti = getTintInfo(h);
+  document.getElementById('rp-tint-name').textContent = ti.name;
+  if (ti.rgb) {
+    document.getElementById('rp-tint-rgb').textContent = `rgb(${ti.rgb})`;
+    document.getElementById('rp-swatch').style.background = `rgba(${ti.rgb},0.6)`;
+  } else {
+    document.getElementById('rp-tint-rgb').textContent = '—';
+    document.getElementById('rp-swatch').style.background = 'rgba(255,255,255,0.05)';
+  }
+
+  // VISIBILITY
+  document.getElementById('rp-visited').textContent =
+    fowEnabled ? fowVisited.size + ' / ' + (terrainData ? terrainData.hexes.length : '?') : '—';
+
+  // Darkest / brightest (simple heuristic)
+  if (lightSources.length > 0 && terrainData && terrainData.hexes) {
+    let darkestHex = null, brightestHex = null, darkestDist = Infinity, brightestDist = Infinity;
+    terrainData.hexes.forEach(hex => {
+      const p = hexToPixel(hex.q, hex.r);
+      const cx = p.x * camZoom + camX;
+      const cy = p.y * camZoom + camY;
+      let minDist = Infinity;
+      lightSources.forEach(ls => {
+        const d = Math.hypot(cx - ls.cx, cy - ls.cy);
+        if (d < minDist) minDist = d;
+      });
+      if (minDist < brightestDist) { brightestDist = minDist; brightestHex = hex; }
+      if (minDist > darkestDist || !darkestHex) { darkestDist = minDist; darkestHex = hex; }
+    });
+    document.getElementById('rp-brightest').textContent =
+      brightestHex ? `(${brightestHex.q},${brightestHex.r})` : '—';
+    document.getElementById('rp-darkest').textContent =
+      darkestHex ? `(${darkestHex.q},${darkestHex.r})` : '—';
+  } else {
+    document.getElementById('rp-brightest').textContent = '—';
+    document.getElementById('rp-darkest').textContent = '—';
+  }
+
+  // Roster count
+  document.getElementById('roster-count').textContent = lightSources.length;
+  document.getElementById('rp-total-count').textContent = lightSources.length;
+}
+
+// ── Hour display update ─────────────────────────────────
+function updateHourDisplay() {
+  const h = parseInt(document.getElementById('hour-slider').value);
+  hour = h;
+  document.getElementById('hour-display').textContent = h.toString().padStart(2,'0');
+  brightnessMultiplier = getBrightness(h);
+  tintInfo = getTintInfo(h);
+}
+
+// ── Render pipeline ─────────────────────────────────────
+const PIPELINE_STEPS = [
+  'SPA SPA — Calibrating solar position…',
+  'ALS DAT — Scheduling ambient light levels…',
+  'PLS SPA — Spawning settlement light sources…',
+  'OCC SPA — Computing occlusion mesh…',
+  'CTT SPA — Translating color temperature…',
+  'LCE UIX — Exporting light uniforms…',
+];
+
+function runPipeline() {
+  const overlay = document.getElementById('gen-overlay');
+  const stepEl  = document.getElementById('gen-step');
+  const barEl   = document.getElementById('gen-bar');
+
+  overlay.classList.add('active');
+
+  // Clear auto-generated lights (settlement + moonlight), keep user-placed
+  lightSources = lightSources.filter(ls => ls.userPlaced);
+
+  let step = 0;
+  function doStep() {
+    if (step >= PIPELINE_STEPS.length) {
+      // Done
+      barEl.style.width = '100%';
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        pipelineRan = true;
+        // Spawn settlement lights
+        spawnSettlementLights();
+        // Moonlight if night
+        if (hour >= 19 || hour <= 5) spawnMoonlight();
+        updateRoster();
+        updateRightPanel();
+        saveSnapshot();
+      }, 300);
+      return;
+    }
+    stepEl.textContent = PIPELINE_STEPS[step];
+    barEl.style.width = ((step + 1) / PIPELINE_STEPS.length * 100) + '%';
+    step++;
+    setTimeout(doStep, 420);
+  }
+  doStep();
+}
+
+function spawnSettlementLights() {
+  if (!architectData) return;
+  const settlements = architectData.settlements || architectData.nodes || [];
+  settlements.forEach(s => {
+    const pop = s.population || s.pop || 1000;
+    const r = 60 + (pop / 10000) * 120;
+    const wx = s.x || s.wx || (s.q ? hexToPixel(s.q, s.r).x : 0);
+    const wy = s.y || s.wy || (s.q ? hexToPixel(s.q, s.r).y : 0);
+    addLight('settlement', wx, wy, r, false);
+  });
+}
+
+function spawnMoonlight() {
+  // Moon at canvas center-top
+  const wx = canvasToWorld(canvas.width / 2, canvas.height * 0.1).x;
+  const wy = canvasToWorld(canvas.width / 2, canvas.height * 0.1).y;
+  addLight('moonlight', wx, wy, LIGHT_TYPES.moonlight.radius, false);
+}
+
+function addLight(type, wx, wy, customRadius, userPlaced) {
+  const def = LIGHT_TYPES[type];
+  const cp = worldToCanvas(wx, wy);
+  const ls = {
+    id: nextLightId++,
+    type,
+    wx, wy,
+    cx: cp.x, cy: cp.y,
+    radius: customRadius !== undefined ? customRadius : def.radius,
+    color: def.color,
+    intensity: def.intensity,
+    flicker: def.flicker,
+    userPlaced: !!userPlaced,
+  };
+  lightSources.push(ls);
+  return ls;
+}
+
+function removeLight(id) {
+  lightSources = lightSources.filter(ls => ls.id !== id);
+  if (selectedLight && selectedLight.id === id) selectedLight = null;
+  updateRoster();
+  updateRightPanel();
+}
+
+// ── Roster ─────────────────────────────────────────────
+function updateRoster() {
+  const list = document.getElementById('roster-list');
+  if (lightSources.length === 0) {
+    list.innerHTML = '<div style="padding:8px 12px;font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);">No lights. Press RENDER to generate.</div>';
+    document.getElementById('roster-count').textContent = '0';
+    return;
+  }
+  list.innerHTML = '';
+  lightSources.forEach(ls => {
+    const row = document.createElement('div');
+    row.className = 'roster-row' + (selectedLight && selectedLight.id === ls.id ? ' selected' : '');
+    row.innerHTML = `
+      <div class="roster-dot" style="background:${ls.color}"></div>
+      <div class="roster-type">${ls.type}</div>
+      <div class="roster-coords">(${Math.round(ls.wx)},${Math.round(ls.wy)})</div>
+      <div class="roster-radius">r:${Math.round(ls.radius)}</div>
+      <div class="roster-del" title="Remove">×</div>
+    `;
+    row.querySelector('.roster-del').addEventListener('click', e => {
+      e.stopPropagation();
+      removeLight(ls.id);
+    });
+    row.addEventListener('click', () => {
+      selectedLight = ls;
+      updateRoster();
+    });
+    list.appendChild(row);
+  });
+  document.getElementById('roster-count').textContent = lightSources.length;
+}
+
+// ── Save snapshot ───────────────────────────────────────
+function saveSnapshot() {
+  const snap = {
+    hour,
+    brightnessMultiplier,
+    tintColor: tintInfo.color,
+    lightSources: lightSources.map(ls => ({
+      type: ls.type, x: ls.wx, y: ls.wy, radius: ls.radius, color: ls.color
+    }))
+  };
+  localStorage.setItem('qa-lighting-snapshot', JSON.stringify(snap));
+}
+
+// ── Event setup ─────────────────────────────────────────
+function setupEvents() {
+  // Resize
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    // Re-update canvas positions
+    lightSources.forEach(ls => {
+      const cp = worldToCanvas(ls.wx, ls.wy);
+      ls.cx = cp.x; ls.cy = cp.y;
+    });
+  });
+
+  // Hour slider
+  document.getElementById('hour-slider').addEventListener('input', e => {
+    hour = parseInt(e.target.value);
+    document.getElementById('hour-display').textContent = hour.toString().padStart(2,'0');
+    brightnessMultiplier = getBrightness(hour);
+    tintInfo = getTintInfo(hour);
+    updateRightPanel();
+  });
+
+  // Tabs
+  document.querySelectorAll('.tb-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // Render button
+  document.getElementById('btn-render').addEventListener('click', runPipeline);
+
+  // Add Light toggle
+  document.getElementById('btn-add-light').addEventListener('click', () => {
+    addLightMode = !addLightMode;
+    const btn = document.getElementById('btn-add-light');
+    btn.classList.toggle('active-mode', addLightMode);
+    btn.textContent = addLightMode ? '✕ CANCEL' : 'ADD LIGHT';
+    canvas.classList.toggle('addlight-mode', addLightMode);
+    document.getElementById('sb-mode').textContent = addLightMode ? 'MODE: PLACE LIGHT' : 'MODE: OBSERVE';
+    if (!addLightMode) document.getElementById('cursor-ring').classList.remove('visible');
+  });
+
+  // Clear lights
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    lightSources = [];
+    selectedLight = null;
+    fowVisited.clear();
+    updateRoster();
+    updateRightPanel();
+  });
+
+  // Canvas mouse events
+  canvas.addEventListener('mousedown', onMouseDown);
+  canvas.addEventListener('mousemove', onMouseMove);
+  canvas.addEventListener('mouseup', onMouseUp);
+  canvas.addEventListener('mouseleave', () => {
+    isDragging = false;
+    document.getElementById('cursor-ring').classList.remove('visible');
+  });
+  canvas.addEventListener('wheel', onWheel, { passive:false });
+  canvas.addEventListener('click', onCanvasClick);
+  canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && addLightMode) {
+      addLightMode = false;
+      const btn = document.getElementById('btn-add-light');
+      btn.classList.remove('active-mode');
+      btn.textContent = 'ADD LIGHT';
+      canvas.classList.remove('addlight-mode');
+      document.getElementById('cursor-ring').classList.remove('visible');
+      document.getElementById('sb-mode').textContent = 'MODE: OBSERVE';
+    }
+    if ((e.key === 'Delete' || e.key === 'Backspace') && selectedLight) {
+      removeLight(selectedLight.id);
+    }
+  });
+
+  // FOW toggle
+  document.getElementById('fow-toggle').addEventListener('change', e => {
+    fowEnabled = e.target.checked;
+    if (!fowEnabled) fowVisited.clear();
+    updateRightPanel();
+  });
+
+  // Night vision toggle
+  document.getElementById('nv-toggle').addEventListener('change', e => {
+    nvEnabled = e.target.checked;
+    canvas.classList.toggle('nv-on', nvEnabled);
+    document.getElementById('rp-nv-label').classList.toggle('on', nvEnabled);
+  });
+
+  // Type selector buttons
+  document.querySelectorAll('.type-sel-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.type-sel-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      placeType = btn.dataset.ltype;
+    });
+  });
+}
+
+// ── Canvas mouse handlers ──────────────────────────────
+function onMouseDown(e) {
+  if (addLightMode) return;
+  isDragging = true;
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
+  camStartX  = camX;
+  camStartY  = camY;
+}
+
+function onMouseMove(e) {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  if (addLightMode) {
+    const ring = document.getElementById('cursor-ring');
+    ring.classList.add('visible');
+    ring.style.left = mx + 'px';
+    ring.style.top  = my + 'px';
+  }
+
+  if (isDragging && !addLightMode) {
+    camX = camStartX + (e.clientX - dragStartX);
+    camY = camStartY + (e.clientY - dragStartY);
+    // Update all light canvas positions
+    lightSources.forEach(ls => {
+      const cp = worldToCanvas(ls.wx, ls.wy);
+      ls.cx = cp.x; ls.cy = cp.y;
+    });
+  }
+}
+
+function onMouseUp(e) {
+  isDragging = false;
+}
+
+function onWheel(e) {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const delta = e.deltaY > 0 ? 0.9 : 1.1;
+  const oldZoom = camZoom;
+  camZoom = Math.max(0.15, Math.min(5, camZoom * delta));
+  // Zoom toward mouse
+  camX = mx - (mx - camX) * (camZoom / oldZoom);
+  camY = my - (my - camY) * (camZoom / oldZoom);
+  // Update light canvas positions
+  lightSources.forEach(ls => {
+    const cp = worldToCanvas(ls.wx, ls.wy);
+    ls.cx = cp.x; ls.cy = cp.y;
+  });
+}
+
+function onCanvasClick(e) {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  if (addLightMode) {
+    // Drop a light source
+    const wp = canvasToWorld(mx, my);
+    const ls = addLight(placeType, wp.x, wp.y, undefined, true);
+    ls.cx = mx; ls.cy = my;
+    updateRoster();
+    updateRightPanel();
+    saveSnapshot();
+    return;
+  }
+
+  // Check if clicking on an existing light icon
+  let hit = null;
+  for (const ls of lightSources) {
+    const dist = Math.hypot(mx - ls.cx, my - ls.cy);
+    if (dist < 16) { hit = ls; break; }
+  }
+  selectedLight = hit;
+  updateRoster();
+}
+
+// ── Pillar toggle ────────────────────────────────────────
+function togglePillar(idx) {
+  const section = document.getElementById('pillar-' + idx);
+  const modules = section.querySelector('.pillar-modules');
+  const isCollapsed = section.classList.contains('collapsed');
+  if (isCollapsed) {
+    section.classList.remove('collapsed');
+    modules.style.maxHeight = modules.scrollHeight + 'px';
+  } else {
+    modules.style.maxHeight = modules.scrollHeight + 'px';
+    requestAnimationFrame(() => {
+      modules.style.maxHeight = modules.scrollHeight + 'px';
+      requestAnimationFrame(() => {
+        section.classList.add('collapsed');
+      });
+    });
+  }
+}
+
+function selectModule(row) {
+  document.querySelectorAll('.module-row').forEach(r => r.classList.remove('active'));
+  row.classList.add('active');
+}
+
+// ── Kick off ────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

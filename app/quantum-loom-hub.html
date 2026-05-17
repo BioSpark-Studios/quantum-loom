@@ -39,6 +39,7 @@
   --c-atlas:     #1e8cff;
   --c-environ:   #4ecdc4;
   --c-architect: #ffd166;
+  --c-lighting:  #ff9f43;
 }
 
 html,body{
@@ -863,6 +864,11 @@ html,body{
         <span class="ni-icon">⊓</span>
         <span class="ni-label">Architect</span>
       </div>
+      <div class="nav-item" id="nav-lighting" data-layer="lighting"
+           style="--lc:var(--c-lighting)" onclick="switchLayer('lighting')" title="Quantum Atlas · 04 Lighting">
+        <span class="ni-icon">◐</span>
+        <span class="ni-label">Lighting</span>
+      </div>
 
       <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
     </div>
@@ -982,6 +988,16 @@ html,body{
       <iframe class="layer-frame" id="frame-architect"
         src="quantum-atlas-architect.html"
         onload="frameLoaded('architect')"></iframe>
+
+      <!-- Atlas · 04 Lighting -->
+      <div class="frame-loader" id="loader-lighting">
+        <div class="loader-glyph" style="color:#ff9f43">◐</div>
+        <div class="loader-lbl">Loading Quantum Atlas · Lighting</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#ff9f43"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-lighting"
+        src="quantum-atlas-lighting.html"
+        onload="frameLoaded('lighting')"></iframe>
 
     </div>
   </div>
@@ -1357,6 +1373,7 @@ const LAYERS = {
   atlas:     { label:'Atlas · 01 Terrain',     icon:'⬡',  color:'var(--c-atlas)',   file:'quantum-atlas-terrain.html'     },
   environ:   { label:'Atlas · 02 Environment', icon:'◉',  color:'var(--c-environ)',   file:'quantum-atlas-environment.html' },
   architect: { label:'Atlas · 03 Architect',   icon:'⊓',  color:'var(--c-architect)', file:'quantum-atlas-architect.html'   },
+  lighting:  { label:'Atlas · 04 Lighting',    icon:'◐',  color:'var(--c-lighting)',  file:'quantum-atlas-lighting.html'    },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
