@@ -38,6 +38,7 @@
   --c-output:    #c8973a;
   --c-atlas:     #1e8cff;
   --c-environ:   #4ecdc4;
+  --c-architect: #ffd166;
 }
 
 html,body{
@@ -857,6 +858,11 @@ html,body{
         <span class="ni-icon">◉</span>
         <span class="ni-label">Environ</span>
       </div>
+      <div class="nav-item" id="nav-architect" data-layer="architect"
+           style="--lc:var(--c-architect)" onclick="switchLayer('architect')" title="Quantum Atlas · 03 Architect">
+        <span class="ni-icon">⊓</span>
+        <span class="ni-label">Architect</span>
+      </div>
 
       <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
     </div>
@@ -966,6 +972,16 @@ html,body{
       <iframe class="layer-frame" id="frame-environ"
         src="quantum-atlas-environment.html"
         onload="frameLoaded('environ')"></iframe>
+
+      <!-- Atlas · 03 Architect -->
+      <div class="frame-loader" id="loader-architect">
+        <div class="loader-glyph" style="color:#ffd166">⊓</div>
+        <div class="loader-lbl">Loading Quantum Atlas · Architect</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#ffd166"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-architect"
+        src="quantum-atlas-architect.html"
+        onload="frameLoaded('architect')"></iframe>
 
     </div>
   </div>
@@ -1339,7 +1355,8 @@ const LAYERS = {
   ionodes:   { label:'Signal Bus & I/O',    icon:'⇌',  color:'var(--c-ionodes)',   file:'quantum-loom-io-nodes.html' },
   output:    { label:'Output Renderer',    icon:'⎘',  color:'var(--c-output)',    file:'quantum-loom-output.html'   },
   atlas:     { label:'Atlas · 01 Terrain',     icon:'⬡',  color:'var(--c-atlas)',   file:'quantum-atlas-terrain.html'     },
-  environ:   { label:'Atlas · 02 Environment', icon:'◉',  color:'var(--c-environ)', file:'quantum-atlas-environment.html' },
+  environ:   { label:'Atlas · 02 Environment', icon:'◉',  color:'var(--c-environ)',   file:'quantum-atlas-environment.html' },
+  architect: { label:'Atlas · 03 Architect',   icon:'⊓',  color:'var(--c-architect)', file:'quantum-atlas-architect.html'   },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
