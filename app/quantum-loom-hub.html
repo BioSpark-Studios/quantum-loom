@@ -39,7 +39,8 @@
   --c-atlas:     #1e8cff;
   --c-environ:   #4ecdc4;
   --c-architect: #ffd166;
-  --c-lighting:  #ff9f43;
+  --c-lighting:      #ff9f43;
+  --c-civilization:  #c77dff;
 }
 
 html,body{
@@ -869,6 +870,11 @@ html,body{
         <span class="ni-icon">◐</span>
         <span class="ni-label">Lighting</span>
       </div>
+      <div class="nav-item" id="nav-civilization" data-layer="civilization"
+           style="--lc:var(--c-civilization)" onclick="switchLayer('civilization')" title="Quantum Atlas · 05 Civilization">
+        <span class="ni-icon">⚑</span>
+        <span class="ni-label">Civiliz.</span>
+      </div>
 
       <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
     </div>
@@ -998,6 +1004,16 @@ html,body{
       <iframe class="layer-frame" id="frame-lighting"
         src="quantum-atlas-lighting.html"
         onload="frameLoaded('lighting')"></iframe>
+
+      <!-- Atlas · 05 Civilization -->
+      <div class="frame-loader" id="loader-civilization">
+        <div class="loader-glyph" style="color:#c77dff">⚑</div>
+        <div class="loader-lbl">Loading Quantum Atlas · Civilization</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#c77dff"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-civilization"
+        src="quantum-atlas-civilization.html"
+        onload="frameLoaded('civilization')"></iframe>
 
     </div>
   </div>
@@ -1373,7 +1389,8 @@ const LAYERS = {
   atlas:     { label:'Atlas · 01 Terrain',     icon:'⬡',  color:'var(--c-atlas)',   file:'quantum-atlas-terrain.html'     },
   environ:   { label:'Atlas · 02 Environment', icon:'◉',  color:'var(--c-environ)',   file:'quantum-atlas-environment.html' },
   architect: { label:'Atlas · 03 Architect',   icon:'⊓',  color:'var(--c-architect)', file:'quantum-atlas-architect.html'   },
-  lighting:  { label:'Atlas · 04 Lighting',    icon:'◐',  color:'var(--c-lighting)',  file:'quantum-atlas-lighting.html'    },
+  lighting:      { label:'Atlas · 04 Lighting',      icon:'◐',  color:'var(--c-lighting)',      file:'quantum-atlas-lighting.html'      },
+  civilization:  { label:'Atlas · 05 Civilization',  icon:'⚑',  color:'var(--c-civilization)',  file:'quantum-atlas-civilization.html'  },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
