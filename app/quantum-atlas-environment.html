@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 02 · Environment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #04050a;
+  --surface:  rgba(8,11,18,.98);
+  --surface2: rgba(12,16,24,.97);
+  --edge:     rgba(255,255,255,.055);
+  --edge-hi:  rgba(255,255,255,.12);
+  --venturan: #b1d0f0;
+  --amber:    #e8b84b;
+  --emerald:  #4dc8a0;
+  --solari:   #f98f3b;
+  --fusion:   #9b7fd4;
+  --blood:    #d45b5b;
+  --totem:    #7fd4c8;
+  --terrain:  #1e8cff;
+  --environ:  #4ecdc4;
+  --fm: 'Orbitron', monospace;
+  --fd: 'Space Grotesk', sans-serif;
+  --fc: 'JetBrains Mono', monospace;
+}
+
+html,body{
+  height:100%;overflow:hidden;
+  background:var(--bg);color:#fff;
+  font-family:var(--fd);font-size:13px;
+}
+
+#shell{
+  display:flex;flex-direction:column;height:100vh;overflow:hidden;
+}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;
+}
+
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--environ);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--fm);font-size:.7rem;color:var(--environ);
+  animation:breathe-env 4s ease-in-out infinite;flex-shrink:0;
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--environ);white-space:nowrap;
+}
+
+.tb-title{
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.5);
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;
+  display:flex;align-items:center;white-space:nowrap;flex-shrink:0;
+}
+
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:0 10px;height:100%;
+  display:flex;align-items:center;cursor:pointer;
+  color:rgba(255,255,255,.35);border-bottom:2px solid transparent;
+  transition:all .12s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03)}
+.tb-tab.active{color:var(--environ);border-bottom-color:var(--environ);}
+
+.tb-spacer{flex:1;}
+
+/* Terrain link chip */
+.tb-terrain-chip{
+  display:flex;align-items:center;gap:5px;
+  padding:0 10px;border-left:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-terrain-dot{
+  width:6px;height:6px;border-radius:50%;flex-shrink:0;
+}
+.tb-terrain-label{
+  font-family:var(--fc);font-size:.32rem;letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+/* Time controls */
+.tb-time-wrap{
+  display:flex;align-items:center;gap:8px;padding:0 10px;
+  border-left:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-time-label{
+  font-family:var(--fc);font-size:.32rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.35);text-transform:uppercase;
+}
+.tb-day-input{
+  font-family:var(--fc);font-size:.4rem;letter-spacing:.06em;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  border-radius:3px;color:#fff;padding:3px 6px;width:54px;
+  outline:none;transition:border-color .12s;
+}
+.tb-day-input:focus{border-color:var(--environ);background:rgba(78,205,196,.05);}
+
+.tb-hour-wrap{
+  display:flex;align-items:center;gap:5px;
+}
+.tb-hour-val{
+  font-family:var(--fc);font-size:.4rem;color:var(--environ);
+  min-width:18px;text-align:center;
+}
+.tb-hour-slider{
+  width:60px;height:3px;accent-color:var(--environ);cursor:pointer;
+}
+
+.tb-season-chip{
+  font-family:var(--fc);font-size:.32rem;letter-spacing:.06em;
+  padding:3px 7px;border-radius:3px;border:1px solid var(--environ);
+  color:var(--environ);background:rgba(78,205,196,.07);white-space:nowrap;
+}
+
+.tb-actions{
+  display:flex;gap:4px;padding:0 10px;height:100%;align-items:center;
+  border-left:1px solid var(--edge);flex-shrink:0;
+}
+.tb-btn{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);
+  white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff}
+.tb-btn.hot{
+  border-color:rgba(78,205,196,.45);background:rgba(78,205,196,.08);color:var(--environ);
+}
+.tb-btn.hot:hover{background:rgba(78,205,196,.16);box-shadow:0 0 12px rgba(78,205,196,.2);}
+
+/* ── BODY ── */
+#body{
+  flex:1;display:flex;overflow:hidden;
+}
+
+/* ── LEFT SIDEBAR ── */
+#left-sidebar{
+  width:240px;flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+
+.ls-header{
+  padding:8px 10px 6px;border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.ls-header-title{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--environ);opacity:.8;
+}
+
+.ls-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+}
+.ls-scroll::-webkit-scrollbar{width:3px;}
+.ls-scroll::-webkit-scrollbar-track{background:transparent;}
+.ls-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+.pillar-section{border-bottom:1px solid var(--edge);}
+.pillar-header{
+  display:flex;align-items:center;gap:6px;padding:7px 10px;
+  cursor:pointer;transition:background .1s;user-select:none;
+}
+.pillar-header:hover{background:rgba(255,255,255,.025);}
+.pillar-num{
+  font-family:var(--fm);font-size:.38rem;color:var(--environ);
+  letter-spacing:.06em;flex-shrink:0;opacity:.75;
+}
+.pillar-name{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(255,255,255,.6);flex:1;
+}
+.pillar-count{
+  font-family:var(--fc);font-size:.32rem;
+  color:rgba(255,255,255,.3);padding:1px 5px;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  border-radius:8px;flex-shrink:0;
+}
+.pillar-chevron{
+  font-size:.5rem;color:rgba(255,255,255,.25);
+  transition:transform .18s;flex-shrink:0;
+}
+.pillar-section.collapsed .pillar-chevron{transform:rotate(-90deg);}
+.pillar-modules{overflow:hidden;transition:max-height .22s ease;}
+.pillar-section.collapsed .pillar-modules{max-height:0!important;}
+
+.module-row{
+  display:flex;align-items:center;gap:6px;padding:5px 10px 5px 14px;
+  cursor:pointer;transition:background .1s;position:relative;
+}
+.module-row:hover{background:rgba(255,255,255,.03);}
+.module-row.active{background:rgba(78,205,196,.07);border-right:2px solid var(--environ);}
+
+.type-badge{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.05em;
+  padding:1px 4px;border-radius:2px;flex-shrink:0;font-weight:400;
+  border:1px solid currentColor;opacity:.85;
+}
+.type-SPA{color:#1e8cff;}
+.type-CTL{color:#4dc8a0;}
+.type-DAT{color:#9b7fd4;}
+.type-ENR{color:#f98f3b;}
+.type-UIX{color:#e8b84b;}
+
+.module-acronym{
+  font-family:var(--fc);font-size:.36rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.7);flex-shrink:0;min-width:26px;
+}
+.module-name{
+  font-family:var(--fd);font-size:.36rem;font-weight:300;
+  color:rgba(255,255,255,.4);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.module-row.active .module-acronym{color:#fff;}
+.module-row.active .module-name{color:rgba(255,255,255,.7);}
+
+/* Weather log panel */
+.weather-log-panel{
+  border-top:1px solid var(--edge);flex-shrink:0;
+  background:var(--surface2);max-height:180px;display:flex;flex-direction:column;
+}
+.weather-log-header{
+  padding:6px 10px;display:flex;align-items:center;gap:6px;
+  border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.weather-log-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.15em;
+  text-transform:uppercase;color:rgba(255,255,255,.35);flex:1;
+}
+.weather-log-count{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);
+}
+.weather-log-list{
+  flex:1;overflow-y:auto;padding:3px 0;
+}
+.weather-log-list::-webkit-scrollbar{width:2px;}
+.weather-log-list::-webkit-scrollbar-thumb{background:var(--edge);}
+.wlog-entry{
+  padding:3px 10px 3px 12px;
+  border-left:2px solid transparent;
+  transition:background .1s;
+}
+.wlog-entry:hover{background:rgba(255,255,255,.02);}
+.wlog-time{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.25);
+  display:block;
+}
+.wlog-name{
+  font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.55);
+}
+.wlog-hex{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.25);
+}
+
+/* Sub-module detail panel */
+.ls-detail{
+  border-top:1px solid var(--edge);flex-shrink:0;
+  background:var(--surface2);
+}
+.ls-detail-header{
+  padding:6px 10px;display:flex;align-items:center;gap:6px;
+  border-bottom:1px solid var(--edge);
+}
+.ls-detail-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.15em;
+  text-transform:uppercase;color:rgba(255,255,255,.35);flex:1;
+}
+.ls-detail-module{
+  font-family:var(--fc);font-size:.32rem;color:var(--environ);
+  letter-spacing:.06em;
+}
+.submods-list{
+  padding:4px 0;max-height:130px;overflow-y:auto;
+}
+.submods-list::-webkit-scrollbar{width:2px;}
+.submods-list::-webkit-scrollbar-thumb{background:var(--edge);}
+.submod-row{
+  display:flex;align-items:center;gap:5px;padding:3px 10px 3px 14px;
+}
+.submod-idx{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);
+  flex-shrink:0;min-width:16px;
+}
+.submod-name{
+  font-family:var(--fd);font-size:.32rem;color:rgba(255,255,255,.35);
+  font-weight:300;
+}
+
+/* ── CANVAS AREA ── */
+#canvas-wrap{
+  flex:1;overflow:hidden;position:relative;background:var(--bg);
+}
+#env-canvas{
+  display:block;cursor:crosshair;position:absolute;top:0;left:0;
+}
+.canvas-tooltip{
+  position:absolute;pointer-events:none;
+  background:var(--surface2);border:1px solid var(--edge-hi);
+  padding:5px 8px;border-radius:4px;font-family:var(--fc);font-size:.34rem;
+  color:rgba(255,255,255,.7);white-space:nowrap;z-index:10;
+  opacity:0;transition:opacity .1s;
+}
+.canvas-tooltip.visible{opacity:1;}
+
+/* Simulation overlay */
+#sim-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;
+  background:rgba(4,5,10,.85);z-index:5;
+  pointer-events:none;opacity:0;transition:opacity .25s;
+}
+#sim-overlay.active{opacity:1;pointer-events:all;}
+.gen-title{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--environ);
+}
+.gen-step{
+  font-family:var(--fc);font-size:.38rem;color:rgba(255,255,255,.5);
+  letter-spacing:.06em;min-height:16px;
+}
+.gen-bar-wrap{
+  width:260px;height:4px;background:rgba(255,255,255,.06);
+  border-radius:2px;overflow:hidden;
+}
+.gen-bar{
+  height:100%;background:var(--environ);border-radius:2px;
+  width:0%;transition:width .15s ease;
+}
+.gen-pct{
+  font-family:var(--fc);font-size:.36rem;
+  color:rgba(255,255,255,.4);letter-spacing:.06em;
+}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:280px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.rp-header{
+  padding:8px 12px 6px;border-bottom:1px solid var(--edge);flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+}
+.rp-header-title{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.4);flex:1;
+}
+.rp-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-track{background:transparent;}
+.rp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+.insp-section{
+  border-bottom:1px solid var(--edge);padding:8px 12px;
+}
+.insp-section-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.28);
+  margin-bottom:6px;
+}
+.insp-row{
+  display:flex;align-items:center;gap:6px;margin-bottom:4px;
+}
+.insp-key{
+  font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.3);
+  letter-spacing:.04em;flex-shrink:0;min-width:90px;
+}
+.insp-val{
+  font-family:var(--fc);font-size:.34rem;color:rgba(255,255,255,.7);
+  letter-spacing:.03em;
+}
+.insp-val.accent{color:var(--environ);}
+
+.severity-chip{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.06em;
+  padding:1px 5px;border-radius:2px;border:1px solid currentColor;
+}
+
+.sky-swatch{
+  width:22px;height:14px;border-radius:2px;border:1px solid rgba(255,255,255,.1);
+  flex-shrink:0;
+}
+
+/* Pressure cell row */
+.pcell-row{
+  display:flex;align-items:center;gap:5px;margin-bottom:4px;
+  padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);
+}
+.pcell-type{
+  font-family:var(--fm);font-size:.45rem;font-weight:700;
+  width:16px;text-align:center;flex-shrink:0;
+}
+.pcell-type.H{color:#e8f4fc;}
+.pcell-type.L{color:#f98f3b;}
+.pcell-info{flex:1;}
+.pcell-name{
+  font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.55);
+  display:block;
+}
+.pcell-detail{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.25);
+}
+
+/* Precip mini-map */
+#precip-map{
+  display:block;border:1px solid var(--edge);border-radius:2px;
+  margin:6px 0 2px;
+}
+
+/* ── STATUS BAR ── */
+#status-bar{
+  height:26px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface2);border-top:1px solid var(--edge);
+  padding:0;
+}
+.sb-dot{
+  width:6px;height:6px;border-radius:50%;margin:0 8px;flex-shrink:0;
+  animation:led-pulse 2s ease-in-out infinite;
+}
+.sb-dot.ready{background:var(--emerald);}
+.sb-dot.busy{background:var(--amber);animation-duration:0.5s;}
+.sb-dot.done{background:var(--environ);}
+
+.sb-status{
+  font-family:var(--fc);font-size:.34rem;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(255,255,255,.55);
+  padding:0 10px;border-right:1px solid var(--edge);flex-shrink:0;
+}
+.sb-pipeline{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.25);
+  letter-spacing:.06em;padding:0 10px;border-right:1px solid var(--edge);
+  flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.sb-day{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.25);
+  letter-spacing:.06em;padding:0 10px;flex-shrink:0;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes breathe-env{
+  0%,100%{box-shadow:0 0 4px rgba(78,205,196,.3);}
+  50%{box-shadow:0 0 12px rgba(78,205,196,.7),0 0 20px rgba(78,205,196,.3);}
+}
+@keyframes led-pulse{
+  0%,100%{opacity:.6;}
+  50%{opacity:1;}
+}
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- TOP BAR -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">◉</div>
+      <div class="tb-module-id">02 · ENVIRONMENT</div>
+    </div>
+    <div class="tb-title">Quantum Atlas</div>
+    <div class="tb-tabs">
+      <div class="tb-tab active" data-pillar="0">I-ATMOS</div>
+      <div class="tb-tab" data-pillar="1">II-CELEST</div>
+      <div class="tb-tab" data-pillar="2">III-PRECIP</div>
+      <div class="tb-tab" data-pillar="3">IV-AMBIENT</div>
+    </div>
+    <div class="tb-spacer"></div>
+
+    <!-- Terrain link chip -->
+    <div class="tb-terrain-chip" id="terrain-chip">
+      <div class="tb-terrain-dot" id="terrain-dot" style="background:rgba(255,255,255,.2);"></div>
+      <span class="tb-terrain-label" id="terrain-label" style="font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.3);">NO TERRAIN</span>
+    </div>
+
+    <!-- Day -->
+    <div class="tb-time-wrap">
+      <span class="tb-time-label">DAY</span>
+      <input class="tb-day-input" id="day-input" type="number" value="1" min="1" max="9999">
+      <span class="tb-time-label">HOUR</span>
+      <div class="tb-hour-wrap">
+        <input class="tb-hour-slider" id="hour-slider" type="range" min="0" max="23" value="12">
+        <span class="tb-hour-val" id="hour-val">12</span>
+      </div>
+      <span class="tb-season-chip" id="season-chip">Spring</span>
+    </div>
+
+    <div class="tb-actions">
+      <button class="tb-btn" id="btn-tick">TICK DAY</button>
+      <button class="tb-btn hot" id="btn-simulate">SIMULATE</button>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div id="body">
+
+    <!-- LEFT SIDEBAR -->
+    <div id="left-sidebar">
+      <div class="ls-header">
+        <div class="ls-header-title">Component Matrix</div>
+      </div>
+      <div class="ls-scroll" id="ls-scroll">
+
+        <!-- Pillar I — ATMOSPHERIC -->
+        <div class="pillar-section" id="pillar-0">
+          <div class="pillar-header" onclick="togglePillar(0)">
+            <span class="pillar-num">I</span>
+            <span class="pillar-name">Atmospheric</span>
+            <span class="pillar-count">4</span>
+            <span class="pillar-chevron">▾</span>
+          </div>
+          <div class="pillar-modules" id="pillar-modules-0">
+            <div class="module-row active" data-mod="BPS" onclick="selectModule(this,'BPS')">
+              <span class="type-badge type-ENR">ENR</span>
+              <span class="module-acronym">BPS</span>
+              <span class="module-name">Barometric Pressure Solver</span>
+            </div>
+            <div class="module-row" data-mod="FBC" onclick="selectModule(this,'FBC')">
+              <span class="type-badge type-ENR">ENR</span>
+              <span class="module-acronym">FBC</span>
+              <span class="module-name">Frontal Boundary Collision</span>
+            </div>
+            <div class="module-row" data-mod="HPS" onclick="selectModule(this,'HPS')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">HPS</span>
+              <span class="module-name">High-Pressure Cell Seeder</span>
+            </div>
+            <div class="module-row" data-mod="LPR" onclick="selectModule(this,'LPR')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">LPR</span>
+              <span class="module-name">Low-Pressure Void Router</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar II — CELESTIAL -->
+        <div class="pillar-section" id="pillar-1">
+          <div class="pillar-header" onclick="togglePillar(1)">
+            <span class="pillar-num">II</span>
+            <span class="pillar-name">Celestial</span>
+            <span class="pillar-count">4</span>
+            <span class="pillar-chevron">▾</span>
+          </div>
+          <div class="pillar-modules" id="pillar-modules-1">
+            <div class="module-row" data-mod="CCT" onclick="selectModule(this,'CCT')">
+              <span class="type-badge type-DAT">DAT</span>
+              <span class="module-acronym">CCT</span>
+              <span class="module-name">Chronology Calendar Tracker</span>
+            </div>
+            <div class="module-row" data-mod="SSD" onclick="selectModule(this,'SSD')">
+              <span class="type-badge type-ENR">ENR</span>
+              <span class="module-acronym">SSD</span>
+              <span class="module-name">Seasonal Shift Director</span>
+            </div>
+            <div class="module-row" data-mod="LPC" onclick="selectModule(this,'LPC')">
+              <span class="type-badge type-DAT">DAT</span>
+              <span class="module-acronym">LPC</span>
+              <span class="module-name">Lunar Phase Cycle</span>
+            </div>
+            <div class="module-row" data-mod="TFC" onclick="selectModule(this,'TFC')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">TFC</span>
+              <span class="module-name">Tidal Force Calculator</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar III — PRECIPITATION -->
+        <div class="pillar-section" id="pillar-2">
+          <div class="pillar-header" onclick="togglePillar(2)">
+            <span class="pillar-num">III</span>
+            <span class="pillar-name">Precipitation</span>
+            <span class="pillar-count">4</span>
+            <span class="pillar-chevron">▾</span>
+          </div>
+          <div class="pillar-modules" id="pillar-modules-2">
+            <div class="module-row" data-mod="RFA" onclick="selectModule(this,'RFA')">
+              <span class="type-badge type-DAT">DAT</span>
+              <span class="module-acronym">RFA</span>
+              <span class="module-name">Rainfall Accumulation Node</span>
+            </div>
+            <div class="module-row" data-mod="SFA" onclick="selectModule(this,'SFA')">
+              <span class="type-badge type-ENR">ENR</span>
+              <span class="module-acronym">SFA</span>
+              <span class="module-name">Snowfall Accumulator</span>
+            </div>
+            <div class="module-row" data-mod="DSR" onclick="selectModule(this,'DSR')">
+              <span class="type-badge type-UIX">UIX</span>
+              <span class="module-acronym">DSR</span>
+              <span class="module-name">Dynamic Skybox Renderer</span>
+            </div>
+            <div class="module-row" data-mod="EWT" onclick="selectModule(this,'EWT')">
+              <span class="type-badge type-ENR">ENR</span>
+              <span class="module-acronym">EWT</span>
+              <span class="module-name">Extreme Weather Trigger</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar IV — AMBIENT -->
+        <div class="pillar-section" id="pillar-3">
+          <div class="pillar-header" onclick="togglePillar(3)">
+            <span class="pillar-num">IV</span>
+            <span class="pillar-name">Ambient</span>
+            <span class="pillar-count">4</span>
+            <span class="pillar-chevron">▾</span>
+          </div>
+          <div class="pillar-modules" id="pillar-modules-3">
+            <div class="module-row" data-mod="TGM" onclick="selectModule(this,'TGM')">
+              <span class="type-badge type-DAT">DAT</span>
+              <span class="module-acronym">TGM</span>
+              <span class="module-name">Temperature Gradient Map</span>
+            </div>
+            <div class="module-row" data-mod="FGH" onclick="selectModule(this,'FGH')">
+              <span class="type-badge type-UIX">UIX</span>
+              <span class="module-acronym">FGH</span>
+              <span class="module-name">Ground Haze &amp; Fog Renderer</span>
+            </div>
+            <div class="module-row" data-mod="AWC" onclick="selectModule(this,'AWC')">
+              <span class="type-badge type-CTL">CTL</span>
+              <span class="module-acronym">AWC</span>
+              <span class="module-name">Ambient Weather Controller</span>
+            </div>
+            <div class="module-row" data-mod="WEX" onclick="selectModule(this,'WEX')">
+              <span class="type-badge type-DAT">DAT</span>
+              <span class="module-acronym">WEX</span>
+              <span class="module-name">Weather Event Chronicle</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /ls-scroll -->
+
+      <!-- Weather log -->
+      <div class="weather-log-panel">
+        <div class="weather-log-header">
+          <span class="weather-log-title">Weather Log</span>
+          <span class="weather-log-count" id="wlog-count">0 events</span>
+        </div>
+        <div class="weather-log-list" id="weather-log-list">
+          <div style="padding:8px 12px;font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);">No events recorded</div>
+        </div>
+      </div>
+
+      <!-- Sub-module detail -->
+      <div class="ls-detail">
+        <div class="ls-detail-header">
+          <span class="ls-detail-title">Sub-Module Detail</span>
+          <span class="ls-detail-module" id="detail-module-id">BPS</span>
+        </div>
+        <div class="submods-list" id="submods-list"></div>
+      </div>
+    </div>
+
+    <!-- CANVAS AREA -->
+    <div id="canvas-wrap">
+      <canvas id="env-canvas"></canvas>
+      <div class="canvas-tooltip" id="canvas-tooltip"></div>
+      <div id="sim-overlay">
+        <div class="gen-title">Simulating Environment</div>
+        <div class="gen-step" id="sim-step-text">Initializing pipeline…</div>
+        <div class="gen-bar-wrap">
+          <div class="gen-bar" id="sim-bar"></div>
+        </div>
+        <div class="gen-pct" id="sim-pct-text">0%</div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div id="right-panel">
+      <div class="rp-header">
+        <span class="rp-header-title">Atmospheric State</span>
+      </div>
+      <div class="rp-scroll" id="rp-scroll">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+  </div><!-- /body -->
+
+  <!-- STATUS BAR -->
+  <div id="status-bar">
+    <div class="sb-dot ready" id="sb-dot"></div>
+    <div class="sb-status" id="sb-status">SYSTEM READY</div>
+    <div class="sb-pipeline" id="sb-pipeline">Awaiting simulation trigger</div>
+    <div class="sb-day" id="sb-day">DAY: 1 · HOUR: 12</div>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+'use strict';
+
+// ============================================================
+// UTILITY
+// ============================================================
+
+function lerp(a, b, t) { return Math.round(a + (b - a) * Math.max(0, Math.min(1, t))); }
+function lerpF(a, b, t) { return a + (b - a) * Math.max(0, Math.min(1, t)); }
+
+function makeRng(seed) {
+  let s = seed | 0;
+  if (s === 0) s = 1;
+  return function() {
+    s = (s ^ (s << 13)) | 0;
+    s = (s ^ (s >> 17)) | 0;
+    s = (s ^ (s << 5)) | 0;
+    return ((s >>> 0) / 4294967296);
+  };
+}
+
+function seededRng(seed) {
+  // single-shot rng value from seed offset
+  return makeRng(seed);
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// ============================================================
+// HEX MATH (matching Module 01)
+// ============================================================
+
+const HEX_SIZE = 13;
+
+function axialToPixel(q, r, size) {
+  const x = size * Math.sqrt(3) * (q + r / 2);
+  const y = size * (3 / 2) * r;
+  return { x, y };
+}
+
+function hexCorners(cx, cy, size) {
+  const pts = [];
+  for (let i = 0; i < 6; i++) {
+    const angle = Math.PI / 180 * (60 * i - 30);
+    pts.push({ x: cx + size * Math.cos(angle), y: cy + size * Math.sin(angle) });
+  }
+  return pts;
+}
+
+// ============================================================
+// BIOME COLORS (matching Module 01, for underlay)
+// ============================================================
+
+const BIOME_COLORS = {
+  'Frozen Ocean':    '#0a1f35',
+  'Tropical Ocean':  '#0d2d4d',
+  'Temperate Ocean': '#152b42',
+  'Deep Water':      '#1a3a55',
+  'Shallows / Shore':'#1a5276',
+  'Sandy Beach':     '#c8a96e',
+  'Icy Coast':       '#8ab4c8',
+  'Mudflats':        '#6b5a44',
+  'Mangrove Swamp':  '#1e4d30',
+  'Tundra':          '#5a7070',
+  'Taiga Steppe':    '#3a5a3a',
+  'Arid Desert':     '#c4904a',
+  'Savanna':         '#8aaa40',
+  'Lush Grassland':  '#3a9a3a',
+  'Temperate Plains':'#5a8a40',
+  'Plains':          '#6a9a50',
+  'Hills':           '#607040',
+  'Mountain Peak':   '#888888',
+};
+
+function hexColorToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return {r,g,b};
+}
+
+// ============================================================
+// STATE
+// ============================================================
+
+const state = {
+  day: 1,
+  hour: 12,
+  season: 'Spring',
+  moonPhase: 'Waxing',
+  tidalMod: 1.0,
+  tempModifier: 0.0,
+  seasonIcon: '🌱',
+  moonIcon: '🌓',
+  activeWeather: null,
+  skyColor: { r: 87, g: 160, b: 200 },
+  skyDescription: 'Clear Midday Sky',
+};
+
+const DAYS_PER_SEASON = 90;
+
+function getSeasonFromDay(day) {
+  const d = ((day - 1) % 360 + 360) % 360;
+  if (d < 90)  return { name:'Spring', tempMod:  0.0, icon:'🌱' };
+  if (d < 180) return { name:'Summer', tempMod: +10.0, icon:'☀' };
+  if (d < 270) return { name:'Autumn', tempMod:  -5.0, icon:'🍂' };
+  return             { name:'Winter', tempMod: -20.0, icon:'❄' };
+}
+
+function getLunarPhase(day) {
+  const phase = ((day - 1) % 28 + 28) % 28;
+  if (phase < 2)  return { name:'New Moon',  tidalMod: 2.5, icon:'🌑' };
+  if (phase < 13) return { name:'Waxing',    tidalMod: 1.0, icon:'🌓' };
+  if (phase < 16) return { name:'Full Moon', tidalMod: 2.5, icon:'🌕' };
+  return               { name:'Waning',    tidalMod: 1.0, icon:'🌗' };
+}
+
+function syncStateFromInputs() {
+  const dayVal = parseInt(document.getElementById('day-input').value) || 1;
+  const hourVal = parseInt(document.getElementById('hour-slider').value) || 0;
+  state.day = dayVal;
+  state.hour = hourVal;
+  const s = getSeasonFromDay(dayVal);
+  state.season = s.name; state.tempModifier = s.tempMod; state.seasonIcon = s.icon;
+  const l = getLunarPhase(dayVal);
+  state.moonPhase = l.name; state.tidalMod = l.tidalMod; state.moonIcon = l.icon;
+}
+
+function tickDay() {
+  state.day++;
+  document.getElementById('day-input').value = state.day;
+  const s = getSeasonFromDay(state.day);
+  state.season = s.name; state.tempModifier = s.tempMod; state.seasonIcon = s.icon;
+  const l = getLunarPhase(state.day);
+  state.moonPhase = l.name; state.tidalMod = l.tidalMod; state.moonIcon = l.icon;
+  updateSeasonChip();
+  updateStatusBar();
+  // drift pressure cells
+  driftPressureCells();
+}
+
+function updateSeasonChip() {
+  document.getElementById('season-chip').textContent = state.seasonIcon + ' ' + state.season;
+  document.getElementById('hour-val').textContent = state.hour;
+}
+
+function updateStatusBar() {
+  document.getElementById('sb-day').textContent =
+    `DAY: ${state.day} · HR: ${String(state.hour).padStart(2,'0')}:00`;
+}
+
+// ============================================================
+// TERRAIN DATA (from localStorage)
+// ============================================================
+
+let terrainHexes = [];
+let terrainLinked = false;
+
+function loadTerrainData() {
+  try {
+    const snap = localStorage.getItem('qa-terrain-snapshot');
+    if (snap) {
+      const data = JSON.parse(snap);
+      terrainHexes = data.hexes || [];
+      terrainLinked = terrainHexes.length > 0;
+    }
+  } catch(e) {
+    terrainHexes = [];
+    terrainLinked = false;
+  }
+  const dot = document.getElementById('terrain-dot');
+  const label = document.getElementById('terrain-label');
+  if (terrainLinked) {
+    dot.style.background = '#4ecdc4';
+    label.style.color = '#4ecdc4';
+    label.textContent = 'TERRAIN LINKED';
+  } else {
+    dot.style.background = 'rgba(255,255,255,.2)';
+    label.style.color = 'rgba(255,255,255,.3)';
+    label.textContent = 'NO TERRAIN';
+  }
+}
+
+// ============================================================
+// PRESSURE CELLS
+// ============================================================
+
+let pressureCells = [];
+
+class PressureCell {
+  constructor(type, x, y, seed, name) {
+    this.type = type;
+    this.x = x;
+    this.y = y;
+    this.seed = seed;
+    this.name = name || (type + '-' + (seed % 100));
+    const rng = makeRng(seed);
+    this.pressure_mb = type === 'H'
+      ? 1013 + rng() * 30
+      : 983 + rng() * 30;
+    this.radius = 80 + rng() * 120;
+    this.driftX = (rng() - 0.5) * 0.3;
+    this.driftY = (rng() - 0.5) * 0.2;
+    this.moisture = 0.3 + rng() * 0.7;
+  }
+}
+
+const CELL_NAMES_H = ['ANTARES-H','BOREAS-H','CELERIS-H','DOMINUS-H','ELYSIAN-H','FERRUS-H'];
+const CELL_NAMES_L = ['VORTEX-L','TEMPEST-L','STORMWALL-L','MAELSTROM-L','CYCLONE-L','ABYSS-L'];
+
+function generatePressureCells(daySeed) {
+  const rng = makeRng(daySeed * 7 + 1234);
+  const count = 4 + Math.floor(rng() * 4); // 4-7
+  pressureCells = [];
+  const W = canvas.width, H = canvas.height - SKYBOX_H;
+  for (let i = 0; i < count; i++) {
+    const type = rng() > 0.45 ? 'H' : 'L';
+    const x = 60 + rng() * (W - 120);
+    const y = SKYBOX_H + 60 + rng() * (H - 120);
+    const seed = (daySeed * 100 + i * 37) | 0;
+    const nameList = type === 'H' ? CELL_NAMES_H : CELL_NAMES_L;
+    const name = nameList[i % nameList.length];
+    pressureCells.push(new PressureCell(type, x, y, seed, name));
+  }
+}
+
+function driftPressureCells() {
+  const W = canvas.width, H = canvas.height;
+  for (const c of pressureCells) {
+    c.x += c.driftX * 8;
+    c.y += c.driftY * 8;
+    // wrap
+    if (c.x < -c.radius) c.x = W + c.radius;
+    if (c.x > W + c.radius) c.x = -c.radius;
+    if (c.y < SKYBOX_H - c.radius) c.y = H + c.radius;
+    if (c.y > H + c.radius) c.y = SKYBOX_H;
+  }
+}
+
+// ============================================================
+// FRONTAL COLLISION (FBC ENR)
+// ============================================================
+
+let frontalLines = [];
+let extremeEvents = [];
+
+function computeFrontalCollisions() {
+  frontalLines = [];
+  extremeEvents = [];
+  const hCells = pressureCells.filter(c => c.type === 'H');
+  const lCells = pressureCells.filter(c => c.type === 'L');
+
+  for (const h of hCells) {
+    for (const l of lCells) {
+      const dx = l.x - h.x;
+      const dy = l.y - h.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 200) {
+        const mx = (h.x + l.x) / 2;
+        const my = (h.y + l.y) / 2;
+        const norm = dist || 1;
+        const px = -dy / norm, py = dx / norm; // perpendicular
+        const len = 60;
+        const isColdfFront = h.y < l.y; // H north of L → cold front
+        frontalLines.push({
+          x1: mx - px * len, y1: my - py * len,
+          x2: mx + px * len, y2: my + py * len,
+          cold: isColdfFront,
+          hCell: h, lCell: l,
+        });
+        const pressureDiff = Math.abs(h.pressure_mb - l.pressure_mb);
+        if (pressureDiff > 40) {
+          extremeEvents.push({
+            x: mx, y: my,
+            name: pressureDiff > 55 ? 'Hurricane / Typhoon' : 'Severe Thunderstorm',
+            pressureDiff,
+          });
+        }
+      }
+    }
+  }
+}
+
+// ============================================================
+// PRECIPITATION GRID (RFA DAT + SFA ENR)
+// ============================================================
+
+const PRECIP_W = 40, PRECIP_H = 30;
+let precipGrid = new Float32Array(PRECIP_W * PRECIP_H);
+let precipTypeGrid = new Uint8Array(PRECIP_W * PRECIP_H); // 0=clear, 1=rain, 2=snow
+
+function computePrecipitation() {
+  precipGrid.fill(0);
+  precipTypeGrid.fill(0);
+  const W = canvas.width, H = canvas.height;
+  for (let gy = 0; gy < PRECIP_H; gy++) {
+    for (let gx = 0; gx < PRECIP_W; gx++) {
+      const cx = (gx / PRECIP_W) * W;
+      const cy = (gy / PRECIP_H) * H;
+      let intensity = 0;
+      for (const c of pressureCells) {
+        if (c.type === 'L') {
+          const dx = cx - c.x, dy = cy - c.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < c.radius * 1.5) {
+            const pressureDiff = 1013 - c.pressure_mb;
+            const base = (pressureDiff / 50) * c.moisture;
+            const falloff = Math.max(0, 1 - dist / (c.radius * 1.5));
+            intensity += base * falloff;
+          }
+        }
+      }
+      const idx = gy * PRECIP_W + gx;
+      precipGrid[idx] = Math.min(1, intensity);
+      if (intensity > 0.05) {
+        // Snow if winter and cold
+        const isSnow = (state.season === 'Winter') && (gy < PRECIP_H * 0.6);
+        precipTypeGrid[idx] = isSnow ? 2 : 1;
+      }
+    }
+  }
+}
+
+// ============================================================
+// SKYBOX (DSR UIX)
+// ============================================================
+
+const SKYBOX_H = 120;
+
+function getSkyColor(hour, weather) {
+  let sky;
+  if (hour >= 21 || hour < 5) {
+    sky = { r:5, g:8, b:20 };
+  } else if (hour < 7) {
+    const t = (hour - 5) / 2;
+    sky = { r: lerp(20,135,t), g: lerp(10,120,t), b: lerp(30,180,t) };
+    if (t < 0.5) {
+      sky.r = lerp(255, sky.r, t * 2);
+      sky.g = lerp(100, sky.g, t * 2);
+      sky.b = lerp(30,  sky.b, t * 2);
+    }
+  } else if (hour <= 17) {
+    const noon = 1 - Math.abs(hour - 12) / 5;
+    sky = { r: lerp(80,135,noon), g: lerp(160,206,noon), b: lerp(200,235,noon) };
+  } else {
+    const t = (hour - 17) / 4;
+    sky = { r: lerp(255,5,t), g: lerp(120,8,t), b: lerp(30,20,t) };
+  }
+
+  if (weather === 'Hurricane / Typhoon' || weather === 'Severe Thunderstorm') {
+    sky.r = Math.round(sky.r * 0.3 + 80 * 0.7);
+    sky.g = Math.round(sky.g * 0.3 + 80 * 0.7);
+    sky.b = Math.round(sky.b * 0.3 + 90 * 0.7);
+  } else if (weather === 'Dust Storm') {
+    sky.r = Math.round(sky.r * 0.2 + 180 * 0.8);
+    sky.g = Math.round(sky.g * 0.2 + 110 * 0.8);
+    sky.b = Math.round(sky.b * 0.2 + 40 * 0.8);
+  }
+
+  return sky;
+}
+
+function getSkyDescription(hour, weather, season) {
+  let base = '';
+  if (hour >= 21 || hour < 5) base = 'Deep Night Sky';
+  else if (hour < 7) base = 'Sunrise Dawn';
+  else if (hour <= 11) base = 'Morning Clarity';
+  else if (hour <= 13) base = 'Vibrant Midday Blue';
+  else if (hour <= 17) base = 'Afternoon Haze';
+  else base = 'Vivid Sunset';
+  let vis = 'Clear Visibility';
+  if (weather === 'Hurricane / Typhoon') vis = 'Hurricane Overcast';
+  else if (weather === 'Severe Thunderstorm') vis = 'Storm Shroud';
+  else if (weather === 'Dust Storm') vis = 'Dust Veil';
+  else if (season === 'Winter') vis = 'Frost-filtered Clarity';
+  else if (season === 'Summer') vis = 'Heat-shimmer Haze';
+  return `${base} · ${vis}`;
+}
+
+// ============================================================
+// WEATHER LOG (WEX DAT)
+// ============================================================
+
+const weatherLog = [];
+
+function logEvent(name, hexId, severity) {
+  weatherLog.unshift({
+    day: state.day,
+    hour: state.hour,
+    name,
+    hexId: hexId || '—',
+    severity,
+  });
+  if (weatherLog.length > 20) weatherLog.pop();
+  renderWeatherLog();
+}
+
+function renderWeatherLog() {
+  const list = document.getElementById('weather-log-list');
+  const count = document.getElementById('wlog-count');
+  count.textContent = weatherLog.length + ' events';
+  if (weatherLog.length === 0) {
+    list.innerHTML = `<div style="padding:8px 12px;font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);">No events recorded</div>`;
+    return;
+  }
+  const sevColors = { LOW:'#4dc8a0', MODERATE:'#e8b84b', HIGH:'#d45b5b' };
+  list.innerHTML = weatherLog.map(ev => {
+    const timeStr = `DAY ${String(ev.day).padStart(3,'0')} ${String(ev.hour).padStart(2,'0')}:00`;
+    const col = sevColors[ev.severity] || '#fff';
+    return `<div class="wlog-entry" style="border-left-color:${col};">
+      <span class="wlog-time">${timeStr}</span>
+      <span class="wlog-name" style="color:${col};">${ev.name}</span>
+      <span class="wlog-hex"> — ${ev.hexId}</span>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// CANVAS SETUP
+// ============================================================
+
+const canvas = document.getElementById('env-canvas');
+const ctx = canvas.getContext('2d');
+
+let camera = { x: 0, y: 0, zoom: 1 };
+let isPanning = false;
+let panStart = { x:0, y:0 };
+let camStart = { x:0, y:0 };
+let animFrame = null;
+let stormRotation = 0;
+
+function resizeCanvas() {
+  const wrap = document.getElementById('canvas-wrap');
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+}
+
+function worldToScreen(wx, wy) {
+  return {
+    x: canvas.width / 2 + (wx + camera.x) * camera.zoom,
+    y: canvas.height / 2 + (wy + camera.y) * camera.zoom,
+  };
+}
+
+// ============================================================
+// RENDER — SKYBOX STRIP
+// ============================================================
+
+function renderSkybox() {
+  const W = canvas.width;
+  const weather = state.activeWeather;
+  const sky = getSkyColor(state.hour, weather);
+  state.skyColor = sky;
+
+  // Gradient: sky at bottom → darker at top
+  const grad = ctx.createLinearGradient(0, 0, 0, SKYBOX_H);
+  const darker = {
+    r: Math.max(0, sky.r - 40),
+    g: Math.max(0, sky.g - 40),
+    b: Math.max(0, sky.b - 40),
+  };
+  grad.addColorStop(0, `rgb(${darker.r},${darker.g},${darker.b})`);
+  grad.addColorStop(1, `rgb(${sky.r},${sky.g},${sky.b})`);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, SKYBOX_H);
+
+  // Stars at night
+  if (state.hour >= 21 || state.hour < 5) {
+    const rng = makeRng(state.day * 73 + 11);
+    for (let i = 0; i < 80; i++) {
+      const sx = rng() * W;
+      const sy = rng() * SKYBOX_H;
+      const alpha = 0.3 + rng() * 0.7;
+      ctx.beginPath();
+      ctx.arc(sx, sy, 0.8, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.fill();
+    }
+  }
+
+  // Sun/moon circle
+  const isDaytime = state.hour >= 6 && state.hour <= 18;
+  const bodyAngle = ((state.hour + (state.hour >= 12 ? 0 : 24)) / 24) * Math.PI * 2 - Math.PI * 0.5;
+  const arcW = W * 0.8;
+  const arcCX = W / 2;
+  const arcCY = SKYBOX_H + 20;
+  const arcRY = SKYBOX_H + 30;
+  const bx = arcCX + Math.cos(bodyAngle) * arcW / 2;
+  const by = arcCY + Math.sin(bodyAngle) * arcRY;
+
+  if (by < SKYBOX_H + 10) { // only draw if above horizon
+    if (isDaytime) {
+      // Sun
+      const sunGrad = ctx.createRadialGradient(bx, by, 2, bx, by, 14);
+      sunGrad.addColorStop(0, 'rgba(255,240,160,1)');
+      sunGrad.addColorStop(0.5, 'rgba(255,200,60,.7)');
+      sunGrad.addColorStop(1, 'rgba(255,150,0,0)');
+      ctx.beginPath();
+      ctx.arc(bx, by, 14, 0, Math.PI * 2);
+      ctx.fillStyle = sunGrad;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(bx, by, 5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,200,.95)';
+      ctx.fill();
+    } else {
+      // Moon (shows phase)
+      ctx.beginPath();
+      ctx.arc(bx, by, 8, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(220,230,255,.85)';
+      ctx.fill();
+      // Phase shadow
+      const phase = state.moonPhase;
+      if (phase !== 'Full Moon') {
+        ctx.beginPath();
+        ctx.arc(bx, by, 8, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0,5,15,.65)';
+        ctx.fill();
+        if (phase === 'Waxing') {
+          ctx.beginPath();
+          ctx.arc(bx, by, 8, -Math.PI/2, Math.PI/2);
+          ctx.fillStyle = 'rgba(220,230,255,.85)';
+          ctx.fill();
+        } else if (phase === 'Waning') {
+          ctx.beginPath();
+          ctx.arc(bx, by, 8, Math.PI/2, -Math.PI/2);
+          ctx.fillStyle = 'rgba(220,230,255,.85)';
+          ctx.fill();
+        }
+      } else {
+        ctx.beginPath();
+        ctx.arc(bx, by, 8, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(220,230,255,.9)';
+        ctx.fill();
+      }
+    }
+  }
+
+  // Horizon line
+  ctx.strokeStyle = 'rgba(255,255,255,.05)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, SKYBOX_H);
+  ctx.lineTo(W, SKYBOX_H);
+  ctx.stroke();
+
+  // Sky description overlay
+  state.skyDescription = getSkyDescription(state.hour, weather, state.season);
+  ctx.fillStyle = 'rgba(255,255,255,.15)';
+  ctx.font = '9px "JetBrains Mono", monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText(state.skyDescription, W - 10, SKYBOX_H - 8);
+  ctx.textAlign = 'left';
+}
+
+// ============================================================
+// RENDER — HEX UNDERLAY
+// ============================================================
+
+function renderHexUnderlay() {
+  if (!terrainLinked || terrainHexes.length === 0) {
+    // Placeholder
+    ctx.fillStyle = 'rgba(255,255,255,.07)';
+    ctx.font = '11px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('Link Terrain Module to enable hex overlay.', canvas.width / 2, canvas.height / 2 + 20);
+    ctx.textAlign = 'left';
+    return;
+  }
+
+  const size = HEX_SIZE * camera.zoom;
+  const W = canvas.width, H = canvas.height;
+
+  ctx.save();
+  ctx.globalAlpha = 0.35;
+
+  for (const h of terrainHexes) {
+    const pix = axialToPixel(h.q, h.r, HEX_SIZE);
+    const sc = worldToScreen(pix.x, pix.y + SKYBOX_H * 0.5);
+    const cx = sc.x, cy = sc.y + SKYBOX_H * 0.5;
+
+    // Frustum cull
+    if (cx < -size*2 || cx > W+size*2 || cy < -size*2 || cy > H+size*2) continue;
+
+    const corners = hexCorners(cx, cy, size);
+    ctx.beginPath();
+    ctx.moveTo(corners[0].x, corners[0].y);
+    for (let i = 1; i < 6; i++) ctx.lineTo(corners[i].x, corners[i].y);
+    ctx.closePath();
+
+    // Get biome color, desaturate
+    const biome = (h.ecology && h.ecology.biome_type) ? h.ecology.biome_type : 'Plains';
+    const hexCol = BIOME_COLORS[biome] || '#3a5a3a';
+    const rgb = hexColorToRgb(hexCol);
+    // Mix towards grey
+    const grey = (rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114);
+    const dr = Math.round(rgb.r * 0.35 + grey * 0.65);
+    const dg = Math.round(rgb.g * 0.35 + grey * 0.65);
+    const db = Math.round(rgb.b * 0.35 + grey * 0.65);
+    ctx.fillStyle = `rgb(${dr},${dg},${db})`;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,.15)';
+    ctx.lineWidth = 0.5 / camera.zoom;
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+// ============================================================
+// RENDER — WEATHER OVERLAY
+// ============================================================
+
+function renderWeatherOverlay() {
+  const W = canvas.width, H = canvas.height;
+
+  // Pressure cells
+  for (const c of pressureCells) {
+    if (c.type === 'H') {
+      const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius);
+      grad.addColorStop(0, 'rgba(232,244,252,0.20)');
+      grad.addColorStop(0.6, 'rgba(200,230,255,0.08)');
+      grad.addColorStop(1, 'rgba(200,220,255,0.00)');
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.radius * 2, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    } else {
+      const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius);
+      grad.addColorStop(0, 'rgba(249,143,59,0.15)');
+      grad.addColorStop(0.6, 'rgba(220,80,40,0.06)');
+      grad.addColorStop(1, 'rgba(200,50,20,0.00)');
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.radius * 2, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    // Isobars (3 rings)
+    for (let ring = 1; ring <= 3; ring++) {
+      const rr = c.radius * [1, 1.4, 2][ring-1];
+      ctx.beginPath();
+      ctx.ellipse(c.x, c.y, rr * 1.1, rr * 0.85, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Label H or L
+    ctx.save();
+    ctx.font = 'bold 14px "Orbitron", monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = c.type === 'H' ? 'rgba(232,244,252,.7)' : 'rgba(249,143,59,.75)';
+    ctx.fillText(c.type, c.x, c.y - 8);
+    ctx.font = '8px "JetBrains Mono", monospace';
+    ctx.fillStyle = 'rgba(255,255,255,.35)';
+    ctx.fillText(Math.round(c.pressure_mb) + 'mb', c.x, c.y + 8);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.restore();
+  }
+
+  // Precipitation stipple on low-pressure hexes
+  if (terrainLinked) {
+    const size = HEX_SIZE * camera.zoom;
+    for (const h of terrainHexes) {
+      const pix = axialToPixel(h.q, h.r, HEX_SIZE);
+      const sc = worldToScreen(pix.x, pix.y + SKYBOX_H * 0.5);
+      const hx = sc.x, hy = sc.y + SKYBOX_H * 0.5;
+      if (hx < -size*2 || hx > canvas.width+size*2 || hy < -size*2 || hy > canvas.height+size*2) continue;
+      for (const c of pressureCells) {
+        if (c.type === 'L') {
+          const dx = hx - c.x, dy = hy - c.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < c.radius && c.moisture > 0.5) {
+            const intensity = (1 - dist / c.radius) * 0.18;
+            const isSnow = state.season === 'Winter' && (h.topology && h.topology.base_elevation > 80);
+            const corners = hexCorners(hx, hy, size);
+            ctx.beginPath();
+            ctx.moveTo(corners[0].x, corners[0].y);
+            for (let i = 1; i < 6; i++) ctx.lineTo(corners[i].x, corners[i].y);
+            ctx.closePath();
+            ctx.fillStyle = isSnow
+              ? `rgba(200,220,255,${intensity})`
+              : `rgba(30,140,255,${intensity})`;
+            ctx.fill();
+          }
+        }
+      }
+    }
+  }
+
+  // Frontal lines
+  ctx.save();
+  for (const fl of frontalLines) {
+    ctx.beginPath();
+    ctx.moveTo(fl.x1, fl.y1);
+    ctx.lineTo(fl.x2, fl.y2);
+    if (fl.cold) {
+      ctx.strokeStyle = 'rgba(100,160,255,0.65)';
+      ctx.setLineDash([6, 4]);
+    } else {
+      ctx.strokeStyle = 'rgba(255,80,60,0.6)';
+      ctx.setLineDash([5, 5]);
+    }
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.restore();
+
+  // Storm cells (extreme weather)
+  for (const ev of extremeEvents) {
+    ctx.save();
+    ctx.translate(ev.x, ev.y);
+    ctx.rotate(stormRotation);
+    // Spiral rings
+    for (let r = 0; r < 3; r++) {
+      const rad = 18 + r * 12;
+      ctx.beginPath();
+      ctx.arc(0, 0, rad, 0, Math.PI * 1.6);
+      ctx.strokeStyle = `rgba(255,60,60,${0.5 - r * 0.12})`;
+      ctx.lineWidth = 2 - r * 0.4;
+      ctx.stroke();
+      // Arrow head
+      const ax = Math.cos(Math.PI * 1.6) * rad;
+      const ay = Math.sin(Math.PI * 1.6) * rad;
+      ctx.beginPath();
+      ctx.arc(ax, ay, 3, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,60,60,${0.5 - r * 0.12})`;
+      ctx.fill();
+    }
+    // ◉ glyph center
+    ctx.beginPath();
+    ctx.arc(0, 0, 8, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,80,80,.8)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(0, 0, 3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,80,80,.85)';
+    ctx.fill();
+    // Label
+    ctx.font = '9px "JetBrains Mono", monospace';
+    ctx.fillStyle = 'rgba(255,100,80,.9)';
+    ctx.textAlign = 'center';
+    ctx.fillText(ev.name.split('/')[0].trim(), 0, -30);
+    ctx.textAlign = 'left';
+    ctx.restore();
+  }
+
+  // Wind vectors (every ~80px)
+  const WIND_SPACING = 80;
+  const cols = Math.ceil(canvas.width / WIND_SPACING);
+  const rows = Math.ceil((canvas.height - SKYBOX_H) / WIND_SPACING);
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const wx = col * WIND_SPACING + WIND_SPACING * 0.5;
+      const wy = SKYBOX_H + row * WIND_SPACING + WIND_SPACING * 0.5;
+      // Compute dominant wind direction from nearest pressure cells
+      let fx = 0, fy = 0;
+      for (const c of pressureCells) {
+        const dx = wx - c.x, dy = wy - c.y;
+        const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+        const strength = Math.max(0, 1 - dist / 300);
+        if (c.type === 'H') {
+          // Flow outward (anticyclonic, clockwise in N hemisphere)
+          fx += (dx / dist) * strength + (-dy / dist) * strength * 0.5;
+          fy += (dy / dist) * strength + (dx / dist) * strength * 0.5;
+        } else {
+          // Flow inward (cyclonic)
+          fx += (-dx / dist) * strength + (dy / dist) * strength * 0.5;
+          fy += (-dy / dist) * strength + (-dx / dist) * strength * 0.5;
+        }
+      }
+      const mag = Math.sqrt(fx*fx + fy*fy) || 1;
+      const nx = fx/mag, ny = fy/mag;
+      const arrowLen = 12;
+      const ex = wx + nx * arrowLen, ey = wy + ny * arrowLen;
+
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,.12)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(wx - nx*6, wy - ny*6);
+      ctx.lineTo(ex, ey);
+      ctx.stroke();
+      // Arrowhead
+      const headLen = 4;
+      const angle = Math.atan2(ny, nx);
+      ctx.beginPath();
+      ctx.moveTo(ex, ey);
+      ctx.lineTo(ex - headLen * Math.cos(angle - 0.4), ey - headLen * Math.sin(angle - 0.4));
+      ctx.lineTo(ex - headLen * Math.cos(angle + 0.4), ey - headLen * Math.sin(angle + 0.4));
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(255,255,255,.12)';
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+}
+
+// ============================================================
+// MAIN RENDER LOOP (rAF)
+// ============================================================
+
+function renderFrame() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#04050a';
+  ctx.fillRect(0, 0, W, H);
+
+  // Pass 1 — Skybox
+  renderSkybox();
+
+  // Pass 2 — Hex underlay
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, SKYBOX_H, W, H - SKYBOX_H);
+  ctx.clip();
+  renderHexUnderlay();
+  ctx.restore();
+
+  // Pass 3 — Weather overlay (clipped below skybox)
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, SKYBOX_H, W, H - SKYBOX_H);
+  ctx.clip();
+  renderWeatherOverlay();
+  ctx.restore();
+
+  // Rotate storm
+  stormRotation += 0.012;
+
+  animFrame = requestAnimationFrame(renderFrame);
+}
+
+// ============================================================
+// SIMULATION PIPELINE
+// ============================================================
+
+let simulating = false;
+
+function setSimProgress(pct, stepName) {
+  document.getElementById('sim-bar').style.width = pct + '%';
+  document.getElementById('sim-pct-text').textContent = Math.round(pct) + '%';
+  document.getElementById('sim-step-text').textContent = stepName;
+  setStatus('busy', 'SIMULATING…', stepName);
+}
+
+async function runSimulation() {
+  if (simulating) return;
+  simulating = true;
+  syncStateFromInputs();
+
+  const overlay = document.getElementById('sim-overlay');
+  overlay.classList.add('active');
+
+  const STEPS = [
+    { pct:12,  name:'HPS · Regenerating Pressure Cells' },
+    { pct:25,  name:'SSD · Computing Seasonal Modifier' },
+    { pct:38,  name:'FBC · Evaluating Frontal Collisions' },
+    { pct:50,  name:'EWT · Checking Extreme Weather Triggers' },
+    { pct:62,  name:'RFA · Updating Precipitation Grid' },
+    { pct:75,  name:'DSR · Computing Sky Color' },
+    { pct:88,  name:'WEX · Logging Significant Events' },
+    { pct:100, name:'AWC · Rendering Canvas State' },
+  ];
+
+  // Step 1 — Generate pressure cells
+  setSimProgress(STEPS[0].pct, STEPS[0].name);
+  await sleep(60);
+  generatePressureCells(state.day);
+
+  // Step 2 — Seasonal modifier (already in state from syncStateFromInputs)
+  setSimProgress(STEPS[1].pct, STEPS[1].name);
+  await sleep(50);
+  updateSeasonChip();
+
+  // Step 3 — Frontal collisions
+  setSimProgress(STEPS[2].pct, STEPS[2].name);
+  await sleep(60);
+  computeFrontalCollisions();
+
+  // Step 4 — Extreme weather logging
+  setSimProgress(STEPS[3].pct, STEPS[3].name);
+  await sleep(50);
+  state.activeWeather = null;
+  for (const fl of frontalLines) {
+    const evtName = fl.cold ? 'Cold Front Detected' : 'Warm Front Detected';
+    const midHex = nearestHexId((fl.x1 + fl.x2) / 2, (fl.y1 + fl.y2) / 2);
+    logEvent(evtName, midHex, 'LOW');
+  }
+  for (const ev of extremeEvents) {
+    state.activeWeather = ev.name;
+    const midHex = nearestHexId(ev.x, ev.y);
+    logEvent(ev.name, midHex, ev.pressureDiff > 55 ? 'HIGH' : 'MODERATE');
+  }
+
+  // Step 5 — Precipitation grid
+  setSimProgress(STEPS[4].pct, STEPS[4].name);
+  await sleep(60);
+  computePrecipitation();
+
+  // Step 6 — Sky color
+  setSimProgress(STEPS[5].pct, STEPS[5].name);
+  await sleep(40);
+  state.skyColor = getSkyColor(state.hour, state.activeWeather);
+  state.skyDescription = getSkyDescription(state.hour, state.activeWeather, state.season);
+
+  // Step 7 — Season log entry
+  setSimProgress(STEPS[6].pct, STEPS[6].name);
+  await sleep(40);
+  logEvent(`Season: ${state.season} · Phase: ${state.moonPhase}`, 'GLOBAL', 'LOW');
+
+  // Step 8 — Update right panel
+  setSimProgress(STEPS[7].pct, STEPS[7].name);
+  await sleep(50);
+  updateRightPanel();
+  renderPrecipMinimap();
+
+  overlay.classList.remove('active');
+  simulating = false;
+  setStatus('done', 'SIMULATION COMPLETE',
+    `${pressureCells.length} cells · ${frontalLines.length} fronts · ${extremeEvents.length} extreme events`);
+  updateStatusBar();
+}
+
+// ============================================================
+// NEAREST HEX ID (for log entries)
+// ============================================================
+
+function nearestHexId(canvasX, canvasY) {
+  if (!terrainLinked || terrainHexes.length === 0) return '—';
+  // Convert canvas coords back to world, then to axial
+  const wx = (canvasX - canvas.width / 2) / camera.zoom - camera.x;
+  const wy = (canvasY - SKYBOX_H * 0.5 - canvas.height / 2) / camera.zoom - camera.y;
+  // rough nearest
+  let best = null, bestD = Infinity;
+  for (const h of terrainHexes) {
+    const pix = axialToPixel(h.q, h.r, HEX_SIZE);
+    const dx = pix.x - wx, dy = pix.y - wy;
+    const d = dx*dx + dy*dy;
+    if (d < bestD) { bestD = d; best = h; }
+  }
+  return best ? best.id : '—';
+}
+
+// ============================================================
+// RIGHT PANEL — ATMOSPHERIC STATE
+// ============================================================
+
+function updateRightPanel() {
+  const rp = document.getElementById('rp-scroll');
+
+  // 1. CELESTIAL
+  const celestialHtml = `
+    <div class="insp-section">
+      <div class="insp-section-title">Celestial</div>
+      <div class="insp-row">
+        <span class="insp-key">Day / Hour</span>
+        <span class="insp-val accent">DAY ${state.day} · ${String(state.hour).padStart(2,'0')}:00</span>
+      </div>
+      <div class="insp-row">
+        <span class="insp-key">Season</span>
+        <span class="insp-val">${state.seasonIcon} ${state.season}</span>
+      </div>
+      <div class="insp-row">
+        <span class="insp-key">Temp Modifier</span>
+        <span class="insp-val" style="color:${state.tempModifier >= 0 ? '#f98f3b' : '#4ecdc4'};">${state.tempModifier >= 0 ? '+' : ''}${state.tempModifier.toFixed(1)}°C</span>
+      </div>
+      <div class="insp-row">
+        <span class="insp-key">Moon Phase</span>
+        <span class="insp-val">${state.moonIcon} ${state.moonPhase}</span>
+      </div>
+      <div class="insp-row">
+        <span class="insp-key">Tidal Mult.</span>
+        <span class="insp-val">${state.tidalMod.toFixed(1)}×</span>
+      </div>
+    </div>`;
+
+  // 2. PRESSURE SYSTEMS
+  let pressureRows = '';
+  for (const c of pressureCells) {
+    const driftDir = angleName(Math.atan2(c.driftY, c.driftX));
+    pressureRows += `
+      <div class="pcell-row">
+        <span class="pcell-type ${c.type}">${c.type}</span>
+        <div class="pcell-info">
+          <span class="pcell-name">${c.name}</span>
+          <span class="pcell-detail">${Math.round(c.pressure_mb)}mb · r${Math.round(c.radius)}px · ↦${driftDir}</span>
+        </div>
+      </div>`;
+  }
+  const pressureHtml = `
+    <div class="insp-section">
+      <div class="insp-section-title">Pressure Systems</div>
+      ${pressureRows || '<div style="font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);">No cells</div>'}
+    </div>`;
+
+  // 3. ACTIVE WEATHER
+  const sevColors = { LOW:'#4dc8a0', MODERATE:'#e8b84b', HIGH:'#d45b5b' };
+  let activeWeatherRows = '';
+  if (extremeEvents.length === 0 && frontalLines.length === 0) {
+    activeWeatherRows = '<div style="font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);">Calm conditions</div>';
+  }
+  for (const ev of extremeEvents) {
+    const sev = ev.pressureDiff > 55 ? 'HIGH' : 'MODERATE';
+    const windSpeed = Math.round(60 + ev.pressureDiff * 2);
+    activeWeatherRows += `
+      <div class="insp-row" style="margin-bottom:5px;">
+        <div style="flex:1;">
+          <div style="font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.65);">${ev.name}</div>
+          <div style="font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);">Wind: ${windSpeed} km/h</div>
+        </div>
+        <span class="severity-chip" style="color:${sevColors[sev]};">${sev}</span>
+      </div>`;
+  }
+  for (const fl of frontalLines) {
+    const diff = Math.abs(fl.hCell.pressure_mb - fl.lCell.pressure_mb);
+    const windSpeed = Math.round(20 + diff * 0.8);
+    activeWeatherRows += `
+      <div class="insp-row" style="margin-bottom:5px;">
+        <div style="flex:1;">
+          <div style="font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.65);">${fl.cold ? 'Cold Front' : 'Warm Front'}</div>
+          <div style="font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);">Wind: ${windSpeed} km/h</div>
+        </div>
+        <span class="severity-chip" style="color:${sevColors['LOW']};">LOW</span>
+      </div>`;
+  }
+  const activeWeatherHtml = `
+    <div class="insp-section">
+      <div class="insp-section-title">Active Weather</div>
+      ${activeWeatherRows}
+    </div>`;
+
+  // 4. SKY SHADER
+  const sc = state.skyColor;
+  const hexCode = '#' + [sc.r, sc.g, sc.b].map(v => Math.max(0,Math.min(255,v)).toString(16).padStart(2,'0')).join('');
+  const skyHtml = `
+    <div class="insp-section">
+      <div class="insp-section-title">Sky Shader</div>
+      <div class="insp-row">
+        <span class="insp-key">Sky RGB</span>
+        <span class="insp-val">${sc.r}, ${sc.g}, ${sc.b}</span>
+        <div class="sky-swatch" style="background:${hexCode};"></div>
+      </div>
+      <div class="insp-row">
+        <span class="insp-key">Hex Color</span>
+        <span class="insp-val accent">${hexCode}</span>
+      </div>
+      <div class="insp-row" style="flex-wrap:wrap;">
+        <span class="insp-key">Description</span>
+        <span style="font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.45);flex:1;">${state.skyDescription}</span>
+      </div>
+    </div>`;
+
+  // 5. PRECIPITATION MAP
+  const precipHtml = `
+    <div class="insp-section">
+      <div class="insp-section-title">Precipitation Map</div>
+      <canvas id="precip-map" width="80" height="60"></canvas>
+      <div style="font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);margin-top:3px;">
+        Blue=rain · White=snow · Clear=dry
+      </div>
+    </div>`;
+
+  rp.innerHTML = celestialHtml + pressureHtml + activeWeatherHtml + skyHtml + precipHtml;
+
+  // Render precip minimap after DOM update
+  setTimeout(renderPrecipMinimap, 0);
+}
+
+function angleName(rad) {
+  const deg = ((rad * 180 / Math.PI) + 360) % 360;
+  const dirs = ['E','NE','N','NW','W','SW','S','SE','E'];
+  return dirs[Math.round(deg / 45) % 8];
+}
+
+// ============================================================
+// PRECIP MINIMAP
+// ============================================================
+
+function renderPrecipMinimap() {
+  const mc = document.getElementById('precip-map');
+  if (!mc) return;
+  const mctx = mc.getContext('2d');
+  const MW = mc.width, MH = mc.height;
+  mctx.clearRect(0, 0, MW, MH);
+  mctx.fillStyle = '#06090f';
+  mctx.fillRect(0, 0, MW, MH);
+
+  const cw = MW / PRECIP_W, ch = MH / PRECIP_H;
+  for (let gy = 0; gy < PRECIP_H; gy++) {
+    for (let gx = 0; gx < PRECIP_W; gx++) {
+      const idx = gy * PRECIP_W + gx;
+      const intensity = precipGrid[idx];
+      if (intensity < 0.02) continue;
+      const type = precipTypeGrid[idx];
+      const alpha = Math.min(1, intensity * 1.2);
+      if (type === 2) {
+        // Snow — white-blue
+        mctx.fillStyle = `rgba(200,220,255,${alpha})`;
+      } else {
+        // Rain — blue
+        mctx.fillStyle = `rgba(30,100,220,${alpha})`;
+      }
+      mctx.fillRect(gx * cw, gy * ch, cw + 0.5, ch + 0.5);
+    }
+  }
+
+  // Overlay pressure cell positions as tiny dots
+  for (const c of pressureCells) {
+    const mx = (c.x / canvas.width) * MW;
+    const my = ((c.y - SKYBOX_H) / (canvas.height - SKYBOX_H)) * MH;
+    mctx.beginPath();
+    mctx.arc(mx, my, 2, 0, Math.PI * 2);
+    mctx.fillStyle = c.type === 'H' ? 'rgba(200,240,255,.7)' : 'rgba(249,143,59,.7)';
+    mctx.fill();
+  }
+}
+
+// ============================================================
+// SIDEBAR INTERACTIONS
+// ============================================================
+
+const SUB_MODULES_BY_MODULE = {
+  BPS: ['Pressure field init','Gradient descent solver','Isobar contour gen','Cell boundary detect','Pressure delta calc','Divergence mapper','Convergence mapper','Hpa level normalizer','Vertical pressure prof','Pressure smoothing pass','Cell strength estimator','Pressure export mesh','Cross-section renderer','Pressure audit log','Pressure diff reporter','Cache flush'],
+  FBC: ['Boundary detection pass','Front type classifier','Cold air mass tracker','Warm air mass tracker','Collision point solver','Front movement predictor','Occluded front resolver','Stationary front flag','Front length calculator','Precipitation trigger','Severity estimator','Front viz renderer','Front export JSON','Front log writer','Diff tracker','Collision audit'],
+  HPS: ['H-cell seed generator','Anti-cyclone modeler','Clockwise spin applicator','Subsidence mapper','Clear sky predictor','Divergence field set','H-cell drift engine','Pressure peak finder','Stability index calc','H-cell merge resolver','H-cell split op','H-cell strength decay','H-cell viz renderer','H-cell export','Audit log','Cache flush'],
+  LPR: ['L-cell seed generator','Cyclone modeler','Counter-clockwise spin','Convergence field set','Precipitation enabler','Moisture tap router','L-cell drift engine','Pressure trough finder','Instability index','L-cell merge resolver','L-cell split op','L-cell decay model','L-cell viz renderer','L-cell export','Audit log','Cache flush'],
+  CCT: ['Epoch counter','Day accumulator','Season boundary detector','Year rollover handler','Calendar format engine','Date string builder','Day-of-week calc','Julian date conv.','Fiscal calendar map','Holiday flag table','Calendar export','Alarm scheduler','Event reminder bus','Time-zone offset','Leap year handler','Calendar audit'],
+  SSD: ['Season transition detector','Temp modifier table','Day length calculator','Solar angle estimator','Solstice detector','Equinox detector','Flora response model','Fauna response model','Season color palette','Season icon resolver','Transition blend zone','Season export JSON','Audit log','Season diff reporter','Override layer','Cache flush'],
+  LPC: ['Phase angle tracker','New moon detector','Waxing phase calc','Full moon detector','Waning phase calc','Phase name resolver','Phase icon table','Tidal amplifier','Spring tide detector','Neap tide detector','Phase export JSON','Moon viz renderer','Phase audit log','Phase diff reporter','Override layer','Cache flush'],
+  TFC: ['Gravitational force calc','Lunar distance input','Solar tidal adder','Tidal amplitude model','High tide predictor','Low tide predictor','Tidal range calc','Tidal cycle mapper','Coastal effect estimator','Tidal current solver','Resonance detector','Tidal export JSON','Audit log','Tidal diff reporter','Override layer','Cache flush'],
+  RFA: ['Accumulation grid init','Rainfall rate mapper','Duration integrator','Runoff estimator','Catchment area calc','Basin fill tracker','Flood threshold gate','Intensity heatmap','Daily total aggregator','Monthly total aggregator','Rainfall export CSV','Drought index calc','Anomaly detector','Audit log','Diff reporter','Cache flush'],
+  SFA: ['Snow accumulation grid','Snowflake density model','Melt rate estimator','Snow depth tracker','Blizzard threshold gate','Drift accumulator','Compaction model','Snow water equiv. calc','Snowpack export JSON','Avalanche risk flag','Snow cover mapper','Albedo modifier','Freeze/thaw cycle','Audit log','Diff reporter','Cache flush'],
+  DSR: ['Sky color solver','Rayleigh scatter model','Mie scatter model','Time-of-day sampler','Weather modifier pass','Cloud layer renderer','Atmospheric haze layer','Fog layer renderer','Horizon glow calc','Sky gradient builder','Skybox export','Dynamic update bus','Weather blend pass','Audit log','Diff reporter','Cache flush'],
+  EWT: ['Pressure diff monitor','Threshold evaluator','Hurricane classifier','Tornado trigger','Blizzard trigger','Dust storm trigger','Flood warning gate','Heat wave detector','Cold snap detector','Severe storm flag','Event severity scorer','Warning broadcast','Event export JSON','Audit log','Diff reporter','Cache flush'],
+  TGM: ['Temperature grid init','Latitude lapse model','Elevation lapse model','Urban heat island','Sea surface temp.','Inversion layer detect','Gradient color mapper','Isotherm contour gen','Temperature diff calc','Daily temp range','Monthly average','Temperature export CSV','Anomaly detector','Audit log','Diff reporter','Cache flush'],
+  FGH: ['Fog density model','Ground moisture input','Temperature dew point','Fog formation trigger','Fog dissipation model','Visibility range calc','Fog layer renderer','Haze opacity mapper','Low cloud layer','Radiation fog model','Advection fog model','Fog export JSON','Audit log','Fog diff reporter','Override layer','Cache flush'],
+  AWC: ['Weather state machine','Transition controller','Calm state manager','Breezy state manager','Stormy state manager','Extreme state manager','State duration timer','Transition probability','Weather blend engine','Ambient sound trigger','Particle system hook','Weather export JSON','State audit log','Override controller','Diff reporter','Cache flush'],
+  WEX: ['Event log array','Log entry builder','Severity classifier','Hex ID resolver','Log size limiter','Oldest entry evict','Event search filter','Event export JSON','Time-range query','Severity filter','Event viz renderer','Log audit','Duplicate detector','Replay engine','Diff reporter','Cache flush'],
+};
+
+function selectModule(el, modId) {
+  document.querySelectorAll('.module-row').forEach(r => r.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('detail-module-id').textContent = modId;
+  const subs = SUB_MODULES_BY_MODULE[modId] || [];
+  const list = document.getElementById('submods-list');
+  list.innerHTML = subs.map((name, i) => `
+    <div class="submod-row">
+      <span class="submod-idx">${String(i+1).padStart(2,'0')}</span>
+      <span class="submod-name">${name}</span>
+    </div>`).join('');
+}
+
+function togglePillar(idx) {
+  const sec = document.getElementById(`pillar-${idx}`);
+  const mods = document.getElementById(`pillar-modules-${idx}`);
+  sec.classList.toggle('collapsed');
+  if (sec.classList.contains('collapsed')) {
+    mods.style.maxHeight = '0px';
+  } else {
+    mods.style.maxHeight = mods.scrollHeight + 'px';
+  }
+}
+
+function initPillarHeights() {
+  for (let i = 0; i < 4; i++) {
+    const mods = document.getElementById(`pillar-modules-${i}`);
+    mods.style.maxHeight = mods.scrollHeight + 'px';
+  }
+}
+
+// Pillar tabs
+document.querySelectorAll('.tb-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const pi = parseInt(tab.dataset.pillar);
+    const sec = document.getElementById(`pillar-${pi}`);
+    const mods = document.getElementById(`pillar-modules-${pi}`);
+    if (sec.classList.contains('collapsed')) {
+      sec.classList.remove('collapsed');
+      mods.style.maxHeight = mods.scrollHeight + 'px';
+    }
+    setTimeout(() => sec.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 50);
+  });
+});
+
+// ============================================================
+// STATUS BAR HELPERS
+// ============================================================
+
+function setStatus(statusState, text, pipeline) {
+  const dot = document.getElementById('sb-dot');
+  const st = document.getElementById('sb-status');
+  const pl = document.getElementById('sb-pipeline');
+  dot.className = 'sb-dot ' + statusState;
+  st.textContent = text;
+  if (pipeline !== undefined) pl.textContent = pipeline;
+}
+
+// ============================================================
+// TIME CONTROLS
+// ============================================================
+
+document.getElementById('hour-slider').addEventListener('input', function() {
+  state.hour = parseInt(this.value);
+  document.getElementById('hour-val').textContent = state.hour;
+  updateStatusBar();
+  // Skybox updates on next rAF
+});
+
+document.getElementById('day-input').addEventListener('change', function() {
+  state.day = parseInt(this.value) || 1;
+  const s = getSeasonFromDay(state.day);
+  state.season = s.name; state.tempModifier = s.tempMod; state.seasonIcon = s.icon;
+  const l = getLunarPhase(state.day);
+  state.moonPhase = l.name; state.tidalMod = l.tidalMod; state.moonIcon = l.icon;
+  updateSeasonChip();
+  updateStatusBar();
+});
+
+document.getElementById('btn-tick').addEventListener('click', () => {
+  tickDay();
+  setStatus('ready', 'DAY ADVANCED', `Day ${state.day} · ${state.season}`);
+});
+
+document.getElementById('btn-simulate').addEventListener('click', () => {
+  runSimulation();
+});
+
+// ============================================================
+// CANVAS PAN/ZOOM
+// ============================================================
+
+canvas.addEventListener('mousedown', e => {
+  if (e.button === 0) {
+    isPanning = true;
+    panStart = { x: e.clientX, y: e.clientY };
+    camStart = { x: camera.x, y: camera.y };
+    canvas.style.cursor = 'grabbing';
+  }
+});
+
+canvas.addEventListener('mousemove', e => {
+  if (isPanning) {
+    const dx = (e.clientX - panStart.x) / camera.zoom;
+    const dy = (e.clientY - panStart.y) / camera.zoom;
+    camera.x = camStart.x + dx;
+    camera.y = camStart.y + dy;
+    return;
+  }
+  // Tooltip
+  const rect = canvas.getBoundingClientRect();
+  const sx = e.clientX - rect.left;
+  const sy = e.clientY - rect.top;
+  const tooltip = document.getElementById('canvas-tooltip');
+  // Check pressure cell hover
+  let found = false;
+  for (const c of pressureCells) {
+    const dx = sx - c.x, dy = sy - c.y;
+    if (Math.sqrt(dx*dx + dy*dy) < 24) {
+      tooltip.textContent = `${c.name} · ${Math.round(c.pressure_mb)}mb`;
+      tooltip.style.left = (sx + 12) + 'px';
+      tooltip.style.top = (sy - 8) + 'px';
+      tooltip.classList.add('visible');
+      found = true;
+      break;
+    }
+  }
+  if (!found) tooltip.classList.remove('visible');
+});
+
+canvas.addEventListener('mouseup', e => {
+  isPanning = false;
+  canvas.style.cursor = 'crosshair';
+});
+
+canvas.addEventListener('mouseleave', () => {
+  isPanning = false;
+  canvas.style.cursor = 'crosshair';
+  document.getElementById('canvas-tooltip').classList.remove('visible');
+});
+
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+  camera.zoom = Math.max(0.3, Math.min(6, camera.zoom * factor));
+}, { passive: false });
+
+window.addEventListener('resize', () => {
+  resizeCanvas();
+});
+
+// ============================================================
+// INIT
+// ============================================================
+
+window.addEventListener('DOMContentLoaded', () => {
+  resizeCanvas();
+  loadTerrainData();
+  initPillarHeights();
+
+  // Default sub-module detail
+  const firstRow = document.querySelector('.module-row.active');
+  if (firstRow) selectModule(firstRow, firstRow.dataset.mod);
+
+  // Sync state from UI
+  syncStateFromInputs();
+  updateSeasonChip();
+  updateStatusBar();
+
+  // Default right panel
+  updateRightPanel();
+
+  // Start rAF loop
+  renderFrame();
+
+  setStatus('ready', 'SYSTEM READY', 'Awaiting simulation trigger');
+});
+</script>
+</body>
+</html>

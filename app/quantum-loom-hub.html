@@ -36,6 +36,8 @@
   --c-subgraph:  #d45b5b;
   --c-ionodes:   #b1d0f0;
   --c-output:    #c8973a;
+  --c-atlas:     #1e8cff;
+  --c-environ:   #4ecdc4;
 }
 
 html,body{
@@ -843,6 +845,19 @@ html,body{
         <span class="ni-label">Output</span>
       </div>
 
+      <div class="nav-div"></div>
+
+      <div class="nav-item" id="nav-atlas" data-layer="atlas"
+           style="--lc:var(--c-atlas)" onclick="switchLayer('atlas')" title="Quantum Atlas · 01 Terrain">
+        <span class="ni-icon">⬡</span>
+        <span class="ni-label">Atlas</span>
+      </div>
+      <div class="nav-item" id="nav-environ" data-layer="environ"
+           style="--lc:var(--c-environ)" onclick="switchLayer('environ')" title="Quantum Atlas · 02 Environment">
+        <span class="ni-icon">◉</span>
+        <span class="ni-label">Environ</span>
+      </div>
+
       <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
     </div>
 
@@ -931,6 +946,26 @@ html,body{
       <iframe class="layer-frame" id="frame-output"
         src="quantum-loom-output.html"
         onload="frameLoaded('output')"></iframe>
+
+      <!-- Atlas · 01 Terrain -->
+      <div class="frame-loader" id="loader-atlas">
+        <div class="loader-glyph" style="color:#1e8cff">⬡</div>
+        <div class="loader-lbl">Loading Quantum Atlas · Terrain</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#1e8cff"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-atlas"
+        src="quantum-atlas-terrain.html"
+        onload="frameLoaded('atlas')"></iframe>
+
+      <!-- Atlas · 02 Environment -->
+      <div class="frame-loader" id="loader-environ">
+        <div class="loader-glyph" style="color:#4ecdc4">◉</div>
+        <div class="loader-lbl">Loading Quantum Atlas · Environment</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#4ecdc4"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-environ"
+        src="quantum-atlas-environment.html"
+        onload="frameLoaded('environ')"></iframe>
 
     </div>
   </div>
@@ -1303,6 +1338,8 @@ const LAYERS = {
   subgraph:  { label:'Sub-Graph Canvas',    icon:'⬡',  color:'var(--c-subgraph)',  file:'quantum-loom-subgraph.html' },
   ionodes:   { label:'Signal Bus & I/O',    icon:'⇌',  color:'var(--c-ionodes)',   file:'quantum-loom-io-nodes.html' },
   output:    { label:'Output Renderer',    icon:'⎘',  color:'var(--c-output)',    file:'quantum-loom-output.html'   },
+  atlas:     { label:'Atlas · 01 Terrain',     icon:'⬡',  color:'var(--c-atlas)',   file:'quantum-atlas-terrain.html'     },
+  environ:   { label:'Atlas · 02 Environment', icon:'◉',  color:'var(--c-environ)', file:'quantum-atlas-environment.html' },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
