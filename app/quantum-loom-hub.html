@@ -44,7 +44,8 @@
   --c-bridge:    #4dc8a0;
   --c-ecology:   #7fd4c8;
   --c-behavior:  #9030d0;
-  --c-modeling:  #f4c025;
+  --c-modeling:      #f4c025;
+  --c-choreography:  #dc3c78;
 }
 
 html,body{
@@ -879,6 +880,11 @@ html,body{
         <span class="ni-icon">✦</span>
         <span class="ni-label">Modeling</span>
       </div>
+      <div class="nav-item" id="nav-choreography" data-layer="choreography"
+           style="--lc:var(--c-choreography)" onclick="switchLayer('choreography')" title="06 · Choreography | Loom">
+        <span class="ni-icon">⟳</span>
+        <span class="ni-label">Choreo</span>
+      </div>
       <div class="nav-item" id="nav-society" data-layer="society"
            style="--lc:var(--c-society)" onclick="switchLayer('society')" title="08 · Society | Order">
         <span class="ni-icon">⚑</span>
@@ -1038,6 +1044,16 @@ html,body{
       <iframe class="layer-frame" id="frame-modeling"
         src="quantum-atlas-modeling.html"
         onload="frameLoaded('modeling')"></iframe>
+
+      <!-- Atlas · 06 Choreography | Loom -->
+      <div class="frame-loader" id="loader-choreography">
+        <div class="loader-glyph" style="color:#dc3c78">⟳</div>
+        <div class="loader-lbl">Loading 06 · Choreography | Loom</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#dc3c78"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-choreography"
+        src="quantum-atlas-choreography.html"
+        onload="frameLoaded('choreography')"></iframe>
 
       <!-- Atlas · 08 Society | Order -->
       <div class="frame-loader" id="loader-society">
@@ -1454,14 +1470,15 @@ const LAYERS = {
   environ:  { label:'02 · Environment | Mythos', icon:'◉', color:'var(--c-environ)',  file:'quantum-atlas-environment.html'  },
   architect:{ label:'03 · Architect | Architect',icon:'⊓', color:'var(--c-architect)',file:'quantum-atlas-architect.html'    },
   lighting: { label:'04 · Lighting  | Prism',   icon:'◐', color:'var(--c-lighting)', file:'quantum-atlas-lighting.html'     },
-  modeling: { label:'05 · Modeling  | Animus',  icon:'✦', color:'var(--c-modeling)', file:'quantum-atlas-modeling.html'     },
+  modeling:      { label:'05 · Modeling      | Animus',  icon:'✦', color:'var(--c-modeling)',      file:'quantum-atlas-modeling.html'      },
+  choreography:  { label:'06 · Choreography | Loom',    icon:'⟳', color:'var(--c-choreography)',  file:'quantum-atlas-choreography.html'  },
   behavior: { label:'07 · Behavior  | Instinct', icon:'⊙', color:'var(--c-behavior)', file:'quantum-atlas-behavior.html'    },
   society:  { label:'08 · Society   | Order',   icon:'⚑', color:'var(--c-society)',  file:'quantum-atlas-society.html'      },
   bridge:   { label:'16 · Network   | Nexus',   icon:'⇋', color:'var(--c-bridge)',   file:'quantum-atlas-network.html'      },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
-const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-behavior-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot'];
+const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-choreography-snapshot','qa-behavior-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot'];
 
 /* ── State ────────────────────────────────────────────────────────── */
 let activeLayer  = 'workspace';

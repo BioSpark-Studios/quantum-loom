@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 06 · Choreography</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04050a;
+  --surface:rgba(8,11,18,.98);
+  --surface2:rgba(12,16,24,.97);
+  --edge:rgba(255,255,255,.055);
+  --edge-hi:rgba(255,255,255,.12);
+  --venturan:#b1d0f0;
+  --amber:#e8b84b;
+  --emerald:#4dc8a0;
+  --solari:#f98f3b;
+  --fusion:#9b7fd4;
+  --blood:#d45b5b;
+  --totem:#7fd4c8;
+  --choreography:#dc3c78;
+  --text:#e8eaf0;
+  --fm:'Orbitron',monospace;
+  --fd:'Space Grotesk',sans-serif;
+  --fc:'JetBrains Mono',monospace;
+}
+
+html,body{
+  height:100%;overflow:hidden;
+  background:var(--bg);color:var(--text);
+  font-family:var(--fd);font-size:13px;
+}
+
+#shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;
+}
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--choreography);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;color:var(--choreography);
+  animation:breathe-cho 4s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes breathe-cho{
+  0%,100%{opacity:.7;box-shadow:0 0 4px rgba(220,60,120,.2);}
+  50%{opacity:1;box-shadow:0 0 14px rgba(220,60,120,.6);}
+}
+.tb-module-labels{display:flex;flex-direction:column;gap:1px;}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--choreography);white-space:nowrap;
+}
+.tb-subcrest{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.16em;
+  color:rgba(220,60,120,.42);text-transform:uppercase;
+}
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:0 10px;height:100%;
+  display:flex;align-items:center;cursor:pointer;
+  color:rgba(255,255,255,.32);border-bottom:2px solid transparent;
+  transition:all .12s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03);}
+.tb-tab.active{color:var(--choreography);border-bottom-color:var(--choreography);}
+.tb-spacer{flex:1;}
+.tb-upstream{
+  display:flex;align-items:center;gap:4px;
+  padding:0 10px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.up-chip{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.07em;
+  padding:2px 6px;border-radius:2px;border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.28);text-transform:uppercase;transition:all .2s;
+}
+.up-chip.lit{
+  border-color:rgba(77,200,160,.4);color:var(--emerald);
+  background:rgba(77,200,160,.07);
+}
+.tb-actions{
+  display:flex;gap:6px;padding:0 10px;height:100%;align-items:center;flex-shrink:0;
+}
+.tb-btn{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 11px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.4);
+  white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff;}
+.tb-btn.hot{
+  border-color:rgba(220,60,120,.55);background:rgba(220,60,120,.1);
+  color:var(--choreography);font-weight:600;
+}
+.tb-btn.hot:hover{background:rgba(220,60,120,.2);box-shadow:0 0 14px rgba(220,60,120,.35);}
+.tb-btn.running{
+  border-color:rgba(77,200,160,.55);background:rgba(77,200,160,.1);
+  color:var(--emerald);animation:pulse-run 1s ease-in-out infinite;
+}
+@keyframes pulse-run{0%,100%{opacity:.8;}50%{opacity:1;}}
+.tb-btn.sec{
+  border-color:rgba(177,208,240,.3);background:rgba(177,208,240,.05);
+  color:var(--venturan);
+}
+.tb-btn.sec:hover{background:rgba(177,208,240,.12);box-shadow:0 0 10px rgba(177,208,240,.2);}
+.tb-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* ── BODY ── */
+#body{flex:1;display:flex;overflow:hidden;}
+
+/* ── LEFT PANEL ── */
+#left-panel{
+  width:240px;flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.lp-scroll::-webkit-scrollbar{width:3px;}
+.lp-scroll::-webkit-scrollbar-track{background:transparent;}
+.lp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+.sec-header{
+  padding:7px 10px 6px;border-bottom:1px solid var(--edge);
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--choreography);opacity:.8;flex-shrink:0;
+  display:flex;align-items:center;gap:6px;
+}
+.sec-header-count{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);
+  padding:1px 5px;background:rgba(255,255,255,.04);
+  border:1px solid var(--edge);border-radius:8px;margin-left:auto;
+}
+
+/* Component Matrix 4x4 */
+.comp-matrix{
+  display:grid;grid-template-columns:1fr 1fr;gap:3px;
+  padding:6px 6px;
+}
+.comp-card{
+  background:rgba(255,255,255,.025);border:1px solid var(--edge);
+  border-radius:3px;padding:5px 6px;cursor:pointer;
+  transition:all .12s;position:relative;overflow:hidden;
+}
+.comp-card:hover{background:rgba(255,255,255,.05);border-color:var(--edge-hi);}
+.comp-card.active{
+  border-color:rgba(220,60,120,.55);
+  background:rgba(220,60,120,.08);
+}
+.comp-card.active::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--choreography);
+}
+.comp-code{
+  font-family:var(--fm);font-size:.38rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.75);margin-bottom:3px;
+}
+.comp-card.active .comp-code{color:var(--choreography);}
+.comp-wire{
+  display:inline-block;font-family:var(--fc);font-size:.24rem;letter-spacing:.05em;
+  padding:1px 4px;border-radius:2px;border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:3px;
+}
+.comp-status{
+  display:flex;align-items:center;gap:4px;margin-top:2px;
+}
+.comp-dot{
+  width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.15);flex-shrink:0;
+}
+.comp-dot.ok{background:var(--emerald);}
+.comp-dot.warn{background:var(--amber);}
+.comp-dot.active-dot{
+  background:var(--choreography);
+  animation:pulse-dot .8s ease-in-out infinite;
+}
+@keyframes pulse-dot{0%,100%{opacity:.5;}50%{opacity:1;}}
+.comp-label{
+  font-family:var(--fc);font-size:.24rem;color:rgba(255,255,255,.25);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Layer dividers */
+.layer-divider{
+  padding:5px 8px 3px;border-top:1px solid var(--edge);
+  font-family:var(--fm);font-size:.26rem;letter-spacing:.14em;
+  color:rgba(220,60,120,.4);text-transform:uppercase;flex-shrink:0;
+}
+
+/* Entity roster in left panel */
+.ent-row{
+  display:flex;align-items:center;gap:6px;padding:4px 8px;
+  border-bottom:1px solid rgba(255,255,255,.018);
+  cursor:pointer;transition:background .1s;
+}
+.ent-row:hover{background:rgba(255,255,255,.03);}
+.ent-row.leader-row{background:rgba(220,60,120,.04);}
+.ent-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ent-info{flex:1;min-width:0;}
+.ent-name{
+  font-family:var(--fd);font-size:.38rem;color:rgba(255,255,255,.8);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ent-meta{font-family:var(--fc);font-size:.27rem;color:rgba(255,255,255,.3);}
+.ent-role{
+  font-family:var(--fc);font-size:.25rem;
+  padding:1px 4px;border-radius:2px;border:1px solid currentColor;
+  flex-shrink:0;text-transform:uppercase;
+}
+
+.lp-footer{
+  padding:8px 8px;border-top:1px solid var(--edge);flex-shrink:0;
+}
+.lp-footer-btn{
+  width:100%;font-family:var(--fm);font-size:.3rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:7px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(220,60,120,.45);background:rgba(220,60,120,.08);
+  color:var(--choreography);transition:all .14s;margin-bottom:5px;
+}
+.lp-footer-btn:hover{background:rgba(220,60,120,.18);box-shadow:0 0 12px rgba(220,60,120,.25);}
+.lp-footer-btn:last-child{margin-bottom:0;}
+
+/* ── CANVAS AREA ── */
+#canvas-wrap{
+  flex:1;overflow:hidden;position:relative;background:var(--bg);
+}
+#main-canvas{position:absolute;top:0;left:0;width:100%;height:100%;cursor:crosshair;}
+
+.canvas-overlay-btns{
+  position:absolute;top:10px;left:10px;z-index:5;
+  display:flex;gap:6px;
+}
+.canvas-btn{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.07em;text-transform:uppercase;
+  padding:4px 8px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(220,60,120,.3);background:rgba(4,5,10,.75);
+  color:rgba(220,60,120,.6);transition:all .14s;backdrop-filter:blur(4px);
+}
+.canvas-btn:hover{border-color:rgba(220,60,120,.6);color:var(--choreography);}
+.canvas-btn.on{
+  border-color:rgba(220,60,120,.7);background:rgba(220,60,120,.15);
+  color:var(--choreography);
+}
+
+.canvas-info{
+  position:absolute;bottom:10px;left:10px;z-index:5;
+  background:rgba(4,5,10,.82);border:1px solid var(--edge);
+  border-radius:3px;padding:5px 9px;backdrop-filter:blur(4px);
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.4);
+  line-height:1.7;
+}
+.canvas-info .val{color:var(--choreography);}
+.canvas-info .val-g{color:var(--emerald);}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:280px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.rp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-track{background:transparent;}
+.rp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+.rp-section{border-bottom:1px solid var(--edge);}
+.rp-section-header{
+  padding:7px 10px 5px;
+  font-family:var(--fm);font-size:.28rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(220,60,120,.55);
+  display:flex;align-items:center;gap:6px;
+}
+.rp-section-header .rp-sh-badge{
+  font-family:var(--fc);font-size:.25rem;padding:1px 5px;
+  background:rgba(220,60,120,.1);border:1px solid rgba(220,60,120,.3);
+  border-radius:2px;color:var(--choreography);margin-left:auto;
+}
+
+/* Formation selector */
+.formation-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:4px;
+  padding:5px 8px 8px;
+}
+.formation-btn{
+  font-family:var(--fm);font-size:.27rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:8px 4px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:rgba(255,255,255,.02);
+  color:rgba(255,255,255,.35);text-align:center;
+}
+.formation-btn:hover{
+  background:rgba(220,60,120,.08);border-color:rgba(220,60,120,.35);
+  color:rgba(220,60,120,.8);
+}
+.formation-btn.active-form{
+  border-color:var(--choreography);background:rgba(220,60,120,.15);
+  color:var(--choreography);box-shadow:0 0 8px rgba(220,60,120,.2);
+}
+.formation-icon{font-size:.9rem;display:block;margin-bottom:3px;opacity:.75;}
+
+/* BPM / Phase controls */
+.rp-control-row{
+  display:flex;align-items:center;gap:8px;padding:5px 10px;
+}
+.rp-ctrl-label{
+  font-family:var(--fc);font-size:.27rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.3);text-transform:uppercase;width:72px;flex-shrink:0;
+}
+.rp-ctrl-slider{
+  flex:1;-webkit-appearance:none;appearance:none;
+  height:3px;background:rgba(255,255,255,.08);border-radius:2px;cursor:pointer;
+  outline:none;
+}
+.rp-ctrl-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+  background:var(--choreography);cursor:pointer;
+  box-shadow:0 0 6px rgba(220,60,120,.5);
+}
+.rp-ctrl-val{
+  font-family:var(--fc);font-size:.3rem;color:var(--choreography);
+  width:32px;text-align:right;flex-shrink:0;
+}
+
+/* Timeline strip */
+.timeline-wrap{
+  padding:5px 8px 6px;
+}
+.timeline-label{
+  font-family:var(--fc);font-size:.26rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:5px;
+  display:flex;align-items:center;gap:8px;
+}
+.timeline-label .tl-beat{
+  color:var(--choreography);font-size:.3rem;margin-left:auto;
+}
+.timeline-strip{
+  height:52px;background:rgba(0,0,0,.35);border:1px solid var(--edge);
+  border-radius:3px;position:relative;overflow:hidden;cursor:pointer;
+}
+.timeline-bar-grid{
+  position:absolute;inset:0;display:flex;
+}
+.tl-bar{
+  flex:1;border-right:1px solid rgba(255,255,255,.04);
+  position:relative;transition:background .12s;
+}
+.tl-bar:hover{background:rgba(220,60,120,.07);}
+.tl-bar.has-kf{background:rgba(220,60,120,.06);}
+.tl-bar-num{
+  position:absolute;bottom:2px;left:2px;
+  font-family:var(--fc);font-size:.22rem;color:rgba(255,255,255,.18);
+}
+.tl-kf-dot{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:7px;height:7px;border-radius:50%;
+}
+.tl-kf-dot.motion{background:var(--choreography);}
+.tl-kf-dot.sound{background:var(--amber);}
+.tl-kf-dot.formation{background:var(--totem);}
+.tl-playhead{
+  position:absolute;top:0;bottom:0;width:2px;
+  background:rgba(220,60,120,.8);pointer-events:none;
+  box-shadow:0 0 6px rgba(220,60,120,.5);transition:left .1s linear;
+}
+
+.tl-legend{
+  display:flex;gap:10px;margin-top:4px;
+}
+.tl-leg-item{
+  display:flex;align-items:center;gap:4px;
+  font-family:var(--fc);font-size:.24rem;color:rgba(255,255,255,.3);
+}
+.tl-leg-dot{width:6px;height:6px;border-radius:50%;}
+
+/* Sequence readout */
+.seq-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;
+  padding:5px 8px 8px;
+}
+.seq-cell{
+  background:rgba(255,255,255,.025);border:1px solid var(--edge);
+  border-radius:3px;padding:5px 7px;
+}
+.seq-cell-label{
+  font-family:var(--fc);font-size:.25rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.28);text-transform:uppercase;margin-bottom:2px;
+}
+.seq-cell-value{
+  font-family:var(--fm);font-size:.42rem;color:var(--choreography);
+}
+.seq-cell-value.dim{color:rgba(255,255,255,.45);font-family:var(--fc);}
+
+.next-event-row{
+  padding:4px 10px 6px;font-family:var(--fc);font-size:.28rem;
+  color:rgba(255,255,255,.3);
+}
+.next-event-row .nev-val{color:var(--amber);}
+
+.seq-action-row{
+  display:flex;gap:6px;padding:5px 8px 8px;
+}
+.seq-run-btn{
+  flex:1;font-family:var(--fm);font-size:.3rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:8px 6px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(220,60,120,.5);background:rgba(220,60,120,.1);
+  color:var(--choreography);transition:all .14s;
+}
+.seq-run-btn:hover{background:rgba(220,60,120,.22);box-shadow:0 0 14px rgba(220,60,120,.3);}
+.seq-run-btn.running{
+  border-color:rgba(77,200,160,.55);background:rgba(77,200,160,.1);
+  color:var(--emerald);animation:pulse-run 1s ease-in-out infinite;
+}
+.seq-reset-btn{
+  flex:1;font-family:var(--fm);font-size:.3rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:8px 6px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(177,208,240,.25);background:rgba(177,208,240,.04);
+  color:rgba(177,208,240,.6);transition:all .14s;
+}
+.seq-reset-btn:hover{background:rgba(177,208,240,.1);color:var(--venturan);}
+
+/* Component detail panel */
+.comp-detail{
+  padding:8px 10px;
+}
+.comp-detail-title{
+  font-family:var(--fm);font-size:.38rem;letter-spacing:.1em;
+  color:var(--choreography);text-transform:uppercase;margin-bottom:6px;
+  display:flex;align-items:center;gap:8px;
+}
+.comp-detail-desc{
+  font-family:var(--fd);font-size:.36rem;color:rgba(255,255,255,.5);
+  line-height:1.6;margin-bottom:8px;
+}
+.comp-detail-params{
+  display:flex;flex-direction:column;gap:4px;
+}
+.cdp-row{
+  display:flex;align-items:center;padding:3px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.cdp-label{
+  font-family:var(--fc);font-size:.27rem;letter-spacing:.05em;
+  color:rgba(255,255,255,.3);text-transform:uppercase;width:90px;flex-shrink:0;
+}
+.cdp-value{
+  font-family:var(--fc);font-size:.3rem;color:var(--choreography);
+  flex:1;
+}
+.cdp-value.dim{color:rgba(255,255,255,.45);}
+.cdp-value.amber{color:var(--amber);}
+.cdp-value.emerald{color:var(--emerald);}
+
+/* Sync bus row */
+.sync-bus-row{
+  display:flex;align-items:center;gap:6px;padding:4px 10px;
+}
+.sync-bus-agent{
+  font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.35);
+  flex:1;padding:3px 6px;background:rgba(255,255,255,.02);
+  border:1px solid var(--edge);border-radius:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.sync-bus-agent.leader{
+  color:var(--choreography);border-color:rgba(220,60,120,.25);
+  background:rgba(220,60,120,.05);
+}
+.sync-link{
+  width:8px;height:1px;background:rgba(220,60,120,.4);flex-shrink:0;
+}
+
+/* ── STATUS BAR ── */
+#status-bar{
+  height:26px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-top:1px solid var(--edge);
+  padding:0 12px;font-family:var(--fc);font-size:.28rem;
+  color:rgba(255,255,255,.28);letter-spacing:.06em;
+  position:relative;z-index:10;
+}
+.sb-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:0 10px;border-right:1px solid var(--edge);
+  height:100%;white-space:nowrap;
+}
+.sb-chip:first-child{padding-left:0;}
+.sb-chip .val{color:var(--choreography);}
+.sb-chip .val-g{color:var(--emerald);}
+.sb-chip .val-a{color:var(--amber);}
+.sb-spacer{flex:1;}
+.sb-status{
+  padding:0 10px;height:100%;display:flex;align-items:center;gap:5px;
+}
+.sb-dot{width:5px;height:5px;border-radius:50%;background:var(--choreography);}
+.sb-dot.idle{background:rgba(255,255,255,.2);}
+.sb-dot.active{animation:pulse-sb .8s ease-in-out infinite;}
+@keyframes pulse-sb{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+/* No-data placeholder */
+.no-data{
+  padding:16px 10px;text-align:center;
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.18);text-transform:uppercase;line-height:1.8;
+}
+
+/* Snapshot pulse */
+.snap-pulse{
+  display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--choreography);animation:snap-blink .4s ease-in-out 3;
+}
+@keyframes snap-blink{0%,100%{opacity:0;}50%{opacity:1;}}
+
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- ═══════════════════════════════════════ TOP BAR ═══════════════════════════════════════ -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">⟳</div>
+      <div class="tb-module-labels">
+        <div class="tb-module-id">06 · Choreography</div>
+        <div class="tb-subcrest">LOOM · EntitySystems</div>
+      </div>
+    </div>
+
+    <div class="tb-tabs">
+      <div class="tb-tab active" onclick="switchTab('canvas',this)">Canvas</div>
+      <div class="tb-tab" onclick="switchTab('timeline',this)">Timeline</div>
+      <div class="tb-tab" onclick="switchTab('formation',this)">Formation</div>
+      <div class="tb-tab" onclick="switchTab('sync',this)">Sync Bus</div>
+    </div>
+
+    <div class="tb-spacer"></div>
+
+    <div class="tb-upstream">
+      <span style="font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.06em;margin-right:3px;">upstream</span>
+      <span class="up-chip" id="up-modeling">MODELING</span>
+      <span class="up-chip" id="up-behavior">BEHAVIOR</span>
+      <span class="up-chip" id="up-terrain">TERRAIN</span>
+      <span class="up-chip" id="up-architect">ARCHITECT</span>
+    </div>
+
+    <div class="tb-actions">
+      <button class="tb-btn hot" id="btn-run-seq" onclick="toggleSequence()">▶ RUN SEQ</button>
+      <button class="tb-btn" onclick="saveSnapshot()">⬇ SNAPSHOT</button>
+      <button class="tb-btn sec" onclick="resetAll()">✕ RESET</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ BODY ════════════════════════════════════════════ -->
+  <div id="body">
+
+    <!-- ─────────── LEFT PANEL ─────────── -->
+    <div id="left-panel">
+      <!-- Component Matrix header -->
+      <div class="sec-header">
+        Component Matrix
+        <span class="sec-header-count">16</span>
+      </div>
+
+      <div class="lp-scroll">
+        <!-- LAYER I — Sequence -->
+        <div class="layer-divider">I · Sequence</div>
+        <div class="comp-matrix">
+          <div class="comp-card active" id="card-TKP" onclick="activateComp('TKP')">
+            <div class="comp-code">TKP</div>
+            <span class="comp-wire">TMP</span>
+            <div class="comp-status"><div class="comp-dot active-dot" id="dot-TKP"></div><span class="comp-label">Keyframe Planner</span></div>
+          </div>
+          <div class="comp-card" id="card-BSI" onclick="activateComp('BSI')">
+            <div class="comp-code">BSI</div>
+            <span class="comp-wire">AUD</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-BSI"></div><span class="comp-label">Beat Sync Injector</span></div>
+          </div>
+          <div class="comp-card" id="card-POC" onclick="activateComp('POC')">
+            <div class="comp-code">POC</div>
+            <span class="comp-wire">TMP</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-POC"></div><span class="comp-label">Phase Offset Ctrl</span></div>
+          </div>
+          <div class="comp-card" id="card-TCM" onclick="activateComp('TCM')">
+            <div class="comp-code">TCM</div>
+            <span class="comp-wire">BHV</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-TCM"></div><span class="comp-label">Transition Curve</span></div>
+          </div>
+        </div>
+
+        <!-- LAYER II — Formation -->
+        <div class="layer-divider">II · Formation</div>
+        <div class="comp-matrix">
+          <div class="comp-card" id="card-FTL" onclick="activateComp('FTL')">
+            <div class="comp-code">FTL</div>
+            <span class="comp-wire">DAT</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-FTL"></div><span class="comp-label">Formation Library</span></div>
+          </div>
+          <div class="comp-card" id="card-SAE" onclick="activateComp('SAE')">
+            <div class="comp-code">SAE</div>
+            <span class="comp-wire">AGT</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-SAE"></div><span class="comp-label">Slot Assignment</span></div>
+          </div>
+          <div class="comp-card" id="card-DFR" onclick="activateComp('DFR')">
+            <div class="comp-code">DFR</div>
+            <span class="comp-wire">DAT</span>
+            <div class="comp-status"><div class="comp-dot warn" id="dot-DFR"></div><span class="comp-label">Density Flow</span></div>
+          </div>
+          <div class="comp-card" id="card-SHG" onclick="activateComp('SHG')">
+            <div class="comp-code">SHG</div>
+            <span class="comp-wire">DAT</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-SHG"></div><span class="comp-label">Spatial Hash Grid</span></div>
+          </div>
+        </div>
+
+        <!-- LAYER III — Motion -->
+        <div class="layer-divider">III · Motion</div>
+        <div class="comp-matrix">
+          <div class="comp-card" id="card-PSS" onclick="activateComp('PSS')">
+            <div class="comp-code">PSS</div>
+            <span class="comp-wire">BHV</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-PSS"></div><span class="comp-label">Path Spline Solver</span></div>
+          </div>
+          <div class="comp-card" id="card-VGF" onclick="activateComp('VGF')">
+            <div class="comp-code">VGF</div>
+            <span class="comp-wire">DAT</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-VGF"></div><span class="comp-label">Velocity Field</span></div>
+          </div>
+          <div class="comp-card" id="card-CAL" onclick="activateComp('CAL')">
+            <div class="comp-code">CAL</div>
+            <span class="comp-wire">BHV</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-CAL"></div><span class="comp-label">Collision Avoidance</span></div>
+          </div>
+          <div class="comp-card" id="card-MBT" onclick="activateComp('MBT')">
+            <div class="comp-code">MBT</div>
+            <span class="comp-wire">BHV</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-MBT"></div><span class="comp-label">Motion Blend Tree</span></div>
+          </div>
+        </div>
+
+        <!-- LAYER IV — Sync -->
+        <div class="layer-divider">IV · Sync</div>
+        <div class="comp-matrix">
+          <div class="comp-card" id="card-ASB" onclick="activateComp('ASB')">
+            <div class="comp-code">ASB</div>
+            <span class="comp-wire">SOC</span>
+            <div class="comp-status"><div class="comp-dot active-dot" id="dot-ASB"></div><span class="comp-label">Agent Sync Bus</span></div>
+          </div>
+          <div class="comp-card" id="card-LFL" onclick="activateComp('LFL')">
+            <div class="comp-code">LFL</div>
+            <span class="comp-wire">AGT</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-LFL"></div><span class="comp-label">Leader–Follower</span></div>
+          </div>
+          <div class="comp-card" id="card-CFE" onclick="activateComp('CFE')">
+            <div class="comp-code">CFE</div>
+            <span class="comp-wire">BHV</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-CFE"></div><span class="comp-label">Crowd Flow</span></div>
+          </div>
+          <div class="comp-card" id="card-CEP" onclick="activateComp('CEP')">
+            <div class="comp-code">CEP</div>
+            <span class="comp-wire">NAR</span>
+            <div class="comp-status"><div class="comp-dot ok" id="dot-CEP"></div><span class="comp-label">Export Packet</span></div>
+          </div>
+        </div>
+
+        <!-- Entity roster -->
+        <div class="sec-header" style="margin-top:4px;">
+          Entity Roster
+          <span class="sec-header-count" id="roster-count">0</span>
+        </div>
+        <div id="entity-roster"></div>
+
+      </div><!-- end lp-scroll -->
+
+      <div class="lp-footer">
+        <button class="lp-footer-btn" onclick="loadUpstreamData()">↺ RELOAD UPSTREAM</button>
+        <button class="lp-footer-btn" onclick="saveSnapshot()" style="border-color:rgba(77,200,160,.4);color:var(--emerald);background:rgba(77,200,160,.06);">⬇ WRITE SNAPSHOT</button>
+      </div>
+    </div><!-- end left-panel -->
+
+    <!-- ─────────── CANVAS ─────────── -->
+    <div id="canvas-wrap">
+      <canvas id="main-canvas"></canvas>
+
+      <div class="canvas-overlay-btns">
+        <button class="canvas-btn on" id="btn-hex" onclick="toggleLayer('hex',this)">HEX</button>
+        <button class="canvas-btn on" id="btn-vel" onclick="toggleLayer('vel',this)">VEL</button>
+        <button class="canvas-btn on" id="btn-links" onclick="toggleLayer('links',this)">LINKS</button>
+        <button class="canvas-btn on" id="btn-paths" onclick="toggleLayer('paths',this)">PATHS</button>
+        <button class="canvas-btn on" id="btn-formations" onclick="toggleLayer('formations',this)">FORMATION</button>
+      </div>
+
+      <div class="canvas-info" id="canvas-info">
+        <div>ENTITIES &nbsp;<span class="val" id="ci-ent">0</span></div>
+        <div>BEAT &nbsp;&nbsp;&nbsp;&nbsp;<span class="val" id="ci-beat">0</span> / 32</div>
+        <div>BPM &nbsp;&nbsp;&nbsp;&nbsp;<span class="val" id="ci-bpm">120</span></div>
+        <div>FORMATION <span class="val" id="ci-form">Circle</span></div>
+        <div>LEADERS &nbsp;<span class="val-g" id="ci-lead">3</span></div>
+      </div>
+    </div><!-- end canvas-wrap -->
+
+    <!-- ─────────── RIGHT PANEL ─────────── -->
+    <div id="right-panel">
+      <div class="rp-scroll">
+
+        <!-- Formation Selector -->
+        <div class="rp-section">
+          <div class="rp-section-header">
+            Formation Selector
+            <span class="rp-sh-badge" id="rp-form-badge">Circle</span>
+          </div>
+          <div class="formation-grid">
+            <button class="formation-btn active-form" data-form="circle" onclick="setFormation('circle',this)">
+              <span class="formation-icon">◉</span>Circle
+            </button>
+            <button class="formation-btn" data-form="line" onclick="setFormation('line',this)">
+              <span class="formation-icon">━</span>Line
+            </button>
+            <button class="formation-btn" data-form="v-shape" onclick="setFormation('v-shape',this)">
+              <span class="formation-icon">∧</span>V-Shape
+            </button>
+            <button class="formation-btn" data-form="grid" onclick="setFormation('grid',this)">
+              <span class="formation-icon">⊞</span>Grid
+            </button>
+            <button class="formation-btn" data-form="swarm" onclick="setFormation('swarm',this)">
+              <span class="formation-icon">✦</span>Swarm
+            </button>
+            <button class="formation-btn" data-form="custom" onclick="setFormation('custom',this)">
+              <span class="formation-icon">⚙</span>Custom
+            </button>
+          </div>
+        </div>
+
+        <!-- BPM / Phase Controls -->
+        <div class="rp-section">
+          <div class="rp-section-header">Tempo &amp; Phase</div>
+          <div class="rp-control-row">
+            <span class="rp-ctrl-label">BPM</span>
+            <input type="range" class="rp-ctrl-slider" id="sl-bpm" min="40" max="240" value="120"
+              oninput="onBPMChange(this.value)">
+            <span class="rp-ctrl-val" id="val-bpm">120</span>
+          </div>
+          <div class="rp-control-row">
+            <span class="rp-ctrl-label">Phase Offset</span>
+            <input type="range" class="rp-ctrl-slider" id="sl-phase" min="-1" max="1" step="0.01" value="0"
+              oninput="onPhaseChange(this.value)">
+            <span class="rp-ctrl-val" id="val-phase">0.00</span>
+          </div>
+          <div class="rp-control-row">
+            <span class="rp-ctrl-label">Leader Count</span>
+            <input type="range" class="rp-ctrl-slider" id="sl-leaders" min="1" max="8" value="3"
+              oninput="onLeaderCountChange(this.value)">
+            <span class="rp-ctrl-val" id="val-leaders">3</span>
+          </div>
+          <div class="rp-control-row">
+            <span class="rp-ctrl-label">Density</span>
+            <input type="range" class="rp-ctrl-slider" id="sl-density" min="0.1" max="2" step="0.05" value="1"
+              oninput="onDensityChange(this.value)">
+            <span class="rp-ctrl-val" id="val-density">1.0</span>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="rp-section">
+          <div class="rp-section-header">
+            Timeline Strip
+            <span class="rp-sh-badge" id="rp-kf-badge">0 KF</span>
+          </div>
+          <div class="timeline-wrap">
+            <div class="timeline-label">
+              32 Bars · Click to add keyframe
+              <span class="tl-beat">Beat: <span id="tl-beat-num">0</span></span>
+            </div>
+            <div class="timeline-strip" id="timeline-strip">
+              <div class="timeline-bar-grid" id="tl-bar-grid"></div>
+              <div class="tl-playhead" id="tl-playhead" style="left:0%"></div>
+            </div>
+            <div class="tl-legend">
+              <div class="tl-leg-item"><div class="tl-leg-dot" style="background:var(--choreography)"></div>Motion</div>
+              <div class="tl-leg-item"><div class="tl-leg-dot" style="background:var(--amber)"></div>Sound</div>
+              <div class="tl-leg-item"><div class="tl-leg-dot" style="background:var(--totem)"></div>Formation</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Sequence Readout -->
+        <div class="rp-section">
+          <div class="rp-section-header">Active Sequence</div>
+          <div class="seq-grid">
+            <div class="seq-cell">
+              <div class="seq-cell-label">Current Beat</div>
+              <div class="seq-cell-value" id="seq-beat">0</div>
+            </div>
+            <div class="seq-cell">
+              <div class="seq-cell-label">BPM</div>
+              <div class="seq-cell-value" id="seq-bpm">120</div>
+            </div>
+            <div class="seq-cell">
+              <div class="seq-cell-label">Phase</div>
+              <div class="seq-cell-value dim" id="seq-phase">+0.00</div>
+            </div>
+            <div class="seq-cell">
+              <div class="seq-cell-label">KF Count</div>
+              <div class="seq-cell-value" id="seq-kf">0</div>
+            </div>
+          </div>
+          <div class="next-event-row">
+            Next Event: <span class="nev-val" id="next-event">— none —</span>
+          </div>
+          <div class="seq-action-row">
+            <button class="seq-run-btn" id="seq-run-btn" onclick="toggleSequence()">▶ RUN SEQUENCE</button>
+            <button class="seq-reset-btn" onclick="resetAll()">✕ RESET</button>
+          </div>
+        </div>
+
+        <!-- Component Detail -->
+        <div class="rp-section">
+          <div class="rp-section-header">Component Detail
+            <span class="rp-sh-badge" id="rp-comp-badge">TKP</span>
+          </div>
+          <div id="comp-detail-area" class="comp-detail"></div>
+        </div>
+
+        <!-- Sync Bus -->
+        <div class="rp-section">
+          <div class="rp-section-header">Agent Sync Bus</div>
+          <div id="sync-bus-area">
+            <div class="no-data">Loading agents…</div>
+          </div>
+        </div>
+
+      </div><!-- end rp-scroll -->
+    </div><!-- end right-panel -->
+
+  </div><!-- end body -->
+
+  <!-- ═══════════════════════════════════════ STATUS BAR ══════════════════════════════════════ -->
+  <div id="status-bar">
+    <div class="sb-chip">06 · CHOREOGRAPHY</div>
+    <div class="sb-chip">ENTITIES <span class="val" id="sb-ents">0</span></div>
+    <div class="sb-chip">BEAT <span class="val" id="sb-beat">0</span>/32</div>
+    <div class="sb-chip">BPM <span class="val" id="sb-bpm">120</span></div>
+    <div class="sb-chip">FORMATION <span class="val" id="sb-form">Circle</span></div>
+    <div class="sb-chip">LEADERS <span class="val-g" id="sb-leaders">3</span></div>
+    <div class="sb-chip">KF <span class="val-a" id="sb-kf">0</span></div>
+    <div class="sb-spacer"></div>
+    <div class="sb-chip" id="sb-snap">SNAPSHOT <span id="sb-snap-time" style="color:rgba(255,255,255,.25);">never</span></div>
+    <div class="sb-status">
+      <div class="sb-dot idle" id="sb-dot"></div>
+      <span id="sb-label">IDLE</span>
+    </div>
+  </div>
+
+</div><!-- end shell -->
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+//  QUANTUM ATLAS — MODULE 06 · CHOREOGRAPHY
+//  EntitySystems · Crest: LOOM · Accent: #dc3c78 · Glyph: ⟳
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ─── State ───────────────────────────────────────────────────────────────────
+const STATE = {
+  entities: [],
+  bpm: 120,
+  beat: 0,
+  phaseOffset: 0,
+  leaderCount: 3,
+  density: 1.0,
+  formation: 'circle',
+  keyframes: [],        // { bar: 0..31, type: 'motion'|'sound'|'formation' }
+  running: false,
+  activeComp: 'TKP',
+  layers: { hex: true, vel: true, links: true, paths: true, formations: true },
+  beatInterval: null,
+  animId: null,
+  // Beat pulse rings
+  beatPulses: [],       // { x, y, r, maxR, alpha }
+  // Path dash offset
+  dashOffset: 0,
+  // Formation target positions
+  formationSlots: [],
+  // Upstream snapshots
+  modelingSnap: null,
+  behaviorSnap: null,
+  terrainSnap: null,
+  architectSnap: null,
+};
+
+// ─── Canvas ───────────────────────────────────────────────────────────────────
+const canvas = document.getElementById('main-canvas');
+const ctx = canvas.getContext('2d');
+let W = 0, H = 0, CX = 0, CY = 0;
+
+function resizeCanvas() {
+  const wrap = document.getElementById('canvas-wrap');
+  W = wrap.clientWidth;
+  H = wrap.clientHeight;
+  canvas.width = W;
+  canvas.height = H;
+  CX = W / 2;
+  CY = H / 2;
+  computeFormationSlots();
+}
+window.addEventListener('resize', resizeCanvas);
+
+// ─── Entity generation ────────────────────────────────────────────────────────
+const EMOTION_COLORS = {
+  joy:      '#e8b84b',
+  fear:     '#9b7fd4',
+  anger:    '#d45b5b',
+  calm:     '#4dc8a0',
+  curious:  '#b1d0f0',
+  hostile:  '#f98f3b',
+  neutral:  '#7fd4c8',
+  excited:  '#dc3c78',
+};
+
+const ROLE_COLORS = {
+  leader:   '#dc3c78',
+  follower: '#b1d0f0',
+  sentinel: '#4dc8a0',
+  scout:    '#e8b84b',
+};
+
+const NPC_NAMES = [
+  'Axen','Bryn','Cyra','Dael','Eris','Fyar','Gwen','Holt',
+  'Ilex','Jyra','Kael','Lorn','Myra','Nyx','Oryn','Pyke',
+  'Quin','Rhys','Syla','Tove','Ulan','Vex','Wren','Xael'
+];
+
+const EMOTIONS = Object.keys(EMOTION_COLORS);
+
+function generateEntities(count) {
+  count = count || 24;
+  STATE.entities = [];
+  for (let i = 0; i < count; i++) {
+    const emotion = EMOTIONS[Math.floor(Math.random() * EMOTIONS.length)];
+    const isLeader = i < STATE.leaderCount;
+    const role = isLeader ? 'leader' : (Math.random() < .15 ? 'sentinel' : (Math.random() < .2 ? 'scout' : 'follower'));
+    STATE.entities.push({
+      id: i,
+      name: NPC_NAMES[i % NPC_NAMES.length] + (i >= NPC_NAMES.length ? '_' + Math.floor(i / NPC_NAMES.length) : ''),
+      emotion,
+      role,
+      x: CX + (Math.random() - 0.5) * Math.min(W, H) * 0.4,
+      y: CY + (Math.random() - 0.5) * Math.min(W, H) * 0.4,
+      tx: CX, ty: CY,  // target
+      vx: 0, vy: 0,
+      soulWeight: Math.random(),
+      speed: 1.2 + Math.random() * 0.8,
+      leaderId: isLeader ? null : (Math.floor(Math.random() * STATE.leaderCount)),
+      pathProgress: Math.random(),
+      pathT: Math.random() * Math.PI * 2,
+      blendState: 'idle',  // idle | moving | arrived
+    });
+  }
+  computeFormationSlots();
+  assignSlots();
+  renderRoster();
+  renderSyncBus();
+}
+
+// ─── Formation computations ───────────────────────────────────────────────────
+function computeFormationSlots() {
+  const count = STATE.entities.length || 24;
+  const slots = [];
+  const r = Math.min(W, H) * 0.28 * STATE.density;
+  switch (STATE.formation) {
+    case 'circle': {
+      for (let i = 0; i < count; i++) {
+        const a = (i / count) * Math.PI * 2 - Math.PI / 2;
+        slots.push({ x: CX + Math.cos(a) * r, y: CY + Math.sin(a) * r });
+      }
+      break;
+    }
+    case 'line': {
+      const spacing = Math.min(W * 0.7, count * 28) / count;
+      const startX = CX - (count - 1) * spacing / 2;
+      for (let i = 0; i < count; i++) {
+        slots.push({ x: startX + i * spacing, y: CY });
+      }
+      break;
+    }
+    case 'v-shape': {
+      const half = Math.floor(count / 2);
+      const sp = Math.min(W * 0.3, 280) / half;
+      for (let i = 0; i < count; i++) {
+        if (i === 0) { slots.push({ x: CX, y: CY - r * 0.4 }); }
+        else if (i <= half) {
+          const t = i / half;
+          slots.push({ x: CX - sp * i, y: CY - r * 0.4 + t * r * 0.8 });
+        } else {
+          const t = (i - half) / (count - half);
+          slots.push({ x: CX + sp * (i - half), y: CY - r * 0.4 + t * r * 0.8 });
+        }
+      }
+      break;
+    }
+    case 'grid': {
+      const cols = Math.ceil(Math.sqrt(count * (W / H)));
+      const rows = Math.ceil(count / cols);
+      const gsx = Math.min(W * 0.6, cols * 36) / cols;
+      const gsy = Math.min(H * 0.6, rows * 36) / rows;
+      const ox = CX - (cols - 1) * gsx / 2;
+      const oy = CY - (rows - 1) * gsy / 2;
+      for (let i = 0; i < count; i++) {
+        slots.push({
+          x: ox + (i % cols) * gsx,
+          y: oy + Math.floor(i / cols) * gsy
+        });
+      }
+      break;
+    }
+    case 'swarm': {
+      // Scattered but within a region, updated per entity
+      for (let i = 0; i < count; i++) {
+        const a = (i / count) * Math.PI * 2;
+        const rd = r * (0.2 + Math.random() * 0.6);
+        slots.push({
+          x: CX + Math.cos(a) * rd + (Math.random() - 0.5) * 60,
+          y: CY + Math.sin(a) * rd + (Math.random() - 0.5) * 60,
+        });
+      }
+      break;
+    }
+    case 'custom': {
+      // Spiral
+      for (let i = 0; i < count; i++) {
+        const t = (i / count) * Math.PI * 6;
+        const sr = (i / count) * r;
+        slots.push({ x: CX + Math.cos(t) * sr, y: CY + Math.sin(t) * sr });
+      }
+      break;
+    }
+  }
+  STATE.formationSlots = slots;
+}
+
+function assignSlots() {
+  STATE.entities.forEach((e, i) => {
+    if (STATE.formationSlots[i]) {
+      e.tx = STATE.formationSlots[i].x;
+      e.ty = STATE.formationSlots[i].y;
+    }
+  });
+}
+
+// ─── Animation loop ───────────────────────────────────────────────────────────
+let animT = 0;
+let lastTs = 0;
+
+function animLoop(ts) {
+  STATE.animId = requestAnimationFrame(animLoop);
+  const dt = Math.min((ts - lastTs) / 1000, 0.05);
+  lastTs = ts;
+  animT = ts / 1000;
+
+  // Update entities
+  updateEntities(dt);
+
+  // Animate dash offset
+  STATE.dashOffset -= 0.3;
+
+  // Update beat pulses
+  STATE.beatPulses = STATE.beatPulses.filter(p => p.alpha > 0);
+  STATE.beatPulses.forEach(p => {
+    p.r += 80 * dt;
+    p.alpha -= 1.2 * dt;
+  });
+
+  // Draw
+  draw();
+}
+
+function updateEntities(dt) {
+  STATE.entities.forEach((e, i) => {
+    // Move toward target with spring
+    const dx = e.tx - e.x;
+    const dy = e.ty - e.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist > 1.5) {
+      e.blendState = 'moving';
+      const spd = e.speed * 60 * dt * (STATE.running ? 1 : 0.3);
+      const step = Math.min(spd, dist);
+      e.x += (dx / dist) * step;
+      e.y += (dy / dist) * step;
+    } else {
+      e.blendState = 'arrived';
+    }
+
+    // Swarm: continuously update targets with small perturbation
+    if (STATE.formation === 'swarm' && STATE.running) {
+      e.pathT += dt * (0.3 + e.soulWeight * 0.4);
+      if (STATE.formationSlots[i]) {
+        e.tx = STATE.formationSlots[i].x + Math.sin(e.pathT * 1.3) * 18;
+        e.ty = STATE.formationSlots[i].y + Math.cos(e.pathT * 0.9) * 18;
+      }
+    }
+
+    // Leader gentle orbit when running
+    if (e.role === 'leader' && STATE.running) {
+      const orb = 25;
+      e.pathT += dt * 0.4;
+      if (STATE.formationSlots[i]) {
+        e.tx = STATE.formationSlots[i].x + Math.cos(e.pathT + i * 2.1) * orb;
+        e.ty = STATE.formationSlots[i].y + Math.sin(e.pathT * 0.7 + i) * orb;
+      }
+    }
+  });
+}
+
+// ─── Drawing ──────────────────────────────────────────────────────────────────
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Background grid
+  drawBg();
+
+  if (STATE.layers.hex) drawHexGrid();
+  if (STATE.layers.vel) drawVelocityField();
+  if (STATE.layers.formations) drawFormationOutline();
+  if (STATE.layers.paths) drawPathSplines();
+  if (STATE.layers.links) drawLeaderLinks();
+
+  // Beat pulses
+  drawBeatPulses();
+
+  // Entities
+  drawEntities();
+
+  // Conductor node
+  drawConductor();
+}
+
+function drawBg() {
+  // Subtle vignette
+  const grad = ctx.createRadialGradient(CX, CY, 0, CX, CY, Math.max(W, H) * 0.7);
+  grad.addColorStop(0, 'rgba(8,11,18,.0)');
+  grad.addColorStop(1, 'rgba(0,0,0,.45)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function drawHexGrid() {
+  // Read terrain or fallback to placeholder hex grid
+  const HEX_R = 28;
+  const HEX_H = HEX_R * Math.sqrt(3);
+  const HEX_W = HEX_R * 2;
+
+  const cols = Math.ceil(W / (HEX_W * 0.75)) + 2;
+  const rows = Math.ceil(H / HEX_H) + 2;
+
+  ctx.strokeStyle = 'rgba(220,60,120,.05)';
+  ctx.lineWidth = 0.5;
+
+  for (let row = -1; row < rows; row++) {
+    for (let col = -1; col < cols; col++) {
+      const x = col * HEX_W * 0.75;
+      const y = row * HEX_H + (col % 2 === 0 ? 0 : HEX_H / 2);
+      drawHex(x, y, HEX_R);
+    }
+  }
+}
+
+function drawHex(x, y, r) {
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const a = (Math.PI / 3) * i - Math.PI / 6;
+    const px = x + r * Math.cos(a);
+    const py = y + r * Math.sin(a);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.stroke();
+}
+
+function drawVelocityField() {
+  const spacing = 60;
+  const cols = Math.floor(W / spacing) + 1;
+  const rows = Math.floor(H / spacing) + 1;
+  const arrowLen = 12;
+
+  ctx.strokeStyle = 'rgba(177,208,240,.12)';
+  ctx.lineWidth = 0.7;
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const x = c * spacing + (spacing / 2);
+      const y = r * spacing + (spacing / 2);
+
+      // Perlin-ish: use sin/cos to create a smooth vector field
+      const angle = Math.sin(x * 0.008 + animT * 0.15) * Math.PI +
+                    Math.cos(y * 0.009 + animT * 0.1) * Math.PI * 0.5;
+
+      const ex = x + Math.cos(angle) * arrowLen;
+      const ey = y + Math.sin(angle) * arrowLen;
+
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(ex, ey);
+      ctx.stroke();
+
+      // Arrowhead
+      const headAngle = Math.atan2(ey - y, ex - x);
+      ctx.beginPath();
+      ctx.moveTo(ex, ey);
+      ctx.lineTo(ex - 4 * Math.cos(headAngle - 0.4), ey - 4 * Math.sin(headAngle - 0.4));
+      ctx.moveTo(ex, ey);
+      ctx.lineTo(ex - 4 * Math.cos(headAngle + 0.4), ey - 4 * Math.sin(headAngle + 0.4));
+      ctx.stroke();
+    }
+  }
+}
+
+function drawFormationOutline() {
+  if (STATE.formationSlots.length === 0) return;
+
+  ctx.save();
+  ctx.setLineDash([5, 7]);
+  ctx.lineDashOffset = STATE.dashOffset * 0.4;
+  ctx.strokeStyle = 'rgba(220,60,120,.22)';
+  ctx.lineWidth = 1.2;
+
+  if (STATE.formation === 'circle') {
+    const r = Math.min(W, H) * 0.28 * STATE.density;
+    ctx.beginPath();
+    ctx.arc(CX, CY, r, 0, Math.PI * 2);
+    ctx.stroke();
+  } else if (STATE.formation === 'line') {
+    ctx.beginPath();
+    ctx.moveTo(STATE.formationSlots[0].x, STATE.formationSlots[0].y);
+    STATE.formationSlots.forEach(s => ctx.lineTo(s.x, s.y));
+    ctx.stroke();
+  } else if (STATE.formation === 'v-shape') {
+    // draw V outline
+    const mid = Math.floor(STATE.formationSlots.length / 2);
+    ctx.beginPath();
+    ctx.moveTo(STATE.formationSlots[mid].x, STATE.formationSlots[mid].y);
+    for (let i = mid - 1; i >= 0; i--) ctx.lineTo(STATE.formationSlots[i].x, STATE.formationSlots[i].y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(STATE.formationSlots[mid].x, STATE.formationSlots[mid].y);
+    for (let i = mid + 1; i < STATE.formationSlots.length; i++) ctx.lineTo(STATE.formationSlots[i].x, STATE.formationSlots[i].y);
+    ctx.stroke();
+  } else if (STATE.formation === 'grid') {
+    // Draw bounding rect
+    const xs = STATE.formationSlots.map(s => s.x);
+    const ys = STATE.formationSlots.map(s => s.y);
+    const minX = Math.min(...xs) - 14, maxX = Math.max(...xs) + 14;
+    const minY = Math.min(...ys) - 14, maxY = Math.max(...ys) + 14;
+    ctx.strokeRect(minX, minY, maxX - minX, maxY - minY);
+  } else if (STATE.formation === 'swarm') {
+    // Convex hull-ish: just a large ellipse
+    ctx.beginPath();
+    const rw = Math.min(W, H) * 0.3 * STATE.density;
+    const rh = Math.min(W, H) * 0.26 * STATE.density;
+    ctx.ellipse(CX, CY, rw, rh, animT * 0.05, 0, Math.PI * 2);
+    ctx.stroke();
+  } else {
+    // custom: spiral bounding
+    ctx.beginPath();
+    STATE.formationSlots.forEach((s, i) => {
+      if (i === 0) ctx.moveTo(s.x, s.y);
+      else ctx.lineTo(s.x, s.y);
+    });
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawPathSplines() {
+  if (STATE.entities.length < 2) return;
+
+  ctx.save();
+  ctx.setLineDash([6, 5]);
+  ctx.lineDashOffset = STATE.dashOffset;
+  ctx.lineWidth = 0.8;
+
+  STATE.entities.forEach((e, i) => {
+    if (e.role === 'follower' && !STATE.running) return;
+
+    const tx = e.tx, ty = e.ty;
+    const dx = tx - e.x, dy = ty - e.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 8) return;
+
+    // Bezier control point offset
+    const cp1x = e.x + dx * 0.3 + (Math.sin(animT * 0.5 + i) * 20);
+    const cp1y = e.y + dy * 0.3 + (Math.cos(animT * 0.4 + i) * 20);
+    const cp2x = tx - dx * 0.3;
+    const cp2y = ty - dy * 0.3;
+
+    const alpha = e.role === 'leader' ? 0.55 : 0.22;
+    ctx.strokeStyle = `rgba(220,60,120,${alpha})`;
+
+    ctx.beginPath();
+    ctx.moveTo(e.x, e.y);
+    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, tx, ty);
+    ctx.stroke();
+
+    // Arrow at midpoint
+    const mt = 0.5;
+    const mx = Math.pow(1-mt,3)*e.x + 3*Math.pow(1-mt,2)*mt*cp1x + 3*(1-mt)*mt*mt*cp2x + Math.pow(mt,3)*tx;
+    const my = Math.pow(1-mt,3)*e.y + 3*Math.pow(1-mt,2)*mt*cp1y + 3*(1-mt)*mt*mt*cp2y + Math.pow(mt,3)*ty;
+    const ang = Math.atan2(ty - e.y, tx - e.x);
+    ctx.setLineDash([]);
+    ctx.strokeStyle = `rgba(220,60,120,${alpha * 0.9})`;
+    ctx.lineWidth = 0.9;
+    ctx.beginPath();
+    ctx.moveTo(mx, my);
+    ctx.lineTo(mx - 7 * Math.cos(ang - 0.45), my - 7 * Math.sin(ang - 0.45));
+    ctx.moveTo(mx, my);
+    ctx.lineTo(mx - 7 * Math.cos(ang + 0.45), my - 7 * Math.sin(ang + 0.45));
+    ctx.stroke();
+    ctx.setLineDash([6, 5]);
+    ctx.lineDashOffset = STATE.dashOffset;
+    ctx.lineWidth = 0.8;
+  });
+
+  ctx.restore();
+}
+
+function drawLeaderLinks() {
+  STATE.entities.forEach(e => {
+    if (e.role === 'follower' && e.leaderId != null) {
+      const leader = STATE.entities[e.leaderId];
+      if (!leader) return;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(220,60,120,.15)';
+      ctx.lineWidth = 0.6;
+      ctx.setLineDash([2, 5]);
+      ctx.beginPath();
+      ctx.moveTo(e.x, e.y);
+      ctx.lineTo(leader.x, leader.y);
+      ctx.stroke();
+      ctx.restore();
+    }
+  });
+}
+
+function drawBeatPulses() {
+  STATE.beatPulses.forEach(p => {
+    const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+    grad.addColorStop(0, `rgba(220,60,120,0)`);
+    grad.addColorStop(0.7, `rgba(220,60,120,${p.alpha * 0.15})`);
+    grad.addColorStop(1, `rgba(220,60,120,0)`);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = `rgba(220,60,120,${p.alpha * 0.6})`;
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+}
+
+function drawEntities() {
+  STATE.entities.forEach(e => {
+    const isLeader = e.role === 'leader';
+    const r = isLeader ? 10 : 7;
+    const baseColor = EMOTION_COLORS[e.emotion] || '#7fd4c8';
+    const roleColor = ROLE_COLORS[e.role] || '#b1d0f0';
+
+    // Outer ring for leaders
+    if (isLeader) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(220,60,120,.7)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, r + 5, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Glow
+    const glow = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, r + 6);
+    glow.addColorStop(0, baseColor + '44');
+    glow.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, r + 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Fill
+    ctx.fillStyle = baseColor;
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Inner role indicator
+    ctx.fillStyle = isLeader ? '#dc3c78' : 'rgba(4,5,10,.55)';
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, r * 0.45, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Moving indicator
+    if (e.blendState === 'moving' && STATE.running) {
+      ctx.strokeStyle = 'rgba(255,255,255,.35)';
+      ctx.lineWidth = 0.7;
+      ctx.setLineDash([2, 3]);
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, r + 2 + Math.sin(animT * 4 + e.id) * 2, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Name label (leaders only)
+    if (isLeader) {
+      ctx.fillStyle = 'rgba(220,60,120,.8)';
+      ctx.font = '7px "JetBrains Mono"';
+      ctx.textAlign = 'center';
+      ctx.fillText(e.name, e.x, e.y - r - 6);
+    }
+  });
+}
+
+function drawConductor() {
+  // Central conductor node
+  const r = 14;
+  const pulse = Math.sin(animT * (STATE.bpm / 60) * Math.PI) * 0.5 + 0.5;
+
+  const glow = ctx.createRadialGradient(CX, CY, 0, CX, CY, r + 18);
+  glow.addColorStop(0, `rgba(220,60,120,${0.2 + pulse * 0.3})`);
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(CX, CY, r + 18, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = `rgba(220,60,120,${0.15 + pulse * 0.15})`;
+  ctx.beginPath();
+  ctx.arc(CX, CY, r, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = `rgba(220,60,120,${0.5 + pulse * 0.5})`;
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.arc(CX, CY, r, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255,255,255,.7)';
+  ctx.font = '9px "JetBrains Mono"';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('⟳', CX, CY);
+  ctx.textBaseline = 'alphabetic';
+
+  ctx.fillStyle = 'rgba(220,60,120,.55)';
+  ctx.font = '6px "JetBrains Mono"';
+  ctx.fillText('CONDUCTOR', CX, CY + r + 10);
+}
+
+// ─── Beat Sequencer ───────────────────────────────────────────────────────────
+function startBeatSequencer() {
+  if (STATE.beatInterval) clearInterval(STATE.beatInterval);
+  const msPerBeat = 60000 / STATE.bpm;
+  STATE.beatInterval = setInterval(onBeat, msPerBeat);
+}
+
+function stopBeatSequencer() {
+  if (STATE.beatInterval) { clearInterval(STATE.beatInterval); STATE.beatInterval = null; }
+}
+
+function onBeat() {
+  STATE.beat = (STATE.beat + 1) % 32;
+
+  // Fire beat pulse from conductor
+  STATE.beatPulses.push({ x: CX, y: CY, r: 10, maxR: Math.min(W, H) * 0.4, alpha: 0.9 });
+
+  // Check keyframe events at this beat
+  const kfsAtBeat = STATE.keyframes.filter(k => k.bar === STATE.beat);
+  kfsAtBeat.forEach(kf => {
+    if (kf.type === 'formation') {
+      const forms = ['circle','line','v-shape','grid','swarm','custom'];
+      const newForm = forms[Math.floor(Math.random() * forms.length)];
+      setFormation(newForm, null);
+    }
+  });
+
+  updateBeatUI();
+  saveSnapshot();
+}
+
+function updateBeatUI() {
+  const b = STATE.beat;
+  document.getElementById('ci-beat').textContent = b;
+  document.getElementById('sb-beat').textContent = b;
+  document.getElementById('seq-beat').textContent = b;
+  document.getElementById('tl-beat-num').textContent = b;
+
+  // Playhead
+  const pct = (b / 32) * 100;
+  document.getElementById('tl-playhead').style.left = pct + '%';
+
+  // Next event
+  const upcoming = STATE.keyframes
+    .filter(k => k.bar > b)
+    .sort((a, z) => a.bar - z.bar)[0];
+  const nev = document.getElementById('next-event');
+  nev.textContent = upcoming ? `Bar ${upcoming.bar} · ${upcoming.type}` : '— none —';
+}
+
+// ─── Formation UI ─────────────────────────────────────────────────────────────
+function setFormation(name, btn) {
+  STATE.formation = name;
+
+  // Update buttons
+  document.querySelectorAll('.formation-btn').forEach(b => b.classList.remove('active-form'));
+  if (btn) btn.classList.add('active-form');
+  else {
+    const b = document.querySelector(`[data-form="${name}"]`);
+    if (b) b.classList.add('active-form');
+  }
+
+  // Update badge / displays
+  const label = name.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
+  document.getElementById('rp-form-badge').textContent = label;
+  document.getElementById('ci-form').textContent = label;
+  document.getElementById('sb-form').textContent = label;
+
+  computeFormationSlots();
+  assignSlots();
+  saveSnapshot();
+}
+
+// ─── Timeline strip setup ─────────────────────────────────────────────────────
+function buildTimeline() {
+  const grid = document.getElementById('tl-bar-grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < 32; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'tl-bar';
+    bar.id = 'tl-b-' + i;
+    bar.innerHTML = `<span class="tl-bar-num">${i + 1}</span>`;
+    bar.addEventListener('click', () => onTimelineClick(i, bar));
+    grid.appendChild(bar);
+  }
+}
+
+let kfTypeIndex = 0;
+const KF_TYPES = ['motion', 'sound', 'formation'];
+
+function onTimelineClick(bar, el) {
+  // Cycle through types or remove if same
+  const existing = STATE.keyframes.find(k => k.bar === bar);
+  if (existing) {
+    const ti = KF_TYPES.indexOf(existing.type);
+    const nextType = KF_TYPES[(ti + 1) % KF_TYPES.length];
+    if (nextType === KF_TYPES[0] && ti === KF_TYPES.length - 1) {
+      // Remove on wrap-around past last
+      STATE.keyframes = STATE.keyframes.filter(k => k.bar !== bar);
+      el.classList.remove('has-kf');
+      const dot = el.querySelector('.tl-kf-dot');
+      if (dot) dot.remove();
+    } else {
+      existing.type = nextType;
+      const dot = el.querySelector('.tl-kf-dot');
+      if (dot) dot.className = 'tl-kf-dot ' + nextType;
+    }
+  } else {
+    const type = KF_TYPES[kfTypeIndex % KF_TYPES.length];
+    kfTypeIndex++;
+    STATE.keyframes.push({ bar, type });
+    el.classList.add('has-kf');
+    const dot = document.createElement('div');
+    dot.className = 'tl-kf-dot ' + type;
+    el.appendChild(dot);
+  }
+
+  updateKFBadge();
+  saveSnapshot();
+}
+
+function updateKFBadge() {
+  const n = STATE.keyframes.length;
+  document.getElementById('rp-kf-badge').textContent = n + ' KF';
+  document.getElementById('seq-kf').textContent = n;
+  document.getElementById('sb-kf').textContent = n;
+}
+
+// ─── Controls ─────────────────────────────────────────────────────────────────
+function onBPMChange(v) {
+  STATE.bpm = +v;
+  document.getElementById('val-bpm').textContent = v;
+  document.getElementById('seq-bpm').textContent = v;
+  document.getElementById('ci-bpm').textContent = v;
+  document.getElementById('sb-bpm').textContent = v;
+  if (STATE.running) startBeatSequencer();
+}
+
+function onPhaseChange(v) {
+  STATE.phaseOffset = +v;
+  document.getElementById('val-phase').textContent = parseFloat(v).toFixed(2);
+  document.getElementById('seq-phase').textContent = (v >= 0 ? '+' : '') + parseFloat(v).toFixed(2);
+}
+
+function onLeaderCountChange(v) {
+  STATE.leaderCount = +v;
+  document.getElementById('val-leaders').textContent = v;
+  document.getElementById('ci-lead').textContent = v;
+  document.getElementById('sb-leaders').textContent = v;
+  // Reassign roles
+  STATE.entities.forEach((e, i) => {
+    e.role = i < STATE.leaderCount ? 'leader' : (e.role === 'leader' ? 'follower' : e.role);
+    e.leaderId = e.role === 'follower' ? (Math.floor(Math.random() * STATE.leaderCount)) : null;
+  });
+  renderRoster();
+  renderSyncBus();
+}
+
+function onDensityChange(v) {
+  STATE.density = +v;
+  document.getElementById('val-density').textContent = parseFloat(v).toFixed(1);
+  computeFormationSlots();
+  assignSlots();
+}
+
+// ─── Run / Reset ──────────────────────────────────────────────────────────────
+function toggleSequence() {
+  STATE.running = !STATE.running;
+  const runBtn = document.getElementById('btn-run-seq');
+  const seqBtn = document.getElementById('seq-run-btn');
+  const dot = document.getElementById('sb-dot');
+  const label = document.getElementById('sb-label');
+
+  if (STATE.running) {
+    runBtn.textContent = '■ STOP SEQ';
+    runBtn.classList.remove('hot');
+    runBtn.classList.add('running');
+    seqBtn.textContent = '■ STOP SEQUENCE';
+    seqBtn.classList.add('running');
+    dot.classList.remove('idle');
+    dot.classList.add('active');
+    label.textContent = 'RUNNING';
+    startBeatSequencer();
+  } else {
+    runBtn.textContent = '▶ RUN SEQ';
+    runBtn.classList.add('hot');
+    runBtn.classList.remove('running');
+    seqBtn.textContent = '▶ RUN SEQUENCE';
+    seqBtn.classList.remove('running');
+    dot.classList.add('idle');
+    dot.classList.remove('active');
+    label.textContent = 'IDLE';
+    stopBeatSequencer();
+  }
+}
+
+function resetAll() {
+  STATE.beat = 0;
+  STATE.keyframes = [];
+  STATE.running = false;
+  STATE.beatPulses = [];
+  stopBeatSequencer();
+
+  // Clear timeline
+  document.querySelectorAll('.tl-bar').forEach(b => {
+    b.classList.remove('has-kf');
+    const dot = b.querySelector('.tl-kf-dot');
+    if (dot) dot.remove();
+  });
+  document.getElementById('tl-playhead').style.left = '0%';
+
+  const runBtn = document.getElementById('btn-run-seq');
+  const seqBtn = document.getElementById('seq-run-btn');
+  runBtn.textContent = '▶ RUN SEQ';
+  runBtn.classList.add('hot');
+  runBtn.classList.remove('running');
+  seqBtn.textContent = '▶ RUN SEQUENCE';
+  seqBtn.classList.remove('running');
+
+  document.getElementById('sb-dot').classList.add('idle');
+  document.getElementById('sb-dot').classList.remove('active');
+  document.getElementById('sb-label').textContent = 'IDLE';
+
+  updateKFBadge();
+  updateBeatUI();
+  saveSnapshot();
+}
+
+// ─── Layer toggles ────────────────────────────────────────────────────────────
+function toggleLayer(name, btn) {
+  STATE.layers[name] = !STATE.layers[name];
+  btn.classList.toggle('on', STATE.layers[name]);
+}
+
+// ─── Tab switching ────────────────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  // For this implementation tabs just affect the active view label, canvas is always shown
+}
+
+// ─── Component activation ─────────────────────────────────────────────────────
+const COMP_DETAILS = {
+  TKP: {
+    name: 'Timeline Keyframe Planner',
+    wire: 'TMP',
+    desc: 'Manages keyframe markers across the 32-bar timeline. Each keyframe defines a choreography event at a specific beat position — motion cue, formation switch, or sound trigger.',
+    params: [
+      { label: 'Total Bars', key: () => '32' },
+      { label: 'KF Count', key: () => STATE.keyframes.length },
+      { label: 'Resolution', key: () => '1 bar' },
+      { label: 'Wire Type', key: () => 'TMP → BHV' },
+    ]
+  },
+  BSI: {
+    name: 'Beat Sync Injector',
+    wire: 'AUD',
+    desc: 'Injects beat timing signals into the entity system. Fires a beat pulse from the conductor node on each BPM tick, synchronizing entity motion state transitions.',
+    params: [
+      { label: 'BPM', key: () => STATE.bpm },
+      { label: 'Ms/Beat', key: () => Math.round(60000 / STATE.bpm) + ' ms' },
+      { label: 'Beat Counter', key: () => STATE.beat + '/32' },
+      { label: 'Pulse Count', key: () => STATE.beatPulses.length },
+    ]
+  },
+  POC: {
+    name: 'Phase Offset Controller',
+    wire: 'TMP',
+    desc: 'Applies a fractional phase offset to all entity animation timings, allowing staggered or cascaded motion across the entity population.',
+    params: [
+      { label: 'Phase Offset', key: () => STATE.phaseOffset.toFixed(3) },
+      { label: 'Entities', key: () => STATE.entities.length },
+      { label: 'Stagger Mode', key: () => 'Linear' },
+      { label: 'Wire', key: () => 'TMP' },
+    ]
+  },
+  TCM: {
+    name: 'Transition Curve Mapper',
+    wire: 'BHV',
+    desc: 'Maps easing curves to entity transitions during formation changes and motion state switches. Supports ease-in, ease-out, linear, and spring curves.',
+    params: [
+      { label: 'Curve Type', key: () => 'Spring' },
+      { label: 'Damping', key: () => '0.72' },
+      { label: 'Stiffness', key: () => '0.35' },
+      { label: 'Mass', key: () => '1.0' },
+    ]
+  },
+  FTL: {
+    name: 'Formation Template Library',
+    wire: 'DAT',
+    desc: 'Stores and retrieves preset formation geometries: Circle, Line, V-Shape, Grid, Swarm, and Custom. Each template computes slot positions for the current entity count.',
+    params: [
+      { label: 'Templates', key: () => '6' },
+      { label: 'Active', key: () => STATE.formation },
+      { label: 'Entity Count', key: () => STATE.entities.length },
+      { label: 'Slots Gen', key: () => STATE.formationSlots.length },
+    ]
+  },
+  SAE: {
+    name: 'Slot Assignment Engine',
+    wire: 'AGT',
+    desc: 'Assigns entities to formation slots using nearest-neighbor matching, minimizing total travel distance. Respects leader and sentinel role constraints.',
+    params: [
+      { label: 'Assignment', key: () => 'Nearest-Neighbor' },
+      { label: 'Assigned', key: () => STATE.entities.length },
+      { label: 'Leaders', key: () => STATE.leaderCount },
+      { label: 'Followers', key: () => STATE.entities.length - STATE.leaderCount },
+    ]
+  },
+  DFR: {
+    name: 'Density Flow Regulator',
+    wire: 'DAT',
+    desc: 'Controls entity distribution density across formation patterns. Adjusts inter-entity spacing, cluster radius, and dispersion factor.',
+    params: [
+      { label: 'Density', key: () => STATE.density.toFixed(2) },
+      { label: 'Mode', key: () => STATE.density < 0.7 ? 'Sparse' : STATE.density > 1.4 ? 'Dense' : 'Normal' },
+      { label: 'Formation R', key: () => Math.round(Math.min(W, H) * 0.28 * STATE.density) + ' px' },
+      { label: 'Wire', key: () => 'DAT' },
+    ]
+  },
+  SHG: {
+    name: 'Spatial Hash Grid',
+    wire: 'DAT',
+    desc: 'Partitions the canvas into spatial cells for efficient proximity queries. Used by collision avoidance and leader–follower linking.',
+    params: [
+      { label: 'Cell Size', key: () => '64 px' },
+      { label: 'Grid Cols', key: () => Math.ceil(W / 64) },
+      { label: 'Grid Rows', key: () => Math.ceil(H / 64) },
+      { label: 'Entities', key: () => STATE.entities.length },
+    ]
+  },
+  PSS: {
+    name: 'Path Spline Solver',
+    wire: 'BHV',
+    desc: 'Computes smooth bezier splines from each entity\'s current position to its formation slot target. Animates dash offset for flow indication.',
+    params: [
+      { label: 'Spline Type', key: () => 'Cubic Bezier' },
+      { label: 'Dash Offset', key: () => Math.round(STATE.dashOffset % 1000) },
+      { label: 'Active Paths', key: () => STATE.entities.filter(e => e.blendState === 'moving').length },
+      { label: 'Wire', key: () => 'BHV' },
+    ]
+  },
+  VGF: {
+    name: 'Velocity Gradient Field',
+    wire: 'DAT',
+    desc: 'Generates a smooth vector field across the canvas representing crowd flow direction. Derived from sin/cos oscillators with animated time parameter.',
+    params: [
+      { label: 'Field Res', key: () => '60 px' },
+      { label: 'Time Param', key: () => animT.toFixed(1) + ' s' },
+      { label: 'Arrow Len', key: () => '12 px' },
+      { label: 'Wire', key: () => 'DAT' },
+    ]
+  },
+  CAL: {
+    name: 'Collision Avoidance Layer',
+    wire: 'BHV',
+    desc: 'Applies separation forces when entities come within a minimum distance of each other, preventing overlap during formation transitions.',
+    params: [
+      { label: 'Min Dist', key: () => '18 px' },
+      { label: 'Force Mag', key: () => '0.45' },
+      { label: 'Active', key: () => STATE.running ? 'Yes' : 'No' },
+      { label: 'Wire', key: () => 'BHV' },
+    ]
+  },
+  MBT: {
+    name: 'Motion Blend Tree',
+    wire: 'BHV',
+    desc: 'Blends between idle, moving, and arrived animation states for each entity. Manages transition weights and spring-damper position updates.',
+    params: [
+      { label: 'States', key: () => '3' },
+      { label: 'Idle', key: () => STATE.entities.filter(e => e.blendState === 'idle').length },
+      { label: 'Moving', key: () => STATE.entities.filter(e => e.blendState === 'moving').length },
+      { label: 'Arrived', key: () => STATE.entities.filter(e => e.blendState === 'arrived').length },
+    ]
+  },
+  ASB: {
+    name: 'Agent Sync Bus',
+    wire: 'SOC',
+    desc: 'Broadcasts choreography state to all agent systems via a shared message bus. Synchronizes beat, formation, and phase state across all active entities.',
+    params: [
+      { label: 'Bus Active', key: () => 'Yes' },
+      { label: 'Subscribers', key: () => STATE.entities.length },
+      { label: 'Beat Freq', key: () => STATE.bpm + ' bpm' },
+      { label: 'Wire', key: () => 'SOC' },
+    ]
+  },
+  LFL: {
+    name: 'Leader–Follower Linker',
+    wire: 'AGT',
+    desc: 'Establishes directed links from follower entities to their assigned leaders. Leaders perform formation-aware movement; followers trail with a configurable offset.',
+    params: [
+      { label: 'Leaders', key: () => STATE.leaderCount },
+      { label: 'Followers', key: () => STATE.entities.filter(e => e.role === 'follower').length },
+      { label: 'Link Lines', key: () => STATE.layers.links ? 'Visible' : 'Hidden' },
+      { label: 'Wire', key: () => 'AGT' },
+    ]
+  },
+  CFE: {
+    name: 'Crowd Flow Emitter',
+    wire: 'BHV',
+    desc: 'Emits crowd flow vectors that bias entity movement toward zones of interest. Interacts with the velocity gradient field to produce emergent flow patterns.',
+    params: [
+      { label: 'Emit Rate', key: () => '8/beat' },
+      { label: 'Bias Str', key: () => '0.28' },
+      { label: 'Mode', key: () => STATE.formation === 'swarm' ? 'Turbulent' : 'Ordered' },
+      { label: 'Wire', key: () => 'BHV' },
+    ]
+  },
+  CEP: {
+    name: 'Choreography Export Packet',
+    wire: 'NAR',
+    desc: 'Packages the current choreography snapshot into the qa-choreography-snapshot localStorage record for downstream modules (Narrative, Society) to consume.',
+    params: [
+      { label: 'Target Key', key: () => 'qa-choreo…' },
+      { label: 'Entity Count', key: () => STATE.entities.length },
+      { label: 'KF Count', key: () => STATE.keyframes.length },
+      { label: 'Last Write', key: () => 'now' },
+    ]
+  },
+};
+
+function activateComp(code) {
+  STATE.activeComp = code;
+
+  // Update cards
+  document.querySelectorAll('.comp-card').forEach(c => c.classList.remove('active'));
+  const card = document.getElementById('card-' + code);
+  if (card) card.classList.add('active');
+
+  document.getElementById('rp-comp-badge').textContent = code;
+
+  // Render detail
+  const detail = COMP_DETAILS[code];
+  const area = document.getElementById('comp-detail-area');
+  if (!detail) { area.innerHTML = '<div class="no-data">No detail available.</div>'; return; }
+
+  area.innerHTML = `
+    <div class="comp-detail-title">
+      ${code}
+      <span style="font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);font-family:var(--fm);">${detail.wire}</span>
+    </div>
+    <div class="comp-detail-desc">${detail.desc}</div>
+    <div class="comp-detail-params" id="cdp-${code}"></div>
+  `;
+
+  renderCompParams(code);
+}
+
+function renderCompParams(code) {
+  const detail = COMP_DETAILS[code];
+  if (!detail) return;
+  const el = document.getElementById('cdp-' + code);
+  if (!el) return;
+  el.innerHTML = detail.params.map(p => `
+    <div class="cdp-row">
+      <span class="cdp-label">${p.label}</span>
+      <span class="cdp-value">${p.key()}</span>
+    </div>
+  `).join('');
+}
+
+// ─── Roster rendering ─────────────────────────────────────────────────────────
+const ROLE_LABEL_COLORS = {
+  leader:   '#dc3c78',
+  follower: '#b1d0f0',
+  sentinel: '#4dc8a0',
+  scout:    '#e8b84b',
+};
+
+function renderRoster() {
+  const container = document.getElementById('entity-roster');
+  document.getElementById('roster-count').textContent = STATE.entities.length;
+  document.getElementById('ci-ent').textContent = STATE.entities.length;
+  document.getElementById('sb-ents').textContent = STATE.entities.length;
+
+  container.innerHTML = STATE.entities.slice(0, 20).map((e, i) => `
+    <div class="ent-row ${e.role === 'leader' ? 'leader-row' : ''}">
+      <div class="ent-dot" style="background:${EMOTION_COLORS[e.emotion] || '#7fd4c8'}"></div>
+      <div class="ent-info">
+        <div class="ent-name">${e.name}</div>
+        <div class="ent-meta">${e.emotion}</div>
+      </div>
+      <span class="ent-role" style="color:${ROLE_LABEL_COLORS[e.role] || '#b1d0f0'};border-color:${ROLE_LABEL_COLORS[e.role] || '#b1d0f0'}44;">${e.role.toUpperCase().slice(0,3)}</span>
+    </div>
+  `).join('') + (STATE.entities.length > 20 ? `<div class="no-data">+${STATE.entities.length - 20} more entities…</div>` : '');
+}
+
+// ─── Sync Bus rendering ───────────────────────────────────────────────────────
+function renderSyncBus() {
+  const area = document.getElementById('sync-bus-area');
+  if (STATE.entities.length === 0) {
+    area.innerHTML = '<div class="no-data">No entities loaded.</div>';
+    return;
+  }
+  const leaders = STATE.entities.filter(e => e.role === 'leader');
+  const followers = STATE.entities.filter(e => e.role === 'follower').slice(0, 6);
+
+  let html = '';
+  leaders.forEach(l => {
+    const myFollowers = followers.filter(f => f.leaderId === l.id);
+    html += `<div class="sync-bus-row">
+      <div class="sync-bus-agent leader">${l.name} · L${l.id}</div>
+    </div>`;
+    myFollowers.forEach(f => {
+      html += `<div class="sync-bus-row" style="padding-left:18px;">
+        <div class="sync-link"></div>
+        <div class="sync-bus-agent">${f.name}</div>
+      </div>`;
+    });
+  });
+
+  if (!html) html = '<div class="no-data">Sync bus empty.</div>';
+  area.innerHTML = html;
+}
+
+// ─── Upstream data loading ────────────────────────────────────────────────────
+function loadUpstreamData() {
+  let anyLoaded = false;
+
+  try {
+    const ms = localStorage.getItem('qa-modeling-snapshot');
+    if (ms) {
+      STATE.modelingSnap = JSON.parse(ms);
+      document.getElementById('up-modeling').classList.add('lit');
+      anyLoaded = true;
+
+      // Extract entities from modeling snapshot
+      if (STATE.modelingSnap.entities && STATE.modelingSnap.entities.length > 0) {
+        const srcEnts = STATE.modelingSnap.entities;
+        STATE.entities = srcEnts.map((e, i) => ({
+          id: i,
+          name: e.name || (NPC_NAMES[i % NPC_NAMES.length]),
+          emotion: e.emotion || EMOTIONS[Math.floor(Math.random() * EMOTIONS.length)],
+          role: i < STATE.leaderCount ? 'leader' : 'follower',
+          x: CX + (Math.random() - 0.5) * Math.min(W, H) * 0.4,
+          y: CY + (Math.random() - 0.5) * Math.min(W, H) * 0.4,
+          tx: CX, ty: CY,
+          vx: 0, vy: 0,
+          soulWeight: e.soulWeight || Math.random(),
+          speed: 1.2 + Math.random() * 0.8,
+          leaderId: i < STATE.leaderCount ? null : Math.floor(Math.random() * STATE.leaderCount),
+          pathProgress: Math.random(),
+          pathT: Math.random() * Math.PI * 2,
+          blendState: 'idle',
+        }));
+        computeFormationSlots();
+        assignSlots();
+        renderRoster();
+        renderSyncBus();
+      }
+    } else {
+      document.getElementById('up-modeling').classList.remove('lit');
+    }
+  } catch(e) {}
+
+  try {
+    const bs = localStorage.getItem('qa-behavior-snapshot');
+    if (bs) { STATE.behaviorSnap = JSON.parse(bs); document.getElementById('up-behavior').classList.add('lit'); anyLoaded = true; }
+    else document.getElementById('up-behavior').classList.remove('lit');
+  } catch(e) {}
+
+  try {
+    const ts = localStorage.getItem('qa-terrain-snapshot');
+    if (ts) { STATE.terrainSnap = JSON.parse(ts); document.getElementById('up-terrain').classList.add('lit'); anyLoaded = true; }
+    else document.getElementById('up-terrain').classList.remove('lit');
+  } catch(e) {}
+
+  try {
+    const as = localStorage.getItem('qa-architect-snapshot');
+    if (as) { STATE.architectSnap = JSON.parse(as); document.getElementById('up-architect').classList.add('lit'); anyLoaded = true; }
+    else document.getElementById('up-architect').classList.remove('lit');
+  } catch(e) {}
+
+  if (!anyLoaded) {
+    // Use generated fallback
+  }
+
+  saveSnapshot();
+}
+
+// ─── Snapshot output ──────────────────────────────────────────────────────────
+function saveSnapshot() {
+  const snap = {
+    system: 'Quantum Atlas',
+    module: '06 · Choreography',
+    generated: new Date().toISOString(),
+    entity_count: STATE.entities.length,
+    active_formation: STATE.formation.replace('-',' ').replace(/\b\w/g, c => c.toUpperCase()),
+    bpm: STATE.bpm,
+    beat: STATE.beat,
+    phase_offset: parseFloat(STATE.phaseOffset.toFixed(3)),
+    keyframe_count: STATE.keyframes.length,
+    formation_template: STATE.formation,
+    leader_count: STATE.leaderCount,
+    follower_ratio: STATE.entities.length > 0
+      ? parseFloat(((STATE.entities.length - STATE.leaderCount) / STATE.entities.length).toFixed(3))
+      : 0.875,
+    sync_bus_active: true,
+    density: STATE.density,
+    running: STATE.running,
+    keyframes: STATE.keyframes.slice(0, 16),  // sample
+  };
+
+  try {
+    localStorage.setItem('qa-choreography-snapshot', JSON.stringify(snap));
+  } catch(e) {}
+
+  // Flash snapshot badge
+  const badge = document.getElementById('sb-snap-time');
+  const now = new Date();
+  badge.textContent = now.toLocaleTimeString();
+}
+
+// ─── Periodic updates ─────────────────────────────────────────────────────────
+function periodicUpdate() {
+  // Refresh comp detail if visible
+  if (STATE.activeComp && COMP_DETAILS[STATE.activeComp]) {
+    renderCompParams(STATE.activeComp);
+  }
+  // Save snapshot every 2s
+  saveSnapshot();
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+function init() {
+  resizeCanvas();
+  buildTimeline();
+  loadUpstreamData();
+
+  // Generate fallback entities if none loaded from upstream
+  if (STATE.entities.length === 0) {
+    generateEntities(24);
+  }
+
+  activateComp('TKP');
+
+  // Start render loop
+  lastTs = performance.now();
+  animLoop(lastTs);
+
+  // Periodic snapshot & UI refresh
+  setInterval(periodicUpdate, 2000);
+
+  // Initial snapshot
+  saveSnapshot();
+}
+
+init();
+</script>
+
+<!-- ═══════════════════════════════════════ THEME SYNC ══════════════════════════════════════ -->
+<script>
+(function() {
+  const MAP = {
+    'c-bg':'--bg','c-surf':'--surface','c-surf2':'--surface2',
+    'c-edge':'--edge','c-edge-hi':'--edge-hi','c-accent1':'--venturan',
+    'c-accent2':'--amber','c-accent3':'--emerald','c-accent4':'--fusion',
+    'c-danger':'--blood','c-warm':'--solari','c-text':'--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+</script>
+</body>
+</html>
