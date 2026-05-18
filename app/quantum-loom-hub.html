@@ -228,10 +228,11 @@ html,body{
 /* ── Loading overlay ─────────────────────────────────── */
 .frame-loader{
   position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
   background:var(--bg);gap:14px;z-index:5;
   transition:opacity .3s ease;
 }
+.frame-loader.visible{display:flex}
 .frame-loader.gone{opacity:0;pointer-events:none}
 .loader-glyph{
   font-size:1.8rem;color:var(--venturan);
@@ -1508,15 +1509,21 @@ let lastSaved    = null;
 function switchLayer(layerId) {
   if (activeLayer === layerId) return;
 
-  // Deactivate old
+  // Deactivate old — also hide its loader if it somehow re-appeared
   document.getElementById(`frame-${activeLayer}`)?.classList.remove('active');
   document.getElementById(`nav-${activeLayer}`)?.classList.remove('active');
+  document.getElementById(`loader-${activeLayer}`)?.classList.remove('visible');
 
   // Activate new
   activeLayer = layerId;
   const frame = document.getElementById(`frame-${layerId}`);
   frame.classList.add('active');
   document.getElementById(`nav-${layerId}`)?.classList.add('active');
+
+  // Show loader only if this frame hasn't finished loading yet
+  if (!loadedFrames.has(layerId)) {
+    document.getElementById(`loader-${layerId}`)?.classList.add('visible');
+  }
 
   // Update footer
   document.getElementById('hf-layer-name').textContent = LAYERS[layerId]?.label || layerId;
@@ -1540,6 +1547,7 @@ function frameLoaded(layerId) {
   loadedFrames.add(layerId);
   const loader = document.getElementById(`loader-${layerId}`);
   if (loader) {
+    loader.classList.remove('visible');
     setTimeout(() => loader.classList.add('gone'), 200);
     setTimeout(() => loader.remove(), 600);
   }
@@ -1847,6 +1855,9 @@ function toast(msg) {
 
 /* ── Init ─────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
+  // Show workspace loader on startup (it's the initial active layer)
+  document.getElementById('loader-workspace')?.classList.add('visible');
+
   // Load project meta
   try {
     const saved = JSON.parse(localStorage.getItem('ql-workspace-meta') || '{}');

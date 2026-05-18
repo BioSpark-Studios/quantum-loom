@@ -1182,6 +1182,7 @@ async function runPipeline(seed) {
   try {
     const snapshot = { system:'Quantum Atlas', module:'01 · Terrain', generated: new Date().toISOString(), seed: currentSeed, hex_count: hexes.length, hexes };
     localStorage.setItem('qa-terrain-snapshot', JSON.stringify(snapshot));
+    window.parent.postMessage({type:'hub:storage:write',key:'qa-terrain-snapshot',value:JSON.stringify(snapshot)},'*');
   } catch(e) { console.warn('Could not persist terrain snapshot:', e); }
 
   renderCanvas();
@@ -1689,6 +1690,15 @@ window.addEventListener('DOMContentLoaded', () => {
     if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
   });
 })();
+
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Terrain`;
+  }
+  if (d.type === 'hub:layer:activate') renderCanvas();
+});
 </script>
 </body>
 </html>

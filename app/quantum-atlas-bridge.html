@@ -1151,6 +1151,7 @@ function exportZones() {
   }
 
   localStorage.setItem(LOOM_KEYS.zones, JSON.stringify(zones));
+  window.parent.postMessage({type:'hub:storage:write',key:LOOM_KEYS.zones,value:JSON.stringify(zones)},'*');
   addLog('ZONES', `← ${zones.length} biome regions extracted from ${hexArray.length} hexes`, 'zones');
   return zones;
 }
@@ -1212,6 +1213,7 @@ function exportCharacters() {
   }
 
   localStorage.setItem(LOOM_KEYS.workspace, JSON.stringify(chars));
+  window.parent.postMessage({type:'hub:storage:write',key:LOOM_KEYS.workspace,value:JSON.stringify(chars)},'*');
   addLog('CHARS', `← ${settlements.length} settlements + ${factions.length} faction leaders created`, 'chars');
   return chars;
 }
@@ -1251,6 +1253,7 @@ function exportScenes() {
   });
 
   localStorage.setItem(LOOM_KEYS.scenes, JSON.stringify(scenes));
+  window.parent.postMessage({type:'hub:storage:write',key:LOOM_KEYS.scenes,value:JSON.stringify(scenes)},'*');
   addLog('SCENES', `← ${scenes.length} chronicle events → scene stubs`, 'scenes');
   return scenes;
 }
@@ -1328,6 +1331,7 @@ function exportPropagations() {
   const civCount     = props.filter(p => p.type === 'civilization').length;
 
   localStorage.setItem(LOOM_KEYS.propagations, JSON.stringify(props));
+  window.parent.postMessage({type:'hub:storage:write',key:LOOM_KEYS.propagations,value:JSON.stringify(props)},'*');
   addLog('PROPS', `← ${weatherCount} weather arcs + ${civCount} spread arcs generated`, 'props');
   return props;
 }
@@ -1369,6 +1373,7 @@ function exportSequencer() {
   };
 
   localStorage.setItem(LOOM_KEYS.sequencer, JSON.stringify(sequencer));
+  window.parent.postMessage({type:'hub:storage:write',key:LOOM_KEYS.sequencer,value:JSON.stringify(sequencer)},'*');
   addLog('SEQ', `← ${eras.length} eras mapped to bars 1–${eras.length * 5}`, 'seq');
   return sequencer;
 }
@@ -1401,6 +1406,7 @@ function broadcastSignalBus() {
   };
 
   localStorage.setItem('ql-signal-bus', JSON.stringify(payload));
+  window.parent.postMessage({type:'hub:storage:write',key:'ql-signal-bus',value:JSON.stringify(payload)},'*');
   addLog('SIGNAL', `→ Broadcast emitted · era:${currentEra} season:${payload.season}`, 'info');
   return payload;
 }
@@ -1420,6 +1426,7 @@ function exportNexusCapsule(zonesResult, charsResult, scenesResult, propsResult,
       .filter(([,v]) => v !== null).map(([k]) => k),
   };
   localStorage.setItem('qa-bridge-snapshot', JSON.stringify(capsule));
+  window.parent.postMessage({type:'hub:storage:write',key:'qa-bridge-snapshot',value:JSON.stringify(capsule)},'*');
   addLog('NEXUS', `→ Bridge capsule exported`, 'info');
 }
 
@@ -1786,6 +1793,15 @@ window.addEventListener('storage', () => { readAtlas(); updateSourceUI(); update
     if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
   });
 })();
+
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Bridge`;
+  }
+  if (d.type === 'hub:layer:activate') { readAtlas(); updateSourceUI(); updateAtlasChips(); updateLoomUI(); }
+});
 </script>
 </body>
 </html>
