@@ -23,7 +23,7 @@
   --totem:    #7fd4c8;
   --terrain:  #1e8cff;
   --environ:  #4ecdc4;
-  --architect:#ffd166;
+  --architect:#64b4ff;
   --fm: 'Orbitron', monospace;
   --fd: 'Space Grotesk', sans-serif;
   --fc: 'JetBrains Mono', monospace;
@@ -936,7 +936,7 @@ function factionColor(faction) {
   const f = faction.toLowerCase();
   if (f.includes('imperial') || f.includes('crown')) return '#b1d0f0';
   if (f.includes('nomad') || f.includes('wild'))     return '#4dc8a0';
-  if (f.includes('merchant'))                         return '#ffd166';
+  if (f.includes('merchant'))                         return '#64b4ff';
   if (f.includes('void') || f.includes('collective')) return '#9b7fd4';
   return 'rgba(255,255,255,0.3)';
 }
@@ -1902,6 +1902,37 @@ canvas.addEventListener('click', e => {
   renderRoster();
   updateStatusBar();
   setStatus('03 · ARCHITECT ready — press BUILD to forge settlements');
+})();
+
+// ── Theme sync (receives ql:theme from hub) ─────────────────────────────────
+(function() {
+  const MAP = {
+    'c-bg':      '--bg',
+    'c-surf':    '--surface',
+    'c-surf2':   '--surface2',
+    'c-edge':    '--edge',
+    'c-edge-hi': '--edge-hi',
+    'c-accent1': '--venturan',
+    'c-accent2': '--amber',
+    'c-accent3': '--emerald',
+    'c-accent4': '--fusion',
+    'c-danger':  '--blood',
+    'c-warm':    '--solari',
+    'c-text':    '--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
 })();
 </script>
 </body>

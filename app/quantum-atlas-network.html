@@ -16,7 +16,7 @@
   --edge-hi:  rgba(255,255,255,.12);
   --venturan: #b1d0f0;
   --amber:    #e8b84b;
-  --emerald:  #4dc8a0;
+  --emerald:  #ffffff;
   --solari:   #f98f3b;
   --fusion:   #9b7fd4;
   --blood:    #d45b5b;
@@ -26,7 +26,7 @@
   --architect:#ffd166;
   --lighting: #ff9f43;
   --civilization:#c77dff;
-  --bridge:   #4dc8a0;
+  --bridge:   #ffffff;
   --fm:'Orbitron',monospace;
   --fd:'Space Grotesk',sans-serif;
   --fc:'JetBrains Mono',monospace;
@@ -89,7 +89,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;text-transform:uppercase;
   padding:2px 7px;border-radius:10px;border:1px solid;cursor:default;transition:all .2s;
 }
-.tb-chip.lit{color:#4dc8a0;border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.07);}
+.tb-chip.lit{color:#ffffff;border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.07);}
 .tb-chip.dim{color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.07);background:transparent;}
 .tb-chip.loom-lit{color:var(--venturan);border-color:rgba(177,208,240,.4);background:rgba(177,208,240,.07);}
 
@@ -153,10 +153,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   font-family:var(--fc);font-size:.26rem;padding:1px 5px;border-radius:8px;
   border:1px solid;flex-shrink:0;
 }
-.badge-linked{color:#4dc8a0;border-color:rgba(77,200,160,.35);background:rgba(77,200,160,.07);}
+.badge-linked{color:#ffffff;border-color:rgba(77,200,160,.35);background:rgba(77,200,160,.07);}
 .badge-empty{color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.08);background:transparent;}
 .source-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.dot-linked{background:#4dc8a0;box-shadow:0 0 6px rgba(77,200,160,.6);}
+.dot-linked{background:#ffffff;box-shadow:0 0 6px rgba(77,200,160,.6);}
 .dot-empty{background:rgba(255,255,255,.12);}
 
 /* Export queue */
@@ -334,7 +334,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
     <div class="tb-module-chip">
       <div class="tb-glyph">⇋</div>
       <div>
-        <div class="tb-module-id">06 · BRIDGE</div>
+        <div class="tb-module-id">16 · NETWORK</div>
         <div class="tb-subcrest">NEXUS</div>
       </div>
     </div>
@@ -534,7 +534,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
 
   <!-- STATUS BAR -->
   <div id="status-bar">
-    <div class="sb-seg accent">MOD 06 · BRIDGE</div>
+    <div class="sb-seg accent">MOD 16 · NETWORK</div>
     <div class="sb-seg">ATLAS IN: <span class="val" id="sb-atlas-in">0</span>/5</div>
     <div class="sb-seg">LOOM OUT: <span class="val" id="sb-loom-out">0</span>/5</div>
     <div class="sb-seg">LAST SYNC: <span class="val" id="sb-last-sync">—</span></div>
@@ -622,12 +622,12 @@ const COLORS = {
   architect:    '#ffd166',
   lighting:     '#ff9f43',
   civilization: '#c77dff',
-  bridge:       '#4dc8a0',
+  bridge:       '#ffffff',
   zones:        '#7fd4c8',
   chars:        '#b1d0f0',
   scenes:       '#e8b84b',
   props:        '#f98f3b',
-  seq:          '#4dc8a0',
+  seq:          '#ffffff',
 };
 
 const BIOME_COLORS = {
@@ -1660,7 +1660,7 @@ function injectMockData() {
       { name: 'Solaran',    leader: 'Archmage Lyra', population: 12000, tech_level: 4, color: '#f98f3b' },
       { name: 'Dune Pact',  leader: 'Sheikh Amara',  population: 7000,  tech_level: 2, color: '#ffd166' },
       { name: 'Iceguard',   leader: 'Jarl Kossmir',  population: 4500,  tech_level: 2, color: '#b1d0f0' },
-      { name: 'Bogkin',     leader: 'Elder Murvash', population: 2800,  tech_level: 1, color: '#4dc8a0' },
+      { name: 'Bogkin',     leader: 'Elder Murvash', population: 2800,  tech_level: 1, color: '#ffffff' },
     ],
     diplomacy: {
       'Aldorheim-Venthar': 'WAR', 'Solaran-Dune Pact': 'ALLIANCE',

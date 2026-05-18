@@ -22,7 +22,7 @@
   --blood:    #d45b5b;
   --totem:    #7fd4c8;
   --terrain:  #1e8cff;
-  --environ:  #4ecdc4;
+  --environ:  #8050e0;
   --fm: 'Orbitron', monospace;
   --fd: 'Space Grotesk', sans-serif;
   --fc: 'JetBrains Mono', monospace;
@@ -883,8 +883,8 @@ function loadTerrainData() {
   const dot = document.getElementById('terrain-dot');
   const label = document.getElementById('terrain-label');
   if (terrainLinked) {
-    dot.style.background = '#4ecdc4';
-    label.style.color = '#4ecdc4';
+    dot.style.background = '#8050e0';
+    label.style.color = '#8050e0';
     label.textContent = 'TERRAIN LINKED';
   } else {
     dot.style.background = 'rgba(255,255,255,.2)';
@@ -1707,7 +1707,7 @@ function updateRightPanel() {
       </div>
       <div class="insp-row">
         <span class="insp-key">Temp Modifier</span>
-        <span class="insp-val" style="color:${state.tempModifier >= 0 ? '#f98f3b' : '#4ecdc4'};">${state.tempModifier >= 0 ? '+' : ''}${state.tempModifier.toFixed(1)}°C</span>
+        <span class="insp-val" style="color:${state.tempModifier >= 0 ? '#f98f3b' : '#8050e0'};">${state.tempModifier >= 0 ? '+' : ''}${state.tempModifier.toFixed(1)}°C</span>
       </div>
       <div class="insp-row">
         <span class="insp-key">Moon Phase</span>
@@ -2062,6 +2062,37 @@ window.addEventListener('DOMContentLoaded', () => {
 
   setStatus('ready', 'SYSTEM READY', 'Awaiting simulation trigger');
 });
+
+// ── Theme sync (receives ql:theme from hub) ─────────────────────────────────
+(function() {
+  const MAP = {
+    'c-bg':      '--bg',
+    'c-surf':    '--surface',
+    'c-surf2':   '--surface2',
+    'c-edge':    '--edge',
+    'c-edge-hi': '--edge-hi',
+    'c-accent1': '--venturan',
+    'c-accent2': '--amber',
+    'c-accent3': '--emerald',
+    'c-accent4': '--fusion',
+    'c-danger':  '--blood',
+    'c-warm':    '--solari',
+    'c-text':    '--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
 </script>
 </body>
 </html>

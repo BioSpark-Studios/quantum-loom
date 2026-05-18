@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quantum Atlas — 05 · Civilization</title>
+<title>Quantum Atlas — 05 · Society</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
@@ -25,7 +25,7 @@
   --environ:  #4ecdc4;
   --architect:#ffd166;
   --lighting: #ff9f43;
-  --civilization:#c77dff;
+  --society:#c8a860;
   --fm:'Orbitron',monospace;
   --fd:'Space Grotesk',sans-serif;
   --fc:'JetBrains Mono',monospace;
@@ -47,9 +47,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
 }
 .tb-glyph{
-  width:24px;height:24px;border:1.5px solid var(--civilization);
+  width:24px;height:24px;border:1.5px solid var(--society);
   border-radius:3px;display:flex;align-items:center;justify-content:center;
-  font-size:.8rem;color:var(--civilization);
+  font-size:.8rem;color:var(--society);
   animation:breathe 4s ease-in-out infinite;flex-shrink:0;
 }
 @keyframes breathe{
@@ -58,7 +58,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
 }
 .tb-module-id{
   font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--civilization);white-space:nowrap;
+  text-transform:uppercase;color:var(--society);white-space:nowrap;
 }
 .tb-subcrest{
   font-family:var(--fc);font-size:.3rem;letter-spacing:.16em;
@@ -77,7 +77,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   transition:all .12s;white-space:nowrap;
 }
 .tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03);}
-.tb-tab.active{color:var(--civilization);border-bottom-color:var(--civilization);}
+.tb-tab.active{color:var(--society);border-bottom-color:var(--society);}
 
 .tb-links{
   display:flex;align-items:center;gap:5px;padding:0 10px;
@@ -98,7 +98,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
 }
 .tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff;}
 .tb-btn.hot{
-  border-color:rgba(199,125,255,.45);background:rgba(199,125,255,.08);color:var(--civilization);
+  border-color:rgba(199,125,255,.45);background:rgba(199,125,255,.08);color:var(--society);
 }
 .tb-btn.hot:hover{background:rgba(199,125,255,.16);box-shadow:0 0 12px rgba(199,125,255,.2);}
 
@@ -118,7 +118,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   cursor:pointer;user-select:none;transition:background .1s;
 }
 .lp-section-header:hover{background:rgba(255,255,255,.025);}
-.lp-sec-num{font-family:var(--fm);font-size:.38rem;color:var(--civilization);letter-spacing:.06em;opacity:.75;}
+.lp-sec-num{font-family:var(--fm);font-size:.38rem;color:var(--society);letter-spacing:.06em;opacity:.75;}
 .lp-sec-name{font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);flex:1;}
 .lp-sec-chevron{font-size:.5rem;color:rgba(255,255,255,.25);transition:transform .18s;}
 .lp-section.collapsed .lp-sec-chevron{transform:rotate(-90deg);}
@@ -128,12 +128,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
 .lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
 .lp-scroll::-webkit-scrollbar{width:3px;}
 .lp-scroll::-webkit-scrollbar-track{background:transparent;}
-.lp-scroll::-webkit-scrollbar-thumb{background:var(--civilization);border-radius:2px;opacity:.4;}
+.lp-scroll::-webkit-scrollbar-thumb{background:var(--society);border-radius:2px;opacity:.4;}
 
 /* Demography */
 .demo-stat{padding:6px 10px 4px;border-bottom:1px solid var(--edge);}
 .demo-label{font-family:var(--fc);font-size:.28rem;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;}
-.demo-value{font-family:var(--fm);font-size:.7rem;color:var(--civilization);margin-top:2px;letter-spacing:.04em;}
+.demo-value{font-family:var(--fm);font-size:.7rem;color:var(--society);margin-top:2px;letter-spacing:.04em;}
 .demo-sub{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);margin-top:1px;}
 
 .rate-row{display:flex;gap:6px;padding:5px 10px;}
@@ -154,7 +154,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   cursor:pointer;transition:background .1s;border-bottom:1px solid var(--edge);
 }
 .faction-item:hover{background:rgba(255,255,255,.03);}
-.faction-item.selected{background:rgba(199,125,255,.07);border-right:2px solid var(--civilization);}
+.faction-item.selected{background:rgba(199,125,255,.07);border-right:2px solid var(--society);}
 .faction-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .faction-info{flex:1;min-width:0;}
 .faction-name{font-family:var(--fc);font-size:.34rem;color:rgba(255,255,255,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -173,7 +173,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   margin:8px 10px;font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;
   text-transform:uppercase;padding:6px;border-radius:3px;cursor:pointer;
   border:1px solid rgba(199,125,255,.35);background:rgba(199,125,255,.07);
-  color:var(--civilization);transition:all .12s;text-align:center;
+  color:var(--society);transition:all .12s;text-align:center;
 }
 .lp-tick-btn:hover{background:rgba(199,125,255,.15);box-shadow:0 0 10px rgba(199,125,255,.2);}
 
@@ -200,7 +200,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   background:rgba(8,11,18,.85);color:rgba(255,255,255,.3);cursor:pointer;
   transition:all .12s;white-space:nowrap;
 }
-.layer-toggle.on{color:var(--civilization);border-color:rgba(199,125,255,.35);}
+.layer-toggle.on{color:var(--society);border-color:rgba(199,125,255,.35);}
 .layer-toggle:hover{background:rgba(255,255,255,.05);}
 
 /* ── RIGHT PANEL ── */
@@ -221,7 +221,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
 #chronicle-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
 #chronicle-scroll::-webkit-scrollbar{width:3px;}
 #chronicle-scroll::-webkit-scrollbar-track{background:transparent;}
-#chronicle-scroll::-webkit-scrollbar-thumb{background:var(--civilization);border-radius:2px;}
+#chronicle-scroll::-webkit-scrollbar-thumb{background:var(--society);border-radius:2px;}
 
 .event-row{
   display:flex;align-items:flex-start;gap:7px;padding:6px 10px;
@@ -266,7 +266,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
 .fi-name{font-family:var(--fm);font-size:.4rem;color:#fff;flex:1;}
 .fi-body{padding:6px 10px;max-height:160px;overflow-y:auto;}
 .fi-body::-webkit-scrollbar{width:3px;}
-.fi-body::-webkit-scrollbar-thumb{background:var(--civilization);border-radius:2px;}
+.fi-body::-webkit-scrollbar-thumb{background:var(--society);border-radius:2px;}
 .fi-row{display:flex;gap:6px;margin-bottom:4px;align-items:baseline;}
 .fi-lbl{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);width:72px;flex-shrink:0;text-transform:uppercase;letter-spacing:.07em;}
 .fi-val{font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.7);}
@@ -287,7 +287,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   font-family:var(--fc);font-size:.28rem;letter-spacing:.08em;
   color:rgba(255,255,255,.25);text-transform:uppercase;white-space:nowrap;flex-shrink:0;
 }
-.sb-item span{color:var(--civilization);}
+.sb-item span{color:var(--society);}
 .sb-spacer{flex:1;}
 .sb-status{
   font-family:var(--fc);font-size:.28rem;letter-spacing:.1em;
@@ -307,7 +307,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
 }
 .pipeline-title{
   font-family:var(--fm);font-size:.55rem;letter-spacing:.18em;
-  color:var(--civilization);text-transform:uppercase;margin-bottom:16px;
+  color:var(--society);text-transform:uppercase;margin-bottom:16px;
   display:flex;align-items:center;gap:8px;
 }
 .pipeline-step{
@@ -319,10 +319,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   width:8px;height:8px;border-radius:50%;flex-shrink:0;
   background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
 }
-.ps-dot.running{background:var(--civilization);animation:pulse-dot 1s ease-in-out infinite;box-shadow:0 0 8px rgba(199,125,255,.5);}
+.ps-dot.running{background:var(--society);animation:pulse-dot 1s ease-in-out infinite;box-shadow:0 0 8px rgba(199,125,255,.5);}
 .ps-dot.done{background:var(--emerald);border-color:rgba(77,200,160,.5);}
 @keyframes pulse-dot{0%,100%{opacity:.5;}50%{opacity:1;}}
-.ps-code{font-family:var(--fm);font-size:.34rem;letter-spacing:.08em;color:var(--civilization);width:68px;flex-shrink:0;}
+.ps-code{font-family:var(--fm);font-size:.34rem;letter-spacing:.08em;color:var(--society);width:68px;flex-shrink:0;}
 .ps-desc{font-family:var(--fd);font-size:.33rem;color:rgba(255,255,255,.5);flex:1;}
 .ps-tag{
   font-family:var(--fc);font-size:.28rem;padding:1px 5px;border-radius:2px;
@@ -342,8 +342,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
     <div class="tb-module-chip">
       <div class="tb-glyph">⚑</div>
       <div>
-        <div class="tb-module-id">05 · Civilization</div>
-        <div class="tb-subcrest">CIVEX</div>
+        <div class="tb-module-id">05 · Society</div>
+        <div class="tb-subcrest">ORDER</div>
       </div>
     </div>
 
@@ -482,7 +482,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
 
   <!-- STATUS BAR -->
   <div id="status-bar">
-    <div class="sb-item">MOD 05 · <span>CIVILIZATION</span></div>
+    <div class="sb-item">MOD 05 · <span>SOCIETY</span></div>
     <div class="sb-item">ERA <span id="sb-era">0</span></div>
     <div class="sb-item">FACTIONS <span id="sb-factions">0</span></div>
     <div class="sb-item">POP <span id="sb-pop">0</span></div>
@@ -496,7 +496,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
 <!-- PIPELINE OVERLAY -->
 <div id="pipeline-overlay">
   <div class="pipeline-modal">
-    <div class="pipeline-title">⚑ CIVEX Pipeline</div>
+    <div class="pipeline-title">⚑ ORDER Pipeline</div>
     <div id="pipeline-steps"></div>
   </div>
 </div>
@@ -508,7 +508,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
    CONSTANTS
 ═══════════════════════════════════════════ */
 const HEX_SIZE = 18;
-const FACTION_COLORS = ['#c77dff','#ff9f43','#4ecdc4','#ffd166','#ff6b35','#b1d0f0'];
+const FACTION_COLORS = ['#c8a860','#ff9f43','#4ecdc4','#ffd166','#ff6b35','#b1d0f0'];
 const PREFIXES = ['Alder','Ven','Mor','Sul','Kar','Dra','Leth','Orm','Tal','Brix'];
 const SUFFIXES = ['heim','thar','wyn','dor','ax','iel','um','ora','ith','ex'];
 const DIP_STATUSES = ['WAR','PEACE','NEUTRAL','ALLIANCE'];
@@ -524,7 +524,7 @@ const PIPELINE_STEPS = [
   { code:'V-MIG',   desc:'Migration flow tracer',     tag:'SPA' },
   { code:'VI-LNG',  desc:'Language/culture spread',   tag:'SPA' },
   { code:'VII-EVT', desc:'Chronicle event seeder',    tag:'DAT' },
-  { code:'VIII-CXE',desc:'Civilization capsule export',tag:'UIX'},
+  { code:'VIII-CXE',desc:'Society capsule export',tag:'UIX'},
 ];
 const EVENT_TEMPLATES = {
   battle:    ['<F1> forces clash with <F2> at <LOC>','<F1> raids <F2> border settlements'],
@@ -848,7 +848,7 @@ function generateEvents(count) {
 /* ═══════════════════════════════════════════
    INIT / RESET
 ═══════════════════════════════════════════ */
-function initCivilization() {
+function initSociety() {
   _rng = rng(Date.now() & 0xffffff);
   state.hexes = generateHexGrid();
   state.settlements = generateSettlements();
@@ -869,7 +869,7 @@ function initCivilization() {
 
 function fullReset() {
   state.era = 0;
-  initCivilization();
+  initSociety();
   fitCamera();
   updateAllUI();
   setStatus('READY');
@@ -1138,7 +1138,7 @@ function renderFrame(ts) {
       if (sx < -sz*2 || sx > W+sz*2 || sy < -sz*2 || sy > H+sz*2) return;
       const pulse = 1 + 0.15 * Math.sin(animT * 3 + idx);
       const fac = ev.factions[0] >= 0 ? state.factions[ev.factions[0]] : null;
-      const col = fac ? fac.color : '#c77dff';
+      const col = fac ? fac.color : '#c8a860';
       ctx.save();
       ctx.translate(sx, sy - sz * 0.8);
       ctx.scale(pulse, pulse);
@@ -1298,7 +1298,7 @@ function updateChronicle() {
   scroll.innerHTML = '';
   state.events.forEach(ev => {
     const fac = ev.factions[0] >= 0 ? state.factions[ev.factions[0]] : null;
-    const col = fac ? fac.color : '#c77dff';
+    const col = fac ? fac.color : '#c8a860';
     const div = document.createElement('div');
     div.className = 'event-row';
     div.innerHTML = `
@@ -1460,10 +1460,10 @@ function initCanvasEvents() {
 /* ═══════════════════════════════════════════
    SAVE SNAPSHOT
 ═══════════════════════════════════════════ */
-function saveCivilizationSnapshot() {
+function saveSocietySnapshot() {
   const snap = {
     system: 'Quantum Atlas',
-    module: '05 · Civilization',
+    module: '05 · Society',
     generated: new Date().toISOString(),
     era: state.era,
     factions: state.factions.map(f => ({
@@ -1477,7 +1477,7 @@ function saveCivilizationSnapshot() {
     hex_count: state.hexes.length,
   };
   try {
-    localStorage.setItem('qa-civilization-snapshot', JSON.stringify(snap));
+    localStorage.setItem('qa-society-snapshot', JSON.stringify(snap));
   } catch(e) { console.warn('Could not save snapshot', e); }
 }
 
@@ -1498,10 +1498,10 @@ function initUI() {
     setStatus('RENDERING…');
     runPipeline(() => {
       loadUpstream();
-      initCivilization();
+      initSociety();
       fitCamera();
       updateAllUI();
-      saveCivilizationSnapshot();
+      saveSocietySnapshot();
       setStatus('RENDER COMPLETE');
     });
   });
@@ -1552,7 +1552,7 @@ function boot() {
   window.addEventListener('resize', () => { resizeCanvas(); fitCamera(); });
 
   loadUpstream();
-  initCivilization();
+  initSociety();
   fitCamera();
   updateAllUI();
   initCanvasEvents();
