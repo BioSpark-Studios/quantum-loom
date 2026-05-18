@@ -24,7 +24,7 @@
   --terrain:  #1e8cff;
   --environ:  #4ecdc4;
   --architect:#ffd166;
-  --lighting: #ff9f43;
+  --lighting: #e0d8ff;
   --fm:'Orbitron',monospace;
   --fd:'Space Grotesk',sans-serif;
   --fc:'JetBrains Mono',monospace;
@@ -699,7 +699,7 @@ html,body{
             <span class="rp-bk-val" id="bk-settlement">0</span>
           </div>
           <div class="rp-bk-item">
-            <div class="rp-bk-dot" style="background:#ff9f43"></div>
+            <div class="rp-bk-dot" style="background:#e0d8ff"></div>
             <span class="rp-bk-label">Torch</span>
             <span class="rp-bk-val" id="bk-torch">0</span>
           </div>
@@ -809,7 +809,7 @@ html,body{
 
 const LIGHT_TYPES = {
   settlement: { color:'#fff5cc', radius:120, intensity:1.0, flicker:0.05 },
-  torch:      { color:'#ff9f43', radius:60,  intensity:0.8, flicker:0.15 },
+  torch:      { color:'#e0d8ff', radius:60,  intensity:0.8, flicker:0.15 },
   fire:       { color:'#ff6b35', radius:90,  intensity:0.9, flicker:0.25 },
   magic:      { color:'#c77dff', radius:80,  intensity:0.7, flicker:0.08 },
   moonlight:  { color:'#aac4ff', radius:300, intensity:0.2, flicker:0.0  },
@@ -1081,10 +1081,10 @@ function drawLightIcon(ls, t) {
     case 'torch': {
       const r = 3 + Math.sin(t * 200 / 1000 * Math.PI) * 1.5;
       ctx.save();
-      ctx.fillStyle = isSelected ? '#ffb347' : '#ff9f43';
+      ctx.fillStyle = isSelected ? '#ffb347' : '#e0d8ff';
       ctx.beginPath(); ctx.arc(ls.cx, ls.cy, r, 0, Math.PI*2); ctx.fill();
       if (isSelected) {
-        ctx.strokeStyle='#ff9f43'; ctx.lineWidth=1.5;
+        ctx.strokeStyle='#e0d8ff'; ctx.lineWidth=1.5;
         ctx.beginPath(); ctx.arc(ls.cx, ls.cy, 8, 0, Math.PI*2); ctx.stroke();
       }
       ctx.restore();

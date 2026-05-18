@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 05 · Society</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #04050a;
+  --surface:  rgba(8,11,18,.98);
+  --surface2: rgba(12,16,24,.97);
+  --edge:     rgba(255,255,255,.055);
+  --edge-hi:  rgba(255,255,255,.12);
+  --venturan: #b1d0f0;
+  --amber:    #e8b84b;
+  --emerald:  #4dc8a0;
+  --solari:   #f98f3b;
+  --fusion:   #9b7fd4;
+  --blood:    #d45b5b;
+  --totem:    #7fd4c8;
+  --terrain:  #1e8cff;
+  --environ:  #4ecdc4;
+  --architect:#ffd166;
+  --lighting: #ff9f43;
+  --society:#c8a860;
+  --fm:'Orbitron',monospace;
+  --fd:'Space Grotesk',sans-serif;
+  --fc:'JetBrains Mono',monospace;
+}
+
+html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-family:var(--fd);font-size:13px;}
+
+#shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;overflow:hidden;
+}
+
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--society);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;color:var(--society);
+  animation:breathe 4s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes breathe{
+  0%,100%{box-shadow:0 0 4px rgba(199,125,255,.2);}
+  50%{box-shadow:0 0 14px rgba(199,125,255,.6);}
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--society);white-space:nowrap;
+}
+.tb-subcrest{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.16em;
+  color:rgba(199,125,255,.5);text-transform:uppercase;margin-top:2px;
+}
+
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:0 10px;height:100%;
+  display:flex;align-items:center;cursor:pointer;
+  color:rgba(255,255,255,.35);border-bottom:2px solid transparent;
+  transition:all .12s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03);}
+.tb-tab.active{color:var(--society);border-bottom-color:var(--society);}
+
+.tb-links{
+  display:flex;align-items:center;gap:5px;padding:0 10px;
+  border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-link-chip{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:10px;border:1px solid;cursor:default;transition:all .15s;
+}
+.tb-link-chip.lit{color:#4dc8a0;border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.07);}
+.tb-link-chip.dim{color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.07);background:transparent;}
+
+.tb-actions{display:flex;gap:4px;padding:0 10px;height:100%;align-items:center;flex-shrink:0;}
+.tb-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff;}
+.tb-btn.hot{
+  border-color:rgba(199,125,255,.45);background:rgba(199,125,255,.08);color:var(--society);
+}
+.tb-btn.hot:hover{background:rgba(199,125,255,.16);box-shadow:0 0 12px rgba(199,125,255,.2);}
+
+.tb-spacer{flex:1;}
+
+/* ── BODY ── */
+#body{flex:1;display:flex;overflow:hidden;}
+
+/* ── LEFT PANEL ── */
+#left-panel{
+  width:240px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;
+}
+.lp-section{border-bottom:1px solid var(--edge);}
+.lp-section-header{
+  padding:7px 10px;display:flex;align-items:center;gap:6px;
+  cursor:pointer;user-select:none;transition:background .1s;
+}
+.lp-section-header:hover{background:rgba(255,255,255,.025);}
+.lp-sec-num{font-family:var(--fm);font-size:.38rem;color:var(--society);letter-spacing:.06em;opacity:.75;}
+.lp-sec-name{font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);flex:1;}
+.lp-sec-chevron{font-size:.5rem;color:rgba(255,255,255,.25);transition:transform .18s;}
+.lp-section.collapsed .lp-sec-chevron{transform:rotate(-90deg);}
+.lp-section-body{overflow:hidden;transition:max-height .22s ease;}
+.lp-section.collapsed .lp-section-body{max-height:0!important;}
+
+.lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.lp-scroll::-webkit-scrollbar{width:3px;}
+.lp-scroll::-webkit-scrollbar-track{background:transparent;}
+.lp-scroll::-webkit-scrollbar-thumb{background:var(--society);border-radius:2px;opacity:.4;}
+
+/* Demography */
+.demo-stat{padding:6px 10px 4px;border-bottom:1px solid var(--edge);}
+.demo-label{font-family:var(--fc);font-size:.28rem;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;}
+.demo-value{font-family:var(--fm);font-size:.7rem;color:var(--society);margin-top:2px;letter-spacing:.04em;}
+.demo-sub{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);margin-top:1px;}
+
+.rate-row{display:flex;gap:6px;padding:5px 10px;}
+.rate-item{flex:1;background:rgba(255,255,255,.03);border:1px solid var(--edge);border-radius:3px;padding:5px 6px;}
+.rate-lbl{font-family:var(--fc);font-size:.26rem;letter-spacing:.08em;color:rgba(255,255,255,.3);text-transform:uppercase;}
+.rate-val{font-family:var(--fm);font-size:.44rem;margin-top:2px;}
+.rate-birth{color:var(--emerald);}
+.rate-death{color:var(--blood);}
+
+.mig-bar-wrap{padding:5px 10px 8px;}
+.mig-label{font-family:var(--fc);font-size:.28rem;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:4px;}
+.mig-bar-bg{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+.mig-bar-fill{height:100%;background:linear-gradient(90deg,rgba(199,125,255,.4),rgba(199,125,255,.9));border-radius:3px;transition:width .5s;}
+
+/* Faction list */
+.faction-item{
+  display:flex;align-items:center;gap:6px;padding:6px 10px;
+  cursor:pointer;transition:background .1s;border-bottom:1px solid var(--edge);
+}
+.faction-item:hover{background:rgba(255,255,255,.03);}
+.faction-item.selected{background:rgba(199,125,255,.07);border-right:2px solid var(--society);}
+.faction-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.faction-info{flex:1;min-width:0;}
+.faction-name{font-family:var(--fc);font-size:.34rem;color:rgba(255,255,255,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.faction-pop-bar-bg{height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:3px;overflow:hidden;}
+.faction-pop-bar-fill{height:100%;border-radius:2px;transition:width .4s;}
+.faction-dip-badge{
+  font-family:var(--fc);font-size:.26rem;letter-spacing:.06em;
+  padding:1px 5px;border-radius:8px;border:1px solid;flex-shrink:0;text-transform:uppercase;
+}
+.dip-WAR{color:#d45b5b;border-color:rgba(212,91,91,.4);background:rgba(212,91,91,.08);}
+.dip-PEACE{color:#4dc8a0;border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.08);}
+.dip-NEUTRAL{color:rgba(255,255,255,.4);border-color:rgba(255,255,255,.12);background:transparent;}
+.dip-ALLIANCE{color:#e8b84b;border-color:rgba(232,184,75,.4);background:rgba(232,184,75,.08);}
+
+.lp-tick-btn{
+  margin:8px 10px;font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:6px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(199,125,255,.35);background:rgba(199,125,255,.07);
+  color:var(--society);transition:all .12s;text-align:center;
+}
+.lp-tick-btn:hover{background:rgba(199,125,255,.15);box-shadow:0 0 10px rgba(199,125,255,.2);}
+
+/* ── CANVAS AREA ── */
+#canvas-wrap{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  position:relative;background:#04050a;
+}
+#world-canvas{display:block;width:100%;height:100%;cursor:grab;}
+#world-canvas.dragging{cursor:grabbing;}
+
+.canvas-overlay-info{
+  position:absolute;top:8px;left:8px;
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.2);pointer-events:none;line-height:1.6;
+}
+
+.layer-toggles{
+  position:absolute;top:8px;right:8px;display:flex;flex-direction:column;gap:4px;
+}
+.layer-toggle{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.07em;
+  padding:2px 7px;border-radius:2px;border:1px solid var(--edge);
+  background:rgba(8,11,18,.85);color:rgba(255,255,255,.3);cursor:pointer;
+  transition:all .12s;white-space:nowrap;
+}
+.layer-toggle.on{color:var(--society);border-color:rgba(199,125,255,.35);}
+.layer-toggle:hover{background:rgba(255,255,255,.05);}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:280px;flex-shrink:0;background:var(--surface);
+  border-left:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;
+}
+.rp-section{border-bottom:1px solid var(--edge);display:flex;flex-direction:column;}
+.rp-section-header{
+  padding:7px 10px;display:flex;align-items:center;gap:6px;flex-shrink:0;
+  border-bottom:1px solid var(--edge);
+}
+.rp-sec-title{font-family:var(--fm);font-size:.34rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);}
+.rp-sec-count{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.25);margin-left:auto;}
+
+/* Chronicle */
+#chronicle-section{flex:1;min-height:0;display:flex;flex-direction:column;}
+#chronicle-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+#chronicle-scroll::-webkit-scrollbar{width:3px;}
+#chronicle-scroll::-webkit-scrollbar-track{background:transparent;}
+#chronicle-scroll::-webkit-scrollbar-thumb{background:var(--society);border-radius:2px;}
+
+.event-row{
+  display:flex;align-items:flex-start;gap:7px;padding:6px 10px;
+  border-bottom:1px solid var(--edge);transition:background .1s;
+}
+.event-row:nth-child(even){background:rgba(255,255,255,.015);}
+.event-row:hover{background:rgba(199,125,255,.04);}
+.event-era-badge{
+  font-family:var(--fm);font-size:.26rem;letter-spacing:.06em;
+  padding:1px 4px;border-radius:2px;flex-shrink:0;border:1px solid;
+  text-transform:uppercase;margin-top:1px;
+}
+.event-icon{font-size:.65rem;flex-shrink:0;line-height:1;margin-top:1px;}
+.event-body{flex:1;min-width:0;}
+.event-desc{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.6);line-height:1.5;word-break:break-word;}
+.event-faction-tag{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.25);margin-top:2px;}
+
+/* Culture */
+#culture-section{flex-shrink:0;}
+.culture-body{padding:8px 10px;}
+.lang-bar-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.lang-name{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.45);width:60px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lang-bar-bg{flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+.lang-bar-fill{height:100%;border-radius:3px;transition:width .5s;}
+.lang-pct{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);width:28px;text-align:right;flex-shrink:0;}
+
+.religion-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
+#religion-donut{display:block;flex-shrink:0;}
+.religion-legend{display:flex;flex-direction:column;gap:3px;}
+.rel-item{display:flex;align-items:center;gap:5px;}
+.rel-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.rel-name{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.45);}
+
+/* Faction Inspector */
+#faction-inspector{
+  flex-shrink:0;border-top:1px solid var(--edge);
+  display:none;
+}
+#faction-inspector.visible{display:block;}
+.fi-header{padding:7px 10px;border-bottom:1px solid var(--edge);display:flex;align-items:center;gap:7px;}
+.fi-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.fi-name{font-family:var(--fm);font-size:.4rem;color:#fff;flex:1;}
+.fi-body{padding:6px 10px;max-height:160px;overflow-y:auto;}
+.fi-body::-webkit-scrollbar{width:3px;}
+.fi-body::-webkit-scrollbar-thumb{background:var(--society);border-radius:2px;}
+.fi-row{display:flex;gap:6px;margin-bottom:4px;align-items:baseline;}
+.fi-lbl{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);width:72px;flex-shrink:0;text-transform:uppercase;letter-spacing:.07em;}
+.fi-val{font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.7);}
+.fi-traits{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px;}
+.fi-trait{font-family:var(--fc);font-size:.26rem;padding:1px 5px;border-radius:8px;border:1px solid rgba(199,125,255,.3);color:rgba(199,125,255,.7);background:rgba(199,125,255,.06);}
+.fi-dip-btns{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;}
+.fi-dip-btn{
+  font-family:var(--fc);font-size:.26rem;letter-spacing:.06em;padding:2px 7px;
+  border-radius:8px;border:1px solid;cursor:pointer;transition:all .12s;text-transform:uppercase;
+}
+
+/* ── STATUS BAR ── */
+#status-bar{
+  height:26px;flex-shrink:0;background:var(--surface2);border-top:1px solid var(--edge);
+  display:flex;align-items:center;padding:0 12px;gap:16px;overflow:hidden;
+}
+.sb-item{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.25);text-transform:uppercase;white-space:nowrap;flex-shrink:0;
+}
+.sb-item span{color:var(--society);}
+.sb-spacer{flex:1;}
+.sb-status{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.1em;
+  color:rgba(255,255,255,.25);text-transform:uppercase;
+}
+
+/* ── PIPELINE OVERLAY ── */
+#pipeline-overlay{
+  position:fixed;inset:0;z-index:100;display:none;
+  background:rgba(4,5,10,.85);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;
+}
+#pipeline-overlay.visible{display:flex;}
+.pipeline-modal{
+  background:var(--surface2);border:1px solid var(--edge-hi);
+  border-radius:6px;padding:20px 24px;min-width:340px;
+}
+.pipeline-title{
+  font-family:var(--fm);font-size:.55rem;letter-spacing:.18em;
+  color:var(--society);text-transform:uppercase;margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.pipeline-step{
+  display:flex;align-items:center;gap:10px;padding:5px 0;
+  border-bottom:1px solid var(--edge);
+}
+.pipeline-step:last-child{border-bottom:none;}
+.ps-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+}
+.ps-dot.running{background:var(--society);animation:pulse-dot 1s ease-in-out infinite;box-shadow:0 0 8px rgba(199,125,255,.5);}
+.ps-dot.done{background:var(--emerald);border-color:rgba(77,200,160,.5);}
+@keyframes pulse-dot{0%,100%{opacity:.5;}50%{opacity:1;}}
+.ps-code{font-family:var(--fm);font-size:.34rem;letter-spacing:.08em;color:var(--society);width:68px;flex-shrink:0;}
+.ps-desc{font-family:var(--fd);font-size:.33rem;color:rgba(255,255,255,.5);flex:1;}
+.ps-tag{
+  font-family:var(--fc);font-size:.28rem;padding:1px 5px;border-radius:2px;
+  border:1px solid;flex-shrink:0;
+}
+.tag-SPA{color:#1e8cff;border-color:rgba(30,140,255,.3);}
+.tag-CTL{color:#4dc8a0;border-color:rgba(77,200,160,.3);}
+.tag-DAT{color:#9b7fd4;border-color:rgba(155,127,212,.3);}
+.tag-UIX{color:#e8b84b;border-color:rgba(232,184,75,.3);}
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- TOP BAR -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">⚑</div>
+      <div>
+        <div class="tb-module-id">05 · Society</div>
+        <div class="tb-subcrest">ORDER</div>
+      </div>
+    </div>
+
+    <div class="tb-tabs">
+      <div class="tb-tab active" data-tab="0">I-Demography</div>
+      <div class="tb-tab" data-tab="1">II-Faction</div>
+      <div class="tb-tab" data-tab="2">III-Culture</div>
+      <div class="tb-tab" data-tab="3">IV-Chronicle</div>
+    </div>
+
+    <div class="tb-links">
+      <div class="tb-link-chip dim" id="chip-terrain">TERRAIN</div>
+      <div class="tb-link-chip dim" id="chip-environ">ENVIRON</div>
+      <div class="tb-link-chip dim" id="chip-arch">ARCH</div>
+      <div class="tb-link-chip dim" id="chip-lumis">LUMIS</div>
+    </div>
+
+    <div class="tb-actions">
+      <button class="tb-btn" id="btn-tick">TICK ERA</button>
+      <button class="tb-btn" id="btn-reset">RESET</button>
+      <button class="tb-btn hot" id="btn-render">RENDER</button>
+    </div>
+
+    <div class="tb-spacer"></div>
+  </div>
+
+  <!-- BODY -->
+  <div id="body">
+
+    <!-- LEFT PANEL -->
+    <div id="left-panel">
+      <div class="lp-scroll">
+
+        <!-- I DEMOGRAPHY -->
+        <div class="lp-section" id="sec-demography">
+          <div class="lp-section-header" data-sec="demography">
+            <span class="lp-sec-num">I</span>
+            <span class="lp-sec-name">Demography</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:300px;">
+            <div class="demo-stat">
+              <div class="demo-label">World Population</div>
+              <div class="demo-value" id="pop-counter">0</div>
+              <div class="demo-sub" id="pop-sub">initializing…</div>
+            </div>
+            <div class="rate-row">
+              <div class="rate-item">
+                <div class="rate-lbl">Birth Rate</div>
+                <div class="rate-val rate-birth" id="birth-rate">—</div>
+              </div>
+              <div class="rate-item">
+                <div class="rate-lbl">Death Rate</div>
+                <div class="rate-val rate-death" id="death-rate">—</div>
+              </div>
+            </div>
+            <div class="mig-bar-wrap">
+              <div class="mig-label">Migration Pressure</div>
+              <div class="mig-bar-bg"><div class="mig-bar-fill" id="mig-bar" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- II FACTION -->
+        <div class="lp-section" id="sec-faction">
+          <div class="lp-section-header" data-sec="faction">
+            <span class="lp-sec-num">II</span>
+            <span class="lp-sec-name">Factions</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:320px;">
+            <div id="faction-list"></div>
+          </div>
+        </div>
+
+        <div style="padding:4px 0;">
+          <div class="lp-tick-btn" id="lp-tick-btn">⊕ TICK ERA</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CANVAS -->
+    <div id="canvas-wrap">
+      <canvas id="world-canvas"></canvas>
+      <div class="canvas-overlay-info" id="canvas-info">
+        DRAG to pan · SCROLL to zoom<br>
+        Click faction to inspect
+      </div>
+      <div class="layer-toggles">
+        <div class="layer-toggle on" data-layer="hex">HEX BASE</div>
+        <div class="layer-toggle on" data-layer="territory">TERRITORY</div>
+        <div class="layer-toggle on" data-layer="heat">POP HEAT</div>
+        <div class="layer-toggle on" data-layer="migration">MIGRATION</div>
+        <div class="layer-toggle on" data-layer="events">EVENTS</div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div id="right-panel">
+
+      <!-- CHRONICLE -->
+      <div class="rp-section" id="chronicle-section" style="flex:1;min-height:0;">
+        <div class="rp-section-header" style="flex-shrink:0;">
+          <span class="rp-sec-title">IV · Chronicle</span>
+          <span class="rp-sec-count" id="event-count">0 events</span>
+        </div>
+        <div id="chronicle-scroll"></div>
+      </div>
+
+      <!-- CULTURE -->
+      <div class="rp-section" id="culture-section" style="flex-shrink:0;">
+        <div class="rp-section-header">
+          <span class="rp-sec-title">III · Culture</span>
+        </div>
+        <div class="culture-body">
+          <div id="lang-bars"></div>
+          <div class="religion-row">
+            <canvas id="religion-donut" width="80" height="80"></canvas>
+            <div class="religion-legend" id="religion-legend"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FACTION INSPECTOR -->
+      <div id="faction-inspector">
+        <div class="fi-header">
+          <div class="fi-dot" id="fi-dot"></div>
+          <div class="fi-name" id="fi-name">—</div>
+        </div>
+        <div class="fi-body" id="fi-body"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div id="status-bar">
+    <div class="sb-item">MOD 05 · <span>SOCIETY</span></div>
+    <div class="sb-item">ERA <span id="sb-era">0</span></div>
+    <div class="sb-item">FACTIONS <span id="sb-factions">0</span></div>
+    <div class="sb-item">POP <span id="sb-pop">0</span></div>
+    <div class="sb-item">EVENTS <span id="sb-events">0</span></div>
+    <div class="sb-spacer"></div>
+    <div class="sb-status" id="sb-status">STANDBY</div>
+  </div>
+
+</div>
+
+<!-- PIPELINE OVERLAY -->
+<div id="pipeline-overlay">
+  <div class="pipeline-modal">
+    <div class="pipeline-title">⚑ ORDER Pipeline</div>
+    <div id="pipeline-steps"></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════
+   CONSTANTS
+═══════════════════════════════════════════ */
+const HEX_SIZE = 18;
+const FACTION_COLORS = ['#c8a860','#ff9f43','#4ecdc4','#ffd166','#ff6b35','#b1d0f0'];
+const PREFIXES = ['Alder','Ven','Mor','Sul','Kar','Dra','Leth','Orm','Tal','Brix'];
+const SUFFIXES = ['heim','thar','wyn','dor','ax','iel','um','ora','ith','ex'];
+const DIP_STATUSES = ['WAR','PEACE','NEUTRAL','ALLIANCE'];
+const LANGUAGES = ['Venturan','Morathi','Sulkai','Dravic'];
+const RELIGIONS = ['Solari Faith','Void Cult','Earth Rite','Star Order'];
+const RELIGION_COLORS = ['#f98f3b','#9b7fd4','#4dc8a0','#e8b84b'];
+const TRAIT_POOL = ['Expansionist','Maritime','Militarist','Scholar','Trader','Isolationist','Nomadic','Artisan','Mystic','Agrarian'];
+const PIPELINE_STEPS = [
+  { code:'I-PSC',   desc:'Population seed census',   tag:'SPA' },
+  { code:'II-GRT',  desc:'Growth rate calibration',  tag:'CTL' },
+  { code:'III-FAC', desc:'Faction territory solver',  tag:'SPA' },
+  { code:'IV-DIP',  desc:'Diplomacy matrix init',     tag:'DAT' },
+  { code:'V-MIG',   desc:'Migration flow tracer',     tag:'SPA' },
+  { code:'VI-LNG',  desc:'Language/culture spread',   tag:'SPA' },
+  { code:'VII-EVT', desc:'Chronicle event seeder',    tag:'DAT' },
+  { code:'VIII-CXE',desc:'Society capsule export',tag:'UIX'},
+];
+const EVENT_TEMPLATES = {
+  battle:    ['<F1> forces clash with <F2> at <LOC>','<F1> raids <F2> border settlements'],
+  discovery: ['<F1> discovers ancient ruins near <LOC>','<F1> unlocks ancient tech'],
+  founding:  ['<F1> establishes <LOC> as regional capital','<F1> founds the <LOC> trade post'],
+  collapse:  ['<F1> settlement at <LOC> abandoned','Plague sweeps through <F1> territory'],
+  treaty:    ['<F1> and <F2> sign the <LOC> Accord','<F1> surrenders <LOC> to <F2>'],
+  migration: ['<F1> settlers migrate toward <LOC>','Refugees from <F1> reach <LOC>'],
+};
+const EVENT_ICONS = { battle:'⚔', discovery:'★', founding:'✦', collapse:'♦', treaty:'⚖', migration:'→' };
+const EVENT_TYPES = Object.keys(EVENT_ICONS);
+
+const BIOME_COLORS = {
+  ocean:'#0a2040', deep_ocean:'#061428', shallow:'#0d3060',
+  beach:'#c8b878', grassland:'#3a6b2a', forest:'#1e4d18',
+  jungle:'#1a5c1a', desert:'#b5892a', tundra:'#8899aa',
+  mountain:'#6b6b7a', snow:'#c8d8e8', swamp:'#2a4b2a',
+  savanna:'#8b7340', plains:'#5a8040',
+};
+
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let state = {
+  era: 0,
+  factions: [],
+  events: [],
+  hexes: [],        // {q,r,biome,elevation,faction_id}
+  settlements: [],  // {q,r,name,population,faction_id}
+  migration_flows: [],
+  languages: [],
+  religions: [],
+  total_population: 0,
+  birth_rate: 0.032,
+  death_rate: 0.018,
+  migration_pressure: 0.45,
+  selected_faction_id: null,
+};
+
+let upstream = { terrain: null, environ: null, architect: null, lighting: null };
+let layers = { hex:true, territory:true, heat:true, migration:true, events:true };
+
+/* Camera */
+let cam = { x: 0, y: 0, zoom: 1 };
+let drag = { active:false, sx:0, sy:0, cx:0, cy:0 };
+
+/* Animation */
+let animT = 0;
+let dashOffset = 0;
+let popDisplayed = 0;
+let rAFid = null;
+
+/* ═══════════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════════ */
+function rng(seed) {
+  let s = seed ^ 0xdeadbeef;
+  return function() {
+    s = Math.imul(s ^ (s >>> 16), 0x45d9f3b);
+    s = Math.imul(s ^ (s >>> 16), 0x45d9f3b);
+    return ((s ^ (s >>> 16)) >>> 0) / 0xffffffff;
+  };
+}
+
+let _rng = rng(Date.now() & 0xffffff);
+function rand() { return _rng(); }
+function randInt(a, b) { return Math.floor(rand() * (b - a + 1)) + a; }
+function pick(arr) { return arr[Math.floor(rand() * arr.length)]; }
+
+function hexToPixel(q, r) {
+  return {
+    x: HEX_SIZE * Math.sqrt(3) * (q + r / 2),
+    y: HEX_SIZE * 1.5 * r,
+  };
+}
+
+function fmtNum(n) {
+  if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return String(Math.round(n));
+}
+
+function hexNeighbors(q, r) {
+  return [[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,1]].map(([dq,dr]) => ({q:q+dq,r:r+dr}));
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+/* ═══════════════════════════════════════════
+   UPSTREAM DATA LOAD
+═══════════════════════════════════════════ */
+function loadUpstream() {
+  const keys = ['qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot'];
+  const ids  = ['terrain','environ','architect','lighting'];
+  const chips = ['chip-terrain','chip-environ','chip-arch','chip-lumis'];
+  keys.forEach((k,i) => {
+    try {
+      const raw = localStorage.getItem(k);
+      if (raw) {
+        upstream[ids[i]] = JSON.parse(raw);
+        document.getElementById(chips[i]).className = 'tb-link-chip lit';
+      } else {
+        document.getElementById(chips[i]).className = 'tb-link-chip dim';
+      }
+    } catch(e) {
+      document.getElementById(chips[i]).className = 'tb-link-chip dim';
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════
+   PROCEDURAL GENERATION
+═══════════════════════════════════════════ */
+function generateFactionName() {
+  return pick(PREFIXES) + pick(SUFFIXES);
+}
+
+function generateHexGrid() {
+  const hexes = [];
+  const biomes = Object.keys(BIOME_COLORS);
+  // Try to load from terrain snapshot
+  if (upstream.terrain && upstream.terrain.hexes && upstream.terrain.hexes.length) {
+    upstream.terrain.hexes.forEach(h => {
+      hexes.push({ q:h.q, r:h.r, biome:h.biome||'grassland', elevation:h.elevation||0.5, faction_id:null });
+    });
+    return hexes;
+  }
+  // Procedural fallback: 40×40 grid
+  for (let q = -20; q <= 20; q++) {
+    for (let r = -20; r <= 20; r++) {
+      const e = (Math.sin(q * 0.3 + r * 0.17) * 0.5 + 0.5);
+      let biome = 'grassland';
+      if (e < 0.2) biome = 'deep_ocean';
+      else if (e < 0.32) biome = 'ocean';
+      else if (e < 0.38) biome = 'shallow';
+      else if (e < 0.42) biome = 'beach';
+      else if (e < 0.55) biome = 'plains';
+      else if (e < 0.65) biome = 'grassland';
+      else if (e < 0.72) biome = 'forest';
+      else if (e < 0.8) biome = 'mountain';
+      else biome = 'snow';
+      hexes.push({ q, r, biome, elevation:e, faction_id:null });
+    }
+  }
+  return hexes;
+}
+
+function generateSettlements() {
+  if (upstream.architect && upstream.architect.settlements && upstream.architect.settlements.length) {
+    return upstream.architect.settlements.map(s => ({
+      q: Math.round(s.x ? s.x / (HEX_SIZE * Math.sqrt(3)) : (s.q || 0)),
+      r: Math.round(s.y ? s.y / (HEX_SIZE * 1.5) : (s.r || 0)),
+      name: s.name || 'Settlement',
+      population: s.population || randInt(200, 5000),
+      faction_id: null,
+    }));
+  }
+  // Procedural fallback
+  const land = state.hexes.filter(h => !['ocean','deep_ocean','shallow'].includes(h.biome));
+  const count = Math.min(18, land.length);
+  const chosen = [];
+  const used = new Set();
+  while (chosen.length < count && chosen.length < land.length) {
+    const h = land[randInt(0, land.length - 1)];
+    const key = `${h.q},${h.r}`;
+    if (!used.has(key)) {
+      used.add(key);
+      chosen.push({ q:h.q, r:h.r, name:generateFactionName(), population:randInt(200,5000), faction_id:null });
+    }
+  }
+  return chosen;
+}
+
+function generateFactions() {
+  const factions = [];
+  const totalPop = state.settlements.reduce((s, x) => s + x.population, 0) || 20000;
+  for (let i = 0; i < 6; i++) {
+    const pop = Math.floor(totalPop * (0.1 + rand() * 0.2));
+    factions.push({
+      id: i,
+      name: generateFactionName(),
+      color: FACTION_COLORS[i],
+      population: pop,
+      territory: [],
+      diplomacy: {},
+      tech_level: randInt(1, 5),
+      traits: [pick(TRAIT_POOL), pick(TRAIT_POOL)].filter((v,i,a) => a.indexOf(v) === i),
+      capital_hex: null,
+      leader: generateFactionName(),
+    });
+  }
+  return factions;
+}
+
+function assignSettlements() {
+  state.settlements.forEach((s, i) => {
+    const fid = i % state.factions.length;
+    s.faction_id = fid;
+    if (!state.factions[fid].capital_hex) {
+      state.factions[fid].capital_hex = { q:s.q, r:s.r, name:s.name };
+    }
+  });
+}
+
+function buildDiplomacy() {
+  const f = state.factions;
+  for (let i = 0; i < f.length; i++) {
+    for (let j = i + 1; j < f.length; j++) {
+      // Check territory adjacency
+      const r = rand();
+      let status;
+      if (r < 0.2) status = 'WAR';
+      else if (r < 0.45) status = 'NEUTRAL';
+      else if (r < 0.75) status = 'PEACE';
+      else status = 'ALLIANCE';
+      f[i].diplomacy[j] = status;
+      f[j].diplomacy[i] = status;
+    }
+  }
+}
+
+function bfsTerritoryExpansion() {
+  const hexMap = new Map();
+  state.hexes.forEach(h => { hexMap.set(`${h.q},${h.r}`, h); h.faction_id = null; });
+
+  state.factions.forEach(fac => {
+    fac.territory = [];
+    const cap = fac.capital_hex;
+    if (!cap) return;
+    const capHex = hexMap.get(`${cap.q},${cap.r}`);
+    if (!capHex) return;
+    const limit = Math.max(4, Math.floor(fac.population / 300));
+    const queue = [capHex];
+    const visited = new Set([`${cap.q},${cap.r}`]);
+    capHex.faction_id = fac.id;
+    fac.territory.push({ q:cap.q, r:cap.r });
+    while (queue.length && fac.territory.length < limit) {
+      const cur = queue.shift();
+      for (const nb of hexNeighbors(cur.q, cur.r)) {
+        const key = `${nb.q},${nb.r}`;
+        if (visited.has(key)) continue;
+        visited.add(key);
+        const nbHex = hexMap.get(key);
+        if (!nbHex || nbHex.faction_id !== null) continue;
+        if (['ocean','deep_ocean','shallow'].includes(nbHex.biome)) continue;
+        nbHex.faction_id = fac.id;
+        fac.territory.push({ q:nb.q, r:nb.r });
+        queue.push(nbHex);
+        if (fac.territory.length >= limit) break;
+      }
+    }
+  });
+}
+
+function generateMigrationFlows() {
+  const flows = [];
+  const settled = state.settlements.filter(s => s.population > 500);
+  if (settled.length < 2) return flows;
+  for (let i = 0; i < Math.min(8, settled.length); i++) {
+    const a = settled[i];
+    const b = settled[(i + 1) % settled.length];
+    if (a === b) continue;
+    flows.push({ from:a, to:b, strength:rand() });
+  }
+  return flows;
+}
+
+function generateLanguages() {
+  const total = 100;
+  const splits = [rand(), rand(), rand(), rand()];
+  const sum = splits.reduce((a, b) => a + b, 0);
+  return LANGUAGES.map((name, i) => ({
+    name,
+    share: splits[i] / sum * 100,
+    color: FACTION_COLORS[i],
+  }));
+}
+
+function generateReligions() {
+  const splits = [rand(), rand(), rand(), rand()];
+  const sum = splits.reduce((a, b) => a + b, 0);
+  return RELIGIONS.map((name, i) => ({
+    name,
+    share: splits[i] / sum * 100,
+    color: RELIGION_COLORS[i],
+  }));
+}
+
+function buildEventDesc(template, fac1, fac2, loc) {
+  return template
+    .replace('<F1>', fac1 ? fac1.name : '?')
+    .replace('<F2>', fac2 ? fac2.name : '?')
+    .replace('<LOC>', loc || 'the frontier');
+}
+
+function generateEvents(count) {
+  const events = [];
+  const locs = ['Ashenveil','Ironshard','Stonehaven','Mirefall','Goldpeak','Coastwatch','Thornwall'];
+  for (let i = 0; i < count; i++) {
+    const type = pick(EVENT_TYPES);
+    const templates = EVENT_TEMPLATES[type];
+    const fac1 = pick(state.factions);
+    const fac2 = pick(state.factions.filter(f => f.id !== fac1.id));
+    const loc = pick(locs);
+    const era = randInt(1, Math.max(1, state.era));
+    const hex = state.hexes[randInt(0, state.hexes.length - 1)] || { q:0, r:0 };
+    events.push({
+      id: i,
+      era,
+      type,
+      icon: EVENT_ICONS[type],
+      hex_q: hex.q,
+      hex_r: hex.r,
+      description: buildEventDesc(pick(templates), fac1, fac2, loc),
+      factions: [fac1.id, fac2 ? fac2.id : -1],
+    });
+  }
+  return events.sort((a, b) => b.era - a.era);
+}
+
+/* ═══════════════════════════════════════════
+   INIT / RESET
+═══════════════════════════════════════════ */
+function initSociety() {
+  _rng = rng(Date.now() & 0xffffff);
+  state.hexes = generateHexGrid();
+  state.settlements = generateSettlements();
+  state.factions = generateFactions();
+  assignSettlements();
+  buildDiplomacy();
+  bfsTerritoryExpansion();
+  state.migration_flows = generateMigrationFlows();
+  state.languages = generateLanguages();
+  state.religions = generateReligions();
+  state.total_population = state.factions.reduce((s, f) => s + f.population, 0);
+  state.birth_rate = 0.025 + rand() * 0.02;
+  state.death_rate = 0.01 + rand() * 0.015;
+  state.migration_pressure = 0.3 + rand() * 0.5;
+  state.events = generateEvents(randInt(12, 20));
+  // Keep era if ticking, reset otherwise
+}
+
+function fullReset() {
+  state.era = 0;
+  initSociety();
+  fitCamera();
+  updateAllUI();
+  setStatus('READY');
+}
+
+/* ═══════════════════════════════════════════
+   TICK ERA
+═══════════════════════════════════════════ */
+function tickEra() {
+  state.era++;
+
+  // Population growth
+  const growth = 1 + (state.birth_rate - state.death_rate);
+  state.factions.forEach(f => {
+    f.population = Math.round(f.population * growth);
+  });
+  state.settlements.forEach(s => { s.population = Math.round(s.population * (0.95 + rand() * 0.15)); });
+
+  // Migrate 15% of pop between settlements
+  const migAmount = 0.15;
+  for (let i = 0; i < state.settlements.length - 1; i++) {
+    const from = state.settlements[i];
+    const to   = state.settlements[(i + 1) % state.settlements.length];
+    const amt  = Math.floor(from.population * migAmount * rand());
+    from.population -= amt;
+    to.population   += amt;
+  }
+
+  // Slight drift in rates
+  state.birth_rate = Math.max(0.005, Math.min(0.06, state.birth_rate + (rand() - 0.5) * 0.005));
+  state.death_rate = Math.max(0.003, Math.min(0.04,  state.death_rate + (rand() - 0.5) * 0.004));
+  state.migration_pressure = Math.max(0.1, Math.min(0.95, state.migration_pressure + (rand() - 0.5) * 0.08));
+
+  // Diplomacy drift
+  state.factions.forEach((fa, i) => {
+    state.factions.forEach((fb, j) => {
+      if (j <= i) return;
+      if (rand() < 0.1) {
+        const cur = DIP_STATUSES.indexOf(fa.diplomacy[j]);
+        const next = (cur + (rand() < 0.5 ? 1 : -1) + DIP_STATUSES.length) % DIP_STATUSES.length;
+        fa.diplomacy[j] = DIP_STATUSES[next];
+        fb.diplomacy[i] = DIP_STATUSES[next];
+      }
+    });
+  });
+
+  // New events
+  const newCount = randInt(1, 2);
+  const newEvents = generateEvents(newCount).map((e, i) => ({ ...e, id: state.events.length + i, era: state.era }));
+  state.events.unshift(...newEvents);
+
+  // Re-run BFS territory
+  bfsTerritoryExpansion();
+
+  // Re-generate migration flows
+  state.migration_flows = generateMigrationFlows();
+
+  // Recalc total
+  state.total_population = state.factions.reduce((s, f) => s + f.population, 0);
+
+  updateAllUI();
+  setStatus(`ERA ${state.era} COMPLETE`);
+}
+
+/* ═══════════════════════════════════════════
+   CAMERA
+═══════════════════════════════════════════ */
+function fitCamera() {
+  const canvas = document.getElementById('world-canvas');
+  if (state.hexes.length === 0) { cam = { x:0, y:0, zoom:1 }; return; }
+  let minX=Infinity, maxX=-Infinity, minY=Infinity, maxY=-Infinity;
+  state.hexes.forEach(h => {
+    const p = hexToPixel(h.q, h.r);
+    if (p.x < minX) minX = p.x;
+    if (p.x > maxX) maxX = p.x;
+    if (p.y < minY) minY = p.y;
+    if (p.y > maxY) maxY = p.y;
+  });
+  const W = canvas.width, H = canvas.height;
+  const padX = 60, padY = 60;
+  const gridW = maxX - minX + HEX_SIZE * 2;
+  const gridH = maxY - minY + HEX_SIZE * 2;
+  const zx = (W - padX * 2) / gridW;
+  const zy = (H - padY * 2) / gridH;
+  cam.zoom = Math.min(zx, zy, 2.5);
+  cam.x = W / 2 - ((minX + maxX) / 2) * cam.zoom;
+  cam.y = H / 2 - ((minY + maxY) / 2) * cam.zoom;
+}
+
+/* ═══════════════════════════════════════════
+   CANVAS RENDER
+═══════════════════════════════════════════ */
+const HEX_H = HEX_SIZE * 2;
+const HEX_W = Math.sqrt(3) * HEX_SIZE;
+
+function hexCorners(cx, cy, size) {
+  const pts = [];
+  for (let i = 0; i < 6; i++) {
+    const ang = Math.PI / 180 * (60 * i - 30);
+    pts.push([cx + size * Math.cos(ang), cy + size * Math.sin(ang)]);
+  }
+  return pts;
+}
+
+function drawHex(ctx, cx, cy, size, fillStyle, strokeStyle, lineWidth) {
+  const pts = hexCorners(cx, cy, size);
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < 6; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.closePath();
+  if (fillStyle) { ctx.fillStyle = fillStyle; ctx.fill(); }
+  if (strokeStyle) { ctx.strokeStyle = strokeStyle; ctx.lineWidth = lineWidth || 1; ctx.stroke(); }
+}
+
+function worldToScreen(wx, wy) {
+  return { sx: wx * cam.zoom + cam.x, sy: wy * cam.zoom + cam.y };
+}
+
+function hexScreenPos(q, r) {
+  const p = hexToPixel(q, r);
+  return worldToScreen(p.x, p.y);
+}
+
+function renderFrame(ts) {
+  const canvas = document.getElementById('world-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  animT = ts / 1000;
+  dashOffset -= 0.4;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#04050a';
+  ctx.fillRect(0, 0, W, H);
+
+  const sz = Math.max(2, HEX_SIZE * cam.zoom);
+
+  // ── LAYER 1: Hex base ──
+  if (layers.hex) {
+    state.hexes.forEach(h => {
+      const { sx, sy } = hexScreenPos(h.q, h.r);
+      if (sx < -sz*2 || sx > W+sz*2 || sy < -sz*2 || sy > H+sz*2) return;
+      const biomeColor = BIOME_COLORS[h.biome] || '#333';
+      const el = h.elevation || 0.5;
+      const alpha = 0.25 + el * 0.1;
+      // Parse hex color for alpha blending
+      ctx.globalAlpha = alpha;
+      drawHex(ctx, sx, sy, sz * 0.98, biomeColor, null, 0);
+      ctx.globalAlpha = 1;
+      drawHex(ctx, sx, sy, sz * 0.98, null, 'rgba(255,255,255,0.03)', 0.5);
+    });
+  }
+
+  // ── LAYER 2: Faction territory ──
+  if (layers.territory) {
+    const hexMap = new Map(state.hexes.map(h => [`${h.q},${h.r}`, h]));
+    state.hexes.forEach(h => {
+      if (h.faction_id === null) return;
+      const { sx, sy } = hexScreenPos(h.q, h.r);
+      if (sx < -sz*2 || sx > W+sz*2 || sy < -sz*2 || sy > H+sz*2) return;
+      const fac = state.factions[h.faction_id];
+      if (!fac) return;
+      const isSelected = state.selected_faction_id === h.faction_id;
+      const glow = isSelected ? (0.5 + 0.5 * Math.sin(animT * 2)) : 0;
+      ctx.globalAlpha = 0.3 + glow * 0.15;
+      drawHex(ctx, sx, sy, sz * 0.96, fac.color, null, 0);
+      ctx.globalAlpha = 1;
+
+      // Borders between faction changes
+      const neighbors = hexNeighbors(h.q, h.r);
+      neighbors.forEach(nb => {
+        const nbHex = hexMap.get(`${nb.q},${nb.r}`);
+        if (!nbHex || nbHex.faction_id !== h.faction_id) {
+          // Draw border edge
+          const nbSc = hexScreenPos(nb.q, nb.r);
+          ctx.save();
+          ctx.globalAlpha = isSelected ? 0.9 : 0.7;
+          ctx.strokeStyle = fac.color;
+          ctx.lineWidth = isSelected ? 2 : 1.5;
+          if (isSelected) ctx.shadowColor = fac.color, ctx.shadowBlur = 6;
+          // Draw a short line from center toward neighbor
+          const midX = (sx + nbSc.sx) / 2;
+          const midY = (sy + nbSc.sy) / 2;
+          ctx.beginPath();
+          ctx.moveTo(sx + (midX - sx) * 0.7, sy + (midY - sy) * 0.7);
+          ctx.lineTo(midX, midY);
+          ctx.stroke();
+          ctx.restore();
+        }
+      });
+    });
+  }
+
+  // ── LAYER 3: Population heat ──
+  if (layers.heat) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    state.settlements.forEach(s => {
+      const { sx, sy } = hexScreenPos(s.q, s.r);
+      if (sx < -sz*4 || sx > W+sz*4 || sy < -sz*4 || sy > H+sz*4) return;
+      const maxPop = 5000;
+      const t = Math.min(s.population / maxPop, 1);
+      const radius = sz * (1.5 + t * 3);
+      const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, radius);
+      if (t < 0.33) {
+        grad.addColorStop(0, `rgba(30,100,255,${t * 0.6})`);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+      } else if (t < 0.66) {
+        grad.addColorStop(0, `rgba(255,220,50,${t * 0.5})`);
+        grad.addColorStop(0.4, `rgba(30,100,255,${t * 0.2})`);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+      } else {
+        grad.addColorStop(0, `rgba(255,60,30,${t * 0.55})`);
+        grad.addColorStop(0.3, `rgba(255,180,30,${t * 0.3})`);
+        grad.addColorStop(0.7, `rgba(30,80,255,${t * 0.1})`);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+      }
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.restore();
+  }
+
+  // ── LAYER 4: Migration flows ──
+  if (layers.migration) {
+    ctx.save();
+    ctx.setLineDash([6, 5]);
+    ctx.lineDashOffset = dashOffset;
+    state.migration_flows.forEach(flow => {
+      const from = hexScreenPos(flow.from.q, flow.from.r);
+      const to   = hexScreenPos(flow.to.q,   flow.to.r);
+      const mx = (from.sx + to.sx) / 2 + (to.sy - from.sy) * 0.3;
+      const my = (from.sy + to.sy) / 2 - (to.sx - from.sx) * 0.3;
+      ctx.beginPath();
+      ctx.moveTo(from.sx, from.sy);
+      ctx.quadraticCurveTo(mx, my, to.sx, to.sy);
+      ctx.strokeStyle = `rgba(199,125,255,${0.3 + flow.strength * 0.4})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      // Arrowhead
+      const dx = to.sx - mx, dy = to.sy - my;
+      const len = Math.sqrt(dx*dx+dy*dy)||1;
+      const nx = dx/len, ny = dy/len;
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(to.sx, to.sy);
+      ctx.lineTo(to.sx - nx*7 + ny*4, to.sy - ny*7 - nx*4);
+      ctx.lineTo(to.sx - nx*7 - ny*4, to.sy - ny*7 + nx*4);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(199,125,255,${0.5 + flow.strength * 0.4})`;
+      ctx.fill();
+      ctx.setLineDash([6, 5]);
+      ctx.lineDashOffset = dashOffset;
+    });
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  // ── LAYER 5: Event markers ──
+  if (layers.events) {
+    state.events.slice(0, 30).forEach((ev, idx) => {
+      const { sx, sy } = hexScreenPos(ev.hex_q, ev.hex_r);
+      if (sx < -sz*2 || sx > W+sz*2 || sy < -sz*2 || sy > H+sz*2) return;
+      const pulse = 1 + 0.15 * Math.sin(animT * 3 + idx);
+      const fac = ev.factions[0] >= 0 ? state.factions[ev.factions[0]] : null;
+      const col = fac ? fac.color : '#c8a860';
+      ctx.save();
+      ctx.translate(sx, sy - sz * 0.8);
+      ctx.scale(pulse, pulse);
+      ctx.font = `${Math.max(10, sz * 0.7)}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = col;
+      ctx.shadowBlur = 8;
+      ctx.fillStyle = col;
+      ctx.fillText(ev.icon, 0, 0);
+      ctx.restore();
+    });
+  }
+
+  // ── Settlement dots ──
+  state.settlements.forEach(s => {
+    const { sx, sy } = hexScreenPos(s.q, s.r);
+    if (sx < -sz*2 || sx > W+sz*2 || sy < -sz*2 || sy > H+sz*2) return;
+    const fac = s.faction_id !== null ? state.factions[s.faction_id] : null;
+    const col = fac ? fac.color : '#fff';
+    const r = Math.max(3, Math.min(8, sz * 0.3 + Math.log(s.population) * 0.3));
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(sx, sy, r, 0, Math.PI * 2);
+    ctx.fillStyle = col;
+    ctx.shadowColor = col;
+    ctx.shadowBlur = 6;
+    ctx.fill();
+    ctx.strokeStyle = '#04050a';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.restore();
+    if (sz > 12) {
+      ctx.font = `${Math.max(8, sz * 0.45)}px 'JetBrains Mono',monospace`;
+      ctx.fillStyle = 'rgba(255,255,255,0.65)';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.shadowColor = 'transparent';
+      ctx.fillText(s.name.slice(0, 8), sx, sy + r + 2);
+    }
+  });
+
+  // Pop counter animation
+  const targetPop = state.total_population;
+  popDisplayed = lerp(popDisplayed, targetPop, 0.08);
+  document.getElementById('pop-counter').textContent = fmtNum(Math.round(popDisplayed));
+
+  rAFid = requestAnimationFrame(renderFrame);
+}
+
+/* ═══════════════════════════════════════════
+   UI UPDATES
+═══════════════════════════════════════════ */
+function updateAllUI() {
+  updateStatusBar();
+  updateFactionList();
+  updateChronicle();
+  updateCulturePanel();
+  updateDemography();
+}
+
+function updateStatusBar() {
+  document.getElementById('sb-era').textContent = state.era;
+  document.getElementById('sb-factions').textContent = state.factions.length;
+  document.getElementById('sb-pop').textContent = fmtNum(state.total_population);
+  document.getElementById('sb-events').textContent = state.events.length;
+  document.getElementById('event-count').textContent = state.events.length + ' events';
+}
+
+function setStatus(msg) {
+  document.getElementById('sb-status').textContent = msg;
+}
+
+function updateDemography() {
+  const br = (state.birth_rate * 1000).toFixed(1);
+  const dr = (state.death_rate * 1000).toFixed(1);
+  document.getElementById('birth-rate').textContent = br + '‰';
+  document.getElementById('death-rate').textContent = dr + '‰';
+  document.getElementById('mig-bar').style.width = (state.migration_pressure * 100).toFixed(0) + '%';
+  document.getElementById('pop-sub').textContent =
+    `${state.settlements.length} settlements · era ${state.era}`;
+}
+
+function updateFactionList() {
+  const maxPop = Math.max(...state.factions.map(f => f.population), 1);
+  const container = document.getElementById('faction-list');
+  container.innerHTML = '';
+  state.factions.forEach(fac => {
+    const pct = (fac.population / maxPop * 100).toFixed(0);
+    // Primary diplomacy: find most common status with others
+    const dipCounts = { WAR:0, PEACE:0, NEUTRAL:0, ALLIANCE:0 };
+    Object.values(fac.diplomacy).forEach(s => { if (dipCounts[s] !== undefined) dipCounts[s]++; });
+    const mainDip = Object.keys(dipCounts).reduce((a, b) => dipCounts[a] >= dipCounts[b] ? a : b, 'NEUTRAL');
+
+    const div = document.createElement('div');
+    div.className = 'faction-item' + (state.selected_faction_id === fac.id ? ' selected' : '');
+    div.dataset.id = fac.id;
+    div.innerHTML = `
+      <div class="faction-dot" style="background:${fac.color};box-shadow:0 0 4px ${fac.color}55"></div>
+      <div class="faction-info">
+        <div class="faction-name">${fac.name}</div>
+        <div class="faction-pop-bar-bg">
+          <div class="faction-pop-bar-fill" style="width:${pct}%;background:${fac.color}"></div>
+        </div>
+      </div>
+      <div class="faction-dip-badge dip-${mainDip}">${mainDip}</div>
+    `;
+    div.addEventListener('click', () => selectFaction(fac.id));
+    container.appendChild(div);
+  });
+}
+
+function selectFaction(id) {
+  state.selected_faction_id = state.selected_faction_id === id ? null : id;
+  updateFactionList();
+  updateFactionInspector();
+}
+
+function updateFactionInspector() {
+  const inspector = document.getElementById('faction-inspector');
+  if (state.selected_faction_id === null) {
+    inspector.classList.remove('visible');
+    return;
+  }
+  const fac = state.factions.find(f => f.id === state.selected_faction_id);
+  if (!fac) { inspector.classList.remove('visible'); return; }
+  inspector.classList.add('visible');
+
+  document.getElementById('fi-dot').style.cssText = `background:${fac.color};box-shadow:0 0 6px ${fac.color}`;
+  document.getElementById('fi-name').textContent = fac.name;
+
+  const cap = fac.capital_hex ? fac.capital_hex.name || `(${fac.capital_hex.q},${fac.capital_hex.r})` : '—';
+  const dipRows = Object.entries(fac.diplomacy).map(([id, status]) => {
+    const other = state.factions.find(f => f.id == id);
+    return other ? `<span class="fi-dip-btn dip-${status}" style="cursor:default">${other.name.slice(0,6)} · ${status}</span>` : '';
+  }).join('');
+
+  document.getElementById('fi-body').innerHTML = `
+    <div class="fi-row"><span class="fi-lbl">Leader</span><span class="fi-val">${fac.leader}</span></div>
+    <div class="fi-row"><span class="fi-lbl">Capital</span><span class="fi-val">${cap}</span></div>
+    <div class="fi-row"><span class="fi-lbl">Population</span><span class="fi-val" style="color:${fac.color}">${fmtNum(fac.population)}</span></div>
+    <div class="fi-row"><span class="fi-lbl">Territory</span><span class="fi-val">${fac.territory.length} hexes</span></div>
+    <div class="fi-row"><span class="fi-lbl">Tech Level</span><span class="fi-val">${'■'.repeat(fac.tech_level)}${'□'.repeat(5-fac.tech_level)}</span></div>
+    <div class="fi-row" style="flex-direction:column;align-items:flex-start;gap:3px;">
+      <span class="fi-lbl">Traits</span>
+      <div class="fi-traits">${fac.traits.map(t => `<span class="fi-trait">${t}</span>`).join('')}</div>
+    </div>
+    <div class="fi-row" style="flex-direction:column;align-items:flex-start;gap:3px;">
+      <span class="fi-lbl">Diplomacy</span>
+      <div class="fi-dip-btns">${dipRows}</div>
+    </div>
+  `;
+}
+
+function updateChronicle() {
+  const scroll = document.getElementById('chronicle-scroll');
+  scroll.innerHTML = '';
+  state.events.forEach(ev => {
+    const fac = ev.factions[0] >= 0 ? state.factions[ev.factions[0]] : null;
+    const col = fac ? fac.color : '#c8a860';
+    const div = document.createElement('div');
+    div.className = 'event-row';
+    div.innerHTML = `
+      <div class="event-era-badge" style="color:${col};border-color:${col}55">E${ev.era}</div>
+      <div class="event-icon">${ev.icon}</div>
+      <div class="event-body">
+        <div class="event-desc">${ev.description}</div>
+        <div class="event-faction-tag">${fac ? fac.name : '?'} · ${ev.type}</div>
+      </div>
+    `;
+    scroll.appendChild(div);
+  });
+}
+
+function updateCulturePanel() {
+  // Language bars
+  const langContainer = document.getElementById('lang-bars');
+  langContainer.innerHTML = '';
+  state.languages.forEach(lang => {
+    const div = document.createElement('div');
+    div.className = 'lang-bar-row';
+    div.innerHTML = `
+      <div class="lang-name">${lang.name}</div>
+      <div class="lang-bar-bg"><div class="lang-bar-fill" style="width:${lang.share.toFixed(0)}%;background:${lang.color}"></div></div>
+      <div class="lang-pct">${lang.share.toFixed(0)}%</div>
+    `;
+    langContainer.appendChild(div);
+  });
+
+  // Religion donut
+  const donutCanvas = document.getElementById('religion-donut');
+  const dctx = donutCanvas.getContext('2d');
+  const cx = 40, cy = 40, outerR = 36, innerR = 20;
+  dctx.clearRect(0, 0, 80, 80);
+  let startAngle = -Math.PI / 2;
+  const total = state.religions.reduce((s, r) => s + r.share, 0);
+  state.religions.forEach(rel => {
+    const sweep = (rel.share / total) * Math.PI * 2;
+    dctx.beginPath();
+    dctx.moveTo(cx, cy);
+    dctx.arc(cx, cy, outerR, startAngle, startAngle + sweep);
+    dctx.closePath();
+    dctx.fillStyle = rel.color;
+    dctx.fill();
+    startAngle += sweep;
+  });
+  // Inner hole
+  dctx.beginPath();
+  dctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+  dctx.fillStyle = '#04050a';
+  dctx.fill();
+
+  // Legend
+  const legend = document.getElementById('religion-legend');
+  legend.innerHTML = '';
+  state.religions.forEach(rel => {
+    const div = document.createElement('div');
+    div.className = 'rel-item';
+    div.innerHTML = `<div class="rel-dot" style="background:${rel.color}"></div><div class="rel-name">${rel.name} (${rel.share.toFixed(0)}%)</div>`;
+    legend.appendChild(div);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   PIPELINE OVERLAY
+═══════════════════════════════════════════ */
+function runPipeline(callback) {
+  const overlay = document.getElementById('pipeline-overlay');
+  const stepsContainer = document.getElementById('pipeline-steps');
+
+  overlay.classList.add('visible');
+  stepsContainer.innerHTML = '';
+
+  const stepEls = PIPELINE_STEPS.map(step => {
+    const div = document.createElement('div');
+    div.className = 'pipeline-step';
+    div.innerHTML = `
+      <div class="ps-dot" id="psdot-${step.code.replace(/[^a-z0-9]/gi,'_')}"></div>
+      <div class="ps-code">${step.code}</div>
+      <div class="ps-desc">${step.desc}</div>
+      <div class="ps-tag tag-${step.tag}">${step.tag}</div>
+    `;
+    stepsContainer.appendChild(div);
+    return { el: div, dot: div.querySelector('.ps-dot') };
+  });
+
+  let i = 0;
+  function runNext() {
+    if (i >= stepEls.length) {
+      setTimeout(() => {
+        overlay.classList.remove('visible');
+        callback();
+      }, 300);
+      return;
+    }
+    stepEls[i].dot.className = 'ps-dot running';
+    const delay = 180 + Math.random() * 220;
+    setTimeout(() => {
+      stepEls[i].dot.className = 'ps-dot done';
+      i++;
+      runNext();
+    }, delay);
+  }
+  runNext();
+}
+
+/* ═══════════════════════════════════════════
+   CANVAS RESIZE
+═══════════════════════════════════════════ */
+function resizeCanvas() {
+  const canvas = document.getElementById('world-canvas');
+  const wrap = document.getElementById('canvas-wrap');
+  const rect = wrap.getBoundingClientRect();
+  if (canvas.width !== rect.width || canvas.height !== rect.height) {
+    canvas.width  = rect.width;
+    canvas.height = rect.height;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   CANVAS EVENTS
+═══════════════════════════════════════════ */
+function initCanvasEvents() {
+  const canvas = document.getElementById('world-canvas');
+
+  canvas.addEventListener('mousedown', e => {
+    drag.active = true;
+    drag.sx = e.clientX;
+    drag.sy = e.clientY;
+    drag.cx = cam.x;
+    drag.cy = cam.y;
+    canvas.classList.add('dragging');
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!drag.active) return;
+    cam.x = drag.cx + (e.clientX - drag.sx);
+    cam.y = drag.cy + (e.clientY - drag.sy);
+  });
+
+  window.addEventListener('mouseup', () => {
+    drag.active = false;
+    document.getElementById('world-canvas').classList.remove('dragging');
+  });
+
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
+    const newZoom = Math.max(0.15, Math.min(8, cam.zoom * zoomFactor));
+    cam.x = mx - (mx - cam.x) * (newZoom / cam.zoom);
+    cam.y = my - (my - cam.y) * (newZoom / cam.zoom);
+    cam.zoom = newZoom;
+  }, { passive: false });
+}
+
+/* ═══════════════════════════════════════════
+   SAVE SNAPSHOT
+═══════════════════════════════════════════ */
+function saveSocietySnapshot() {
+  const snap = {
+    system: 'Quantum Atlas',
+    module: '05 · Society',
+    generated: new Date().toISOString(),
+    era: state.era,
+    factions: state.factions.map(f => ({
+      id: f.id, name: f.name, color: f.color,
+      population: f.population, tech_level: f.tech_level,
+      traits: f.traits, diplomacy: f.diplomacy,
+      territory_count: f.territory.length,
+    })),
+    events: state.events,
+    total_population: state.total_population,
+    hex_count: state.hexes.length,
+  };
+  try {
+    localStorage.setItem('qa-society-snapshot', JSON.stringify(snap));
+  } catch(e) { console.warn('Could not save snapshot', e); }
+}
+
+/* ═══════════════════════════════════════════
+   TOP BAR / PANEL INTERACTIONS
+═══════════════════════════════════════════ */
+function initUI() {
+  // Tabs
+  document.querySelectorAll('.tb-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // Buttons
+  document.getElementById('btn-render').addEventListener('click', () => {
+    setStatus('RENDERING…');
+    runPipeline(() => {
+      loadUpstream();
+      initSociety();
+      fitCamera();
+      updateAllUI();
+      saveSocietySnapshot();
+      setStatus('RENDER COMPLETE');
+    });
+  });
+
+  document.getElementById('btn-reset').addEventListener('click', () => {
+    fullReset();
+  });
+
+  document.getElementById('btn-tick').addEventListener('click', () => {
+    tickEra();
+  });
+
+  document.getElementById('lp-tick-btn').addEventListener('click', () => {
+    tickEra();
+  });
+
+  // Layer toggles
+  document.querySelectorAll('.layer-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const layer = btn.dataset.layer;
+      layers[layer] = !layers[layer];
+      btn.classList.toggle('on', layers[layer]);
+    });
+  });
+
+  // Collapsible sections
+  document.querySelectorAll('.lp-section-header').forEach(hdr => {
+    hdr.addEventListener('click', () => {
+      const sec = hdr.closest('.lp-section');
+      sec.classList.toggle('collapsed');
+      const body = sec.querySelector('.lp-section-body');
+      if (!sec.classList.contains('collapsed')) {
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  });
+  // Set initial max-heights
+  document.querySelectorAll('.lp-section-body').forEach(b => {
+    b.style.maxHeight = b.scrollHeight + 'px';
+  });
+}
+
+/* ═══════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════ */
+function boot() {
+  resizeCanvas();
+  window.addEventListener('resize', () => { resizeCanvas(); fitCamera(); });
+
+  loadUpstream();
+  initSociety();
+  fitCamera();
+  updateAllUI();
+  initCanvasEvents();
+  initUI();
+  setStatus('READY');
+
+  rAFid = requestAnimationFrame(renderFrame);
+}
+
+window.addEventListener('DOMContentLoaded', boot);
+
+// ── Theme sync (receives ql:theme from hub) ─────────────────────────────────
+(function() {
+  const MAP = {
+    'c-bg':      '--bg',
+    'c-surf':    '--surface',
+    'c-surf2':   '--surface2',
+    'c-edge':    '--edge',
+    'c-edge-hi': '--edge-hi',
+    'c-accent1': '--venturan',
+    'c-accent2': '--amber',
+    'c-accent3': '--emerald',
+    'c-accent4': '--fusion',
+    'c-danger':  '--blood',
+    'c-warm':    '--solari',
+    'c-text':    '--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+</script>
+</body>
+</html>
