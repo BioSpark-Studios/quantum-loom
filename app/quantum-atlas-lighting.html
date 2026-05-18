@@ -1532,6 +1532,7 @@ function saveSnapshot() {
     }))
   };
   localStorage.setItem('qa-lighting-snapshot', JSON.stringify(snap));
+  window.parent.postMessage({type:'hub:storage:write',key:'qa-lighting-snapshot',value:JSON.stringify(snap)},'*');
 }
 
 // ── Event setup ─────────────────────────────────────────
@@ -1742,6 +1743,15 @@ function selectModule(row) {
   document.querySelectorAll('.module-row').forEach(r => r.classList.remove('active'));
   row.classList.add('active');
 }
+
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Lighting`;
+  }
+  if (d.type === 'hub:layer:activate') loadUpstream();
+});
 
 // ── Kick off ────────────────────────────────────────────
 init();

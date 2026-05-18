@@ -1269,14 +1269,9 @@ function showToast(msg){
 ════════════════════════════════════════════════ */
 function saveRackState(){
   try{
-    localStorage.setItem('ql-rack',JSON.stringify({
-      knobs:STATE.knobs,
-      faders:STATE.faders,
-      steps:STATE.steps,
-      stepKnobs:STATE.stepKnobs,
-      scrubberAngle:STATE.scrubberAngle,
-      patches:STATE.patches,
-    }));
+    const payload={knobs:STATE.knobs,faders:STATE.faders,steps:STATE.steps,stepKnobs:STATE.stepKnobs,scrubberAngle:STATE.scrubberAngle,patches:STATE.patches};
+    localStorage.setItem('ql-rack',JSON.stringify(payload));
+    window.parent.postMessage({type:'hub:storage:write',key:'ql-rack',value:JSON.stringify(payload)},'*');
     showToast('RACK STATE SAVED');
   }catch(e){ showToast('SAVE FAILED'); }
 }
@@ -1311,9 +1306,25 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Auto-save every 30s
   setInterval(()=>{
-    try{ localStorage.setItem('ql-rack',JSON.stringify({knobs:STATE.knobs,faders:STATE.faders,steps:STATE.steps,stepKnobs:STATE.stepKnobs,scrubberAngle:STATE.scrubberAngle,patches:STATE.patches})); }
-    catch(e){}
+    try{
+      const payload={knobs:STATE.knobs,faders:STATE.faders,steps:STATE.steps,stepKnobs:STATE.stepKnobs,scrubberAngle:STATE.scrubberAngle,patches:STATE.patches};
+      localStorage.setItem('ql-rack',JSON.stringify(payload));
+      window.parent.postMessage({type:'hub:storage:write',key:'ql-rack',value:JSON.stringify(payload)},'*');
+    }catch(e){}
   },30000);
+
+  // Hub integration
+  window.addEventListener('message',e=>{
+    const d=e.data;
+    if(!d||typeof d!=='object') return;
+    if(d.type==='hub:init'&&d.project){
+      document.title=`${d.project.name||'Quantum Loom'} — Axiom Rack`;
+    }
+    if(d.type==='hub:layer:activate'){
+      // re-render Lissajous on tab return
+      initLissajous();
+    }
+  });
 });
 </script>
 </body>

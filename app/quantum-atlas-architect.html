@@ -1762,6 +1762,7 @@ async function runBuildPipeline() {
       trade_partners: s.trade_partners,
     }));
     localStorage.setItem('qa-architect-snapshot', JSON.stringify(snap));
+    window.parent.postMessage({type:'hub:storage:write',key:'qa-architect-snapshot',value:JSON.stringify(snap)},'*');
   } catch(e) { console.warn('Snapshot write failed', e); }
 
   await sleep(100);
@@ -1797,6 +1798,7 @@ document.getElementById('btn-tick').addEventListener('click', () => {
       trade_partners: s.trade_partners,
     }));
     localStorage.setItem('qa-architect-snapshot', JSON.stringify(snap));
+    window.parent.postMessage({type:'hub:storage:write',key:'qa-architect-snapshot',value:JSON.stringify(snap)},'*');
   } catch(e) {}
 });
 
@@ -1892,6 +1894,19 @@ canvas.addEventListener('click', e => {
 });
 
 // ── Init ───────────────────────────────────────────────────
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Architect`;
+  }
+  if (d.type === 'hub:layer:activate') {
+    hexGrid = checkTerrainLink();
+    if (hexGrid) { needHexRedraw = true; }
+    render();
+  }
+});
+
 (function init() {
   hexGrid = checkTerrainLink();
   if (hexGrid) {

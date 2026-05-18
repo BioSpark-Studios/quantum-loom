@@ -1478,6 +1478,7 @@ function saveCivilizationSnapshot() {
   };
   try {
     localStorage.setItem('qa-civilization-snapshot', JSON.stringify(snap));
+    window.parent.postMessage({type:'hub:storage:write',key:'qa-civilization-snapshot',value:JSON.stringify(snap)},'*');
   } catch(e) { console.warn('Could not save snapshot', e); }
 }
 
@@ -1563,6 +1564,15 @@ function boot() {
 }
 
 window.addEventListener('DOMContentLoaded', boot);
+
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Civilization`;
+  }
+  if (d.type === 'hub:layer:activate') loadUpstream();
+});
 </script>
 </body>
 </html>

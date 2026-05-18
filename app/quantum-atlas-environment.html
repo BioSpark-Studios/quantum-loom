@@ -1663,6 +1663,7 @@ function saveSnapshot() {
       extreme_events: extremeEvents.length,
     };
     localStorage.setItem('qa-environ-snapshot', JSON.stringify(snap));
+    window.parent.postMessage({type:'hub:storage:write',key:'qa-environ-snapshot',value:JSON.stringify(snap)},'*');
   } catch(e) { console.warn('Could not save qa-environ-snapshot', e); }
 }
 
@@ -2039,6 +2040,15 @@ window.addEventListener('resize', () => {
 // ============================================================
 // INIT
 // ============================================================
+
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Environment`;
+  }
+  if (d.type === 'hub:layer:activate') { loadTerrainData(); }
+});
 
 window.addEventListener('DOMContentLoaded', () => {
   resizeCanvas();
