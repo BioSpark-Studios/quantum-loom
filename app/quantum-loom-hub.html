@@ -42,6 +42,7 @@
   --c-lighting:      #ff9f43;
   --c-civilization:  #c77dff;
   --c-bridge:        #4dc8a0;
+  --c-ecology:       #7fd4c8;
 }
 
 html,body{
@@ -881,6 +882,11 @@ html,body{
         <span class="ni-icon">⇋</span>
         <span class="ni-label">Bridge</span>
       </div>
+      <div class="nav-item" id="nav-ecology" data-layer="ecology"
+           style="--lc:var(--c-ecology)" onclick="switchLayer('ecology')" title="Quantum Atlas · 07 Ecology">
+        <span class="ni-icon">⚘</span>
+        <span class="ni-label">Ecology</span>
+      </div>
 
       <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
     </div>
@@ -1030,6 +1036,16 @@ html,body{
       <iframe class="layer-frame" id="frame-bridge"
         src="quantum-atlas-bridge.html"
         onload="frameLoaded('bridge')"></iframe>
+
+      <!-- Atlas · 07 Ecology -->
+      <div class="frame-loader" id="loader-ecology">
+        <div class="loader-glyph" style="color:#7fd4c8">⚘</div>
+        <div class="loader-lbl">Loading Quantum Atlas · Ecology</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#7fd4c8"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-ecology"
+        src="quantum-atlas-ecology.html"
+        onload="frameLoaded('ecology')"></iframe>
 
     </div>
   </div>
@@ -1408,10 +1424,11 @@ const LAYERS = {
   lighting:      { label:'Atlas · 04 Lighting',      icon:'◐',  color:'var(--c-lighting)',      file:'quantum-atlas-lighting.html'      },
   civilization:  { label:'Atlas · 05 Civilization',  icon:'⚑',  color:'var(--c-civilization)',  file:'quantum-atlas-civilization.html'  },
   bridge:        { label:'Atlas · 06 Bridge',        icon:'⇋',  color:'var(--c-bridge)',        file:'quantum-atlas-bridge.html'        },
+  ecology:       { label:'Atlas · 07 Ecology',       icon:'⚘',  color:'var(--c-ecology)',       file:'quantum-atlas-ecology.html'       },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
-const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-civilization-snapshot','qa-bridge-snapshot'];
+const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-civilization-snapshot','qa-bridge-snapshot','qa-ecology-snapshot'];
 
 /* ── State ────────────────────────────────────────────────────────── */
 let activeLayer  = 'workspace';
