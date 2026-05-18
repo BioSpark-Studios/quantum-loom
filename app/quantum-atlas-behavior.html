@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 08 · Behavior</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04050a;
+  --surface:rgba(8,11,18,.98);
+  --surface2:rgba(12,16,24,.97);
+  --edge:rgba(255,255,255,.055);
+  --edge-hi:rgba(255,255,255,.12);
+  --venturan:#b1d0f0;
+  --amber:#9030d0;
+  --emerald:#4dc8a0;
+  --solari:#f98f3b;
+  --fusion:#9b7fd4;
+  --blood:#d45b5b;
+  --totem:#7fd4c8;
+  --terrain:#1e8cff;
+  --environ:#4ecdc4;
+  --architect:#ffd166;
+  --lighting:#ff9f43;
+  --civilization:#c77dff;
+  --bridge:#4dc8a0;
+  --ecology:#7fd4c8;
+  --behavior:#9030d0;
+  --fm:'Orbitron',monospace;
+  --fd:'Space Grotesk',sans-serif;
+  --fc:'JetBrains Mono',monospace;
+}
+
+html,body{
+  height:100%;overflow:hidden;
+  background:var(--bg);color:#fff;
+  font-family:var(--fd);font-size:13px;
+}
+
+#shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;
+}
+
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--behavior);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;color:var(--behavior);
+  animation:breathe 4s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes breathe{
+  0%,100%{opacity:.7;box-shadow:0 0 4px rgba(232,184,75,.2);}
+  50%{opacity:1;box-shadow:0 0 10px rgba(232,184,75,.5);}
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--behavior);white-space:nowrap;
+}
+.tb-subcrest{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.18em;
+  color:rgba(232,184,75,.45);text-transform:uppercase;
+}
+
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:0 10px;height:100%;
+  display:flex;align-items:center;cursor:pointer;
+  color:rgba(255,255,255,.35);border-bottom:2px solid transparent;
+  transition:all .12s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03);}
+.tb-tab.active{color:var(--behavior);border-bottom-color:var(--behavior);}
+
+.tb-spacer{flex:1;}
+
+.tb-upstream{
+  display:flex;align-items:center;gap:4px;
+  padding:0 10px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.up-chip{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;
+  padding:2px 6px;border-radius:2px;border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.3);text-transform:uppercase;transition:all .2s;
+}
+.up-chip.lit{border-color:rgba(77,200,160,.4);color:var(--emerald);
+  background:rgba(77,200,160,.06);}
+
+.tb-actions{
+  display:flex;gap:4px;padding:0 10px;height:100%;align-items:center;
+  border-left:1px solid var(--edge);flex-shrink:0;
+}
+.tb-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);
+  white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff;}
+.tb-btn.tick{
+  border-color:rgba(232,184,75,.35);background:rgba(232,184,75,.06);
+  color:var(--behavior);
+}
+.tb-btn.tick:hover{background:rgba(232,184,75,.14);box-shadow:0 0 12px rgba(232,184,75,.2);}
+.tb-btn.hot{
+  border-color:rgba(232,184,75,.55);background:rgba(232,184,75,.12);
+  color:var(--behavior);font-weight:600;
+}
+.tb-btn.hot:hover{background:rgba(232,184,75,.2);box-shadow:0 0 14px rgba(232,184,75,.3);}
+.tb-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+/* ── BODY ── */
+#body{flex:1;display:flex;overflow:hidden;}
+
+/* ── LEFT PANEL ── */
+#left-panel{
+  width:240px;flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.lp-scroll::-webkit-scrollbar{width:3px;}
+.lp-scroll::-webkit-scrollbar-track{background:transparent;}
+.lp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+.sec-header{
+  padding:7px 10px 6px;border-bottom:1px solid var(--edge);
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--behavior);opacity:.8;flex-shrink:0;
+  display:flex;align-items:center;gap:6px;
+}
+.sec-header-count{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.3);
+  padding:1px 5px;background:rgba(255,255,255,.04);
+  border:1px solid var(--edge);border-radius:8px;margin-left:auto;
+}
+
+/* NPC Roster */
+.npc-row{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 10px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,.025);
+  transition:background .1s;
+}
+.npc-row:hover{background:rgba(255,255,255,.03);}
+.npc-row.selected{background:rgba(232,184,75,.07);border-right:2px solid var(--behavior);}
+.npc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.npc-info{flex:1;min-width:0;}
+.npc-name{font-family:var(--fd);font-size:.4rem;color:rgba(255,255,255,.85);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.npc-meta{display:flex;align-items:center;gap:4px;margin-top:1px;}
+.npc-role-badge{
+  font-family:var(--fc);font-size:.26rem;letter-spacing:.04em;
+  padding:1px 4px;border-radius:2px;border:1px solid currentColor;
+  opacity:.7;flex-shrink:0;color:rgba(255,255,255,.4);
+}
+.npc-need-tag{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.35);}
+.npc-state-badge{
+  font-family:var(--fc);font-size:.26rem;letter-spacing:.04em;
+  padding:1px 5px;border-radius:2px;flex-shrink:0;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.4);
+}
+.npc-state-badge.FLEEING{color:var(--blood);border-color:rgba(212,91,91,.35);}
+.npc-state-badge.TRADING{color:var(--amber);border-color:rgba(232,184,75,.35);}
+.npc-state-badge.PATROLLING{color:var(--venturan);border-color:rgba(177,208,240,.35);}
+.npc-state-badge.RESTING{color:var(--totem);border-color:rgba(127,212,200,.35);}
+.npc-state-badge.SEEKING{color:var(--solari);border-color:rgba(249,143,59,.35);}
+
+/* World stats */
+.world-stat-block{padding:8px 10px;border-bottom:1px solid var(--edge);}
+.ws-label{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;
+  text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.ws-val{color:rgba(255,255,255,.7);font-size:.36rem;}
+.bar-track{height:5px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden;margin-bottom:2px;}
+.bar-fill{height:100%;border-radius:3px;transition:width .4s ease;}
+
+.ws-stat-row{
+  display:flex;justify-content:space-between;
+  padding:3px 10px;border-bottom:1px solid rgba(255,255,255,.02);
+}
+.ws-stat-lbl{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.35);}
+.ws-stat-val{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.6);}
+
+#lp-bottom{flex-shrink:0;padding:8px 10px;border-top:1px solid var(--edge);}
+.lp-tick-btn{
+  width:100%;font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:6px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(232,184,75,.35);background:rgba(232,184,75,.06);
+  color:var(--behavior);transition:all .12s;
+}
+.lp-tick-btn:hover{background:rgba(232,184,75,.14);}
+
+/* ── CANVAS ── */
+#canvas-wrap{flex:1;position:relative;overflow:hidden;background:#020408;}
+#main-canvas{display:block;width:100%;height:100%;}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:300px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+
+/* Selected NPC */
+#npc-inspector{
+  flex:0 0 50%;border-bottom:1px solid var(--edge);
+  overflow-y:auto;overflow-x:hidden;
+}
+#npc-inspector::-webkit-scrollbar{width:3px;}
+#npc-inspector::-webkit-scrollbar-track{background:transparent;}
+#npc-inspector::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+.insp-header{
+  padding:8px 10px 6px;border-bottom:1px solid var(--edge);
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--behavior);opacity:.8;flex-shrink:0;
+}
+.insp-block{padding:8px 10px;border-bottom:1px solid var(--edge);}
+.insp-npc-name{
+  font-family:var(--fm);font-size:.55rem;letter-spacing:.12em;
+  color:rgba(255,255,255,.9);margin-bottom:4px;
+}
+.insp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
+.insp-lbl{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.35);}
+.insp-val{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.65);}
+
+/* Maslow bars */
+.maslow-block{padding:8px 10px;border-bottom:1px solid var(--edge);}
+.maslow-label{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px;
+}
+.maslow-need{margin-bottom:6px;}
+.maslow-need-label{
+  display:flex;justify-content:space-between;
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.4);
+  margin-bottom:2px;
+}
+.maslow-need-val{color:rgba(255,255,255,.65);}
+.maslow-bar-track{height:4px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden;}
+.maslow-bar-fill{height:100%;border-radius:2px;transition:width .4s ease;}
+.maslow-need.flash .maslow-bar-fill{animation:needFlash .4s ease;}
+@keyframes needFlash{0%,100%{opacity:1;}50%{opacity:.3;background:var(--blood)!important;}}
+
+/* State badge large */
+.state-badge-large{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--fm);font-size:.45rem;letter-spacing:.1em;
+  padding:4px 10px;border-radius:3px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.6);text-transform:uppercase;
+}
+.state-badge-large.FLEEING{color:var(--blood);border-color:rgba(212,91,91,.4);background:rgba(212,91,91,.06);}
+.state-badge-large.TRADING{color:var(--amber);border-color:rgba(232,184,75,.4);background:rgba(232,184,75,.06);}
+.state-badge-large.PATROLLING{color:var(--venturan);border-color:rgba(177,208,240,.4);background:rgba(177,208,240,.06);}
+.state-badge-large.RESTING{color:var(--totem);border-color:rgba(127,212,200,.4);background:rgba(127,212,200,.06);}
+.state-badge-large.SEEKING{color:var(--solari);border-color:rgba(249,143,59,.4);background:rgba(249,143,59,.06);}
+.state-badge-large.IDLE{color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.1);}
+
+.dominant-drive{
+  font-family:var(--fd);font-size:.36rem;color:rgba(255,255,255,.5);
+  margin-top:5px;font-style:italic;
+}
+
+/* Threat table */
+.threat-table{width:100%;border-collapse:collapse;}
+.threat-table td{
+  font-family:var(--fc);font-size:.28rem;padding:2px 0;
+  border-bottom:1px solid rgba(255,255,255,.03);
+}
+.threat-table td:first-child{color:rgba(255,255,255,.35);}
+.threat-table td:last-child{color:rgba(255,255,255,.6);text-align:right;}
+
+.last-dialogue{
+  font-family:var(--fd);font-size:.34rem;color:rgba(255,255,255,.5);
+  font-style:italic;padding:6px 10px;
+  border-left:2px solid rgba(232,184,75,.3);
+  margin:0 10px 8px;background:rgba(232,184,75,.03);
+}
+
+.no-select{
+  font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.2);
+  padding:20px 10px;text-align:center;
+}
+
+/* Dialogue feed */
+#dialogue-feed{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+}
+#dialogue-feed::-webkit-scrollbar{width:3px;}
+#dialogue-feed::-webkit-scrollbar-track{background:transparent;}
+#dialogue-feed::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+.dialogue-entry{
+  padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.025);
+}
+.dialogue-speaker{
+  font-family:var(--fc);font-size:.28rem;font-weight:600;
+  letter-spacing:.06em;margin-bottom:1px;
+}
+.dialogue-text{
+  font-family:var(--fd);font-size:.34rem;color:rgba(255,255,255,.6);
+  font-style:italic;line-height:1.4;
+}
+.dialogue-meta{
+  font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.2);
+  margin-top:1px;display:flex;gap:6px;
+}
+
+/* ── STATUS BAR ── */
+#status-bar{
+  height:26px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-top:1px solid var(--edge);
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.3);
+}
+.sb-seg{
+  padding:0 10px;border-right:1px solid var(--edge);height:100%;
+  display:flex;align-items:center;gap:5px;white-space:nowrap;
+}
+.sb-seg:first-child{color:var(--behavior);opacity:.7;}
+.sb-val{color:rgba(255,255,255,.55);}
+.sb-spacer{flex:1;}
+.sb-status{padding:0 10px;color:rgba(255,255,255,.25);}
+.sb-status.ok{color:var(--emerald);}
+.sb-status.busy{color:var(--amber);}
+
+/* ── PIPELINE OVERLAY ── */
+#pipeline-overlay{
+  display:none;position:fixed;inset:0;z-index:100;
+  background:rgba(4,5,10,.92);
+  backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;
+  flex-direction:column;gap:0;
+}
+#pipeline-overlay.visible{display:flex;}
+.pipe-title{
+  font-family:var(--fm);font-size:.6rem;letter-spacing:.25em;
+  color:var(--behavior);margin-bottom:20px;text-transform:uppercase;
+}
+.pipe-box{
+  width:340px;
+  background:var(--surface2);border:1px solid var(--edge-hi);border-radius:4px;
+  overflow:hidden;
+}
+.pipe-step{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 14px;border-bottom:1px solid var(--edge);
+  font-family:var(--fc);font-size:.32rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.3);transition:color .2s;
+}
+.pipe-step:last-child{border-bottom:none;}
+.pipe-step.done{color:var(--emerald);}
+.pipe-step.active{color:var(--behavior);}
+.pipe-step-id{
+  font-weight:600;width:50px;flex-shrink:0;
+}
+.pipe-step-tag{
+  margin-left:auto;font-size:.26rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.2);
+}
+.pipe-step.active .pipe-step-tag{color:var(--behavior);opacity:.7;}
+.pipe-step.done .pipe-step-tag{color:var(--emerald);opacity:.6;}
+.pipe-bar{
+  height:3px;background:rgba(255,255,255,.04);
+  position:relative;overflow:hidden;
+}
+.pipe-bar-fill{
+  height:100%;background:var(--behavior);width:0%;
+  transition:width .12s linear;
+}
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- TOP BAR -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">⊙</div>
+      <div>
+        <div class="tb-module-id">08 · BEHAVIOR</div>
+        <div class="tb-subcrest">MOTIV</div>
+      </div>
+    </div>
+
+    <div class="tb-tabs">
+      <div class="tb-tab active" data-tab="0">I-MOTIVATION</div>
+      <div class="tb-tab" data-tab="1">II-THREAT</div>
+      <div class="tb-tab" data-tab="2">III-DIALOGUE</div>
+      <div class="tb-tab" data-tab="3">IV-DECISION</div>
+    </div>
+
+    <div class="tb-spacer"></div>
+
+    <div class="tb-upstream">
+      <div class="up-chip" id="chip-terrain">TERRAIN</div>
+      <div class="up-chip" id="chip-environ">ENVIRON</div>
+      <div class="up-chip" id="chip-arch">ARCH</div>
+      <div class="up-chip" id="chip-civex">CIVEX</div>
+      <div class="up-chip" id="chip-bioex">BIOEX</div>
+    </div>
+
+    <div class="tb-actions">
+      <button class="tb-btn tick" id="btn-tick-top">TICK CYCLE</button>
+      <button class="tb-btn hot" id="btn-simulate">SIMULATE</button>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div id="body">
+
+    <!-- LEFT PANEL -->
+    <div id="left-panel">
+      <div class="sec-header">
+        NPC ROSTER <span class="sec-header-count" id="roster-count">0</span>
+      </div>
+      <div class="lp-scroll" id="npc-roster"></div>
+
+      <div class="sec-header" style="opacity:.6;">WORLD STATS</div>
+
+      <div class="world-stat-block">
+        <div class="ws-label">AVG THREAT <span class="ws-val" id="ws-threat-val">0%</span></div>
+        <div class="bar-track"><div class="bar-fill" id="ws-threat-bar" style="background:linear-gradient(90deg,var(--amber),var(--blood));width:0%"></div></div>
+        <div class="ws-label" style="margin-top:6px;">AVG WELLBEING <span class="ws-val" id="ws-well-val">0%</span></div>
+        <div class="bar-track"><div class="bar-fill" id="ws-well-bar" style="background:linear-gradient(90deg,var(--emerald),var(--venturan));width:0%"></div></div>
+      </div>
+
+      <div class="ws-stat-row">
+        <span class="ws-stat-lbl">Active Dialogues</span>
+        <span class="ws-stat-val" id="ws-dialogues">0</span>
+      </div>
+      <div class="ws-stat-row">
+        <span class="ws-stat-lbl">Displaced NPCs</span>
+        <span class="ws-stat-val" id="ws-displaced">0</span>
+      </div>
+
+      <div style="flex:1;"></div>
+      <div id="lp-bottom">
+        <button class="lp-tick-btn" id="btn-tick-lp">⊙ TICK CYCLE</button>
+      </div>
+    </div>
+
+    <!-- CANVAS -->
+    <div id="canvas-wrap">
+      <canvas id="main-canvas"></canvas>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div id="right-panel">
+      <div class="insp-header">SELECTED NPC</div>
+      <div id="npc-inspector">
+        <div class="no-select" id="no-select-msg">— Select an NPC from the roster or canvas —</div>
+        <div id="npc-detail" style="display:none;">
+          <div class="insp-block">
+            <div class="insp-npc-name" id="det-name">—</div>
+            <div class="insp-row">
+              <span class="insp-lbl">ROLE</span><span class="insp-val" id="det-role">—</span>
+            </div>
+            <div class="insp-row">
+              <span class="insp-lbl">FACTION</span><span class="insp-val" id="det-faction">—</span>
+            </div>
+            <div class="insp-row">
+              <span class="insp-lbl">HOME</span><span class="insp-val" id="det-home">—</span>
+            </div>
+          </div>
+
+          <div class="maslow-block">
+            <div class="maslow-label">Maslow Need Matrix</div>
+            <div class="maslow-need" id="mn-physiological">
+              <div class="maslow-need-label">PHYSIOLOGICAL <span class="maslow-need-val" id="mv-physiological">—</span></div>
+              <div class="maslow-bar-track"><div class="maslow-bar-fill" id="mb-physiological" style="background:#ff6b35;"></div></div>
+            </div>
+            <div class="maslow-need" id="mn-safety">
+              <div class="maslow-need-label">SAFETY <span class="maslow-need-val" id="mv-safety">—</span></div>
+              <div class="maslow-bar-track"><div class="maslow-bar-fill" id="mb-safety" style="background:#ffd166;"></div></div>
+            </div>
+            <div class="maslow-need" id="mn-belonging">
+              <div class="maslow-need-label">BELONGING <span class="maslow-need-val" id="mv-belonging">—</span></div>
+              <div class="maslow-bar-track"><div class="maslow-bar-fill" id="mb-belonging" style="background:#4dc8a0;"></div></div>
+            </div>
+            <div class="maslow-need" id="mn-esteem">
+              <div class="maslow-need-label">ESTEEM <span class="maslow-need-val" id="mv-esteem">—</span></div>
+              <div class="maslow-bar-track"><div class="maslow-bar-fill" id="mb-esteem" style="background:#c77dff;"></div></div>
+            </div>
+            <div class="maslow-need" id="mn-actualization">
+              <div class="maslow-need-label">ACTUALIZATION <span class="maslow-need-val" id="mv-actualization">—</span></div>
+              <div class="maslow-bar-track"><div class="maslow-bar-fill" id="mb-actualization" style="background:#9030d0;"></div></div>
+            </div>
+          </div>
+
+          <div class="insp-block">
+            <div class="insp-row" style="margin-bottom:6px;">
+              <span class="insp-lbl">CURRENT STATE</span>
+              <span class="state-badge-large IDLE" id="det-state">IDLE</span>
+            </div>
+            <div class="dominant-drive" id="det-drive">—</div>
+          </div>
+
+          <div class="insp-block">
+            <div class="maslow-label" style="margin-bottom:5px;">Threat Assessment</div>
+            <table class="threat-table">
+              <tr><td>Nearest Threat</td><td id="thr-nearest">—</td></tr>
+              <tr><td>Enemy Faction Distance</td><td id="thr-enemy">—</td></tr>
+              <tr><td>Pathogen Exposure</td><td id="thr-pathogen">—</td></tr>
+              <tr><td>Weather Severity</td><td id="thr-weather">—</td></tr>
+            </table>
+          </div>
+
+          <div class="insp-block" style="border-bottom:none;">
+            <div class="maslow-label" style="margin-bottom:5px;">Last Dialogue</div>
+            <div class="last-dialogue" id="det-dialogue">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-header" style="flex-shrink:0;">DIALOGUE FEED</div>
+      <div id="dialogue-feed"></div>
+    </div>
+
+  </div><!-- /body -->
+
+  <!-- STATUS BAR -->
+  <div id="status-bar">
+    <div class="sb-seg">MOD 08 · BEHAVIOR</div>
+    <div class="sb-seg">NPCS <span class="sb-val" id="sb-npcs">0</span></div>
+    <div class="sb-seg">ACTIVE DIALOGUES <span class="sb-val" id="sb-actdlg">0</span></div>
+    <div class="sb-seg">THREAT AVG <span class="sb-val" id="sb-threat">0%</span></div>
+    <div class="sb-seg">CYCLE <span class="sb-val" id="sb-cycle">0</span></div>
+    <div class="sb-spacer"></div>
+    <div class="sb-status" id="sb-status">READY</div>
+  </div>
+
+</div><!-- /shell -->
+
+<!-- PIPELINE OVERLAY -->
+<div id="pipeline-overlay">
+  <div class="pipe-title">⊙ RUNNING BEHAVIOR PIPELINE</div>
+  <div class="pipe-box">
+    <div class="pipe-step" id="ps-0"><span class="pipe-step-id">I-NMX</span> Need matrix initialization<span class="pipe-step-tag">NMX DAT</span></div>
+    <div class="pipe-step" id="ps-1"><span class="pipe-step-id">II-DRV</span> Drive vector calibration<span class="pipe-step-tag">DRV CTL</span></div>
+    <div class="pipe-step" id="ps-2"><span class="pipe-step-id">III-TAS</span> Threat assessment solver<span class="pipe-step-tag">TAS DAT</span></div>
+    <div class="pipe-step" id="ps-3"><span class="pipe-step-id">IV-DZN</span> Danger zone mapper<span class="pipe-step-tag">DZN SPA</span></div>
+    <div class="pipe-step" id="ps-4"><span class="pipe-step-id">V-FFF</span> Fight/flight/freeze resolver<span class="pipe-step-tag">FFF CTL</span></div>
+    <div class="pipe-step" id="ps-5"><span class="pipe-step-id">VI-DDS</span> Dialogue synthesizer<span class="pipe-step-tag">DDS UIX</span></div>
+    <div class="pipe-step" id="ps-6"><span class="pipe-step-id">VII-BSM</span> Behavioral state machine tick<span class="pipe-step-tag">BSM CTL</span></div>
+    <div class="pipe-step" id="ps-7"><span class="pipe-step-id">VIII-BEX</span> Behavior capsule export<span class="pipe-step-tag">BEX UIX</span></div>
+    <div class="pipe-bar"><div class="pipe-bar-fill" id="pipe-bar-fill"></div></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ─────────────────────────────────────────────
+// CONSTANTS & LEXICONS
+// ─────────────────────────────────────────────
+const FIRST_NAMES = ['Aldren','Syvara','Morthas','Kelith','Duran','Vera','Nym','Caelum','Rho','Seris','Brix','Tamor','Lyss','Fenric','Oran'];
+const LAST_NAMES  = ['Ashveil','Thorne','Coldwater','Duskmantle','Ironfell','Greywood','Saltmere','Blackfen','Emberglass','Crowveil'];
+
+const ROLES = ['MERCHANT','GUARD','FARMER','SCHOLAR','NOMAD','LEADER'];
+
+const STATE_ICONS = {
+  FLEEING: '⚠', TRADING: '↔', PATROLLING: '⬡',
+  IDLE: '●', RESTING: '∿', SEEKING: '★',
+};
+
+const NEED_COLORS = {
+  physiological: '#ff6b35',
+  safety:        '#ffd166',
+  belonging:     '#4dc8a0',
+  esteem:        '#c77dff',
+  actualization: '#9030d0',
+};
+
+const FACTION_COLORS = [
+  '#b1d0f0','#9030d0','#4dc8a0','#9b7fd4',
+  '#f98f3b','#d45b5b','#7fd4c8','#c77dff',
+];
+
+const HEX_SIZE = 28;
+
+const DIALOGUE_TEMPLATES = {
+  TRADING: [
+    '<A>: "The <RESOURCE> harvest was poor this season — I\'ll take what you have."',
+    '<A>: "Word from <FACTION> is they\'ve closed the <DIRECTION> pass. Prices will rise."',
+    '<A>: "Three silvers for the lot. Take it or wait for the next caravan."',
+    '<A> to <B>: "I can offer <RESOURCE> in exchange for safe passage to <SETTLEMENT>."',
+    '<A>: "The market at <SETTLEMENT> is glutted with <RESOURCE>. We route <DIRECTION>."',
+  ],
+  IDLE: [
+    '<A>: "Another <WEATHER> day. The elders say it\'s an omen."',
+    '<A>: "Have you heard? <FACTION> declared war on <FACTION2>. We should move on."',
+    '<A>: "The forest near <SETTLEMENT> is thinning. Something feeds there at night."',
+    '<A>: "I remember when the <DIRECTION> road was safe to walk. Not anymore."',
+    '<A>: "The <WEATHER> season has come early. My joints knew it before the sky did."',
+    '<A> to <B>: "Stay close to <SETTLEMENT>. The wilds have been restless since the storm."',
+  ],
+  FLEEING: [
+    '<A> to <B>: "Run! The <FACTION> soldiers are at the gate!"',
+    '<A>: "Don\'t look back — just keep moving north."',
+    '<A> to <B>: "Leave the <RESOURCE>! It\'s not worth your life."',
+    '<A>: "If we reach <SETTLEMENT> by dawn we\'ll be safe. Move!"',
+  ],
+  SEEKING: [
+    '<A>: "I haven\'t eaten since <DAY> days ago. Does anyone trade in <SETTLEMENT>?"',
+    '<A>: "There must be shelter past the ridge. There must be."',
+    '<A>: "The wells at <SETTLEMENT> are still clean, they say. I head there."',
+    '<A> to <B>: "Share what you have and I will owe you a debt of honor."',
+  ],
+  PATROLLING: [
+    '<A>: "Nothing moves on the <DIRECTION> road tonight. Keep watch."',
+    '<A> to <B>: "The <FACTION> border is a day\'s march. If they push — we hold here."',
+    '<A>: "I\'ve walked this perimeter <DAY> times. Something feels wrong."',
+  ],
+  RESTING: [
+    '<A>: "Wake me at the third bell. I need what sleep I can steal."',
+    '<A>: "This <WEATHER> cold seeps into the bones. Build the fire higher."',
+    '<A> to <B>: "Sit. Rest. We march again when the clouds break."',
+  ],
+};
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let npcs = [];
+let hexGrid = [];
+let settlements = [];
+let factions = [];
+let currentSeason = 'Spring';
+let activeWeather = '';
+let currentHour = 12;
+let ecologyHealth = 70;
+let activePathogens = [];
+let dialogueLog = [];
+let dialoguePairs = [];   // [{a, b}] — currently active dialogue links
+let currentCycle = 0;
+let selectedNpcId = null;
+let animT = 0;
+let lastNeedValues = {};  // for flash detection
+
+// Canvas pan/zoom
+let panX = 0, panY = 0, zoom = 1;
+let isPanning = false, panStart = {x:0,y:0}, panOrigin = {x:0,y:0};
+
+// ─────────────────────────────────────────────
+// UTILITY
+// ─────────────────────────────────────────────
+function clamp(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
+function rng(mn, mx) { return mn + Math.random() * (mx - mn); }
+function rngInt(mn, mx) { return Math.floor(rng(mn, mx + 1)); }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function hexToPixel(q, r) {
+  const x = HEX_SIZE * (Math.sqrt(3) * q + Math.sqrt(3)/2 * r);
+  const y = HEX_SIZE * (3/2 * r);
+  return {x, y};
+}
+
+function hexDist(q1, r1, q2, r2) {
+  const s1 = -q1 - r1, s2 = -q2 - r2;
+  return Math.max(Math.abs(q1-q2), Math.abs(r1-r2), Math.abs(s1-s2));
+}
+
+function isAdjacentHex(tStr, hex) {
+  const [tq, tr] = tStr.split(',').map(Number);
+  return hexDist(tq, tr, hex.q, hex.r) <= 1;
+}
+
+function cubicBezier(p0, p1, p2, p3, t) {
+  const mt = 1 - t;
+  return {
+    x: mt*mt*mt*p0.x + 3*mt*mt*t*p1.x + 3*mt*t*t*p2.x + t*t*t*p3.x,
+    y: mt*mt*mt*p0.y + 3*mt*mt*t*p1.y + 3*mt*t*t*p2.y + t*t*t*p3.y,
+  };
+}
+
+// ─────────────────────────────────────────────
+// TERRAIN COLOR
+// ─────────────────────────────────────────────
+const TERRAIN_COLORS = {
+  ocean:       '#0a2a6e',
+  deep_ocean:  '#061540',
+  shallow:     '#1a4a8e',
+  coast:       '#2a5a7e',
+  beach:       '#c8b878',
+  lowland:     '#4a7a3a',
+  grassland:   '#5a8a4a',
+  plains:      '#6a9a4a',
+  forest:      '#2a5a2a',
+  dense_forest:'#1a4a1a',
+  jungle:      '#1a5a2a',
+  highland:    '#7a6a5a',
+  hills:       '#8a7a6a',
+  mountain:    '#8a8a8a',
+  peak:        '#c8c8c8',
+  snow:        '#e8e8f0',
+  desert:      '#c8a858',
+  arid:        '#b89848',
+  dune:        '#d8b868',
+  tundra:      '#8a9a8a',
+  taiga:       '#4a6a5a',
+  swamp:       '#3a5a3a',
+  wetland:     '#4a6a4a',
+  marsh:       '#3a6a4a',
+  volcano:     '#8a3a2a',
+  lava:        '#c84a2a',
+  badlands:    '#9a6a4a',
+};
+
+function getTerrainColor(type) {
+  return TERRAIN_COLORS[type] || '#3a4a3a';
+}
+
+// Tooltip state
+let hoveredNpc = null;
+let mouseCanvasX = 0, mouseCanvasY = 0;
+
+// ─────────────────────────────────────────────
+// LOAD UPSTREAM DATA
+// ─────────────────────────────────────────────
+function loadUpstream() {
+  // Check chips
+  const chips = {
+    'chip-terrain': 'qa-terrain-snapshot',
+    'chip-environ': 'qa-environ-snapshot',
+    'chip-arch':    'qa-architect-snapshot',
+    'chip-civex':   'qa-civilization-snapshot',
+    'chip-bioex':   'qa-ecology-snapshot',
+  };
+  Object.entries(chips).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    const has = localStorage.getItem(key) !== null;
+    el.classList.toggle('lit', has);
+  });
+
+  // Terrain
+  try {
+    const td = JSON.parse(localStorage.getItem('qa-terrain-snapshot') || '{}');
+    hexGrid = td.hexes || td.hex_grid || generateFallbackHexGrid();
+  } catch(e) { hexGrid = generateFallbackHexGrid(); }
+
+  // Environment
+  try {
+    const ed = JSON.parse(localStorage.getItem('qa-environ-snapshot') || '{}');
+    currentSeason = ed.season || ed.current_season || 'Spring';
+    activeWeather = ed.weather || ed.active_weather || ed.weather_type || '';
+    currentHour   = ed.hour ?? ed.time_of_day ?? 12;
+  } catch(e) {}
+
+  // Architect
+  try {
+    const ad = JSON.parse(localStorage.getItem('qa-architect-snapshot') || '{}');
+    settlements = ad.settlements || [];
+  } catch(e) {}
+
+  // Civilization
+  try {
+    const cd = JSON.parse(localStorage.getItem('qa-civilization-snapshot') || '{}');
+    factions = cd.factions || [];
+  } catch(e) {}
+
+  // Ecology
+  try {
+    const bd = JSON.parse(localStorage.getItem('qa-ecology-snapshot') || '{}');
+    ecologyHealth  = bd.ecosystem_health ?? bd.ecology_health ?? 70;
+    activePathogens = bd.pathogens || bd.active_pathogens || [];
+  } catch(e) {}
+
+  // Fallback settlements
+  if (settlements.length === 0) {
+    settlements = generateFallbackSettlements();
+  }
+  // Fallback factions
+  if (factions.length === 0) {
+    factions = generateFallbackFactions();
+  }
+}
+
+function generateFallbackHexGrid() {
+  const hexes = [];
+  // Biome rings: ocean outer, then coast, then varied land
+  for (let q = -7; q <= 7; q++) {
+    for (let r = -7; r <= 7; r++) {
+      if (Math.abs(q + r) > 7) continue;
+      const dist = Math.max(Math.abs(q), Math.abs(r), Math.abs(-q-r));
+      let type;
+      if (dist >= 6) {
+        type = 'deep_ocean';
+      } else if (dist === 5) {
+        type = 'ocean';
+      } else if (dist === 4) {
+        type = Math.random() < 0.6 ? 'shallow' : 'coast';
+      } else if (dist === 3) {
+        type = Math.random() < 0.4 ? 'beach' : pick(['lowland','grassland','coast']);
+      } else {
+        // Inner region — varied biome based on angle
+        const angle = Math.atan2(r, q);
+        const norm = (angle + Math.PI) / (2 * Math.PI);
+        if (norm < 0.15)       type = pick(['forest','highland','hills']);
+        else if (norm < 0.3)   type = pick(['grassland','plains','lowland']);
+        else if (norm < 0.45)  type = pick(['desert','arid','dune']);
+        else if (norm < 0.6)   type = pick(['swamp','wetland','marsh']);
+        else if (norm < 0.75)  type = pick(['mountain','peak','highland']);
+        else if (norm < 0.9)   type = pick(['tundra','taiga','snow']);
+        else                   type = pick(['forest','grassland','plains']);
+        // Occasional feature hexes
+        if (dist === 0)        type = 'grassland'; // center
+        if (Math.random() < 0.06) type = pick(['volcano','lava','badlands']);
+      }
+      hexes.push({
+        q, r,
+        terrain_type: type,
+        elevation: dist < 3 ? rng(50, 600) : rng(0, 200),
+      });
+    }
+  }
+  return hexes;
+}
+
+function generateFallbackSettlements() {
+  const names = [
+    'Ashveil', 'Thorngate', 'Coldwater Keep', 'Dusk Hollow',
+    'Ironfell', 'Greywatch', 'Saltmere', 'Emberglass',
+  ];
+  // Spread settlements around the grid in a rough ring + center
+  const coords = [
+    {q:0,r:0}, {q:3,r:-2}, {q:-3,r:2}, {q:2,r:3},
+    {q:-2,r:-3},{q:4,r:0},{q:0,r:4},{q:-4,r:1},
+  ];
+  const factionIds = ['f0','f1','f2','f0','f1','f2','f0','f1'];
+  const factionNames = ['Northern Hold','Eastern Guild','Western Syndicate',
+                        'Northern Hold','Eastern Guild','Western Syndicate',
+                        'Northern Hold','Eastern Guild'];
+  return names.map((name, i) => ({
+    id: `s${i}`,
+    name,
+    q: coords[i].q,
+    r: coords[i].r,
+    faction: factionNames[i],
+    faction_id: factionIds[i],
+  }));
+}
+
+function generateFallbackFactions() {
+  return [
+    { id:'f0', name:'Northern Hold',     color: FACTION_COLORS[0], diplomacy:{'f1':'NEUTRAL','f2':'WAR'},   territory:['0,0','3,-2','-2,-3'] },
+    { id:'f1', name:'Eastern Guild',     color: FACTION_COLORS[1], diplomacy:{'f0':'NEUTRAL','f2':'TRADE'}, territory:['3,-2','4,0','2,3'] },
+    { id:'f2', name:'Western Syndicate', color: FACTION_COLORS[2], diplomacy:{'f0':'WAR','f1':'TRADE'},     territory:['-3,2','0,4','-4,1'] },
+  ];
+}
+
+// ─────────────────────────────────────────────
+// NPC GENERATION
+// ─────────────────────────────────────────────
+function generateNpcs() {
+  npcs = [];
+  let idCounter = 0;
+
+  settlements.forEach((sett, si) => {
+    const count = rngInt(2, 4);
+    const settFaction = factions.find(f => f.id === sett.faction_id || f.name === sett.faction) || factions[si % Math.max(1, factions.length)];
+    const factionColor = resolveFactionColor(settFaction?.id, settFaction?.name || sett.faction);
+    const basePos = hexToPixel(sett.q || 0, sett.r || 0);
+
+    for (let k = 0; k < count; k++) {
+      const fn = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
+      const ln = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+      const role = pick(ROLES);
+
+      const npc = {
+        id: `npc_${idCounter++}`,
+        name: `${fn} ${ln}`,
+        role,
+        faction: settFaction?.name || sett.faction || 'Unknown',
+        faction_id: settFaction?.id || 'f0',
+        home_q: sett.q || 0,
+        home_r: sett.r || 0,
+        home_name: sett.name || 'Unknown',
+        wx: basePos.x + rng(-18, 18),
+        wy: basePos.y + rng(-18, 18),
+        color: factionColor,
+        needs: {
+          physiological: rng(60, 90),
+          safety:        rng(70, 90),
+          belonging:     rng(50, 80),
+          esteem:        rng(40, 70),
+          actualization: rng(20, 60),
+        },
+        state: 'IDLE',
+        threat_level: 0,
+        dialogue_target: null,
+        last_dialogue: '',
+        cycle: 0,
+      };
+      applyRoleModifiers(npc);
+      npcs.push(npc);
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+// ROLE BEHAVIOR MODIFIERS
+// Each role has tendencies that influence initial need spreads
+// and drive probabilities.
+// ─────────────────────────────────────────────
+const ROLE_MODIFIERS = {
+  MERCHANT: {
+    physiological: +5,   // well-fed from trade income
+    safety:        +0,
+    belonging:     +10,  // socially active
+    esteem:        +5,   // reputation matters
+    actualization: +0,
+    tradingBias:   0.7,  // 70% chance to prefer TRADING state
+  },
+  GUARD: {
+    physiological: +5,
+    safety:        +15,  // trained for threats
+    belonging:     +0,
+    esteem:        +5,
+    actualization: -5,   // duty-bound, less self-actualizing
+    tradingBias:   0.0,
+  },
+  FARMER: {
+    physiological: -10,  // most exposed to food scarcity
+    safety:        -5,
+    belonging:     +10,  // community bonds
+    esteem:        -5,
+    actualization: +0,
+    tradingBias:   0.1,
+  },
+  SCHOLAR: {
+    physiological: +0,
+    safety:        +5,
+    belonging:     -5,   // often isolated
+    esteem:        +10,  // knowledge = esteem
+    actualization: +20,  // highest actualization drive
+    tradingBias:   0.05,
+  },
+  NOMAD: {
+    physiological: -5,   // subsistence living
+    safety:        -10,  // exposed to hazards
+    belonging:     -15,  // drifter, few bonds
+    esteem:        +0,
+    actualization: +10,  // freedom-seeker
+    tradingBias:   0.15,
+  },
+  LEADER: {
+    physiological: +10,
+    safety:        +10,
+    belonging:     +15,  // faction loyalty core
+    esteem:        +20,  // high reputation
+    actualization: +10,
+    tradingBias:   0.2,
+  },
+};
+
+function applyRoleModifiers(npc) {
+  const mod = ROLE_MODIFIERS[npc.role];
+  if (!mod) return;
+  npc.needs.physiological = clamp(npc.needs.physiological + mod.physiological, 0, 100);
+  npc.needs.safety        = clamp(npc.needs.safety        + mod.safety,        0, 100);
+  npc.needs.belonging     = clamp(npc.needs.belonging     + mod.belonging,      0, 100);
+  npc.needs.esteem        = clamp(npc.needs.esteem        + mod.esteem,        0, 100);
+  npc.needs.actualization = clamp(npc.needs.actualization + mod.actualization,  0, 100);
+}
+
+// ─────────────────────────────────────────────
+// FACTION COLOR ASSIGNMENT
+// ─────────────────────────────────────────────
+function resolveFactionColor(factionId, factionName) {
+  // Look up from loaded faction list first
+  const f = factions.find(x => x.id === factionId || x.name === factionName);
+  if (f && f.color) return f.color;
+  // Deterministic color from hash of faction name
+  const str = factionName || factionId || '';
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) & 0xffffffff;
+  return FACTION_COLORS[Math.abs(h) % FACTION_COLORS.length];
+}
+
+// ─────────────────────────────────────────────
+// NEED MATRIX
+// ─────────────────────────────────────────────
+function updateNeeds(npc, season, weather, ecoHealth, factionAtWar) {
+  const seasonMod = { Spring:0, Summer:5, Autumn:-5, Winter:-15 }[season] || 0;
+  const weatherMod = weather && (weather.includes('Storm') || weather.includes('Blizzard')) ? -8 : 0;
+  const ecoMod = (ecoHealth - 50) * 0.3;
+  npc.needs.physiological = clamp(npc.needs.physiological + seasonMod*0.1 + weatherMod*0.1 + ecoMod*0.05, 0, 100);
+
+  const warMod = factionAtWar ? -12 : +3;
+  npc.needs.safety = clamp(npc.needs.safety + warMod * 0.15, 0, 100);
+
+  npc.needs.belonging = clamp(npc.needs.belonging + (65 - npc.needs.belonging) * 0.05, 0, 100);
+  npc.needs.esteem = clamp(npc.needs.esteem + (npc.needs.actualization > 60 ? 1 : -0.5), 0, 100);
+
+  const lowerMet = npc.needs.physiological > 60 && npc.needs.safety > 60 && npc.needs.belonging > 60;
+  npc.needs.actualization = clamp(npc.needs.actualization + (lowerMet ? 1.5 : -1), 0, 100);
+}
+
+function getDominantNeed(needs) {
+  if (needs.physiological < 40) return { key:'physiological', label:'Hunger',  icon:'⚡' };
+  if (needs.safety < 40)        return { key:'safety',        label:'Fear',    icon:'⚠' };
+  if (needs.belonging < 40)     return { key:'belonging',     label:'Lonely',  icon:'❤' };
+  if (needs.esteem < 40)        return { key:'esteem',        label:'Shame',   icon:'◈' };
+  return                               { key:'actualization', label:'Purpose', icon:'★' };
+}
+
+function getDominantDriveText(npc, domNeed) {
+  const n = domNeed.label;
+  if (n === 'Hunger') return `Seeking food — harvest season failed in home hex`;
+  if (n === 'Fear')   return `Fleeing threat — faction conflict near ${npc.home_name}`;
+  if (n === 'Lonely') return `Seeking social bonds — isolated from ${npc.faction}`;
+  if (n === 'Shame')  return `Rebuilding esteem — reputation damage ongoing`;
+  return `Pursuing purpose — all lower needs satisfied`;
+}
+
+function resolveState(npc, threatLevel) {
+  if (threatLevel > 0.7)                                    return 'FLEEING';
+  if (npc.needs.physiological < 40)                         return 'SEEKING';
+  if (npc.needs.safety < 50 && threatLevel > 0.3)          return 'PATROLLING';
+  // Role-specific biases
+  if (npc.role === 'GUARD' && threatLevel > 0.2)            return 'PATROLLING';
+  if (npc.role === 'MERCHANT' && npc.needs.belonging > 55)  return 'TRADING';
+  if (npc.role === 'NOMAD' && Math.random() < 0.35)         return 'SEEKING';
+  if (npc.role === 'LEADER' && threatLevel > 0.1)           return 'PATROLLING';
+  if (npc.needs.actualization > 70)                         return 'SEEKING';
+  if (npc.needs.safety < 35)                                return 'FLEEING';
+  if (Math.random() < 0.12)                                 return 'RESTING';
+  return 'IDLE';
+}
+
+// ─────────────────────────────────────────────
+// THREAT ASSESSMENT
+// ─────────────────────────────────────────────
+function isFactionAtWar(factionId) {
+  const f = factions.find(x => x.id === factionId);
+  if (!f || !f.diplomacy) return false;
+  return Object.values(f.diplomacy).some(v => v === 'WAR' || v === 'war');
+}
+
+function computeHexThreat(hex) {
+  let threat = 0;
+  const hexFaction = factions.find(f => f.territory && f.territory.includes(`${hex.q},${hex.r}`));
+  if (hexFaction) {
+    const atWar = factions.some(f =>
+      f.id !== hexFaction.id &&
+      f.diplomacy && (f.diplomacy[hexFaction.id] === 'WAR' || f.diplomacy[hexFaction.id] === 'war') &&
+      f.territory && f.territory.some(t => isAdjacentHex(t, hex))
+    );
+    if (atWar) threat += 0.5;
+  }
+  if (activePathogens && activePathogens.some(p => p.hexes && p.hexes.includes(`${hex.q},${hex.r}`))) {
+    threat += 0.35;
+  }
+  if (activeWeather && (activeWeather.includes('Storm') || activeWeather.includes('Blizzard'))) {
+    threat += 0.2;
+  }
+  return Math.min(1, threat);
+}
+
+function computeNpcThreat(npc) {
+  const hex = hexGrid.find(h => h.q === npc.home_q && h.r === npc.home_r);
+  let threat = hex ? computeHexThreat(hex) : 0;
+  if (isFactionAtWar(npc.faction_id)) threat += 0.3;
+  return Math.min(1, threat);
+}
+
+// ─────────────────────────────────────────────
+// DIALOGUE SYNTHESIS
+// ─────────────────────────────────────────────
+function generateDialogue(npcA, npcB, context) {
+  const templates = DIALOGUE_TEMPLATES[npcA.state] || DIALOGUE_TEMPLATES.IDLE;
+  const t = pick(templates);
+  return t
+    .replace('<A>', npcA.name)
+    .replace('<B>', npcB?.name || 'the wind')
+    .replace('<WEATHER>', activeWeather || 'grey')
+    .replace('<FACTION>', context.factions?.[0]?.name || 'the eastern lords')
+    .replace('<FACTION2>', context.factions?.[1]?.name || 'the western guild')
+    .replace('<SETTLEMENT>', context.settlements?.[0]?.name || 'the old town')
+    .replace('<RESOURCE>', pick(['grain','timber','iron','salt','cloth']))
+    .replace('<DIRECTION>', pick(['northern','southern','eastern','western']))
+    .replace('<DAY>', String(rngInt(1, 5)));
+}
+
+function getNearbyNpc(npcA) {
+  let best = null, bestDist = Infinity;
+  npcs.forEach(npcB => {
+    if (npcB.id === npcA.id) return;
+    const dx = npcA.wx - npcB.wx, dy = npcA.wy - npcB.wy;
+    const d = Math.sqrt(dx*dx + dy*dy);
+    if (d < bestDist) { bestDist = d; best = npcB; }
+  });
+  return bestDist < HEX_SIZE * 3 ? best : null;
+}
+
+function runDialogueTick() {
+  const count = rngInt(1, 3);
+  const ctx = { factions, settlements };
+  const candidates = npcs.filter(n => n.state === 'IDLE' || n.state === 'TRADING' || n.state === 'SEEKING');
+  const used = new Set();
+  dialoguePairs = [];
+
+  for (let i = 0; i < count; i++) {
+    const shuffled = candidates.filter(n => !used.has(n.id)).sort(() => Math.random() - 0.5);
+    if (shuffled.length < 1) break;
+    const a = shuffled[0];
+    const b = getNearbyNpc(a) || shuffled[1];
+    if (!b) continue;
+
+    used.add(a.id);
+    used.add(b.id);
+
+    const line = generateDialogue(a, b, ctx);
+    a.last_dialogue = line;
+    a.dialogue_target = b.id;
+
+    dialoguePairs.push({ a: a.id, b: b.id });
+
+    const entry = {
+      speaker: a.name,
+      color: a.color,
+      text: line,
+      target: b ? b.name : 'self',
+      ts: new Date().toLocaleTimeString(),
+      cycle: currentCycle,
+    };
+    dialogueLog.unshift(entry);
+    if (dialogueLog.length > 40) dialogueLog.pop();
+  }
+}
+
+// ─────────────────────────────────────────────
+// TICK CYCLE
+// ─────────────────────────────────────────────
+function tickCycle() {
+  currentCycle++;
+  const prevNeeds = {};
+
+  // Phase 1: snapshot previous need values for flash detection
+  npcs.forEach(npc => {
+    prevNeeds[npc.id] = {
+      physiological: npc.needs.physiological,
+      safety:        npc.needs.safety,
+      belonging:     npc.needs.belonging,
+      esteem:        npc.needs.esteem,
+      actualization: npc.needs.actualization,
+    };
+  });
+
+  // Phase 2: update needs for each NPC
+  npcs.forEach(npc => {
+    const atWar = isFactionAtWar(npc.faction_id);
+    updateNeeds(npc, currentSeason, activeWeather, ecologyHealth, atWar);
+  });
+
+  // Phase 3: compute threats and resolve states
+  npcs.forEach(npc => {
+    npc.threat_level = computeNpcThreat(npc);
+    npc.state = resolveState(npc, npc.threat_level);
+    npc.cycle = currentCycle;
+  });
+
+  // Phase 4: dialogue
+  lastNeedValues = prevNeeds;
+  runDialogueTick();
+  updateUI();
+  setSbStatus('CYCLE ' + currentCycle, 'ok');
+}
+
+// ─────────────────────────────────────────────
+// WORLD STATS
+// ─────────────────────────────────────────────
+function getWorldStats() {
+  if (npcs.length === 0) return { avgThreat: 0, avgWellbeing: 0, displaced: 0 };
+  let sumThreat = 0, sumWell = 0, displaced = 0;
+  npcs.forEach(n => {
+    sumThreat += n.threat_level * 100;
+    const well = (n.needs.physiological + n.needs.safety + n.needs.belonging + n.needs.esteem + n.needs.actualization) / 5;
+    sumWell += well;
+    if (n.state === 'FLEEING') displaced++;
+  });
+  return {
+    avgThreat: sumThreat / npcs.length,
+    avgWellbeing: sumWell / npcs.length,
+    displaced,
+  };
+}
+
+// ─────────────────────────────────────────────
+// UI UPDATE
+// ─────────────────────────────────────────────
+function updateUI() {
+  // Roster
+  const roster = document.getElementById('npc-roster');
+  roster.innerHTML = '';
+  const count = document.getElementById('roster-count');
+  count.textContent = npcs.length;
+
+  npcs.forEach(npc => {
+    const domNeed = getDominantNeed(npc.needs);
+    const row = document.createElement('div');
+    row.className = 'npc-row' + (npc.id === selectedNpcId ? ' selected' : '');
+    row.dataset.id = npc.id;
+    row.innerHTML = `
+      <div class="npc-dot" style="background:${npc.color};"></div>
+      <div class="npc-info">
+        <div class="npc-name">${npc.name}</div>
+        <div class="npc-meta">
+          <span class="npc-role-badge">${npc.role}</span>
+          <span class="npc-need-tag">${domNeed.icon} ${domNeed.label}</span>
+        </div>
+      </div>
+      <span class="npc-state-badge ${npc.state}">${npc.state}</span>
+    `;
+    row.addEventListener('click', () => selectNpc(npc.id));
+    roster.appendChild(row);
+  });
+
+  // World stats
+  const ws = getWorldStats();
+  document.getElementById('ws-threat-val').textContent = Math.round(ws.avgThreat) + '%';
+  document.getElementById('ws-threat-bar').style.width = ws.avgThreat + '%';
+  document.getElementById('ws-well-val').textContent = Math.round(ws.avgWellbeing) + '%';
+  document.getElementById('ws-well-bar').style.width = ws.avgWellbeing + '%';
+  document.getElementById('ws-dialogues').textContent = dialoguePairs.length;
+  document.getElementById('ws-displaced').textContent = ws.displaced;
+
+  // Status bar
+  document.getElementById('sb-npcs').textContent = npcs.length;
+  document.getElementById('sb-actdlg').textContent = dialoguePairs.length;
+  document.getElementById('sb-threat').textContent = Math.round(ws.avgThreat) + '%';
+  document.getElementById('sb-cycle').textContent = currentCycle;
+
+  // Selected NPC inspector
+  if (selectedNpcId) updateInspector();
+
+  // Dialogue feed
+  updateDialogueFeed();
+}
+
+function updateInspector() {
+  const npc = npcs.find(n => n.id === selectedNpcId);
+  const noSel = document.getElementById('no-select-msg');
+  const detail = document.getElementById('npc-detail');
+  if (!npc) { noSel.style.display = ''; detail.style.display = 'none'; return; }
+  noSel.style.display = 'none';
+  detail.style.display = '';
+
+  document.getElementById('det-name').textContent = npc.name;
+  document.getElementById('det-role').textContent = npc.role;
+  document.getElementById('det-faction').textContent = npc.faction;
+  document.getElementById('det-home').textContent = npc.home_name || `(${npc.home_q},${npc.home_r})`;
+
+  // Maslow bars
+  const prev = lastNeedValues[npc.id] || {};
+  ['physiological','safety','belonging','esteem','actualization'].forEach(k => {
+    const pct = Math.round(npc.needs[k]);
+    document.getElementById(`mv-${k}`).textContent = pct;
+    document.getElementById(`mb-${k}`).style.width = pct + '%';
+    // Flash if dropped below 40
+    const mn = document.getElementById(`mn-${k}`);
+    if (prev[k] >= 40 && npc.needs[k] < 40) {
+      mn.classList.remove('flash');
+      void mn.offsetWidth; // reflow
+      mn.classList.add('flash');
+    }
+  });
+
+  const domNeed = getDominantNeed(npc.needs);
+  const stateBadge = document.getElementById('det-state');
+  stateBadge.textContent = npc.state;
+  stateBadge.className = `state-badge-large ${npc.state}`;
+
+  document.getElementById('det-drive').textContent = getDominantDriveText(npc, domNeed);
+
+  // Threat
+  document.getElementById('thr-nearest').textContent = npc.threat_level > 0 ? (Math.round(npc.threat_level * 100) + '%') : 'None';
+  const atWar = isFactionAtWar(npc.faction_id);
+  document.getElementById('thr-enemy').textContent = atWar ? 'CLOSE (<2 hexes)' : 'Not detected';
+  const pathExp = activePathogens.some(p => p.hexes?.includes(`${npc.home_q},${npc.home_r}`));
+  document.getElementById('thr-pathogen').textContent = pathExp ? 'ACTIVE' : 'None';
+  const severe = activeWeather && (activeWeather.includes('Storm') || activeWeather.includes('Blizzard'));
+  document.getElementById('thr-weather').textContent = severe ? activeWeather : (activeWeather || 'Clear');
+
+  document.getElementById('det-dialogue').textContent = npc.last_dialogue || '— No dialogue yet —';
+}
+
+function updateDialogueFeed() {
+  const feed = document.getElementById('dialogue-feed');
+  feed.innerHTML = '';
+  dialogueLog.forEach(e => {
+    const el = document.createElement('div');
+    el.className = 'dialogue-entry';
+    el.innerHTML = `
+      <div class="dialogue-speaker" style="color:${e.color}">${e.speaker}</div>
+      <div class="dialogue-text">${e.text}</div>
+      <div class="dialogue-meta">
+        <span>→ ${e.target}</span>
+        <span>cycle ${e.cycle}</span>
+        <span>${e.ts}</span>
+      </div>
+    `;
+    feed.appendChild(el);
+  });
+}
+
+function selectNpc(id) {
+  selectedNpcId = id;
+  updateUI();
+}
+
+function setSbStatus(msg, cls) {
+  const el = document.getElementById('sb-status');
+  el.textContent = msg;
+  el.className = 'sb-status' + (cls ? ' ' + cls : '');
+}
+
+// ─────────────────────────────────────────────
+// CANVAS RENDERING
+// ─────────────────────────────────────────────
+const canvas = document.getElementById('main-canvas');
+const ctx2d  = canvas.getContext('2d');
+
+function resizeCanvas() {
+  const wrap = document.getElementById('canvas-wrap');
+  canvas.width  = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+}
+
+function worldToCanvas(wx, wy) {
+  return {
+    x: canvas.width/2  + panX + wx * zoom,
+    y: canvas.height/2 + panY + wy * zoom,
+  };
+}
+
+function drawFrame() {
+  updateHover();
+  const W = canvas.width, H = canvas.height;
+  ctx2d.clearRect(0, 0, W, H);
+  ctx2d.fillStyle = '#020408';
+  ctx2d.fillRect(0, 0, W, H);
+
+  ctx2d.save();
+
+  // ── LAYER 1: Hex base ──
+  hexGrid.forEach((hex, hi) => {
+    const {x, y} = worldToCanvas(...hexToPixelArr(hex.q, hex.r));
+    drawHex(x, y, HEX_SIZE * zoom, getTerrainColor(hex.terrain_type), 0.25);
+  });
+
+  // ── LAYER 1b: Settlement markers ──
+  settlements.forEach(sett => {
+    const {x, y} = worldToCanvas(...hexToPixelArr(sett.q || 0, sett.r || 0));
+    const sf = factions.find(f => f.id === sett.faction_id || f.name === sett.faction);
+    const sc = sf ? sf.color : '#ffffff';
+
+    // Settlement diamond
+    ctx2d.beginPath();
+    const ds = 7 * zoom;
+    ctx2d.moveTo(x, y - ds);
+    ctx2d.lineTo(x + ds, y);
+    ctx2d.lineTo(x, y + ds);
+    ctx2d.lineTo(x - ds, y);
+    ctx2d.closePath();
+    ctx2d.fillStyle = sc + '33';
+    ctx2d.fill();
+    ctx2d.strokeStyle = sc + 'aa';
+    ctx2d.lineWidth = 1;
+    ctx2d.stroke();
+
+    // Settlement name label
+    if (zoom > 0.6) {
+      ctx2d.font = `${Math.round(8 * zoom)}px 'JetBrains Mono',monospace`;
+      ctx2d.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx2d.textAlign = 'center';
+      ctx2d.fillText(sett.name || '', x, y + ds + 10 * zoom);
+    }
+  });
+
+  // ── LAYER 2: Threat zones ──
+  hexGrid.forEach((hex, hi) => {
+    const threat = computeHexThreat(hex);
+    if (threat > 0.3) {
+      const {x, y} = worldToCanvas(...hexToPixelArr(hex.q, hex.r));
+      const alpha = 0.15 + 0.1 * Math.sin(animT * 3 + hi * 0.7);
+      const r = HEX_SIZE * zoom * 1.5;
+      const grad = ctx2d.createRadialGradient(x, y, 0, x, y, r);
+      grad.addColorStop(0, `rgba(212,91,91,${alpha * threat})`);
+      grad.addColorStop(1, 'rgba(212,91,91,0)');
+      ctx2d.beginPath();
+      ctx2d.arc(x, y, r, 0, Math.PI*2);
+      ctx2d.fillStyle = grad;
+      ctx2d.fill();
+    }
+  });
+
+  // ── LAYER 3: NPC positions ──
+  const activeDlgIds = new Set();
+  dialoguePairs.forEach(p => { activeDlgIds.add(p.a); activeDlgIds.add(p.b); });
+
+  npcs.forEach((npc, ni) => {
+    const {x, y} = worldToCanvas(npc.wx, npc.wy);
+    const speaking = activeDlgIds.has(npc.id);
+    const r = speaking ? 6 + 2 * Math.sin(animT * 6 + ni) : 6;
+
+    // Need ring (5-segment radial around NPC)
+    const needKeys = ['physiological','safety','belonging','esteem','actualization'];
+    needKeys.forEach((k, ki) => {
+      const segAngle = (Math.PI * 2 / 5);
+      const startA = segAngle * ki - Math.PI/2;
+      const endA   = startA + segAngle - 0.06;
+      const val = npc.needs[k] / 100;
+      const innerR = (r + 3) * zoom;
+      const outerR = (r + 3 + val * 7) * zoom;
+
+      ctx2d.beginPath();
+      ctx2d.arc(x, y, outerR, startA, endA);
+      ctx2d.arc(x, y, innerR, endA, startA, true);
+      ctx2d.closePath();
+      ctx2d.fillStyle = NEED_COLORS[k] + 'bb';
+      ctx2d.fill();
+    });
+
+    // NPC circle
+    ctx2d.beginPath();
+    ctx2d.arc(x, y, r * zoom, 0, Math.PI*2);
+    ctx2d.fillStyle = npc.color;
+    ctx2d.fill();
+    ctx2d.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx2d.lineWidth = 1;
+    ctx2d.stroke();
+
+    // Highlight selected
+    if (npc.id === selectedNpcId) {
+      ctx2d.beginPath();
+      ctx2d.arc(x, y, (r + 4) * zoom, 0, Math.PI*2);
+      ctx2d.strokeStyle = 'rgba(232,184,75,0.7)';
+      ctx2d.lineWidth = 1.5;
+      ctx2d.stroke();
+    }
+  });
+
+  // ── LAYER 4: Dialogue arcs ──
+  dialoguePairs.forEach((pair, pi) => {
+    const a = npcs.find(n => n.id === pair.a);
+    const b = npcs.find(n => n.id === pair.b);
+    if (!a || !b) return;
+    const pa = worldToCanvas(a.wx, a.wy);
+    const pb = worldToCanvas(b.wx, b.wy);
+    const mx = (pa.x + pb.x) / 2, my = (pa.y + pb.y) / 2 - 30 * zoom;
+    const cp1 = {x: pa.x + (mx - pa.x)*0.5, y: pa.y + (my - pa.y)*0.5};
+    const cp2 = {x: pb.x + (mx - pb.x)*0.5, y: pb.y + (my - pb.y)*0.5};
+
+    ctx2d.beginPath();
+    ctx2d.moveTo(pa.x, pa.y);
+    ctx2d.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, pb.x, pb.y);
+    ctx2d.strokeStyle = 'rgba(232,184,75,0.25)';
+    ctx2d.lineWidth = 1;
+    ctx2d.setLineDash([3, 4]);
+    ctx2d.stroke();
+    ctx2d.setLineDash([]);
+
+    // Animated dot
+    const t = (animT * 0.4 + pi * 0.33) % 1;
+    const dot = cubicBezier(pa, cp1, cp2, pb, t);
+    ctx2d.beginPath();
+    ctx2d.arc(dot.x, dot.y, 2.5, 0, Math.PI*2);
+    ctx2d.fillStyle = 'rgba(232,184,75,0.8)';
+    ctx2d.fill();
+  });
+
+  // ── LAYER 5: Behavioral state icons ──
+  npcs.forEach((npc, ni) => {
+    const {x, y} = worldToCanvas(npc.wx, npc.wy);
+    const icon = STATE_ICONS[npc.state] || '●';
+    ctx2d.font = `${Math.max(7, 8 * zoom)}px sans-serif`;
+    ctx2d.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx2d.textAlign = 'center';
+    ctx2d.fillText(icon, x, y - (10 * zoom));
+  });
+
+  // ── TOOLTIP: Hovered NPC ──
+  if (hoveredNpc) {
+    const {x, y} = worldToCanvas(hoveredNpc.wx, hoveredNpc.wy);
+    const tw = 140, th = 52;
+    let tx = x + 14, ty = y - 30;
+    if (tx + tw > canvas.width)  tx = x - tw - 14;
+    if (ty < 4) ty = y + 16;
+
+    ctx2d.fillStyle = 'rgba(8,11,18,0.93)';
+    roundRect(ctx2d, tx, ty, tw, th, 3);
+    ctx2d.fill();
+    ctx2d.strokeStyle = 'rgba(232,184,75,0.35)';
+    ctx2d.lineWidth = 1;
+    roundRect(ctx2d, tx, ty, tw, th, 3);
+    ctx2d.stroke();
+
+    ctx2d.fillStyle = hoveredNpc.color;
+    ctx2d.font = `600 ${Math.round(10 * zoom)}px 'Orbitron',monospace`;
+    ctx2d.textAlign = 'left';
+    ctx2d.fillText(hoveredNpc.name, tx + 7, ty + 15);
+
+    ctx2d.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx2d.font = `${Math.round(9 * zoom)}px 'JetBrains Mono',monospace`;
+    ctx2d.fillText(`${hoveredNpc.role} · ${hoveredNpc.state}`, tx + 7, ty + 28);
+
+    const domNeed = getDominantNeed(hoveredNpc.needs);
+    ctx2d.fillStyle = 'rgba(232,184,75,0.6)';
+    ctx2d.font = `${Math.round(8 * zoom)}px 'Space Grotesk',sans-serif`;
+    ctx2d.fillText(`${domNeed.icon} ${domNeed.label} · T:${Math.round(hoveredNpc.threat_level*100)}%`, tx + 7, ty + 42);
+  }
+
+  // ── HUD: Cycle counter + zoom level ──
+  ctx2d.fillStyle = 'rgba(8,11,18,0.75)';
+  ctx2d.fillRect(8, 8, 120, 32);
+  ctx2d.strokeStyle = 'rgba(232,184,75,0.2)';
+  ctx2d.lineWidth = 1;
+  ctx2d.strokeRect(8, 8, 120, 32);
+  ctx2d.fillStyle = 'rgba(232,184,75,0.6)';
+  ctx2d.font = '10px "Orbitron",monospace';
+  ctx2d.textAlign = 'left';
+  ctx2d.fillText(`CYCLE ${currentCycle}`, 14, 22);
+  ctx2d.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx2d.font = '8px "JetBrains Mono",monospace';
+  ctx2d.fillText(`ZOOM ${zoom.toFixed(2)}x  NPCs ${npcs.length}`, 14, 34);
+
+  // ── HUD: Need legend (bottom-left) ──
+  if (zoom > 0.5) {
+    const legendX = 8, legendY = canvas.height - 90;
+    ctx2d.fillStyle = 'rgba(8,11,18,0.75)';
+    ctx2d.fillRect(legendX, legendY, 112, 82);
+    ctx2d.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx2d.lineWidth = 1;
+    ctx2d.strokeRect(legendX, legendY, 112, 82);
+    ctx2d.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx2d.font = '8px "Orbitron",monospace';
+    ctx2d.textAlign = 'left';
+    ctx2d.fillText('NEED RING', legendX + 6, legendY + 12);
+    const needLabels = [
+      ['PHYSIO',   NEED_COLORS.physiological],
+      ['SAFETY',   NEED_COLORS.safety],
+      ['BELONG',   NEED_COLORS.belonging],
+      ['ESTEEM',   NEED_COLORS.esteem],
+      ['ACTUAL',   NEED_COLORS.actualization],
+    ];
+    needLabels.forEach(([label, color], i) => {
+      const ly = legendY + 22 + i * 11;
+      ctx2d.fillStyle = color;
+      ctx2d.fillRect(legendX + 6, ly, 8, 6);
+      ctx2d.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx2d.font = '7px "JetBrains Mono",monospace';
+      ctx2d.fillText(label, legendX + 18, ly + 6);
+    });
+  }
+
+  ctx2d.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function hexToPixelArr(q, r) {
+  const x = HEX_SIZE * (Math.sqrt(3) * q + Math.sqrt(3)/2 * r);
+  const y = HEX_SIZE * (3/2 * r);
+  return [x, y];
+}
+
+function drawHex(cx, cy, size, color, alpha) {
+  ctx2d.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const a = Math.PI/180 * (60*i - 30);
+    const px = cx + size * Math.cos(a);
+    const py = cy + size * Math.sin(a);
+    i === 0 ? ctx2d.moveTo(px, py) : ctx2d.lineTo(px, py);
+  }
+  ctx2d.closePath();
+  ctx2d.fillStyle = color + Math.round(alpha * 255).toString(16).padStart(2,'0');
+  ctx2d.fill();
+  ctx2d.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx2d.lineWidth = 0.5;
+  ctx2d.stroke();
+}
+
+// ─────────────────────────────────────────────
+// ANIMATION LOOP
+// ─────────────────────────────────────────────
+let lastTs = 0;
+function rafLoop(ts) {
+  const dt = Math.min((ts - lastTs) / 1000, 0.1); // cap dt to prevent jumps
+  lastTs = ts;
+  animT += dt;
+  driftNpcs(dt);
+  drawFrame();
+  requestAnimationFrame(rafLoop);
+}
+
+// ─────────────────────────────────────────────
+// CANVAS INTERACTION
+// ─────────────────────────────────────────────
+canvas.addEventListener('mousedown', e => {
+  isPanning = true;
+  panStart = {x: e.clientX, y: e.clientY};
+  panOrigin = {x: panX, y: panY};
+  canvas.style.cursor = 'grabbing';
+});
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  mouseCanvasX = e.clientX - rect.left;
+  mouseCanvasY = e.clientY - rect.top;
+  if (isPanning) {
+    panX = panOrigin.x + (e.clientX - panStart.x);
+    panY = panOrigin.y + (e.clientY - panStart.y);
+  }
+});
+canvas.addEventListener('mouseup', e => {
+  const moved = Math.abs(e.clientX - panStart.x) + Math.abs(e.clientY - panStart.y);
+  isPanning = false;
+  canvas.style.cursor = 'default';
+  if (moved < 5) {
+    // Check NPC click
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    let clicked = null;
+    npcs.forEach(npc => {
+      const {x, y} = worldToCanvas(npc.wx, npc.wy);
+      const dx = mx - x, dy = my - y;
+      if (Math.sqrt(dx*dx + dy*dy) < 10) clicked = npc.id;
+    });
+    if (clicked) selectNpc(clicked);
+  }
+});
+canvas.addEventListener('mouseleave', () => {
+  isPanning = false;
+  canvas.style.cursor = 'default';
+  hoveredNpc = null;
+});
+
+// Hover detection runs in rAF — update hoveredNpc each frame based on mouseCanvasX/Y
+function updateHover() {
+  if (isPanning) { hoveredNpc = null; return; }
+  let found = null;
+  npcs.forEach(npc => {
+    const {x, y} = worldToCanvas(npc.wx, npc.wy);
+    const dx = mouseCanvasX - x, dy = mouseCanvasY - y;
+    if (Math.sqrt(dx*dx + dy*dy) < 12) found = npc;
+  });
+  hoveredNpc = found;
+  canvas.style.cursor = found ? 'pointer' : (isPanning ? 'grabbing' : 'default');
+}
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const factor = e.deltaY > 0 ? 0.9 : 1.1;
+  zoom = clamp(zoom * factor, 0.3, 3);
+}, {passive: false});
+
+// ─────────────────────────────────────────────
+// PIPELINE SIMULATE
+// ─────────────────────────────────────────────
+async function runSimulate() {
+  const overlay = document.getElementById('pipeline-overlay');
+  const steps = document.querySelectorAll('.pipe-step');
+  const bar = document.getElementById('pipe-bar-fill');
+  const TOTAL = steps.length;
+
+  overlay.classList.add('visible');
+  setSbStatus('SIMULATING…', 'busy');
+
+  // Reset steps
+  steps.forEach(s => s.classList.remove('active','done'));
+  bar.style.width = '0%';
+
+  for (let i = 0; i < TOTAL; i++) {
+    steps[i].classList.add('active');
+    bar.style.width = (i / TOTAL * 100) + '%';
+    await delay(220 + Math.random() * 180);
+
+    // Actual work on relevant steps
+    if (i === 0) { // NMX
+      loadUpstream();
+      generateNpcs();
+    }
+    if (i === 1) { // DRV
+      npcs.forEach(npc => {
+        npc.threat_level = computeNpcThreat(npc);
+      });
+    }
+    if (i === 2) { // TAS
+      // precompute hex threats (already done in computeHexThreat calls)
+    }
+    if (i === 4) { // FFF — state machine
+      npcs.forEach(npc => {
+        npc.state = resolveState(npc, npc.threat_level);
+      });
+    }
+    if (i === 5) { // DDS
+      runDialogueTick();
+    }
+    if (i === 6) { // BSM
+      currentCycle++;
+      npcs.forEach(npc => {
+        const atWar = isFactionAtWar(npc.faction_id);
+        updateNeeds(npc, currentSeason, activeWeather, ecologyHealth, atWar);
+        npc.state = resolveState(npc, npc.threat_level);
+        npc.cycle = currentCycle;
+      });
+    }
+    if (i === 7) { // BEX — export
+      exportBehaviorSnapshot();
+    }
+
+    steps[i].classList.remove('active');
+    steps[i].classList.add('done');
+    bar.style.width = ((i + 1) / TOTAL * 100) + '%';
+    await delay(60);
+  }
+
+  overlay.classList.remove('visible');
+  updateUI();
+  setSbStatus('SIMULATED · CYCLE ' + currentCycle, 'ok');
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function exportBehaviorSnapshot() {
+  const ws = getWorldStats();
+  const avgThreat = ws.avgThreat;
+  const avgWellbeing = ws.avgWellbeing;
+
+  localStorage.setItem('qa-behavior-snapshot', JSON.stringify({
+    system: 'Quantum Atlas',
+    module: '08 · Behavior',
+    generated: new Date().toISOString(),
+    cycle: currentCycle,
+    npc_count: npcs.length,
+    npcs: npcs.map(n => ({
+      id: n.id,
+      name: n.name,
+      role: n.role,
+      faction: n.faction,
+      state: n.state,
+      needs: n.needs,
+      threat_level: n.threat_level,
+      dominant_need: getDominantNeed(n.needs).label,
+      last_dialogue: n.last_dialogue,
+    })),
+    avg_threat: avgThreat,
+    avg_wellbeing: avgWellbeing,
+    dialogue_log: dialogueLog.slice(-20),
+  }));
+}
+
+// ─────────────────────────────────────────────
+// TAB SWITCHING
+// ─────────────────────────────────────────────
+document.querySelectorAll('.tb-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+// ─────────────────────────────────────────────
+// BUTTON WIRING
+// ─────────────────────────────────────────────
+document.getElementById('btn-tick-top').addEventListener('click', () => {
+  if (npcs.length === 0) {
+    loadUpstream();
+    generateNpcs();
+  }
+  tickCycle();
+});
+document.getElementById('btn-tick-lp').addEventListener('click', () => {
+  if (npcs.length === 0) {
+    loadUpstream();
+    generateNpcs();
+  }
+  tickCycle();
+});
+document.getElementById('btn-simulate').addEventListener('click', runSimulate);
+
+// ─────────────────────────────────────────────
+// NPC MOVEMENT (drift toward home hex when idle/resting)
+// ─────────────────────────────────────────────
+function driftNpcs(dt) {
+  npcs.forEach(npc => {
+    if (npc.state === 'FLEEING') {
+      // Drift away from home
+      const home = hexToPixel(npc.home_q, npc.home_r);
+      const dx = npc.wx - home.x, dy = npc.wy - home.y;
+      const len = Math.sqrt(dx*dx + dy*dy) || 1;
+      npc.wx += (dx/len) * 4 * dt;
+      npc.wy += (dy/len) * 4 * dt;
+      // Clamp to world bounds
+      npc.wx = clamp(npc.wx, -300, 300);
+      npc.wy = clamp(npc.wy, -300, 300);
+    } else if (npc.state === 'SEEKING') {
+      // Move toward nearest settlement
+      const target = settlements[Math.floor(Math.random() * settlements.length)];
+      if (target) {
+        const tp = hexToPixel(target.q || 0, target.r || 0);
+        const dx = tp.x - npc.wx, dy = tp.y - npc.wy;
+        const len = Math.sqrt(dx*dx+dy*dy) || 1;
+        if (len > 5) { npc.wx += (dx/len) * 6 * dt; npc.wy += (dy/len) * 6 * dt; }
+      }
+    } else if (npc.state === 'PATROLLING') {
+      // Circle near home
+      const t = animT * 0.4 + npcs.indexOf(npc) * 1.2;
+      const home = hexToPixel(npc.home_q, npc.home_r);
+      const targetX = home.x + Math.cos(t) * HEX_SIZE;
+      const targetY = home.y + Math.sin(t) * HEX_SIZE;
+      npc.wx += (targetX - npc.wx) * 0.02;
+      npc.wy += (targetY - npc.wy) * 0.02;
+    } else {
+      // Gentle drift toward home
+      const home = hexToPixel(npc.home_q, npc.home_r);
+      npc.wx += (home.x - npc.wx) * 0.005;
+      npc.wy += (home.y - npc.wy) * 0.005;
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+function init() {
+  resizeCanvas();
+  window.addEventListener('resize', () => { resizeCanvas(); });
+
+  loadUpstream();
+  generateNpcs();
+
+  // Initial state machine pass
+  npcs.forEach(npc => {
+    npc.threat_level = computeNpcThreat(npc);
+    npc.state = resolveState(npc, npc.threat_level);
+  });
+
+  // Seed a few dialogues on load
+  runDialogueTick();
+
+  // Center view on NPCs
+  if (npcs.length > 0) {
+    const avgWx = npcs.reduce((s, n) => s + n.wx, 0) / npcs.length;
+    const avgWy = npcs.reduce((s, n) => s + n.wy, 0) / npcs.length;
+    panX = -avgWx * zoom;
+    panY = -avgWy * zoom;
+  }
+
+  updateUI();
+  setSbStatus('READY', 'ok');
+  requestAnimationFrame(rafLoop);
+}
+
+init();
+</script>
+
+<script>
+(function() {
+  const MAP = {
+    'c-bg':'--bg','c-surf':'--surface','c-surf2':'--surface2',
+    'c-edge':'--edge','c-edge-hi':'--edge-hi','c-accent1':'--venturan',
+    'c-accent2':'--amber','c-accent3':'--emerald','c-accent4':'--fusion',
+    'c-danger':'--blood','c-warm':'--solari','c-text':'--text',
+  };
+  function applyTokens(t) {
+    const r = document.documentElement;
+    Object.entries(MAP).forEach(([k,v]) => { if (t[k] !== undefined) r.style.setProperty(v, t[k]); });
+  }
+  try { const s = JSON.parse(localStorage.getItem('ql-theme')||'{}'); if (s.tokens) applyTokens(s.tokens); } catch(e) {}
+  window.addEventListener('message', e => { if (e.data?.type==='ql:theme' && e.data.tokens) applyTokens(e.data.tokens); });
+})();
+</script>
+</body>
+</html>

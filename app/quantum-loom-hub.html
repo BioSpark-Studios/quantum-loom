@@ -37,11 +37,16 @@
   --c-ionodes:   #b1d0f0;
   --c-output:    #c8973a;
   --c-atlas:     #1e8cff;
-  --c-environ:   #4ecdc4;
-  --c-architect: #ffd166;
-  --c-lighting:      #ff9f43;
-  --c-civilization:  #c77dff;
-  --c-bridge:        #4dc8a0;
+  --c-environ:   #8050e0;
+  --c-architect: #64b4ff;
+  --c-lighting:  #e0d8ff;
+  --c-society:   #c8a860;
+  --c-bridge:    #4dc8a0;
+  --c-ecology:   #7fd4c8;
+  --c-behavior:  #9030d0;
+  --c-modeling:      #f4c025;
+  --c-choreography:  #dc3c78;
+  --c-sequencer:     #b08030;
 }
 
 html,body{
@@ -858,29 +863,54 @@ html,body{
         <span class="ni-label">Atlas</span>
       </div>
       <div class="nav-item" id="nav-environ" data-layer="environ"
-           style="--lc:var(--c-environ)" onclick="switchLayer('environ')" title="Quantum Atlas · 02 Environment">
+           style="--lc:var(--c-environ)" onclick="switchLayer('environ')" title="02 · Environment | Mythos">
         <span class="ni-icon">◉</span>
         <span class="ni-label">Environ</span>
       </div>
       <div class="nav-item" id="nav-architect" data-layer="architect"
-           style="--lc:var(--c-architect)" onclick="switchLayer('architect')" title="Quantum Atlas · 03 Architect">
+           style="--lc:var(--c-architect)" onclick="switchLayer('architect')" title="03 · Architect | Architect">
         <span class="ni-icon">⊓</span>
         <span class="ni-label">Architect</span>
       </div>
       <div class="nav-item" id="nav-lighting" data-layer="lighting"
-           style="--lc:var(--c-lighting)" onclick="switchLayer('lighting')" title="Quantum Atlas · 04 Lighting">
+           style="--lc:var(--c-lighting)" onclick="switchLayer('lighting')" title="04 · Lighting | Prism">
         <span class="ni-icon">◐</span>
         <span class="ni-label">Lighting</span>
       </div>
-      <div class="nav-item" id="nav-civilization" data-layer="civilization"
-           style="--lc:var(--c-civilization)" onclick="switchLayer('civilization')" title="Quantum Atlas · 05 Civilization">
+      <div class="nav-item" id="nav-modeling" data-layer="modeling"
+           style="--lc:var(--c-modeling)" onclick="switchLayer('modeling')" title="05 · Modeling | Animus">
+        <span class="ni-icon">✦</span>
+        <span class="ni-label">Modeling</span>
+      </div>
+      <div class="nav-item" id="nav-choreography" data-layer="choreography"
+           style="--lc:var(--c-choreography)" onclick="switchLayer('choreography')" title="06 · Choreography | Loom">
+        <span class="ni-icon">⟳</span>
+        <span class="ni-label">Choreo</span>
+      </div>
+      <div class="nav-item" id="nav-society" data-layer="society"
+           style="--lc:var(--c-society)" onclick="switchLayer('society')" title="08 · Society | Order">
         <span class="ni-icon">⚑</span>
-        <span class="ni-label">Civiliz.</span>
+        <span class="ni-label">Society</span>
       </div>
       <div class="nav-item" id="nav-bridge" data-layer="bridge"
            style="--lc:var(--c-bridge)" onclick="switchLayer('bridge')" title="Quantum Atlas · 06 Bridge">
         <span class="ni-icon">⇋</span>
         <span class="ni-label">Bridge</span>
+      </div>
+      <div class="nav-item" id="nav-ecology" data-layer="ecology"
+           style="--lc:var(--c-ecology)" onclick="switchLayer('ecology')" title="Quantum Atlas · 07 Ecology">
+        <span class="ni-icon">⚘</span>
+        <span class="ni-label">Ecology</span>
+      </div>
+      <div class="nav-item" id="nav-sequencer" data-layer="sequencer"
+           style="--lc:var(--c-sequencer)" onclick="switchLayer('sequencer')" title="09 · Sequencer | Chronicle">
+        <span class="ni-icon">▶</span>
+        <span class="ni-label">Sequencer</span>
+      </div>
+      <div class="nav-item" id="nav-behavior" data-layer="behavior"
+           style="--lc:var(--c-behavior)" onclick="switchLayer('behavior')" title="07 · Behavior | Instinct">
+        <span class="ni-icon">⊙</span>
+        <span class="ni-label">Behavior</span>
       </div>
 
       <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
@@ -982,55 +1012,105 @@ html,body{
         src="quantum-atlas-terrain.html"
         onload="frameLoaded('atlas')"></iframe>
 
-      <!-- Atlas · 02 Environment -->
+      <!-- 02 · Environment | Mythos -->
       <div class="frame-loader" id="loader-environ">
-        <div class="loader-glyph" style="color:#4ecdc4">◉</div>
-        <div class="loader-lbl">Loading Quantum Atlas · Environment</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:#4ecdc4"></div></div>
+        <div class="loader-glyph" style="color:#8050e0">◉</div>
+        <div class="loader-lbl">Loading 02 · Environment | Mythos</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#8050e0"></div></div>
       </div>
       <iframe class="layer-frame" id="frame-environ"
         src="quantum-atlas-environment.html"
         onload="frameLoaded('environ')"></iframe>
 
-      <!-- Atlas · 03 Architect -->
+      <!-- 03 · Architect | Architect -->
       <div class="frame-loader" id="loader-architect">
-        <div class="loader-glyph" style="color:#ffd166">⊓</div>
-        <div class="loader-lbl">Loading Quantum Atlas · Architect</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:#ffd166"></div></div>
+        <div class="loader-glyph" style="color:#64b4ff">⊓</div>
+        <div class="loader-lbl">Loading 03 · Architect | Architect</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#64b4ff"></div></div>
       </div>
       <iframe class="layer-frame" id="frame-architect"
         src="quantum-atlas-architect.html"
         onload="frameLoaded('architect')"></iframe>
 
-      <!-- Atlas · 04 Lighting -->
+      <!-- 04 · Lighting | Prism -->
       <div class="frame-loader" id="loader-lighting">
-        <div class="loader-glyph" style="color:#ff9f43">◐</div>
-        <div class="loader-lbl">Loading Quantum Atlas · Lighting</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:#ff9f43"></div></div>
+        <div class="loader-glyph" style="color:#e0d8ff">◐</div>
+        <div class="loader-lbl">Loading 04 · Lighting | Prism</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#e0d8ff"></div></div>
       </div>
       <iframe class="layer-frame" id="frame-lighting"
         src="quantum-atlas-lighting.html"
         onload="frameLoaded('lighting')"></iframe>
 
-      <!-- Atlas · 05 Civilization -->
-      <div class="frame-loader" id="loader-civilization">
-        <div class="loader-glyph" style="color:#c77dff">⚑</div>
-        <div class="loader-lbl">Loading Quantum Atlas · Civilization</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:#c77dff"></div></div>
+      <!-- Atlas · 05 Modeling | Animus -->
+      <div class="frame-loader" id="loader-modeling">
+        <div class="loader-glyph" style="color:#f4c025">✦</div>
+        <div class="loader-lbl">Loading 05 · Modeling | Animus</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#f4c025"></div></div>
       </div>
-      <iframe class="layer-frame" id="frame-civilization"
-        src="quantum-atlas-civilization.html"
-        onload="frameLoaded('civilization')"></iframe>
+      <iframe class="layer-frame" id="frame-modeling"
+        src="quantum-atlas-modeling.html"
+        onload="frameLoaded('modeling')"></iframe>
 
-      <!-- Atlas · 06 Bridge -->
+      <!-- Atlas · 06 Choreography | Loom -->
+      <div class="frame-loader" id="loader-choreography">
+        <div class="loader-glyph" style="color:#dc3c78">⟳</div>
+        <div class="loader-lbl">Loading 06 · Choreography | Loom</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#dc3c78"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-choreography"
+        src="quantum-atlas-choreography.html"
+        onload="frameLoaded('choreography')"></iframe>
+
+      <!-- Atlas · 08 Society | Order -->
+      <div class="frame-loader" id="loader-society">
+        <div class="loader-glyph" style="color:#c8a860">⚑</div>
+        <div class="loader-lbl">Loading 08 · Society | Order</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#c8a860"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-society"
+        src="quantum-atlas-society.html"
+        onload="frameLoaded('society')"></iframe>
+
+      <!-- 16 · Network | Nexus -->
       <div class="frame-loader" id="loader-bridge">
-        <div class="loader-glyph" style="color:#4dc8a0">⇋</div>
-        <div class="loader-lbl">Loading Quantum Atlas · Bridge</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:#4dc8a0"></div></div>
+        <div class="loader-glyph" style="color:#ffffff">⇋</div>
+        <div class="loader-lbl">Loading 16 · Network | Nexus</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#ffffff"></div></div>
       </div>
       <iframe class="layer-frame" id="frame-bridge"
-        src="quantum-atlas-bridge.html"
+        src="quantum-atlas-network.html"
         onload="frameLoaded('bridge')"></iframe>
+
+      <!-- Atlas · 07 Ecology -->
+      <div class="frame-loader" id="loader-ecology">
+        <div class="loader-glyph" style="color:#7fd4c8">⚘</div>
+        <div class="loader-lbl">Loading Quantum Atlas · Ecology</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#7fd4c8"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-ecology"
+        src="quantum-atlas-ecology.html"
+        onload="frameLoaded('ecology')"></iframe>
+
+      <!-- Atlas · 09 Sequencer | Chronicle -->
+      <div class="frame-loader" id="loader-sequencer">
+        <div class="loader-glyph" style="color:#b08030">▶</div>
+        <div class="loader-lbl">Loading 09 · Sequencer | Chronicle</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#b08030"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-sequencer"
+        src="quantum-atlas-sequencer.html"
+        onload="frameLoaded('sequencer')"></iframe>
+
+      <!-- Atlas · 08 Behavior -->
+      <div class="frame-loader" id="loader-behavior">
+        <div class="loader-glyph" style="color:#9030d0">⊙</div>
+        <div class="loader-lbl">Loading 07 · Behavior | Instinct</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#9030d0"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-behavior"
+        src="quantum-atlas-behavior.html"
+        onload="frameLoaded('behavior')"></iframe>
 
     </div>
   </div>
@@ -1403,16 +1483,20 @@ const LAYERS = {
   subgraph:  { label:'Sub-Graph Canvas',    icon:'⬡',  color:'var(--c-subgraph)',  file:'quantum-loom-subgraph.html' },
   ionodes:   { label:'Signal Bus & I/O',    icon:'⇌',  color:'var(--c-ionodes)',   file:'quantum-loom-io-nodes.html' },
   output:    { label:'Output Renderer',    icon:'⎘',  color:'var(--c-output)',    file:'quantum-loom-output.html'   },
-  atlas:     { label:'Atlas · 01 Terrain',     icon:'⬡',  color:'var(--c-atlas)',   file:'quantum-atlas-terrain.html'     },
-  environ:   { label:'Atlas · 02 Environment', icon:'◉',  color:'var(--c-environ)',   file:'quantum-atlas-environment.html' },
-  architect: { label:'Atlas · 03 Architect',   icon:'⊓',  color:'var(--c-architect)', file:'quantum-atlas-architect.html'   },
-  lighting:      { label:'Atlas · 04 Lighting',      icon:'◐',  color:'var(--c-lighting)',      file:'quantum-atlas-lighting.html'      },
-  civilization:  { label:'Atlas · 05 Civilization',  icon:'⚑',  color:'var(--c-civilization)',  file:'quantum-atlas-civilization.html'  },
-  bridge:        { label:'Atlas · 06 Bridge',        icon:'⇋',  color:'var(--c-bridge)',        file:'quantum-atlas-bridge.html'        },
+  atlas:    { label:'01 · Terrain   | Atlas',    icon:'⬡', color:'var(--c-atlas)',    file:'quantum-atlas-terrain.html'      },
+  environ:  { label:'02 · Environment | Mythos', icon:'◉', color:'var(--c-environ)',  file:'quantum-atlas-environment.html'  },
+  architect:{ label:'03 · Architect | Architect',icon:'⊓', color:'var(--c-architect)',file:'quantum-atlas-architect.html'    },
+  lighting: { label:'04 · Lighting  | Prism',   icon:'◐', color:'var(--c-lighting)', file:'quantum-atlas-lighting.html'     },
+  modeling:      { label:'05 · Modeling      | Animus',  icon:'✦', color:'var(--c-modeling)',      file:'quantum-atlas-modeling.html'      },
+  choreography:  { label:'06 · Choreography | Loom',    icon:'⟳', color:'var(--c-choreography)',  file:'quantum-atlas-choreography.html'  },
+  behavior:      { label:'07 · Behavior     | Instinct', icon:'⊙', color:'var(--c-behavior)',      file:'quantum-atlas-behavior.html'      },
+  sequencer:     { label:'09 · Sequencer    | Chronicle',icon:'▶', color:'var(--c-sequencer)',     file:'quantum-atlas-sequencer.html'     },
+  society:  { label:'08 · Society   | Order',   icon:'⚑', color:'var(--c-society)',  file:'quantum-atlas-society.html'      },
+  bridge:   { label:'16 · Network   | Nexus',   icon:'⇋', color:'var(--c-bridge)',   file:'quantum-atlas-network.html'      },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
-const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-civilization-snapshot','qa-bridge-snapshot'];
+const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-choreography-snapshot','qa-behavior-snapshot','qa-sequencer-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot'];
 
 /* ── State ────────────────────────────────────────────────────────── */
 let activeLayer  = 'workspace';

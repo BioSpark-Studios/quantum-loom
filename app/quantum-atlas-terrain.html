@@ -1660,6 +1660,37 @@ window.addEventListener('DOMContentLoaded', () => {
   renderCanvas();
 });
 
+// ── Theme sync (receives ql:theme from hub) ─────────────────────────────────
+(function() {
+  const MAP = {
+    'c-bg':      '--bg',
+    'c-surf':    '--surface',
+    'c-surf2':   '--surface2',
+    'c-edge':    '--edge',
+    'c-edge-hi': '--edge-hi',
+    'c-accent1': '--venturan',
+    'c-accent2': '--amber',
+    'c-accent3': '--emerald',
+    'c-accent4': '--fusion',
+    'c-danger':  '--blood',
+    'c-warm':    '--solari',
+    'c-text':    '--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+
 window.addEventListener('message', e => {
   const d = e.data;
   if (!d || typeof d !== 'object') return;
