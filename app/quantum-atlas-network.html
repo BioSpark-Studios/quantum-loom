@@ -1432,6 +1432,7 @@ function saveSnapshot() {
     connected:            state.broadcastCount > 0,
   };
   localStorage.setItem('qa-network-snapshot', JSON.stringify(snap));
+  window.parent.postMessage({type:'hub:storage:write',key:'qa-network-snapshot',value:JSON.stringify(snap)},'*');
 }
 
 /* ════════════════════════════════════════════════════
