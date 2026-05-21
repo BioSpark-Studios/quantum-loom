@@ -1249,6 +1249,7 @@ function writeEcologySnapshot() {
     events: ecoEvents.slice(-20),
   };
   localStorage.setItem('qa-ecology-snapshot', JSON.stringify(snap));
+  window.parent.postMessage({type:'hub:storage:write',key:'qa-ecology-snapshot',value:JSON.stringify(snap)},'*');
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1905,6 +1906,15 @@ init();
     if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
   });
 })();
+
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Ecology | Biome`;
+  }
+  if (d.type === 'hub:layer:activate') loadUpstreamData();
+});
 </script>
 </body>
 </html>

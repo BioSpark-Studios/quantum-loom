@@ -1782,6 +1782,7 @@ function exportBehaviorSnapshot() {
     avg_wellbeing: avgWellbeing,
     dialogue_log: dialogueLog.slice(-20),
   }));
+  window.parent.postMessage({type:'hub:storage:write',key:'qa-behavior-snapshot',value:localStorage.getItem('qa-behavior-snapshot')},'*');
 }
 
 // ─────────────────────────────────────────────
@@ -1904,6 +1905,15 @@ init();
   try { const s = JSON.parse(localStorage.getItem('ql-theme')||'{}'); if (s.tokens) applyTokens(s.tokens); } catch(e) {}
   window.addEventListener('message', e => { if (e.data?.type==='ql:theme' && e.data.tokens) applyTokens(e.data.tokens); });
 })();
+
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Behavior | Instinct`;
+  }
+  if (d.type === 'hub:layer:activate') loadUpstream();
+});
 </script>
 </body>
 </html>
