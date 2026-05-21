@@ -1891,6 +1891,17 @@ document.querySelectorAll('.tb-tab').forEach(tab => {
     if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
   });
 })();
+
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Network | Nexus`;
+  }
+  if (d.type === 'hub:layer:activate') {
+    try { init(); } catch(err) {}
+  }
+});
 </script>
 </body>
 </html>
