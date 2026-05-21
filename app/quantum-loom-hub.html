@@ -43,10 +43,12 @@
   --c-society:   #c8a860;
   --c-bridge:    #4dc8a0;
   --c-ecology:   #7fd4c8;
-  --c-behavior:  #9030d0;
+  --c-behavior:      #9030d0;
   --c-modeling:      #f4c025;
   --c-choreography:  #dc3c78;
-  --c-sequencer:     #b08030;
+  --c-atlas-sequencer: #b08030;
+  --c-civilization:  #e89640;
+  --c-network:       #4dc8a0;
 }
 
 html,body{
@@ -893,7 +895,7 @@ html,body{
         <span class="ni-label">Society</span>
       </div>
       <div class="nav-item" id="nav-bridge" data-layer="bridge"
-           style="--lc:var(--c-bridge)" onclick="switchLayer('bridge')" title="Quantum Atlas · 06 Bridge">
+           style="--lc:var(--c-bridge)" onclick="switchLayer('bridge')" title="Atlas · Signal Bridge — Loom">
         <span class="ni-icon">⇋</span>
         <span class="ni-label">Bridge</span>
       </div>
@@ -902,15 +904,25 @@ html,body{
         <span class="ni-icon">⚘</span>
         <span class="ni-label">Ecology</span>
       </div>
-      <div class="nav-item" id="nav-sequencer" data-layer="sequencer"
-           style="--lc:var(--c-sequencer)" onclick="switchLayer('sequencer')" title="09 · Sequencer | Chronicle">
+      <div class="nav-item" id="nav-atlas-sequencer" data-layer="atlas-sequencer"
+           style="--lc:var(--c-atlas-sequencer)" onclick="switchLayer('atlas-sequencer')" title="09 · Sequencer | Chronicle">
         <span class="ni-icon">▶</span>
-        <span class="ni-label">Sequencer</span>
+        <span class="ni-label">Chronicle</span>
       </div>
       <div class="nav-item" id="nav-behavior" data-layer="behavior"
            style="--lc:var(--c-behavior)" onclick="switchLayer('behavior')" title="07 · Behavior | Instinct">
         <span class="ni-icon">⊙</span>
         <span class="ni-label">Behavior</span>
+      </div>
+      <div class="nav-item" id="nav-civilization" data-layer="civilization"
+           style="--lc:var(--c-civilization)" onclick="switchLayer('civilization')" title="Atlas · Civilization | Society">
+        <span class="ni-icon">⚐</span>
+        <span class="ni-label">Civiliz.</span>
+      </div>
+      <div class="nav-item" id="nav-network" data-layer="network"
+           style="--lc:var(--c-network)" onclick="switchLayer('network')" title="16 · Network | Nexus">
+        <span class="ni-icon">⬡</span>
+        <span class="ni-label">Network</span>
       </div>
 
       <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
@@ -998,6 +1010,13 @@ html,body{
       <iframe class="layer-frame" id="frame-ionodes"
         src="quantum-loom-io-nodes.html"
         onload="frameLoaded('ionodes')"></iframe>
+
+      <!-- Output -->
+      <div class="frame-loader" id="loader-output">
+        <div class="loader-glyph" style="color:var(--c-output)">⥘</div>
+        <div class="loader-lbl">Loading Output Renderer</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:var(--c-output)"></div></div>
+      </div>
       <iframe class="layer-frame" id="frame-output"
         src="quantum-loom-output.html"
         onload="frameLoaded('output')"></iframe>
@@ -1072,14 +1091,14 @@ html,body{
         src="quantum-atlas-society.html"
         onload="frameLoaded('society')"></iframe>
 
-      <!-- 16 · Network | Nexus -->
+      <!-- Atlas · Signal Bridge -->
       <div class="frame-loader" id="loader-bridge">
-        <div class="loader-glyph" style="color:#ffffff">⇋</div>
-        <div class="loader-lbl">Loading 16 · Network | Nexus</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:#ffffff"></div></div>
+        <div class="loader-glyph" style="color:var(--c-bridge)">⇋</div>
+        <div class="loader-lbl">Loading Atlas · Signal Bridge</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:var(--c-bridge)"></div></div>
       </div>
       <iframe class="layer-frame" id="frame-bridge"
-        src="quantum-atlas-network.html"
+        src="quantum-atlas-bridge.html"
         onload="frameLoaded('bridge')"></iframe>
 
       <!-- Atlas · 07 Ecology -->
@@ -1093,14 +1112,14 @@ html,body{
         onload="frameLoaded('ecology')"></iframe>
 
       <!-- Atlas · 09 Sequencer | Chronicle -->
-      <div class="frame-loader" id="loader-sequencer">
-        <div class="loader-glyph" style="color:#b08030">▶</div>
+      <div class="frame-loader" id="loader-atlas-sequencer">
+        <div class="loader-glyph" style="color:var(--c-atlas-sequencer)">▶</div>
         <div class="loader-lbl">Loading 09 · Sequencer | Chronicle</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:#b08030"></div></div>
+        <div class="loader-bar"><div class="loader-fill" style="background:var(--c-atlas-sequencer)"></div></div>
       </div>
-      <iframe class="layer-frame" id="frame-sequencer"
+      <iframe class="layer-frame" id="frame-atlas-sequencer"
         src="quantum-atlas-sequencer.html"
-        onload="frameLoaded('sequencer')"></iframe>
+        onload="frameLoaded('atlas-sequencer')"></iframe>
 
       <!-- Atlas · 08 Behavior -->
       <div class="frame-loader" id="loader-behavior">
@@ -1111,6 +1130,26 @@ html,body{
       <iframe class="layer-frame" id="frame-behavior"
         src="quantum-atlas-behavior.html"
         onload="frameLoaded('behavior')"></iframe>
+
+      <!-- Atlas · Civilization -->
+      <div class="frame-loader" id="loader-civilization">
+        <div class="loader-glyph" style="color:var(--c-civilization)">⚐</div>
+        <div class="loader-lbl">Loading Atlas · Civilization</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:var(--c-civilization)"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-civilization"
+        src="quantum-atlas-civilization.html"
+        onload="frameLoaded('civilization')"></iframe>
+
+      <!-- 16 · Network | Nexus -->
+      <div class="frame-loader" id="loader-network">
+        <div class="loader-glyph" style="color:var(--c-network)">⬡</div>
+        <div class="loader-lbl">Loading 16 · Network | Nexus</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:var(--c-network)"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-network"
+        src="quantum-atlas-network.html"
+        onload="frameLoaded('network')"></iframe>
 
     </div>
   </div>
@@ -1373,7 +1412,7 @@ html,body{
     <span style="font-size:1.1rem">🤖</span>
     <span class="lp-title">AI Assistant</span>
     <div class="lp-dot" id="llm-dot"></div>
-    <button class="fm-close" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.85rem;padding:2px 6px" onclick="closeLLMPanel()">✕</button>
+    <button class="fb-close" onclick="closeLLMPanel()">✕</button>
   </div>
 
   <div class="lp-tabs">
@@ -1430,7 +1469,7 @@ html,body{
   </div>
 
   <!-- CHAT TAB -->
-  <div id="lp-pane-chat" style="display:none;flex:1;flex-direction:column;overflow:hidden;display:none">
+  <div id="lp-pane-chat" style="display:none;flex:1;flex-direction:column;overflow:hidden">
     <div class="lp-chat-msgs" id="lp-msgs"></div>
     <div class="lp-chat-input-row">
       <textarea class="lp-chat-input" id="lp-chat-input" placeholder="Ask anything about your story…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();llmSend()}"></textarea>
@@ -1487,16 +1526,19 @@ const LAYERS = {
   environ:  { label:'02 · Environment | Mythos', icon:'◉', color:'var(--c-environ)',  file:'quantum-atlas-environment.html'  },
   architect:{ label:'03 · Architect | Architect',icon:'⊓', color:'var(--c-architect)',file:'quantum-atlas-architect.html'    },
   lighting: { label:'04 · Lighting  | Prism',   icon:'◐', color:'var(--c-lighting)', file:'quantum-atlas-lighting.html'     },
-  modeling:      { label:'05 · Modeling      | Animus',  icon:'✦', color:'var(--c-modeling)',      file:'quantum-atlas-modeling.html'      },
-  choreography:  { label:'06 · Choreography | Loom',    icon:'⟳', color:'var(--c-choreography)',  file:'quantum-atlas-choreography.html'  },
-  behavior:      { label:'07 · Behavior     | Instinct', icon:'⊙', color:'var(--c-behavior)',      file:'quantum-atlas-behavior.html'      },
-  sequencer:     { label:'09 · Sequencer    | Chronicle',icon:'▶', color:'var(--c-sequencer)',     file:'quantum-atlas-sequencer.html'     },
-  society:  { label:'08 · Society   | Order',   icon:'⚑', color:'var(--c-society)',  file:'quantum-atlas-society.html'      },
-  bridge:   { label:'16 · Network   | Nexus',   icon:'⇋', color:'var(--c-bridge)',   file:'quantum-atlas-network.html'      },
+  modeling:        { label:'05 · Modeling      | Animus',   icon:'✦', color:'var(--c-modeling)',        file:'quantum-atlas-modeling.html'      },
+  choreography:    { label:'06 · Choreography  | Loom',    icon:'⟳', color:'var(--c-choreography)',    file:'quantum-atlas-choreography.html'  },
+  behavior:        { label:'07 · Behavior      | Instinct', icon:'⊙', color:'var(--c-behavior)',        file:'quantum-atlas-behavior.html'      },
+  ecology:         { label:'07 · Ecology       | Biome',   icon:'⚘', color:'var(--c-ecology)',         file:'quantum-atlas-ecology.html'       },
+  'atlas-sequencer':{ label:'09 · Sequencer   | Chronicle',icon:'▶', color:'var(--c-atlas-sequencer)', file:'quantum-atlas-sequencer.html'    },
+  society:         { label:'08 · Society       | Order',   icon:'⚑', color:'var(--c-society)',         file:'quantum-atlas-society.html'      },
+  bridge:          { label:'Atlas · Signal Bridge',        icon:'⇋', color:'var(--c-bridge)',          file:'quantum-atlas-bridge.html'       },
+  civilization:    { label:'Atlas · Civilization',         icon:'⚐', color:'var(--c-civilization)',    file:'quantum-atlas-civilization.html' },
+  network:         { label:'16 · Network       | Nexus',   icon:'⬡', color:'var(--c-network)',         file:'quantum-atlas-network.html'      },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
-const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-choreography-snapshot','qa-behavior-snapshot','qa-sequencer-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot'];
+const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-choreography-snapshot','qa-behavior-snapshot','qa-sequencer-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot','qa-civilization-snapshot','qa-bridge-snapshot'];
 
 /* ── State ────────────────────────────────────────────────────────── */
 let activeLayer  = 'workspace';
