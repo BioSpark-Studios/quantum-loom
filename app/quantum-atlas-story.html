@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 10 · Story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #04050a;
+  --surface:  rgba(8,11,18,.98);
+  --surface2: rgba(12,16,24,.97);
+  --edge:     rgba(255,255,255,.055);
+  --edge-hi:  rgba(255,255,255,.12);
+  --venturan: #b1d0f0;
+  --amber:    #e8b84b;
+  --emerald:  #4dc8a0;
+  --solari:   #f98f3b;
+  --fusion:   #9b7fd4;
+  --blood:    #d45b5b;
+  --totem:    #7fd4c8;
+  --story:    #8c50ff;
+  --text:     rgba(255,255,255,.82);
+  --fm:'Orbitron',monospace;
+  --fd:'Space Grotesk',sans-serif;
+  --fc:'JetBrains Mono',monospace;
+}
+
+html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-family:var(--fd);font-size:13px;}
+#shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;overflow:hidden;
+}
+
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--story);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;color:var(--story);
+  animation:breathe 4s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes breathe{
+  0%,100%{box-shadow:0 0 4px rgba(140,80,255,.2);}
+  50%{box-shadow:0 0 14px rgba(140,80,255,.6);}
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--story);white-space:nowrap;
+}
+.tb-subcrest{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.16em;
+  color:rgba(140,80,255,.5);text-transform:uppercase;margin-top:2px;
+}
+
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:0 10px;height:100%;
+  display:flex;align-items:center;cursor:pointer;
+  color:rgba(255,255,255,.35);border-bottom:2px solid transparent;
+  transition:all .12s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03);}
+.tb-tab.active{color:var(--story);border-bottom-color:var(--story);}
+
+.tb-links{
+  display:flex;align-items:center;gap:5px;padding:0 10px;
+  border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-link-chip{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:10px;border:1px solid;cursor:default;transition:all .15s;
+}
+.tb-link-chip.lit{color:#4dc8a0;border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.07);}
+.tb-link-chip.dim{color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.07);background:transparent;}
+
+.tb-actions{display:flex;gap:4px;padding:0 10px;height:100%;align-items:center;flex-shrink:0;}
+.tb-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff;}
+.tb-btn.hot{
+  border-color:rgba(140,80,255,.45);background:rgba(140,80,255,.08);color:var(--story);
+}
+.tb-btn.hot:hover{background:rgba(140,80,255,.16);box-shadow:0 0 12px rgba(140,80,255,.2);}
+
+.tb-spacer{flex:1;}
+
+/* ── BODY ── */
+#body{flex:1;display:flex;overflow:hidden;}
+
+/* ── LEFT PANEL ── */
+#left-panel{
+  width:240px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;
+}
+
+.lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.lp-scroll::-webkit-scrollbar{width:3px;}
+.lp-scroll::-webkit-scrollbar-track{background:transparent;}
+.lp-scroll::-webkit-scrollbar-thumb{background:var(--story);border-radius:2px;opacity:.4;}
+
+.lp-section{border-bottom:1px solid var(--edge);}
+.lp-section-header{
+  padding:7px 10px;display:flex;align-items:center;gap:6px;
+  cursor:pointer;user-select:none;transition:background .1s;
+}
+.lp-section-header:hover{background:rgba(255,255,255,.025);}
+.lp-sec-num{font-family:var(--fm);font-size:.38rem;color:var(--story);letter-spacing:.06em;opacity:.75;}
+.lp-sec-name{font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);flex:1;}
+.lp-sec-chevron{font-size:.5rem;color:rgba(255,255,255,.25);transition:transform .18s;}
+.lp-section.collapsed .lp-sec-chevron{transform:rotate(-90deg);}
+.lp-section-body{overflow:hidden;transition:max-height .22s ease;}
+.lp-section.collapsed .lp-section-body{max-height:0!important;}
+
+/* Component cards */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:6px 8px;}
+.comp-card{
+  background:rgba(255,255,255,.03);border:1px solid var(--edge);border-radius:4px;
+  padding:6px 7px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;
+}
+.comp-card:hover{background:rgba(140,80,255,.06);border-color:rgba(140,80,255,.25);}
+.comp-card.active{background:rgba(140,80,255,.1);border-color:rgba(140,80,255,.45);}
+.comp-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--story),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.comp-card.active::before{opacity:1;}
+.comp-code{font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;color:var(--story);text-transform:uppercase;}
+.comp-name{font-family:var(--fd);font-size:.3rem;color:rgba(255,255,255,.55);margin-top:2px;line-height:1.3;}
+.comp-dept{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.2);margin-top:3px;text-transform:uppercase;letter-spacing:.06em;}
+.comp-status{
+  display:inline-block;width:5px;height:5px;border-radius:50%;
+  position:absolute;top:6px;right:6px;
+}
+.comp-status.on{background:var(--emerald);box-shadow:0 0 4px var(--emerald);}
+.comp-status.idle{background:rgba(255,255,255,.2);}
+.comp-status.run{background:var(--amber);animation:pulse-dot .7s ease-in-out infinite alternate;}
+@keyframes pulse-dot{from{opacity:.4;}to{opacity:1;}}
+
+/* ── CANVAS ── */
+#canvas-wrap{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  position:relative;background:#04050a;
+}
+#story-canvas{display:block;width:100%;height:100%;cursor:grab;}
+#story-canvas.dragging{cursor:grabbing;}
+
+.canvas-overlay-info{
+  position:absolute;top:8px;left:8px;
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.2);pointer-events:none;line-height:1.8;
+}
+
+.canvas-legend{
+  position:absolute;bottom:8px;left:8px;
+  display:flex;flex-direction:column;gap:4px;pointer-events:none;
+}
+.legend-item{display:flex;align-items:center;gap:5px;}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.legend-lbl{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase;}
+
+.canvas-controls{
+  position:absolute;bottom:8px;right:8px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.cc-btn{
+  font-family:var(--fc);font-size:.32rem;
+  width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--edge);background:rgba(8,11,18,.9);color:rgba(255,255,255,.4);
+  border-radius:3px;cursor:pointer;transition:all .12s;
+}
+.cc-btn:hover{background:rgba(140,80,255,.12);border-color:rgba(140,80,255,.4);color:var(--story);}
+
+#gen-overlay{
+  position:absolute;inset:0;background:rgba(4,5,10,.85);
+  display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;
+  z-index:10;
+}
+#gen-overlay.visible{display:flex;}
+.gen-label{font-family:var(--fm);font-size:.6rem;letter-spacing:.2em;color:var(--story);}
+.gen-progress{width:240px;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;}
+.gen-bar{height:100%;width:0;background:var(--story);border-radius:2px;transition:width .08s linear;}
+.gen-status{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.35);letter-spacing:.08em;}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:280px;flex-shrink:0;background:var(--surface);
+  border-left:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;
+}
+.rp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-track{background:transparent;}
+.rp-scroll::-webkit-scrollbar-thumb{background:var(--story);border-radius:2px;}
+
+.rp-section{border-bottom:1px solid var(--edge);}
+.rp-section-header{
+  padding:7px 10px;display:flex;align-items:center;gap:6px;flex-shrink:0;
+  border-bottom:1px solid var(--edge);
+}
+.rp-sec-title{font-family:var(--fm);font-size:.34rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);}
+.rp-sec-badge{
+  font-family:var(--fc);font-size:.26rem;padding:1px 6px;border-radius:8px;border:1px solid;
+  margin-left:auto;
+}
+
+/* Generate section */
+#generate-section{padding:10px;}
+.generate-btn{
+  width:100%;font-family:var(--fm);font-size:.4rem;letter-spacing:.15em;
+  text-transform:uppercase;padding:10px;border-radius:4px;cursor:pointer;
+  border:1px solid rgba(140,80,255,.5);background:rgba(140,80,255,.1);
+  color:var(--story);transition:all .15s;
+}
+.generate-btn:hover{background:rgba(140,80,255,.2);box-shadow:0 0 16px rgba(140,80,255,.25);border-color:rgba(140,80,255,.7);}
+.generate-btn:active{transform:scale(.98);}
+
+.gen-params{display:flex;flex-direction:column;gap:5px;margin-top:8px;}
+.gp-row{display:flex;align-items:center;gap:6px;}
+.gp-lbl{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;flex:1;}
+.gp-select{
+  font-family:var(--fc);font-size:.28rem;background:rgba(255,255,255,.04);
+  border:1px solid var(--edge);color:rgba(255,255,255,.6);border-radius:2px;
+  padding:2px 5px;cursor:pointer;outline:none;
+}
+.gp-select:focus{border-color:rgba(140,80,255,.4);}
+
+/* Arc Overview */
+#arc-overview{padding:8px 10px;display:none;}
+#arc-overview.visible{display:block;}
+.arc-type-badge{
+  display:inline-block;font-family:var(--fm);font-size:.38rem;letter-spacing:.1em;
+  padding:3px 10px;border-radius:3px;border:1px solid rgba(140,80,255,.4);
+  background:rgba(140,80,255,.1);color:var(--story);text-transform:uppercase;margin-bottom:7px;
+}
+.arc-stats{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.arc-stat{background:rgba(255,255,255,.03);border:1px solid var(--edge);border-radius:3px;padding:5px 7px;}
+.arc-stat-val{font-family:var(--fm);font-size:.55rem;color:var(--story);}
+.arc-stat-lbl{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em;margin-top:1px;}
+.conflict-badge{
+  margin-top:6px;display:flex;align-items:center;gap:6px;
+  padding:4px 8px;border-radius:3px;background:rgba(255,255,255,.03);border:1px solid var(--edge);
+}
+.conflict-icon{font-size:.65rem;}
+.conflict-lbl{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;}
+.conflict-val{font-family:var(--fm);font-size:.32rem;color:var(--amber);margin-left:auto;}
+
+/* Node Inspector */
+#node-inspector{padding:8px 10px;display:none;}
+#node-inspector.visible{display:block;}
+.ni-beat-header{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+.ni-beat-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.ni-beat-name{font-family:var(--fm);font-size:.38rem;color:#fff;flex:1;word-break:break-word;}
+.ni-type-badge{
+  font-family:var(--fc);font-size:.26rem;padding:2px 6px;border-radius:8px;
+  border:1px solid;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0;
+}
+.ni-row{display:flex;gap:6px;margin-bottom:4px;align-items:flex-start;}
+.ni-lbl{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);width:70px;flex-shrink:0;text-transform:uppercase;letter-spacing:.07em;padding-top:1px;}
+.ni-val{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.7);flex:1;line-height:1.4;}
+
+.ni-entities{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px;}
+.ni-entity-chip{
+  font-family:var(--fc);font-size:.26rem;padding:1px 6px;border-radius:8px;
+  border:1px solid rgba(140,80,255,.3);color:rgba(140,80,255,.85);
+  background:rgba(140,80,255,.07);
+}
+
+.ni-prose{
+  margin-top:7px;padding:7px 8px;
+  background:rgba(255,255,255,.03);border:1px solid var(--edge);
+  border-left:2px solid var(--story);border-radius:0 3px 3px 0;
+}
+.ni-prose-lbl{font-family:var(--fm);font-size:.28rem;letter-spacing:.1em;color:rgba(140,80,255,.55);text-transform:uppercase;margin-bottom:4px;}
+.ni-prose-text{font-family:var(--fd);font-size:.32rem;color:rgba(255,255,255,.55);line-height:1.65;font-style:italic;}
+
+.ni-triggers{margin-top:7px;}
+.ni-trigger-lbl{font-family:var(--fm);font-size:.28rem;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:4px;}
+.ni-trigger-list{display:flex;flex-direction:column;gap:2px;}
+.ni-trigger-item{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.45);padding:2px 7px;
+  background:rgba(255,255,255,.02);border-radius:2px;border:1px solid var(--edge);
+  display:flex;align-items:center;gap:5px;
+}
+.ni-trigger-item::before{content:'→';color:var(--story);font-size:.3rem;}
+
+/* Story Export */
+#export-section{padding:8px 10px;}
+.export-btn{
+  width:100%;font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:7px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(77,200,160,.35);background:rgba(77,200,160,.07);
+  color:var(--emerald);transition:all .12s;margin-bottom:6px;
+}
+.export-btn:hover{background:rgba(77,200,160,.14);box-shadow:0 0 10px rgba(77,200,160,.15);}
+.export-info{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.25);line-height:1.5;}
+.export-flash{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.08em;color:var(--emerald);
+  text-transform:uppercase;text-align:center;margin-top:4px;opacity:0;transition:opacity .3s;
+}
+.export-flash.show{opacity:1;}
+
+/* Lore Fragments */
+#lore-section{flex:1;min-height:120px;display:flex;flex-direction:column;}
+#lore-scroll{flex:1;overflow-y:auto;}
+#lore-scroll::-webkit-scrollbar{width:3px;}
+#lore-scroll::-webkit-scrollbar-thumb{background:var(--story);border-radius:2px;}
+.lore-fragment{
+  padding:6px 10px;border-bottom:1px solid var(--edge);transition:background .1s;
+  cursor:pointer;
+}
+.lore-fragment:hover{background:rgba(140,80,255,.04);}
+.lf-index{font-family:var(--fm);font-size:.26rem;color:rgba(140,80,255,.4);letter-spacing:.06em;margin-bottom:2px;}
+.lf-text{font-family:var(--fd);font-size:.3rem;color:rgba(255,255,255,.5);line-height:1.55;font-style:italic;}
+.lf-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px;}
+.lf-tag{font-family:var(--fc);font-size:.24rem;padding:1px 4px;border-radius:8px;border:1px solid var(--edge);color:rgba(255,255,255,.25);}
+
+/* STATUS BAR */
+#status-bar{
+  height:26px;flex-shrink:0;display:flex;align-items:center;gap:0;
+  background:var(--surface);border-top:1px solid var(--edge);
+  padding:0 10px;overflow:hidden;
+}
+.sb-item{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.07em;
+  color:rgba(255,255,255,.25);padding:0 8px;border-right:1px solid var(--edge);
+  white-space:nowrap;
+}
+.sb-item:first-child{padding-left:0;}
+.sb-item span{color:rgba(140,80,255,.7);}
+.sb-status{
+  font-family:var(--fm);font-size:.28rem;letter-spacing:.1em;
+  color:rgba(255,255,255,.18);text-transform:uppercase;margin-left:auto;
+}
+.sb-status.active{color:var(--emerald);}
+.sb-dot{
+  width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.15);
+  display:inline-block;margin-right:4px;vertical-align:middle;
+}
+.sb-dot.on{background:var(--emerald);box-shadow:0 0 4px var(--emerald);}
+
+/* Upstream snapshot empty state */
+.empty-state{
+  padding:16px 10px;text-align:center;
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);
+  line-height:1.6;letter-spacing:.05em;
+}
+.empty-state em{display:block;font-size:.55rem;margin-bottom:6px;color:rgba(140,80,255,.3);font-style:normal;}
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- ── TOP BAR ── -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">✎</div>
+      <div>
+        <div class="tb-module-id">10 · STORY</div>
+        <div class="tb-subcrest">QUILL · NarrativeSystems</div>
+      </div>
+    </div>
+
+    <div class="tb-tabs">
+      <div class="tb-tab active" data-tab="graph">STORY GRAPH</div>
+      <div class="tb-tab" data-tab="lore">LORE FRAGMENTS</div>
+      <div class="tb-tab" data-tab="arcs">ARC MATRIX</div>
+    </div>
+
+    <div class="tb-links">
+      <div class="tb-link-chip dim" id="chip-seq" title="qa-sequencer-snapshot">SEQ</div>
+      <div class="tb-link-chip dim" id="chip-bhv" title="qa-behavior-snapshot">BHV</div>
+      <div class="tb-link-chip dim" id="chip-soc" title="qa-society-snapshot">SOC</div>
+      <div class="tb-link-chip dim" id="chip-mdl" title="qa-modeling-snapshot">MDL</div>
+    </div>
+
+    <div class="tb-actions">
+      <button class="tb-btn hot" id="btn-generate">⬟ GENERATE ARC</button>
+      <button class="tb-btn" id="btn-reset">↺ RESET</button>
+    </div>
+
+    <div class="tb-spacer"></div>
+
+    <div class="tb-actions">
+      <div class="tb-link-chip dim" id="chip-out-story" title="qa-story-snapshot">▶ STORY</div>
+    </div>
+  </div>
+
+  <!-- ── BODY ── -->
+  <div id="body">
+
+    <!-- ── LEFT PANEL — Component Matrix ── -->
+    <div id="left-panel">
+      <div class="lp-scroll">
+
+        <!-- Layer I: Arc -->
+        <div class="lp-section" id="sec-arc">
+          <div class="lp-section-header" onclick="toggleSection('sec-arc')">
+            <span class="lp-sec-num">I</span>
+            <span class="lp-sec-name">Arc</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:200px">
+            <div class="comp-grid">
+              <div class="comp-card active" data-comp="PRS" onclick="selectComp(this,'PRS')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">PRS</div>
+                <div class="comp-name">Protagonist Selector</div>
+                <div class="comp-dept">→ AGT</div>
+              </div>
+              <div class="comp-card" data-comp="CSG" onclick="selectComp(this,'CSG')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">CSG</div>
+                <div class="comp-name">Conflict Seed Generator</div>
+                <div class="comp-dept">→ NAR</div>
+              </div>
+              <div class="comp-card" data-comp="ASC" onclick="selectComp(this,'ASC')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">ASC</div>
+                <div class="comp-name">Arc Shape Classifier</div>
+                <div class="comp-dept">→ NAR</div>
+              </div>
+              <div class="comp-card" data-comp="SKC" onclick="selectComp(this,'SKC')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">SKC</div>
+                <div class="comp-name">Stakes Calibrator</div>
+                <div class="comp-dept">→ BHV</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer II: Beat -->
+        <div class="lp-section" id="sec-beat">
+          <div class="lp-section-header" onclick="toggleSection('sec-beat')">
+            <span class="lp-sec-num">II</span>
+            <span class="lp-sec-name">Beat</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:200px">
+            <div class="comp-grid">
+              <div class="comp-card" data-comp="IIE" onclick="selectComp(this,'IIE')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">IIE</div>
+                <div class="comp-name">Inciting Incident Engine</div>
+                <div class="comp-dept">→ EVT</div>
+              </div>
+              <div class="comp-card" data-comp="RAS" onclick="selectComp(this,'RAS')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">RAS</div>
+                <div class="comp-name">Rising Action Scheduler</div>
+                <div class="comp-dept">→ TMP</div>
+              </div>
+              <div class="comp-card" data-comp="CTR" onclick="selectComp(this,'CTR')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">CTR</div>
+                <div class="comp-name">Climax Trigger Resolver</div>
+                <div class="comp-dept">→ EVT</div>
+              </div>
+              <div class="comp-card" data-comp="DNC" onclick="selectComp(this,'DNC')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">DNC</div>
+                <div class="comp-name">Denouement Composer</div>
+                <div class="comp-dept">→ NAR</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer III: Character -->
+        <div class="lp-section" id="sec-char">
+          <div class="lp-section-header" onclick="toggleSection('sec-char')">
+            <span class="lp-sec-num">III</span>
+            <span class="lp-sec-name">Character</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:200px">
+            <div class="comp-grid">
+              <div class="comp-card" data-comp="CVM" onclick="selectComp(this,'CVM')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">CVM</div>
+                <div class="comp-name">Character Voice Modeler</div>
+                <div class="comp-dept">→ IDN</div>
+              </div>
+              <div class="comp-card" data-comp="RWM" onclick="selectComp(this,'RWM')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">RWM</div>
+                <div class="comp-name">Relationship Web Mapper</div>
+                <div class="comp-dept">→ SOC</div>
+              </div>
+              <div class="comp-card" data-comp="MAT" onclick="selectComp(this,'MAT')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">MAT</div>
+                <div class="comp-name">Motivation Arc Tracer</div>
+                <div class="comp-dept">→ BHV</div>
+              </div>
+              <div class="comp-card" data-comp="DFB" onclick="selectComp(this,'DFB')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">DFB</div>
+                <div class="comp-name">Dialogue Fragment Builder</div>
+                <div class="comp-dept">→ NAR</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer IV: Lore -->
+        <div class="lp-section" id="sec-lore">
+          <div class="lp-section-header" onclick="toggleSection('sec-lore')">
+            <span class="lp-sec-num">IV</span>
+            <span class="lp-sec-name">Lore</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:200px">
+            <div class="comp-grid">
+              <div class="comp-card" data-comp="FHW" onclick="selectComp(this,'FHW')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">FHW</div>
+                <div class="comp-name">Faction History Writer</div>
+                <div class="comp-dept">→ NAR</div>
+              </div>
+              <div class="comp-card" data-comp="PNG" onclick="selectComp(this,'PNG')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">PNG</div>
+                <div class="comp-name">Place Name Generator</div>
+                <div class="comp-dept">→ IDN</div>
+              </div>
+              <div class="comp-card" data-comp="MSI" onclick="selectComp(this,'MSI')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">MSI</div>
+                <div class="comp-name">Myth Seed Injector</div>
+                <div class="comp-dept">→ NAR</div>
+              </div>
+              <div class="comp-card" data-comp="LPE" onclick="selectComp(this,'LPE')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">LPE</div>
+                <div class="comp-name">Lore Packet Exporter</div>
+                <div class="comp-dept">→ NAR</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /lp-scroll -->
+    </div><!-- /left-panel -->
+
+    <!-- ── CANVAS ── -->
+    <div id="canvas-wrap">
+      <canvas id="story-canvas"></canvas>
+
+      <div class="canvas-overlay-info" id="canvas-info">
+        BEATS: <span id="ci-beats">0</span> · EDGES: <span id="ci-edges">0</span> · ZOOM: <span id="ci-zoom">1.00</span>x
+      </div>
+
+      <div class="canvas-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#8c50ff"></div><div class="legend-lbl">Inciting Incident</div></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e8b84b"></div><div class="legend-lbl">Rising Action</div></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d45b5b"></div><div class="legend-lbl">Climax</div></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#4dc8a0"></div><div class="legend-lbl">Denouement</div></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#b1d0f0"></div><div class="legend-lbl">Character Moment</div></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#c8a860"></div><div class="legend-lbl">Faction Event</div></div>
+      </div>
+
+      <div class="canvas-controls">
+        <div class="cc-btn" title="Zoom In" onclick="zoomCanvas(1.2)">+</div>
+        <div class="cc-btn" title="Zoom Out" onclick="zoomCanvas(0.83)">−</div>
+        <div class="cc-btn" title="Reset View" onclick="resetView()">⊡</div>
+      </div>
+
+      <div id="gen-overlay">
+        <div class="gen-label">GENERATING ARC</div>
+        <div class="gen-progress"><div class="gen-bar" id="gen-bar"></div></div>
+        <div class="gen-status" id="gen-status">Initializing narrative engine...</div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT PANEL ── -->
+    <div id="right-panel">
+      <div class="rp-scroll">
+
+        <!-- Generate Story -->
+        <div class="rp-section">
+          <div class="rp-section-header">
+            <span class="rp-sec-title">Generate Story</span>
+          </div>
+          <div id="generate-section">
+            <button class="generate-btn" id="rp-generate-btn" onclick="generateArc()">⬟ GENERATE ARC</button>
+            <div class="gen-params">
+              <div class="gp-row">
+                <span class="gp-lbl">Arc Type</span>
+                <select class="gp-select" id="sel-arc-type">
+                  <option value="auto">Auto</option>
+                  <option value="Hero's Journey">Hero's Journey</option>
+                  <option value="Tragedy">Tragedy</option>
+                  <option value="Comedy">Comedy</option>
+                  <option value="Epistolary">Epistolary</option>
+                  <option value="Cyclical">Cyclical</option>
+                </select>
+              </div>
+              <div class="gp-row">
+                <span class="gp-lbl">Beat Density</span>
+                <select class="gp-select" id="sel-beat-density">
+                  <option value="sparse">Sparse</option>
+                  <option value="normal" selected>Normal</option>
+                  <option value="dense">Dense</option>
+                </select>
+              </div>
+              <div class="gp-row">
+                <span class="gp-lbl">Conflict</span>
+                <select class="gp-select" id="sel-conflict">
+                  <option value="auto">Auto</option>
+                  <option value="Resource">Resource</option>
+                  <option value="Ideology">Ideology</option>
+                  <option value="Survival">Survival</option>
+                  <option value="Power">Power</option>
+                  <option value="Identity">Identity</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Arc Overview -->
+        <div class="rp-section">
+          <div class="rp-section-header">
+            <span class="rp-sec-title">Arc Overview</span>
+            <span class="rp-sec-badge" id="arc-state-badge" style="color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.07)">IDLE</span>
+          </div>
+          <div id="arc-overview">
+            <div class="arc-type-badge" id="arc-type-display">—</div>
+            <div class="arc-stats">
+              <div class="arc-stat"><div class="arc-stat-val" id="ao-chapters">0</div><div class="arc-stat-lbl">Chapters</div></div>
+              <div class="arc-stat"><div class="arc-stat-val" id="ao-beats">0</div><div class="arc-stat-lbl">Beats</div></div>
+              <div class="arc-stat"><div class="arc-stat-val" id="ao-chars">0</div><div class="arc-stat-lbl">Characters</div></div>
+              <div class="arc-stat"><div class="arc-stat-val" id="ao-factions">0</div><div class="arc-stat-lbl">Factions</div></div>
+            </div>
+            <div class="conflict-badge">
+              <span class="conflict-icon">⚡</span>
+              <span class="conflict-lbl">Conflict Type</span>
+              <span class="conflict-val" id="ao-conflict">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Node Inspector -->
+        <div class="rp-section">
+          <div class="rp-section-header">
+            <span class="rp-sec-title">Active Node</span>
+            <span class="rp-sec-badge" id="node-badge" style="color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.07)">NONE</span>
+          </div>
+          <div id="node-inspector">
+            <div class="ni-beat-header">
+              <div class="ni-beat-dot" id="ni-dot"></div>
+              <div class="ni-beat-name" id="ni-name">—</div>
+            </div>
+            <div class="ni-type-badge" id="ni-type" style="color:rgba(255,255,255,.3);border-color:rgba(255,255,255,.1)">—</div>
+
+            <div class="ni-row" style="margin-top:7px;">
+              <div class="ni-lbl">Chapter</div>
+              <div class="ni-val" id="ni-chapter">—</div>
+            </div>
+            <div class="ni-row">
+              <div class="ni-lbl">Entities</div>
+              <div class="ni-val">
+                <div class="ni-entities" id="ni-entities"></div>
+              </div>
+            </div>
+
+            <div class="ni-prose">
+              <div class="ni-prose-lbl">Prose Fragment</div>
+              <div class="ni-prose-text" id="ni-prose">Select a story beat to read its prose fragment.</div>
+            </div>
+
+            <div class="ni-triggers">
+              <div class="ni-trigger-lbl">Downstream Triggers</div>
+              <div class="ni-trigger-list" id="ni-triggers"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Story Export -->
+        <div class="rp-section">
+          <div class="rp-section-header">
+            <span class="rp-sec-title">Story Export</span>
+          </div>
+          <div id="export-section">
+            <button class="export-btn" onclick="exportLore()">⬡ EXPORT LORE PACKET</button>
+            <div class="export-info">Exports qa-story-snapshot with all beat data, lore fragments, and entity/faction relationships.</div>
+            <div class="export-flash" id="export-flash">EXPORTED TO localStorage</div>
+          </div>
+        </div>
+
+        <!-- Lore Fragments -->
+        <div class="rp-section" id="lore-section">
+          <div class="rp-section-header">
+            <span class="rp-sec-title">Lore Fragments</span>
+            <span class="rp-sec-badge" id="lore-count" style="color:rgba(140,80,255,.6);border-color:rgba(140,80,255,.25);background:rgba(140,80,255,.07)">0</span>
+          </div>
+          <div id="lore-scroll">
+            <div class="empty-state">
+              <em>✎</em>
+              No lore generated yet.<br>Press GENERATE ARC to weave<br>the narrative fabric.
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /rp-scroll -->
+    </div><!-- /right-panel -->
+
+  </div><!-- /body -->
+
+  <!-- ── STATUS BAR ── -->
+  <div id="status-bar">
+    <div class="sb-item"><span class="sb-dot" id="sb-dot-seq"></span>SEQ</div>
+    <div class="sb-item"><span class="sb-dot" id="sb-dot-bhv"></span>BHV</div>
+    <div class="sb-item"><span class="sb-dot" id="sb-dot-soc"></span>SOC</div>
+    <div class="sb-item"><span class="sb-dot" id="sb-dot-mdl"></span>MDL</div>
+    <div class="sb-item">ARC: <span id="sb-arc">—</span></div>
+    <div class="sb-item">BEATS: <span id="sb-beats">0</span></div>
+    <div class="sb-item">PROTAGONIST: <span id="sb-protagonist">—</span></div>
+    <div class="sb-item">TICK: <span id="sb-tick">0</span></div>
+    <div class="sb-status" id="sb-status">IDLE</div>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// QUANTUM ATLAS · MODULE 10 · STORY  ·  NarrativeSystems
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── CONSTANTS ──────────────────────────────────────────────────────────────
+const NODE_COLORS = {
+  'Inciting Incident': '#8c50ff',
+  'Rising Action':     '#e8b84b',
+  'Climax':            '#d45b5b',
+  'Denouement':        '#4dc8a0',
+  'Character Moment':  '#b1d0f0',
+  'Faction Event':     '#c8a860',
+};
+const ARC_TYPES = ["Hero's Journey", "Tragedy", "Comedy", "Epistolary", "Cyclical"];
+const CONFLICT_TYPES = ["Resource", "Ideology", "Survival", "Power", "Identity"];
+const EMOTIONS = ["resolve","grief","fury","hope","despair","wonder","dread","longing","pride","shame"];
+const RESOLUTIONS = ["determination","surrender","revelation","silence","sacrifice","redemption","exile","ascension","collapse","renewal"];
+const RESOURCES = ["the Aether Vein","the Void Crystal","the Codex of Tides","ancient ruins","the Stellar Gate","dark matter caches","the Prism Core","temporal shards"];
+const PLACES_BASE = ["Vel'Khar","the Shattered Reach","Nox Prime","Umbral Basin","the Tessered Moors","Station Kira","the Hollowed Spire","Dawnrift","Ashveil","the Core Confluence"];
+const MYTH_SEEDS  = ["a prophecy carved in quantum foam","the silence before the first collapse","the dream that broke the simulation","a god who counted stars until they died","the last word spoken by the architect","an equation that consumed its own proof"];
+const FACTIONS_BASE = ["the Aetherion Compact","the Void Syndicate","the Luminar Council","the Fractured Remnants","the Iron Theorem","the Pale Concordat","the Starborn Host"];
+const ENTITY_NAMES = ["Elara Voss","Kade Mourne","Serethi","Alix the Null","Commander Drehn","The Archivist","Vessel-7","Nomad Quinn","Sable Kira","Orren Flux","The Dreamer","Ashveil Thorne"];
+const TRIGGER_TYPES = ["Faction shift","Entity decision","Resource conflict","World event","Temporal anomaly","Cascade effect","Revelation","Alliance broken","Alliance formed"];
+
+// Prose template bank (30+ templates)
+const PROSE_TEMPLATES = [
+  "{name} stood at the edge of {place}, their {emotion} giving way to {resolution}.",
+  "The {faction} had long disputed the {resource} of {place}, and now the reckoning had arrived.",
+  "When {name} and {name2} met in {place}, the {arc_type} of the age began.",
+  "No one had expected {name} to survive the collapse of {place}, yet here they stood.",
+  "The {faction} called it liberation. The survivors of {place} called it something else entirely.",
+  "In the ruins of {place}, {name} found what the {faction} had buried for three generations.",
+  "'{resolution},' {name} whispered, watching {place} dissolve into the void.",
+  "The {resource} was not what the {faction} had promised—{name} understood that now.",
+  "Every path through {place} led back to the same truth: {name} could not escape {emotion}.",
+  "They said {name} died in {place}. The {faction} said many things that were untrue.",
+  "As the stars above {place} blinked out one by one, {name} felt only {emotion}.",
+  "{name2} had warned {name} about the {faction}, but {emotion} had made them blind.",
+  "The ancient records of {place} spoke of a {arc_type}—few believed they would live to see it.",
+  "When the {faction} claimed {resource}, {name} knew the age of {resolution} had ended.",
+  "In {place}, the concept of {emotion} had taken on a different shape entirely.",
+  "{name} carried {resource} through the depths of {place}, knowing its weight would break them.",
+  "The chronicles of the {faction} omitted what happened next in {place}.",
+  "Between {name} and {name2} lay the ruins of {place} and everything they had once believed.",
+  "'{emotion},' the {faction} elders said, 'is the price of {resolution}.'",
+  "{name} had mapped every corridor of {place}; none of them led anywhere but back to the beginning.",
+  "The myth of {place} was simple: {name} had touched {resource} and the world had changed.",
+  "Three suns rose over {place} the morning the {faction} dissolved.",
+  "No treaty could contain what {name} had unleashed in the depths of {place}.",
+  "{name2} stood between the {faction} and {name}, knowing exactly what it would cost.",
+  "The {arc_type} demanded a sacrifice. {name} made sure it was not a stranger who paid.",
+  "They had come to {place} seeking {resource}; they left carrying only {emotion}.",
+  "The war between the {faction} and {name} had never truly been about {resource}.",
+  "Deep within {place}, {name} heard the {myth_seed}.",
+  "After the events in {place}, neither the {faction} nor {name} spoke of {resolution} again.",
+  "The {faction} had a word for what {name} had become after {place}: they used it like a warning.",
+  "{name} reached the heart of {place} and found {name2} had been there all along.",
+  "History would record {place} as a tragedy. {name} preferred to call it {arc_type}.",
+  "The {resource} that the {faction} guarded with such ferocity turned out to be only a memory.",
+  "What {name} told {name2} in {place} was never repeated, not even by the wind.",
+  "The {faction} had built {place} as a monument to {resolution}; it became something else entirely.",
+  "{emotion} was the last thing {name} expected to feel when the {faction} finally fell.",
+  "There are no simple endings in {arc_type}—only {name} standing in {place} as the ash settles.",
+];
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let state = {
+  nodes: [],
+  edges: [],
+  selectedNodeId: null,
+  activeBeatId: null,
+  arc: null,
+  loreFragments: [],
+  upstreamData: { seq: null, bhv: null, soc: null, mdl: null },
+  tick: 0,
+  generated: false,
+};
+
+let canvas, ctx;
+let camX = 0, camY = 0, camZoom = 1;
+let isPanning = false, panStartX = 0, panStartY = 0, panCamStartX = 0, panCamStartY = 0;
+let animT = 0;
+let rafId = null;
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  canvas = document.getElementById('story-canvas');
+  ctx = canvas.getContext('2d');
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  setupCanvasEvents();
+  loadUpstreamSnapshots();
+  startRenderLoop();
+
+  // Poll upstream snapshots periodically
+  setInterval(loadUpstreamSnapshots, 5000);
+  setInterval(() => {
+    state.tick++;
+    document.getElementById('sb-tick').textContent = state.tick;
+  }, 1000);
+});
+
+function resizeCanvas() {
+  const wrap = document.getElementById('canvas-wrap');
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+}
+
+// ── UPSTREAM SNAPSHOT READING ─────────────────────────────────────────────
+function loadUpstreamSnapshots() {
+  const keys = {
+    seq: 'qa-sequencer-snapshot',
+    bhv: 'qa-behavior-snapshot',
+    soc: 'qa-society-snapshot',
+    mdl: 'qa-modeling-snapshot',
+  };
+  let anyData = false;
+  for (const [key, lsKey] of Object.entries(keys)) {
+    try {
+      const raw = localStorage.getItem(lsKey);
+      if (raw) {
+        state.upstreamData[key] = JSON.parse(raw);
+        anyData = true;
+      }
+    } catch(e) {
+      state.upstreamData[key] = null;
+    }
+  }
+  updateUpstreamChips();
+}
+
+function updateUpstreamChips() {
+  const mapping = [
+    ['chip-seq',  'sb-dot-seq',  state.upstreamData.seq],
+    ['chip-bhv',  'sb-dot-bhv',  state.upstreamData.bhv],
+    ['chip-soc',  'sb-dot-soc',  state.upstreamData.soc],
+    ['chip-mdl',  'sb-dot-mdl',  state.upstreamData.mdl],
+  ];
+  for (const [chipId, dotId, data] of mapping) {
+    const chip = document.getElementById(chipId);
+    const dot  = document.getElementById(dotId);
+    if (data) {
+      chip.className = 'tb-link-chip lit';
+      dot.className  = 'sb-dot on';
+    } else {
+      chip.className = 'tb-link-chip dim';
+      dot.className  = 'sb-dot';
+    }
+  }
+}
+
+// ── UPSTREAM DATA EXTRACTION ──────────────────────────────────────────────
+function extractEntities() {
+  const entities = [];
+  // Try behavior snapshot
+  if (state.upstreamData.bhv) {
+    const d = state.upstreamData.bhv;
+    if (d.agents && Array.isArray(d.agents)) {
+      d.agents.slice(0, 12).forEach(a => entities.push(a.id || a.name || 'Unknown'));
+    }
+    if (d.entity_count) {
+      for (let i = 0; i < Math.min(d.entity_count, 8); i++) {
+        entities.push(`Entity-${String(i+1).padStart(3,'0')}`);
+      }
+    }
+  }
+  // Try modeling snapshot
+  if (state.upstreamData.mdl) {
+    const d = state.upstreamData.mdl;
+    if (d.entities && Array.isArray(d.entities)) {
+      d.entities.slice(0, 8).forEach(e => entities.push(e.id || e.name || 'Model-'+Math.random().toString(36).slice(2,5)));
+    }
+  }
+  // Fallback
+  if (entities.length < 4) {
+    ENTITY_NAMES.slice(0, 8).forEach(n => { if (!entities.includes(n)) entities.push(n); });
+  }
+  return [...new Set(entities)].slice(0, 12);
+}
+
+function extractFactions() {
+  const factions = [];
+  if (state.upstreamData.soc) {
+    const d = state.upstreamData.soc;
+    if (d.factions && Array.isArray(d.factions)) {
+      d.factions.forEach(f => factions.push(f.name || f.id || 'Faction'));
+    }
+  }
+  if (factions.length < 3) {
+    FACTIONS_BASE.slice(0, 4).forEach(f => { if (!factions.includes(f)) factions.push(f); });
+  }
+  return factions.slice(0, 6);
+}
+
+function extractPlaces() {
+  const places = [...PLACES_BASE];
+  if (state.upstreamData.seq) {
+    const d = state.upstreamData.seq;
+    if (d.regions && Array.isArray(d.regions)) {
+      d.regions.forEach(r => places.unshift(r.name || r.id));
+    }
+  }
+  return [...new Set(places)].slice(0, 10);
+}
+
+// ── PROSE FRAGMENT GENERATION ─────────────────────────────────────────────
+function generateProseFragment(entities, factions, places, arcType, beatType) {
+  const tpl = PROSE_TEMPLATES[Math.floor(Math.random() * PROSE_TEMPLATES.length)];
+  const name = entities[Math.floor(Math.random() * entities.length)] || 'the wanderer';
+  const name2 = entities[Math.floor(Math.random() * entities.length)] || 'the stranger';
+  const faction = factions[Math.floor(Math.random() * factions.length)] || 'the Council';
+  const place = places[Math.floor(Math.random() * places.length)] || 'the Wastes';
+  const emotion = EMOTIONS[Math.floor(Math.random() * EMOTIONS.length)];
+  const resolution = RESOLUTIONS[Math.floor(Math.random() * RESOLUTIONS.length)];
+  const resource = RESOURCES[Math.floor(Math.random() * RESOURCES.length)];
+  const myth_seed = MYTH_SEEDS[Math.floor(Math.random() * MYTH_SEEDS.length)];
+
+  return tpl
+    .replace(/{name2}/g, name2)
+    .replace(/{name}/g, name)
+    .replace(/{faction}/g, faction)
+    .replace(/{place}/g, place)
+    .replace(/{emotion}/g, emotion)
+    .replace(/{resolution}/g, resolution)
+    .replace(/{resource}/g, resource)
+    .replace(/{arc_type}/g, arcType || "story")
+    .replace(/{myth_seed}/g, myth_seed);
+}
+
+function generateTwoSentenceFragment(entities, factions, places, arcType, beatType) {
+  const s1 = generateProseFragment(entities, factions, places, arcType, beatType);
+  const s2 = generateProseFragment(entities, factions, places, arcType, beatType);
+  const s3 = generateProseFragment(entities, factions, places, arcType, beatType);
+  return s1 + ' ' + s2 + ' ' + s3;
+}
+
+// ── FORCE-DIRECTED LAYOUT ─────────────────────────────────────────────────
+function runForceLayout(nodes, edges, iterations) {
+  const W = canvas.width - 100, H = canvas.height - 80;
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+
+  // Initialize random positions
+  nodes.forEach(n => {
+    if (n.x === undefined) { n.x = cx + (Math.random() - 0.5) * W * 0.7; }
+    if (n.y === undefined) { n.y = cy + (Math.random() - 0.5) * H * 0.7; }
+    n.vx = 0; n.vy = 0;
+  });
+
+  const REPULSION = 8000;
+  const SPRING_LEN = 160;
+  const SPRING_K = 0.04;
+  const DAMPING = 0.85;
+  const CENTER_K = 0.008;
+
+  for (let iter = 0; iter < iterations; iter++) {
+    // Repulsion between all pairs
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[j].x - nodes[i].x;
+        const dy = nodes[j].y - nodes[i].y;
+        const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
+        const force = REPULSION / (dist * dist);
+        const fx = (dx / dist) * force;
+        const fy = (dy / dist) * force;
+        nodes[i].vx -= fx; nodes[i].vy -= fy;
+        nodes[j].vx += fx; nodes[j].vy += fy;
+      }
+    }
+
+    // Spring attraction along edges
+    for (const edge of edges) {
+      const a = nodes.find(n => n.id === edge.from);
+      const b = nodes.find(n => n.id === edge.to);
+      if (!a || !b) continue;
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
+      const stretch = dist - SPRING_LEN;
+      const fx = (dx / dist) * stretch * SPRING_K;
+      const fy = (dy / dist) * stretch * SPRING_K;
+      a.vx += fx; a.vy += fy;
+      b.vx -= fx; b.vy -= fy;
+    }
+
+    // Center gravity
+    nodes.forEach(n => {
+      n.vx += (cx - n.x) * CENTER_K;
+      n.vy += (cy - n.y) * CENTER_K;
+      n.vx *= DAMPING;
+      n.vy *= DAMPING;
+      n.x += n.vx;
+      n.y += n.vy;
+    });
+  }
+}
+
+// ── ARC GENERATION ────────────────────────────────────────────────────────
+async function generateArc() {
+  const overlay = document.getElementById('gen-overlay');
+  const bar     = document.getElementById('gen-bar');
+  const status  = document.getElementById('gen-status');
+  overlay.classList.add('visible');
+
+  const steps = [
+    [10,  'Reading upstream entity data...'],
+    [20,  'Extracting faction relationships...'],
+    [35,  'Seeding conflict vectors...'],
+    [48,  'Selecting protagonist...'],
+    [60,  'Assembling story beats...'],
+    [72,  'Weaving narrative threads...'],
+    [84,  'Running force-directed layout...'],
+    [93,  'Composing prose fragments...'],
+    [100, 'Finalizing arc structure...'],
+  ];
+
+  for (const [pct, msg] of steps) {
+    bar.style.width = pct + '%';
+    status.textContent = msg;
+    await delay(180 + Math.random() * 120);
+  }
+
+  // Collect upstream
+  const entities = extractEntities();
+  const factions = extractFactions();
+  const places   = extractPlaces();
+
+  // Arc type
+  const arcSel = document.getElementById('sel-arc-type').value;
+  const arcType = arcSel === 'auto' ? ARC_TYPES[Math.floor(Math.random() * ARC_TYPES.length)] : arcSel;
+
+  // Conflict
+  const confSel = document.getElementById('sel-conflict').value;
+  const conflictType = confSel === 'auto' ? CONFLICT_TYPES[Math.floor(Math.random() * CONFLICT_TYPES.length)] : confSel;
+
+  // Beat density
+  const density = document.getElementById('sel-beat-density').value;
+  const beatCount = density === 'sparse' ? 12 : density === 'dense' ? 28 : 20;
+
+  // Build protagonist
+  const protagonist = entities[0] || 'Entity-001';
+
+  // Chapter count
+  const chapterCount = arcType === 'Epistolary' ? 8 : arcType === 'Cyclical' ? 5 : 6;
+
+  // Build beat sequence according to arc structure
+  const beatSequence = buildBeatSequence(arcType, beatCount, chapterCount);
+
+  // Create nodes
+  const newNodes = [];
+  const newEdges = [];
+  let nodeId = 0;
+
+  for (const beat of beatSequence) {
+    const involvedEntities = pickRandom(entities, Math.floor(Math.random() * 3) + 1);
+    const involvedFaction  = Math.random() < 0.5 ? pickRandom(factions, 1)[0] : null;
+
+    const prose = generateTwoSentenceFragment(
+      involvedEntities.length ? involvedEntities : entities,
+      factions, places, arcType, beat.type
+    );
+
+    const triggers = pickRandom(TRIGGER_TYPES, Math.floor(Math.random() * 3) + 1);
+
+    newNodes.push({
+      id: `beat-${nodeId++}`,
+      title: beat.title,
+      type: beat.type,
+      chapter: beat.chapter,
+      color: NODE_COLORS[beat.type] || '#8c50ff',
+      entities: involvedEntities,
+      faction: involvedFaction,
+      prose,
+      triggers,
+      x: undefined,
+      y: undefined,
+      vx: 0, vy: 0,
+      radius: 28,
+    });
+  }
+
+  // Create edges (sequential + some cross-chapter)
+  for (let i = 0; i < newNodes.length - 1; i++) {
+    const strength = 0.5 + Math.random() * 0.5;
+    newEdges.push({ from: newNodes[i].id, to: newNodes[i+1].id, strength });
+  }
+  // Extra cross-edges for drama
+  const extraEdgeCount = Math.floor(beatCount * 0.2);
+  for (let i = 0; i < extraEdgeCount; i++) {
+    const a = Math.floor(Math.random() * newNodes.length);
+    const b = Math.floor(Math.random() * newNodes.length);
+    if (a !== b && Math.abs(a - b) > 2) {
+      newEdges.push({ from: newNodes[a].id, to: newNodes[b].id, strength: 0.2 + Math.random() * 0.3 });
+    }
+  }
+
+  // Force layout
+  runForceLayout(newNodes, newEdges, 120);
+
+  state.nodes = newNodes;
+  state.edges = newEdges;
+  state.arc = {
+    type: arcType,
+    chapterCount,
+    beatCount: newNodes.length,
+    characterCount: entities.length,
+    factionCount: factions.length,
+    conflictType,
+    protagonist,
+  };
+
+  // Generate lore fragments
+  state.loreFragments = [];
+  const loreCount = 12 + Math.floor(Math.random() * 6);
+  for (let i = 0; i < loreCount; i++) {
+    state.loreFragments.push({
+      index: i + 1,
+      text: generateProseFragment(entities, factions, places, arcType, 'lore'),
+      tags: pickRandom(['faction', 'entity', 'place', 'myth', 'conflict', 'history'], 2),
+    });
+  }
+
+  state.generated = true;
+  state.activeBeatId = newNodes[0]?.id || null;
+
+  overlay.classList.remove('visible');
+
+  updateArcOverview();
+  updateCanvasInfo();
+  updateLoreFragments();
+  updateStatusBar();
+  saveSnapshot();
+  selectNode(state.activeBeatId);
+
+  // Reset camera to fit
+  resetView();
+}
+
+function buildBeatSequence(arcType, beatCount, chapterCount) {
+  const beats = [];
+  const beatsPerChapter = Math.ceil(beatCount / chapterCount);
+
+  // Arc type determines beat type distribution
+  const beatTypesByArc = {
+    "Hero's Journey": ['Inciting Incident','Rising Action','Rising Action','Character Moment','Climax','Denouement'],
+    "Tragedy":        ['Inciting Incident','Rising Action','Character Moment','Climax','Climax','Denouement'],
+    "Comedy":         ['Inciting Incident','Character Moment','Rising Action','Character Moment','Climax','Denouement'],
+    "Epistolary":     ['Character Moment','Faction Event','Rising Action','Character Moment','Climax','Denouement','Character Moment','Denouement'],
+    "Cyclical":       ['Inciting Incident','Rising Action','Climax','Denouement','Inciting Incident'],
+  };
+
+  const beatTitlesByType = {
+    'Inciting Incident': ['The Call','The Breaking','The Discovery','The Summons','The Fracture','The Awakening','The Wound'],
+    'Rising Action':     ['Gathering Storm','The Alliance','Trial by Fire','Crossing the Threshold','The Revelation','Shadows Lengthen','The Betrayal','Preparing for War'],
+    'Climax':            ['The Reckoning','Final Confrontation','Point of No Return','The Collapse','The Sacrifice','Into the Abyss'],
+    'Denouement':        ['Aftermath','The New World','Echoes','What Remains','The Long Road','Silence After Thunder','Embers'],
+    'Character Moment':  ['A Quiet Hour','The Conversation','Memory Shard','The Letter','Inner Monologue','Shared Burden','The Dream'],
+    'Faction Event':     ['Council of Shadows','The Declaration','Shifting Allegiances','The Purge','Envoys','Under Siege','Treaty at Dawn'],
+  };
+
+  const typeSequence = beatTypesByArc[arcType] || beatTypesByArc["Hero's Journey"];
+  let globalBeat = 0;
+
+  for (let ch = 0; ch < chapterCount; ch++) {
+    const typeForChapter = typeSequence[ch % typeSequence.length];
+    const chBeats = ch === chapterCount - 1
+      ? beatCount - globalBeat
+      : beatsPerChapter;
+
+    for (let b = 0; b < chBeats && globalBeat < beatCount; b++) {
+      let type = typeForChapter;
+      // Randomize inner beats
+      if (b > 0 && Math.random() < 0.35) {
+        const alternates = Object.keys(beatTitlesByType).filter(t => t !== type);
+        type = alternates[Math.floor(Math.random() * alternates.length)];
+      }
+      const titles = beatTitlesByType[type];
+      const title  = titles[Math.floor(Math.random() * titles.length)] + (globalBeat > 0 ? ` ${globalBeat}` : '');
+      beats.push({ type, title, chapter: ch + 1 });
+      globalBeat++;
+    }
+  }
+
+  return beats;
+}
+
+// ── SELECTION ─────────────────────────────────────────────────────────────
+function selectNode(nodeId) {
+  state.selectedNodeId = nodeId;
+  const node = state.nodes.find(n => n.id === nodeId);
+  const inspector = document.getElementById('node-inspector');
+  const badge = document.getElementById('node-badge');
+
+  if (!node) {
+    inspector.classList.remove('visible');
+    badge.textContent = 'NONE';
+    badge.style.color = 'rgba(255,255,255,.2)';
+    badge.style.borderColor = 'rgba(255,255,255,.07)';
+    return;
+  }
+
+  inspector.classList.add('visible');
+  badge.textContent = node.type.toUpperCase().replace(' ','_');
+  badge.style.color = node.color;
+  badge.style.borderColor = node.color.replace(')',',0.35)').replace('rgb','rgba') || node.color;
+
+  document.getElementById('ni-dot').style.background = node.color;
+  document.getElementById('ni-name').textContent = node.title;
+
+  const typeEl = document.getElementById('ni-type');
+  typeEl.textContent = node.type;
+  typeEl.style.color = node.color;
+  typeEl.style.borderColor = node.color;
+
+  document.getElementById('ni-chapter').textContent = `Ch. ${node.chapter}`;
+
+  // Entities
+  const entContainer = document.getElementById('ni-entities');
+  entContainer.innerHTML = '';
+  (node.entities || []).slice(0, 3).forEach(ent => {
+    const chip = document.createElement('span');
+    chip.className = 'ni-entity-chip';
+    chip.textContent = ent;
+    entContainer.appendChild(chip);
+  });
+  if (!node.entities?.length) {
+    entContainer.innerHTML = '<span style="color:rgba(255,255,255,.2);font-family:var(--fc);font-size:.28rem">—</span>';
+  }
+
+  // Prose
+  document.getElementById('ni-prose').textContent = node.prose || 'No prose fragment available.';
+
+  // Triggers
+  const trigEl = document.getElementById('ni-triggers');
+  trigEl.innerHTML = '';
+  (node.triggers || []).forEach(t => {
+    const item = document.createElement('div');
+    item.className = 'ni-trigger-item';
+    item.textContent = t;
+    trigEl.appendChild(item);
+  });
+  if (!node.triggers?.length) {
+    trigEl.innerHTML = '<div style="color:rgba(255,255,255,.2);font-family:var(--fc);font-size:.28rem;padding:2px 0">No downstream triggers</div>';
+  }
+
+  saveSnapshot();
+}
+
+// ── ARC OVERVIEW UPDATE ───────────────────────────────────────────────────
+function updateArcOverview() {
+  if (!state.arc) return;
+  const ov = document.getElementById('arc-overview');
+  ov.classList.add('visible');
+
+  document.getElementById('arc-type-display').textContent = state.arc.type;
+  document.getElementById('ao-chapters').textContent = state.arc.chapterCount;
+  document.getElementById('ao-beats').textContent = state.arc.beatCount;
+  document.getElementById('ao-chars').textContent = state.arc.characterCount;
+  document.getElementById('ao-factions').textContent = state.arc.factionCount;
+  document.getElementById('ao-conflict').textContent = state.arc.conflictType;
+
+  const badge = document.getElementById('arc-state-badge');
+  badge.textContent = 'ACTIVE';
+  badge.style.color = 'var(--story)';
+  badge.style.borderColor = 'rgba(140,80,255,.35)';
+  badge.style.background = 'rgba(140,80,255,.08)';
+}
+
+function updateCanvasInfo() {
+  document.getElementById('ci-beats').textContent = state.nodes.length;
+  document.getElementById('ci-edges').textContent = state.edges.length;
+  document.getElementById('ci-zoom').textContent = camZoom.toFixed(2);
+}
+
+function updateStatusBar() {
+  if (!state.arc) return;
+  document.getElementById('sb-arc').textContent = state.arc.type;
+  document.getElementById('sb-beats').textContent = state.arc.beatCount;
+  document.getElementById('sb-protagonist').textContent = state.arc.protagonist || '—';
+  const sb = document.getElementById('sb-status');
+  sb.textContent = 'ACTIVE';
+  sb.className = 'sb-status active';
+}
+
+function updateLoreFragments() {
+  const container = document.getElementById('lore-scroll');
+  const countEl = document.getElementById('lore-count');
+  countEl.textContent = state.loreFragments.length;
+
+  if (!state.loreFragments.length) {
+    container.innerHTML = '<div class="empty-state"><em>✎</em>No lore generated yet.</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  state.loreFragments.forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'lore-fragment';
+    div.innerHTML = `
+      <div class="lf-index">FRAGMENT ${String(f.index).padStart(2,'0')}</div>
+      <div class="lf-text">${escapeHtml(f.text)}</div>
+      <div class="lf-tags">${f.tags.map(t=>`<span class="lf-tag">${t}</span>`).join('')}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// ── SNAPSHOT ─────────────────────────────────────────────────────────────
+function saveSnapshot() {
+  const snap = {
+    system: 'Quantum Atlas',
+    module: '10 · Story',
+    generated: new Date().toISOString(),
+    arc_type: state.arc?.type || null,
+    chapter_count: state.arc?.chapterCount || 0,
+    beat_count: state.nodes.length,
+    character_count: state.arc?.characterCount || 0,
+    faction_count: state.arc?.factionCount || 0,
+    active_beat: state.activeBeatId || 0,
+    lore_fragments: state.loreFragments.length,
+    conflict_type: state.arc?.conflictType || null,
+    protagonist: state.arc?.protagonist || null,
+  };
+  try {
+    localStorage.setItem('qa-story-snapshot', JSON.stringify(snap));
+    document.getElementById('chip-out-story').className = 'tb-link-chip lit';
+  } catch(e) {}
+}
+
+// ── EXPORT ────────────────────────────────────────────────────────────────
+function exportLore() {
+  const packet = {
+    system: 'Quantum Atlas',
+    module: '10 · Story',
+    exported: new Date().toISOString(),
+    arc: state.arc,
+    beats: state.nodes.map(n => ({
+      id: n.id,
+      title: n.title,
+      type: n.type,
+      chapter: n.chapter,
+      entities: n.entities,
+      faction: n.faction,
+      prose: n.prose,
+      triggers: n.triggers,
+    })),
+    edges: state.edges,
+    lore_fragments: state.loreFragments,
+  };
+  try {
+    localStorage.setItem('qa-story-snapshot', JSON.stringify(packet));
+    const flash = document.getElementById('export-flash');
+    flash.classList.add('show');
+    setTimeout(() => flash.classList.remove('show'), 2000);
+  } catch(e) {}
+}
+
+// ── CANVAS RENDERING ─────────────────────────────────────────────────────
+function startRenderLoop() {
+  function loop(t) {
+    animT = t * 0.001;
+    render();
+    rafId = requestAnimationFrame(loop);
+  }
+  rafId = requestAnimationFrame(loop);
+}
+
+function render() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background grid
+  drawGrid(W, H);
+
+  if (!state.nodes.length) {
+    drawEmptyState(W, H);
+    return;
+  }
+
+  ctx.save();
+  ctx.translate(camX, camY);
+  ctx.scale(camZoom, camZoom);
+
+  // Draw edges first
+  drawEdges();
+
+  // Draw nodes
+  drawNodes();
+
+  ctx.restore();
+}
+
+function drawGrid(W, H) {
+  const GRID = 32;
+  ctx.strokeStyle = 'rgba(255,255,255,0.022)';
+  ctx.lineWidth = 0.5;
+  // Offset grid by camera
+  const offX = ((camX % (GRID * camZoom)) + GRID * camZoom) % (GRID * camZoom);
+  const offY = ((camY % (GRID * camZoom)) + GRID * camZoom) % (GRID * camZoom);
+  for (let x = offX; x < W; x += GRID * camZoom) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (let y = offY; y < H; y += GRID * camZoom) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+}
+
+function drawEmptyState(W, H) {
+  ctx.fillStyle = 'rgba(140,80,255,0.07)';
+  ctx.strokeStyle = 'rgba(140,80,255,0.15)';
+  ctx.lineWidth = 1;
+  const cx = W / 2, cy = H / 2;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 48, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(140,80,255,0.5)';
+  ctx.font = '28px Orbitron, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('✎', cx, cy);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.font = '600 11px Orbitron, monospace';
+  ctx.fillText('STORY GRAPH', cx, cy + 68);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.08)';
+  ctx.font = '10px Space Grotesk, sans-serif';
+  ctx.fillText('Press GENERATE ARC to weave your narrative', cx, cy + 90);
+}
+
+function drawEdges() {
+  for (const edge of state.edges) {
+    const from = state.nodes.find(n => n.id === edge.from);
+    const to   = state.nodes.find(n => n.id === edge.to);
+    if (!from || !to) continue;
+
+    const strength = edge.strength || 0.5;
+    ctx.globalAlpha = 0.25 + strength * 0.35;
+    ctx.strokeStyle = 'rgba(140,80,255,' + (0.4 + strength * 0.4) + ')';
+    ctx.lineWidth = 0.5 + strength * 2;
+
+    // Bezier curve
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const cpOffset = Math.min(60, Math.sqrt(dx*dx + dy*dy) * 0.35);
+    const cpx1 = from.x + dx * 0.25 + (-dy) * 0.25 * (strength > 0.5 ? 1 : -1);
+    const cpy1 = from.y + dy * 0.25 + (dx) * 0.25 * (strength > 0.5 ? 1 : -1);
+    const cpx2 = to.x - dx * 0.25 + (-dy) * 0.25 * (strength > 0.5 ? 1 : -1);
+    const cpy2 = to.y - dy * 0.25 + (dx) * 0.25 * (strength > 0.5 ? 1 : -1);
+
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    ctx.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, to.x, to.y);
+    ctx.stroke();
+
+    // Arrowhead at destination
+    drawArrow(ctx, cpx2, cpy2, to.x, to.y, 7, ctx.strokeStyle);
+
+    ctx.globalAlpha = 1;
+  }
+}
+
+function drawArrow(ctx, fromX, fromY, toX, toY, size, color) {
+  const angle = Math.atan2(toY - fromY, toX - fromX);
+  const dist = Math.sqrt((toX-fromX)**2 + (toY-fromY)**2);
+  if (dist < 1) return;
+
+  // Back off from node center
+  const backOff = 30;
+  const arrowX = toX - Math.cos(angle) * backOff;
+  const arrowY = toY - Math.sin(angle) * backOff;
+
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.globalAlpha = 0.6;
+  ctx.beginPath();
+  ctx.translate(arrowX, arrowY);
+  ctx.rotate(angle);
+  ctx.moveTo(0, 0);
+  ctx.lineTo(-size, -size * 0.5);
+  ctx.lineTo(-size, size * 0.5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawNodes() {
+  for (const node of state.nodes) {
+    const isSelected = node.id === state.selectedNodeId;
+    const isActive   = node.id === state.activeBeatId;
+
+    // Glow for active beat
+    if (isActive) {
+      const pulseRadius = node.radius + 8 + Math.sin(animT * 2) * 5;
+      const grd = ctx.createRadialGradient(node.x, node.y, node.radius * 0.5, node.x, node.y, pulseRadius + 12);
+      grd.addColorStop(0, node.color.replace(')',', 0.35)').replace('#', 'rgba(').replace(/rgba\(([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2}),/i, (m, r, g, b) => `rgba(${parseInt(r,16)},${parseInt(g,16)},${parseInt(b,16)},`));
+      grd.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, pulseRadius + 12, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+    }
+
+    // Selection ring
+    if (isSelected) {
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.radius + 6, 0, Math.PI * 2);
+      ctx.strokeStyle = '#8c50ff';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Main circle
+    const hex = node.color;
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+
+    // Gradient fill
+    const grd = ctx.createRadialGradient(node.x - node.radius * 0.3, node.y - node.radius * 0.3, 2, node.x, node.y, node.radius);
+    grd.addColorStop(0, lighten(hex, 0.3));
+    grd.addColorStop(1, darken(hex, 0.4));
+    ctx.fillStyle = grd;
+    ctx.fill();
+
+    ctx.strokeStyle = lighten(hex, 0.4);
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Inner glyph by type
+    ctx.fillStyle = '#fff';
+    ctx.globalAlpha = 0.85;
+    ctx.font = `${isSelected ? 'bold ' : ''}13px Space Grotesk, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(beatGlyph(node.type), node.x, node.y);
+    ctx.globalAlpha = 1;
+
+    // Label below
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.font = `10px Space Grotesk, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    const maxW = 80;
+    let label = node.title;
+    if (label.length > 14) label = label.slice(0, 13) + '…';
+    ctx.fillText(label, node.x, node.y + node.radius + 5);
+
+    // Chapter badge
+    ctx.fillStyle = hex;
+    ctx.globalAlpha = 0.7;
+    ctx.font = `8px Orbitron, monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(`CH${node.chapter}`, node.x, node.y - node.radius - 3);
+    ctx.globalAlpha = 1;
+  }
+}
+
+function beatGlyph(type) {
+  const map = {
+    'Inciting Incident': '✦',
+    'Rising Action':     '▲',
+    'Climax':            '⚡',
+    'Denouement':        '◎',
+    'Character Moment':  '♦',
+    'Faction Event':     '⚑',
+  };
+  return map[type] || '●';
+}
+
+// ── COLOR HELPERS ─────────────────────────────────────────────────────────
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return [r, g, b];
+}
+function lighten(hex, amt) {
+  const [r, g, b] = hexToRgb(hex);
+  return `rgba(${Math.min(255, r + amt * 255)},${Math.min(255, g + amt * 255)},${Math.min(255, b + amt * 255)},1)`;
+}
+function darken(hex, amt) {
+  const [r, g, b] = hexToRgb(hex);
+  return `rgba(${Math.max(0, r - amt * 255)},${Math.max(0, g - amt * 255)},${Math.max(0, b - amt * 255)},1)`;
+}
+
+// ── CANVAS EVENTS ─────────────────────────────────────────────────────────
+function setupCanvasEvents() {
+  canvas.addEventListener('mousedown', onMouseDown);
+  canvas.addEventListener('mousemove', onMouseMove);
+  canvas.addEventListener('mouseup',   onMouseUp);
+  canvas.addEventListener('wheel',     onWheel, { passive: false });
+  canvas.addEventListener('click',     onCanvasClick);
+}
+
+function onMouseDown(e) {
+  isPanning = true;
+  panStartX = e.clientX;
+  panStartY = e.clientY;
+  panCamStartX = camX;
+  panCamStartY = camY;
+  canvas.classList.add('dragging');
+}
+
+function onMouseMove(e) {
+  if (!isPanning) return;
+  camX = panCamStartX + (e.clientX - panStartX);
+  camY = panCamStartY + (e.clientY - panStartY);
+  updateCanvasInfo();
+}
+
+function onMouseUp() {
+  isPanning = false;
+  canvas.classList.remove('dragging');
+}
+
+function onWheel(e) {
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.1 : 0.9;
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  camX = mx - (mx - camX) * factor;
+  camY = my - (my - camY) * factor;
+  camZoom = Math.max(0.1, Math.min(5, camZoom * factor));
+  updateCanvasInfo();
+}
+
+function onCanvasClick(e) {
+  if (!state.nodes.length) return;
+  const rect = canvas.getBoundingClientRect();
+  const mx = (e.clientX - rect.left - camX) / camZoom;
+  const my = (e.clientY - rect.top  - camY) / camZoom;
+
+  let hit = null;
+  for (const node of state.nodes) {
+    const dx = mx - node.x, dy = my - node.y;
+    if (Math.sqrt(dx*dx + dy*dy) < node.radius + 4) { hit = node; break; }
+  }
+
+  if (hit) {
+    state.activeBeatId = hit.id;
+    selectNode(hit.id);
+  }
+}
+
+function zoomCanvas(factor) {
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+  camX = cx - (cx - camX) * factor;
+  camY = cy - (cy - camY) * factor;
+  camZoom = Math.max(0.1, Math.min(5, camZoom * factor));
+  updateCanvasInfo();
+}
+
+function resetView() {
+  if (!state.nodes.length) { camX = 0; camY = 0; camZoom = 1; updateCanvasInfo(); return; }
+
+  // Compute bounding box
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const n of state.nodes) {
+    minX = Math.min(minX, n.x - n.radius);
+    maxX = Math.max(maxX, n.x + n.radius);
+    minY = Math.min(minY, n.y - n.radius);
+    maxY = Math.max(maxY, n.y + n.radius);
+  }
+
+  const W = canvas.width, H = canvas.height;
+  const padX = 60, padY = 60;
+  const graphW = maxX - minX + padX * 2;
+  const graphH = maxY - minY + padY * 2;
+  const zoom = Math.min(3, Math.min((W - padX * 2) / graphW, (H - padY * 2) / graphH));
+  camZoom = zoom;
+  camX = (W - (minX + maxX) * zoom) / 2;
+  camY = (H - (minY + maxY) * zoom) / 2;
+  updateCanvasInfo();
+}
+
+// ── UI HELPERS ────────────────────────────────────────────────────────────
+function toggleSection(id) {
+  const sec = document.getElementById(id);
+  sec.classList.toggle('collapsed');
+  const body = sec.querySelector('.lp-section-body');
+  if (sec.classList.contains('collapsed')) {
+    body.style.maxHeight = '0';
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+let selectedComp = null;
+function selectComp(el, code) {
+  if (selectedComp) selectedComp.classList.remove('active');
+  el.classList.add('active');
+  selectedComp = el;
+  const statusEl = el.querySelector('.comp-status');
+  statusEl.className = 'comp-status run';
+  setTimeout(() => {
+    statusEl.className = state.generated ? 'comp-status on' : 'comp-status idle';
+  }, 900 + Math.random() * 600);
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function pickRandom(arr, n) {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, n);
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── RESET ─────────────────────────────────────────────────────────────────
+document.getElementById('btn-reset').addEventListener('click', () => {
+  state.nodes = [];
+  state.edges = [];
+  state.selectedNodeId = null;
+  state.activeBeatId   = null;
+  state.arc = null;
+  state.loreFragments  = [];
+  state.generated = false;
+
+  document.getElementById('arc-overview').classList.remove('visible');
+  document.getElementById('node-inspector').classList.remove('visible');
+  document.getElementById('arc-state-badge').textContent = 'IDLE';
+  document.getElementById('arc-state-badge').style.color = 'rgba(255,255,255,.2)';
+  document.getElementById('arc-state-badge').style.borderColor = 'rgba(255,255,255,.07)';
+  document.getElementById('arc-state-badge').style.background = 'transparent';
+  document.getElementById('node-badge').textContent = 'NONE';
+  document.getElementById('sb-status').textContent = 'IDLE';
+  document.getElementById('sb-status').className = 'sb-status';
+
+  updateLoreFragments();
+  updateCanvasInfo();
+  resetView();
+});
+
+// ── TOP BAR BUTTON ALIAS ──────────────────────────────────────────────────
+document.getElementById('btn-generate').addEventListener('click', generateArc);
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+document.querySelectorAll('.tb-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    // All views share the same canvas — just update label
+  });
+});
+
+// Initialize component status dots after generation
+function refreshCompStatuses() {
+  document.querySelectorAll('.comp-card').forEach(card => {
+    const statusEl = card.querySelector('.comp-status');
+    statusEl.className = 'comp-status ' + (state.generated ? 'on' : 'idle');
+  });
+  // PRS always "on"
+  const prs = document.querySelector('[data-comp="PRS"] .comp-status');
+  if (prs) prs.className = 'comp-status on';
+}
+</script>
+
+<!-- ── THEME SYNC IIFE ── -->
+<script>
+(function() {
+  const MAP = {
+    'c-bg':'--bg','c-surf':'--surface','c-surf2':'--surface2',
+    'c-edge':'--edge','c-edge-hi':'--edge-hi','c-accent1':'--venturan',
+    'c-accent2':'--amber','c-accent3':'--emerald','c-accent4':'--fusion',
+    'c-danger':'--blood','c-warm':'--solari','c-text':'--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+</script>
+</body>
+</html>
