@@ -51,6 +51,7 @@
   --c-memory:        #00c060;
   --c-sound:         #dc8c1e;
   --c-logic:         #20c8d0;
+  --c-simulation:    #30e060;
 }
 
 html,body{
@@ -931,6 +932,11 @@ html,body{
         <span class="ni-icon">⊢</span>
         <span class="ni-label">Logic</span>
       </div>
+      <div class="nav-item" id="nav-simulation" data-layer="simulation"
+           style="--lc:var(--c-simulation)" onclick="switchLayer('simulation')" title="14 · Simulation | Continuum">
+        <span class="ni-icon">∿</span>
+        <span class="ni-label">Sim</span>
+      </div>
       <div class="nav-item" id="nav-behavior" data-layer="behavior"
            style="--lc:var(--c-behavior)" onclick="switchLayer('behavior')" title="07 · Behavior | Instinct">
         <span class="ni-icon">⊙</span>
@@ -1115,6 +1121,16 @@ html,body{
       <iframe class="layer-frame" id="frame-ecology"
         src="quantum-atlas-ecology.html"
         onload="frameLoaded('ecology')"></iframe>
+
+      <!-- Atlas · 14 Simulation | Continuum -->
+      <div class="frame-loader" id="loader-simulation">
+        <div class="loader-glyph" style="color:#30e060">∿</div>
+        <div class="loader-lbl">Loading 14 · Simulation | Continuum</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#30e060"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-simulation"
+        src="quantum-atlas-simulation.html"
+        onload="frameLoaded('simulation')"></iframe>
 
       <!-- Atlas · 13 Logic | Axiom -->
       <div class="frame-loader" id="loader-logic">
@@ -1559,12 +1575,13 @@ const LAYERS = {
   memory:        { label:'11 · Memory       | Codex',    icon:'◎', color:'var(--c-memory)',         file:'quantum-atlas-memory.html'        },
   sound:         { label:'12 · Sound        | Composer', icon:'♪', color:'var(--c-sound)',           file:'quantum-atlas-sound.html'         },
   logic:         { label:'13 · Logic        | Axiom',    icon:'⊢', color:'var(--c-logic)',           file:'quantum-atlas-logic.html'         },
+  simulation:    { label:'14 · Simulation   | Continuum',icon:'∿', color:'var(--c-simulation)',      file:'quantum-atlas-simulation.html'    },
   society:  { label:'08 · Society   | Order',   icon:'⚑', color:'var(--c-society)',  file:'quantum-atlas-society.html'      },
   bridge:   { label:'16 · Network   | Nexus',   icon:'⇋', color:'var(--c-bridge)',   file:'quantum-atlas-network.html'      },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
-const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-choreography-snapshot','qa-behavior-snapshot','qa-sequencer-snapshot','qa-story-snapshot','qa-memory-snapshot','qa-sound-snapshot','qa-logic-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot'];
+const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-choreography-snapshot','qa-behavior-snapshot','qa-sequencer-snapshot','qa-story-snapshot','qa-memory-snapshot','qa-sound-snapshot','qa-logic-snapshot','qa-simulation-snapshot','qa-forge-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot'];
 
 /* ── State ────────────────────────────────────────────────────────── */
 let activeLayer  = 'workspace';
