@@ -36,23 +36,23 @@
   --c-subgraph:  #d45b5b;
   --c-ionodes:   #b1d0f0;
   --c-output:    #c8973a;
-  --c-atlas:     #1e8cff;
-  --c-environ:   #8050e0;
-  --c-architect: #64b4ff;
-  --c-lighting:  #e0d8ff;
-  --c-society:   #c8a860;
-  --c-network:   #ffffff;
-  --c-ecology:   #7fd4c8;
-  --c-behavior:  #9030d0;
+  /* Atlas module accent colors (01–16) */
+  --c-atlas:         #1e8cff;
+  --c-environ:       #8050e0;
+  --c-architect:     #64b4ff;
+  --c-lighting:      #e0d8ff;
   --c-modeling:      #f4c025;
   --c-choreography:  #dc3c78;
-  --c-sequencer:     #b08030;
+  --c-behavior:      #9030d0;
+  --c-society:       #c8a860;
+  --c-atlas-seq:     #b08030;
   --c-story:         #8c50ff;
   --c-memory:        #00c060;
   --c-sound:         #dc8c1e;
   --c-logic:         #20c8d0;
   --c-simulation:    #30e060;
   --c-forge:         #ff6400;
+  --c-network:       #ffffff;
 }
 
 html,body{
@@ -903,10 +903,10 @@ html,body{
         <span class="ni-icon">⇋</span>
         <span class="ni-label">Network</span>
       </div>
-      <div class="nav-item" id="nav-sequencer" data-layer="sequencer"
-           style="--lc:var(--c-sequencer)" onclick="switchLayer('sequencer')" title="09 · Sequencer | Chronicle">
+      <div class="nav-item" id="nav-atlas-seq" data-layer="atlas-seq"
+           style="--lc:var(--c-atlas-seq)" onclick="switchLayer('atlas-seq')" title="09 · Sequencer | Chronicle">
         <span class="ni-icon">▶</span>
-        <span class="ni-label">Sequencer</span>
+        <span class="ni-label">Chronicle</span>
       </div>
       <div class="nav-item" id="nav-story" data-layer="story"
            style="--lc:var(--c-story)" onclick="switchLayer('story')" title="10 · Story | Quill">
@@ -1174,14 +1174,14 @@ html,body{
         onload="frameLoaded('story')"></iframe>
 
       <!-- Atlas · 09 Sequencer | Chronicle -->
-      <div class="frame-loader" id="loader-sequencer">
+      <div class="frame-loader" id="loader-atlas-seq">
         <div class="loader-glyph" style="color:#b08030">▶</div>
         <div class="loader-lbl">Loading 09 · Sequencer | Chronicle</div>
         <div class="loader-bar"><div class="loader-fill" style="background:#b08030"></div></div>
       </div>
-      <iframe class="layer-frame" id="frame-sequencer"
+      <iframe class="layer-frame" id="frame-atlas-seq"
         src="quantum-atlas-sequencer.html"
-        onload="frameLoaded('sequencer')"></iframe>
+        onload="frameLoaded('atlas-seq')"></iframe>
 
       <!-- Atlas · 08 Behavior -->
       <div class="frame-loader" id="loader-behavior">
@@ -1571,7 +1571,7 @@ const LAYERS = {
   modeling:      { label:'05 · Modeling      | Animus',  icon:'✦', color:'var(--c-modeling)',      file:'quantum-atlas-modeling.html'      },
   choreography:  { label:'06 · Choreography | Loom',    icon:'⟳', color:'var(--c-choreography)',  file:'quantum-atlas-choreography.html'  },
   behavior:      { label:'07 · Behavior     | Instinct', icon:'⊙', color:'var(--c-behavior)',      file:'quantum-atlas-behavior.html'      },
-  sequencer:     { label:'09 · Sequencer    | Chronicle',icon:'▶', color:'var(--c-sequencer)',     file:'quantum-atlas-sequencer.html'     },
+  'atlas-seq':   { label:'09 · Sequencer    | Chronicle',icon:'▶', color:'var(--c-atlas-seq)',    file:'quantum-atlas-sequencer.html'     },
   story:         { label:'10 · Story        | Quill',    icon:'✎', color:'var(--c-story)',          file:'quantum-atlas-story.html'         },
   memory:        { label:'11 · Memory       | Codex',    icon:'◎', color:'var(--c-memory)',         file:'quantum-atlas-memory.html'        },
   sound:         { label:'12 · Sound        | Composer', icon:'♪', color:'var(--c-sound)',           file:'quantum-atlas-sound.html'         },
