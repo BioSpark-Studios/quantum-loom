@@ -58,7 +58,7 @@
 html,body{
   height:100%;overflow:hidden;
   background:var(--bg);color:#fff;
-  font-family:var(--fd);font-size:13px;
+  font-family:var(--fd);font-size:14px;
 }
 
 /* ── Outer shell ─────────────────────────────────────── */
@@ -943,7 +943,6 @@ html,body{
         <span class="ni-icon">⊙</span>
         <span class="ni-label">Behavior</span>
       </div>
-
       <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
     </div>
 
@@ -1029,6 +1028,13 @@ html,body{
       <iframe class="layer-frame" id="frame-ionodes"
         src="quantum-loom-io-nodes.html"
         onload="frameLoaded('ionodes')"></iframe>
+
+      <!-- Output -->
+      <div class="frame-loader" id="loader-output">
+        <div class="loader-glyph" style="color:var(--c-output)">⥘</div>
+        <div class="loader-lbl">Loading Output Renderer</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:var(--c-output)"></div></div>
+      </div>
       <iframe class="layer-frame" id="frame-output"
         src="quantum-loom-output.html"
         onload="frameLoaded('output')"></iframe>
@@ -1192,6 +1198,16 @@ html,body{
       <iframe class="layer-frame" id="frame-behavior"
         src="quantum-atlas-behavior.html"
         onload="frameLoaded('behavior')"></iframe>
+
+      <!-- 16 · Network | Nexus -->
+      <div class="frame-loader" id="loader-network">
+        <div class="loader-glyph" style="color:var(--c-network)">⇋</div>
+        <div class="loader-lbl">Loading 16 · Network | Nexus</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:var(--c-network)"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-network"
+        src="quantum-atlas-network.html"
+        onload="frameLoaded('network')"></iframe>
 
     </div>
   </div>
@@ -1454,7 +1470,7 @@ html,body{
     <span style="font-size:1.1rem">🤖</span>
     <span class="lp-title">AI Assistant</span>
     <div class="lp-dot" id="llm-dot"></div>
-    <button class="fm-close" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.85rem;padding:2px 6px" onclick="closeLLMPanel()">✕</button>
+    <button class="fb-close" onclick="closeLLMPanel()">✕</button>
   </div>
 
   <div class="lp-tabs">
@@ -1511,7 +1527,7 @@ html,body{
   </div>
 
   <!-- CHAT TAB -->
-  <div id="lp-pane-chat" style="display:none;flex:1;flex-direction:column;overflow:hidden;display:none">
+  <div id="lp-pane-chat" style="display:none;flex:1;flex-direction:column;overflow:hidden">
     <div class="lp-chat-msgs" id="lp-msgs"></div>
     <div class="lp-chat-input-row">
       <textarea class="lp-chat-input" id="lp-chat-input" placeholder="Ask anything about your story…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();llmSend()}"></textarea>

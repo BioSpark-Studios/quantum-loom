@@ -30,7 +30,7 @@
 html,body{
   height:100%;overflow:hidden;
   background:var(--bg);color:#fff;
-  font-family:var(--fd);font-size:13px;
+  font-family:var(--fd);font-size:14px;
 }
 
 #shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
@@ -1463,7 +1463,7 @@ function handleGenerate() {
 
     // Save snapshot
     try {
-      localStorage.setItem('qa-modeling-snapshot', JSON.stringify({
+      const _modelSnap = JSON.stringify({
         system: 'Quantum Atlas',
         module: '05 · Modeling',
         generated: new Date().toISOString(),
@@ -1474,7 +1474,9 @@ function handleGenerate() {
           emotions: e.emotions, physiology: e.physiology,
           memory_seeds: e.memory_seeds, animation_state: e.animation_state,
         })),
-      }));
+      });
+      localStorage.setItem('qa-modeling-snapshot', _modelSnap);
+      window.parent.postMessage({type:'hub:storage:write',key:'qa-modeling-snapshot',value:_modelSnap},'*');
     } catch(err) {}
 
     renderRoster();
@@ -1601,6 +1603,15 @@ startAnimLoop();
   try { const s = JSON.parse(localStorage.getItem('ql-theme')||'{}'); if (s.tokens) applyTokens(s.tokens); } catch(e) {}
   window.addEventListener('message', e => { if (e.data?.type==='ql:theme' && e.data.tokens) applyTokens(e.data.tokens); });
 })();
+
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Modeling | Animus`;
+  }
+  if (d.type === 'hub:layer:activate') checkUpstream();
+});
 </script>
 </body>
 </html>
