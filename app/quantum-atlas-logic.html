@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 13 · Logic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #04050a;
+  --surface:  rgba(8,11,18,.98);
+  --surface2: rgba(12,16,24,.97);
+  --edge:     rgba(255,255,255,.055);
+  --edge-hi:  rgba(255,255,255,.12);
+  --venturan: #b1d0f0;
+  --amber:    #e8b84b;
+  --emerald:  #4dc8a0;
+  --solari:   #f98f3b;
+  --fusion:   #9b7fd4;
+  --blood:    #d45b5b;
+  --totem:    #7fd4c8;
+  --logic:    #20c8d0;
+  --text:     rgba(255,255,255,.82);
+  --fm:'Orbitron',monospace;
+  --fd:'Space Grotesk',sans-serif;
+  --fc:'JetBrains Mono',monospace;
+}
+
+html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-family:var(--fd);font-size:13px;}
+#shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;overflow:hidden;
+}
+
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--logic);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;color:var(--logic);
+  animation:breathe 4s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes breathe{
+  0%,100%{box-shadow:0 0 4px rgba(32,200,208,.2);}
+  50%{box-shadow:0 0 14px rgba(32,200,208,.6);}
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--logic);white-space:nowrap;
+}
+.tb-subcrest{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.16em;
+  color:rgba(32,200,208,.5);text-transform:uppercase;margin-top:2px;
+}
+
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:0 10px;height:100%;
+  display:flex;align-items:center;cursor:pointer;
+  color:rgba(255,255,255,.35);border-bottom:2px solid transparent;
+  transition:all .12s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03);}
+.tb-tab.active{color:var(--logic);border-bottom-color:var(--logic);}
+
+.tb-links{
+  display:flex;align-items:center;gap:5px;padding:0 10px;
+  border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-link-chip{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:10px;border:1px solid;cursor:default;transition:all .15s;
+}
+.tb-link-chip.lit{color:#4dc8a0;border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.07);}
+.tb-link-chip.dim{color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.07);background:transparent;}
+
+.tb-actions{display:flex;gap:4px;padding:0 10px;height:100%;align-items:center;flex-shrink:0;}
+.tb-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff;}
+.tb-btn.hot{
+  border-color:rgba(32,200,208,.45);background:rgba(32,200,208,.08);color:var(--logic);
+}
+.tb-btn.hot:hover{background:rgba(32,200,208,.16);box-shadow:0 0 12px rgba(32,200,208,.2);}
+
+.tb-spacer{flex:1;}
+.tb-dept{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.18);padding:0 14px;white-space:nowrap;
+}
+
+/* ── BODY ── */
+#body{flex:1;display:flex;overflow:hidden;}
+
+/* ── LEFT PANEL ── */
+#left-panel{
+  width:240px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;
+}
+
+.lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.lp-scroll::-webkit-scrollbar{width:3px;}
+.lp-scroll::-webkit-scrollbar-track{background:transparent;}
+.lp-scroll::-webkit-scrollbar-thumb{background:var(--logic);border-radius:2px;opacity:.4;}
+
+.lp-header{
+  padding:8px 10px;border-bottom:1px solid var(--edge);flex-shrink:0;
+  display:flex;align-items:center;gap:6px;
+}
+.lp-header-title{font-family:var(--fm);font-size:.38rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.5);}
+.lp-header-badge{
+  font-family:var(--fc);font-size:.26rem;padding:1px 6px;border-radius:8px;
+  border:1px solid rgba(32,200,208,.3);background:rgba(32,200,208,.07);color:var(--logic);
+  margin-left:auto;
+}
+
+.lp-section{border-bottom:1px solid var(--edge);}
+.lp-section-header{
+  padding:7px 10px;display:flex;align-items:center;gap:6px;
+  cursor:pointer;user-select:none;transition:background .1s;
+}
+.lp-section-header:hover{background:rgba(255,255,255,.025);}
+.lp-sec-num{font-family:var(--fm);font-size:.38rem;color:var(--logic);letter-spacing:.06em;opacity:.75;}
+.lp-sec-name{font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);flex:1;}
+.lp-sec-chevron{font-size:.5rem;color:rgba(255,255,255,.25);transition:transform .18s;}
+.lp-section.collapsed .lp-sec-chevron{transform:rotate(-90deg);}
+.lp-section-body{overflow:hidden;transition:max-height .22s ease;}
+.lp-section.collapsed .lp-section-body{max-height:0!important;}
+
+/* Component cards */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:6px 8px;}
+.comp-card{
+  background:rgba(255,255,255,.03);border:1px solid var(--edge);border-radius:4px;
+  padding:6px 7px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;
+}
+.comp-card:hover{background:rgba(32,200,208,.06);border-color:rgba(32,200,208,.25);}
+.comp-card.active{background:rgba(32,200,208,.1);border-color:rgba(32,200,208,.45);}
+.comp-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--logic),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.comp-card.active::before{opacity:1;}
+.comp-code{font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;color:var(--logic);text-transform:uppercase;}
+.comp-name{font-family:var(--fd);font-size:.3rem;color:rgba(255,255,255,.55);margin-top:2px;line-height:1.3;}
+.comp-dept{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.2);margin-top:3px;text-transform:uppercase;letter-spacing:.06em;}
+.comp-status{
+  display:inline-block;width:5px;height:5px;border-radius:50%;
+  position:absolute;top:6px;right:6px;
+}
+.comp-status.on{background:var(--emerald);box-shadow:0 0 4px var(--emerald);}
+.comp-status.idle{background:rgba(255,255,255,.2);}
+.comp-status.run{background:var(--amber);animation:pulse-dot .7s ease-in-out infinite alternate;}
+@keyframes pulse-dot{from{opacity:.4;}to{opacity:1;}}
+
+/* ── CANVAS ── */
+#canvas-wrap{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  position:relative;background:#04050a;
+}
+#logic-canvas{display:block;width:100%;height:100%;cursor:grab;}
+#logic-canvas.dragging{cursor:grabbing;}
+
+.canvas-overlay-info{
+  position:absolute;top:8px;left:8px;
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.2);pointer-events:none;line-height:1.8;
+}
+
+.canvas-legend{
+  position:absolute;bottom:36px;left:8px;
+  display:flex;flex-direction:column;gap:4px;pointer-events:none;
+}
+.legend-item{display:flex;align-items:center;gap:5px;}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.legend-rect{width:12px;height:8px;border-radius:2px;flex-shrink:0;}
+.legend-lbl{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase;}
+
+.canvas-controls{
+  position:absolute;bottom:36px;right:8px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.cc-btn{
+  font-family:var(--fc);font-size:.32rem;
+  width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--edge);background:rgba(8,11,18,.9);color:rgba(255,255,255,.4);
+  border-radius:3px;cursor:pointer;transition:all .12s;
+}
+.cc-btn:hover{background:rgba(32,200,208,.12);border-color:rgba(32,200,208,.4);color:var(--logic);}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:280px;flex-shrink:0;background:var(--surface);
+  border-left:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;
+}
+.rp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-track{background:transparent;}
+.rp-scroll::-webkit-scrollbar-thumb{background:var(--logic);border-radius:2px;}
+
+.rp-section{border-bottom:1px solid var(--edge);}
+.rp-section-header{
+  padding:7px 10px;display:flex;align-items:center;gap:6px;flex-shrink:0;
+  border-bottom:1px solid var(--edge);
+}
+.rp-sec-title{font-family:var(--fm);font-size:.34rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);}
+.rp-sec-badge{
+  font-family:var(--fc);font-size:.26rem;padding:1px 6px;border-radius:8px;border:1px solid;
+  margin-left:auto;
+}
+
+/* Rule editor */
+#rule-editor-section{padding:8px 10px;}
+.rule-editor-list{display:flex;flex-direction:column;gap:3px;}
+.rule-row{
+  display:flex;align-items:center;gap:6px;padding:5px 7px;
+  background:rgba(255,255,255,.025);border:1px solid var(--edge);border-radius:3px;
+  transition:all .12s;cursor:default;
+}
+.rule-row:hover{background:rgba(32,200,208,.05);border-color:rgba(32,200,208,.18);}
+.rule-toggle{
+  width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);
+  flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.rule-toggle.enabled{border-color:var(--logic);background:rgba(32,200,208,.15);}
+.rule-toggle.enabled::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--logic);display:block;}
+.rule-name{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.6);flex:1;line-height:1.3;}
+.rule-status{font-size:.45rem;flex-shrink:0;}
+.rule-status.satisfied{color:var(--emerald);}
+.rule-status.violated{color:var(--blood);}
+.rule-status.unknown{color:rgba(255,255,255,.2);}
+
+/* Evaluate button */
+#eval-section{padding:10px;}
+.evaluate-btn{
+  width:100%;font-family:var(--fm);font-size:.4rem;letter-spacing:.15em;
+  text-transform:uppercase;padding:10px;border-radius:4px;cursor:pointer;
+  border:1px solid rgba(32,200,208,.5);background:rgba(32,200,208,.1);
+  color:var(--logic);transition:all .15s;
+}
+.evaluate-btn:hover{background:rgba(32,200,208,.2);box-shadow:0 0 16px rgba(32,200,208,.25);border-color:rgba(32,200,208,.7);}
+.evaluate-btn:active{transform:scale(.98);}
+.evaluate-btn.running{
+  animation:eval-pulse .5s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes eval-pulse{
+  from{background:rgba(32,200,208,.1);box-shadow:0 0 6px rgba(32,200,208,.15);}
+  to{background:rgba(32,200,208,.25);box-shadow:0 0 20px rgba(32,200,208,.35);}
+}
+
+/* Conflict log */
+#conflict-log-section{padding:8px 10px;}
+.conflict-log-list{display:flex;flex-direction:column;gap:4px;max-height:140px;overflow-y:auto;}
+.conflict-log-list::-webkit-scrollbar{width:2px;}
+.conflict-log-list::-webkit-scrollbar-thumb{background:var(--blood);border-radius:1px;}
+.conflict-entry{
+  padding:5px 7px;border-radius:3px;border:1px solid;
+  background:rgba(212,91,91,.05);border-color:rgba(212,91,91,.2);
+}
+.conflict-entry.resolved{
+  background:rgba(77,200,160,.04);border-color:rgba(77,200,160,.15);
+}
+.ce-header{display:flex;align-items:center;gap:5px;margin-bottom:3px;}
+.ce-src{font-family:var(--fm);font-size:.26rem;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);}
+.ce-time{font-family:var(--fc);font-size:.24rem;color:rgba(255,255,255,.2);margin-left:auto;}
+.ce-desc{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.55);line-height:1.4;}
+.ce-res{font-family:var(--fc);font-size:.26rem;color:var(--emerald);margin-top:2px;}
+.ce-res.pending{color:var(--amber);}
+.conflict-empty{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);
+  text-align:center;padding:14px 0;text-transform:uppercase;letter-spacing:.08em;
+}
+
+/* Axiom stats */
+#axiom-stats-section{padding:8px 10px;}
+.axiom-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.axiom-stat{
+  background:rgba(255,255,255,.03);border:1px solid var(--edge);border-radius:3px;
+  padding:6px 8px;
+}
+.axiom-stat-val{font-family:var(--fm);font-size:.6rem;color:var(--logic);}
+.axiom-stat-val.warn{color:var(--amber);}
+.axiom-stat-val.danger{color:var(--blood);}
+.axiom-stat-lbl{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+.axiom-stat-full{grid-column:1/-1;}
+.axiom-eval-time{
+  margin-top:6px;padding:4px 7px;background:rgba(255,255,255,.025);
+  border:1px solid var(--edge);border-radius:3px;
+  display:flex;align-items:center;gap:6px;
+}
+.aet-lbl{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;}
+.aet-val{font-family:var(--fm);font-size:.32rem;color:var(--logic);margin-left:auto;}
+
+/* Snapshot section */
+#snapshot-section{padding:8px 10px;}
+.snap-display{
+  background:rgba(255,255,255,.025);border:1px solid var(--edge);border-radius:3px;
+  padding:6px 8px;
+  font-family:var(--fc);font-size:.27rem;color:rgba(255,255,255,.4);
+  line-height:1.6;max-height:110px;overflow-y:auto;word-break:break-all;
+}
+.snap-display::-webkit-scrollbar{width:2px;}
+.snap-display::-webkit-scrollbar-thumb{background:var(--logic);border-radius:1px;}
+.snap-actions{display:flex;gap:4px;margin-top:6px;}
+.snap-btn{
+  flex:1;font-family:var(--fm);font-size:.3rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.4);
+}
+.snap-btn:hover{background:rgba(32,200,208,.08);border-color:rgba(32,200,208,.3);color:var(--logic);}
+
+/* STATUS BAR */
+#status-bar{
+  height:26px;flex-shrink:0;display:flex;align-items:center;gap:0;
+  background:var(--surface2);border-top:1px solid var(--edge);
+  padding:0 12px;overflow:hidden;
+}
+.sb-item{
+  display:flex;align-items:center;gap:4px;
+  padding:0 10px;border-right:1px solid var(--edge);height:100%;
+}
+.sb-item:first-child{padding-left:0;}
+.sb-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.sb-dot.green{background:var(--emerald);box-shadow:0 0 4px var(--emerald);}
+.sb-dot.amber{background:var(--amber);box-shadow:0 0 4px var(--amber);}
+.sb-dot.red{background:var(--blood);box-shadow:0 0 4px var(--blood);}
+.sb-dot.blue{background:var(--logic);box-shadow:0 0 4px var(--logic);}
+.sb-dot.dim{background:rgba(255,255,255,.15);}
+.sb-label{font-family:var(--fc);font-size:.28rem;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.sb-val{font-family:var(--fc);font-size:.28rem;letter-spacing:.06em;color:rgba(255,255,255,.5);}
+.sb-spacer{flex:1;}
+.sb-ts{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.18);letter-spacing:.08em;}
+
+/* Node detail overlay (clicking a canvas node) */
+#node-detail{
+  position:absolute;top:50px;right:10px;width:200px;
+  background:var(--surface);border:1px solid var(--edge-hi);border-radius:5px;
+  padding:10px;display:none;z-index:15;
+}
+#node-detail.visible{display:block;}
+.nd-close{
+  position:absolute;top:6px;right:8px;font-size:.7rem;color:rgba(255,255,255,.3);
+  cursor:pointer;transition:color .1s;
+}
+.nd-close:hover{color:#fff;}
+.nd-title{font-family:var(--fm);font-size:.38rem;letter-spacing:.1em;color:var(--logic);text-transform:uppercase;margin-bottom:6px;padding-right:14px;}
+.nd-row{display:flex;gap:6px;margin-bottom:4px;align-items:flex-start;}
+.nd-lbl{font-family:var(--fc);font-size:.27rem;color:rgba(255,255,255,.3);width:55px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em;}
+.nd-val{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.65);flex:1;line-height:1.4;}
+.nd-chip{
+  display:inline-block;font-family:var(--fc);font-size:.25rem;
+  padding:1px 5px;border-radius:8px;border:1px solid;
+}
+
+/* tooltip */
+#canvas-tooltip{
+  position:absolute;pointer-events:none;display:none;
+  background:rgba(4,5,10,.95);border:1px solid var(--edge-hi);
+  border-radius:3px;padding:4px 8px;
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.7);
+  letter-spacing:.05em;z-index:30;white-space:nowrap;
+}
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- ══ TOP BAR ══ -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">⊢</div>
+      <div>
+        <div class="tb-module-id">13 · Logic</div>
+        <div class="tb-subcrest">Axiom · PipelineSystems</div>
+      </div>
+    </div>
+
+    <div class="tb-tabs">
+      <div class="tb-tab active" data-tab="tree">Decision Tree</div>
+      <div class="tb-tab" data-tab="rules">Rules</div>
+      <div class="tb-tab" data-tab="conflicts">Conflicts</div>
+      <div class="tb-tab" data-tab="export">Export</div>
+    </div>
+
+    <div class="tb-links">
+      <div class="tb-link-chip lit" title="Terrain snapshot">TRN</div>
+      <div class="tb-link-chip lit" title="Environment snapshot">ENV</div>
+      <div class="tb-link-chip lit" title="Behavior snapshot">BHV</div>
+      <div class="tb-link-chip lit" title="Society snapshot">SOC</div>
+      <div class="tb-link-chip lit" title="Sequencer snapshot">SEQ</div>
+      <div class="tb-link-chip lit" title="Story snapshot">STR</div>
+      <div class="tb-link-chip dim" title="qa-logic-snapshot">LGC↓</div>
+    </div>
+
+    <div class="tb-actions">
+      <button class="tb-btn" id="btn-reset-view">Reset View</button>
+      <button class="tb-btn" id="btn-clear-conflicts">Clear Log</button>
+      <button class="tb-btn hot" id="btn-evaluate">⊢ Evaluate</button>
+    </div>
+
+    <div class="tb-spacer"></div>
+    <div class="tb-dept">PipelineSystems · Dept LGC</div>
+  </div>
+
+  <!-- ══ BODY ══ -->
+  <div id="body">
+
+    <!-- ── LEFT PANEL ── -->
+    <div id="left-panel">
+      <div class="lp-header">
+        <span class="lp-header-title">Components</span>
+        <span class="lp-header-badge" id="active-comp-count">16</span>
+      </div>
+      <div class="lp-scroll" id="lp-scroll">
+
+        <!-- Layer I — Rules -->
+        <div class="lp-section" id="sec-rules">
+          <div class="lp-section-header" onclick="toggleSection('sec-rules')">
+            <span class="lp-sec-num">I</span>
+            <span class="lp-sec-name">Rules</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:200px">
+            <div class="comp-grid">
+              <div class="comp-card active" data-comp="WRR" onclick="selectComp(this,'WRR')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">WRR</div>
+                <div class="comp-name">World Rule Registry</div>
+                <div class="comp-dept">→ LGC</div>
+              </div>
+              <div class="comp-card" data-comp="CSV" onclick="selectComp(this,'CSV')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">CSV</div>
+                <div class="comp-name">Constraint Validator</div>
+                <div class="comp-dept">→ LGC</div>
+              </div>
+              <div class="comp-card" data-comp="PEV" onclick="selectComp(this,'PEV')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">PEV</div>
+                <div class="comp-name">Predicate Evaluator</div>
+                <div class="comp-dept">→ LGC</div>
+              </div>
+              <div class="comp-card" data-comp="RPS" onclick="selectComp(this,'RPS')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">RPS</div>
+                <div class="comp-name">Rule Priority Sorter</div>
+                <div class="comp-dept">→ LGC</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer II — Tree -->
+        <div class="lp-section" id="sec-tree">
+          <div class="lp-section-header" onclick="toggleSection('sec-tree')">
+            <span class="lp-sec-num">II</span>
+            <span class="lp-sec-name">Tree</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:200px">
+            <div class="comp-grid">
+              <div class="comp-card" data-comp="CTB" onclick="selectComp(this,'CTB')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">CTB</div>
+                <div class="comp-name">Condition Tree Builder</div>
+                <div class="comp-dept">→ LGC</div>
+              </div>
+              <div class="comp-card" data-comp="BRR" onclick="selectComp(this,'BRR')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">BRR</div>
+                <div class="comp-name">Branch Resolver</div>
+                <div class="comp-dept">→ LGC</div>
+              </div>
+              <div class="comp-card" data-comp="LAD" onclick="selectComp(this,'LAD')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">LAD</div>
+                <div class="comp-name">Leaf Action Dispatcher</div>
+                <div class="comp-dept">→ AGT</div>
+              </div>
+              <div class="comp-card" data-comp="TRP" onclick="selectComp(this,'TRP')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">TRP</div>
+                <div class="comp-name">Tree Pruner</div>
+                <div class="comp-dept">→ LGC</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer III — Conflict -->
+        <div class="lp-section" id="sec-conflict">
+          <div class="lp-section-header" onclick="toggleSection('sec-conflict')">
+            <span class="lp-sec-num">III</span>
+            <span class="lp-sec-name">Conflict</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:200px">
+            <div class="comp-grid">
+              <div class="comp-card" data-comp="CDD" onclick="selectComp(this,'CDD')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">CDD</div>
+                <div class="comp-name">Contradiction Detector</div>
+                <div class="comp-dept">→ LGC</div>
+              </div>
+              <div class="comp-card" data-comp="RSP" onclick="selectComp(this,'RSP')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">RSP</div>
+                <div class="comp-name">Resolution Strategy Picker</div>
+                <div class="comp-dept">→ LGC</div>
+              </div>
+              <div class="comp-card" data-comp="OSM" onclick="selectComp(this,'OSM')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">OSM</div>
+                <div class="comp-name">Override Stack Manager</div>
+                <div class="comp-dept">→ LGC</div>
+              </div>
+              <div class="comp-card" data-comp="CAR" onclick="selectComp(this,'CAR')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">CAR</div>
+                <div class="comp-name">Consensus Arbiter</div>
+                <div class="comp-dept">→ SOC</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer IV — Export -->
+        <div class="lp-section" id="sec-export">
+          <div class="lp-section-header" onclick="toggleSection('sec-export')">
+            <span class="lp-sec-num">IV</span>
+            <span class="lp-sec-name">Export</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:200px">
+            <div class="comp-grid">
+              <div class="comp-card" data-comp="LSS" onclick="selectComp(this,'LSS')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">LSS</div>
+                <div class="comp-name">Logic State Serializer</div>
+                <div class="comp-dept">→ DAT</div>
+              </div>
+              <div class="comp-card" data-comp="APB" onclick="selectComp(this,'APB')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">APB</div>
+                <div class="comp-name">Axiom Packet Builder</div>
+                <div class="comp-dept">→ LGC</div>
+              </div>
+              <div class="comp-card" data-comp="CRW" onclick="selectComp(this,'CRW')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">CRW</div>
+                <div class="comp-name">Constraint Report Writer</div>
+                <div class="comp-dept">→ NAR</div>
+              </div>
+              <div class="comp-card" data-comp="DRP" onclick="selectComp(this,'DRP')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">DRP</div>
+                <div class="comp-name">Downstream Rule Pusher</div>
+                <div class="comp-dept">→ AGT</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /lp-scroll -->
+    </div><!-- /left-panel -->
+
+    <!-- ── CANVAS ── -->
+    <div id="canvas-wrap">
+      <canvas id="logic-canvas"></canvas>
+
+      <div class="canvas-overlay-info" id="canvas-info">
+        MOD 13 · LOGIC GRAPH<br>
+        VIEW: DECISION TREE<br>
+        <span id="ci-nodes">NODES: 0</span><br>
+        <span id="ci-edges">EDGES: 0</span><br>
+        <span id="ci-zoom">ZOOM: 100%</span>
+      </div>
+
+      <div class="canvas-legend">
+        <div class="legend-item"><div class="legend-rect" style="background:#20c8d0;opacity:.8;"></div><span class="legend-lbl">World Rule</span></div>
+        <div class="legend-item"><div class="legend-rect" style="background:#e8b84b;opacity:.8;"></div><span class="legend-lbl">Constraint</span></div>
+        <div class="legend-item"><div class="legend-rect" style="background:#9b7fd4;opacity:.8;"></div><span class="legend-lbl">Behavioral</span></div>
+        <div class="legend-item"><div class="legend-rect" style="background:#c8a860;opacity:.8;"></div><span class="legend-lbl">Social</span></div>
+        <div class="legend-item"><div class="legend-rect" style="background:#8c50ff;opacity:.8;"></div><span class="legend-lbl">Narrative</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#4dc8a0;"></div><span class="legend-lbl">Leaf: PASS</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d45b5b;"></div><span class="legend-lbl">Leaf: FAIL</span></div>
+      </div>
+
+      <div class="canvas-controls">
+        <div class="cc-btn" id="cc-zoom-in" title="Zoom In">+</div>
+        <div class="cc-btn" id="cc-zoom-out" title="Zoom Out">−</div>
+        <div class="cc-btn" id="cc-fit" title="Fit View">⊡</div>
+        <div class="cc-btn" id="cc-center" title="Center Root">⊙</div>
+      </div>
+
+      <!-- Node detail popup -->
+      <div id="node-detail">
+        <span class="nd-close" id="nd-close">✕</span>
+        <div class="nd-title" id="nd-title">Node</div>
+        <div class="nd-row"><span class="nd-lbl">Type</span><span class="nd-val" id="nd-type">—</span></div>
+        <div class="nd-row"><span class="nd-lbl">Rule</span><span class="nd-val" id="nd-rule">—</span></div>
+        <div class="nd-row"><span class="nd-lbl">Status</span><span class="nd-val" id="nd-status">—</span></div>
+        <div class="nd-row"><span class="nd-lbl">Depth</span><span class="nd-val" id="nd-depth">—</span></div>
+        <div class="nd-row"><span class="nd-lbl">Children</span><span class="nd-val" id="nd-children">—</span></div>
+        <div class="nd-row"><span class="nd-lbl">Priority</span><span class="nd-val" id="nd-priority">—</span></div>
+      </div>
+
+      <div id="canvas-tooltip"></div>
+    </div><!-- /canvas-wrap -->
+
+    <!-- ── RIGHT PANEL ── -->
+    <div id="right-panel">
+      <div class="rp-scroll">
+
+        <!-- Rule Editor -->
+        <div class="rp-section">
+          <div class="rp-section-header">
+            <span class="rp-sec-title">Rule Editor</span>
+            <span class="rp-sec-badge" id="rp-rule-badge" style="color:var(--logic);border-color:rgba(32,200,208,.3);background:rgba(32,200,208,.06);">12 RULES</span>
+          </div>
+          <div id="rule-editor-section">
+            <div class="rule-editor-list" id="rule-list">
+              <!-- populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Evaluate -->
+        <div class="rp-section">
+          <div class="rp-section-header">
+            <span class="rp-sec-title">Constraint Pass</span>
+          </div>
+          <div id="eval-section">
+            <button class="evaluate-btn" id="rp-evaluate-btn" onclick="runEvaluation()">⊢ Run Evaluation Pass</button>
+            <div style="margin-top:7px;font-family:var(--fc);font-size:.27rem;color:rgba(255,255,255,.25);line-height:1.6;">
+              Reads upstream snapshots (terrain, environ, behavior, society, sequencer, story) and runs constraint satisfaction across all active rules.
+            </div>
+          </div>
+        </div>
+
+        <!-- Conflict Log -->
+        <div class="rp-section">
+          <div class="rp-section-header">
+            <span class="rp-sec-title">Conflict Log</span>
+            <span class="rp-sec-badge" id="rp-conflict-badge" style="color:var(--blood);border-color:rgba(212,91,91,.3);background:rgba(212,91,91,.06);">0 CONFLICTS</span>
+          </div>
+          <div id="conflict-log-section">
+            <div class="conflict-log-list" id="conflict-list">
+              <div class="conflict-empty" id="conflict-empty">No conflicts detected</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Axiom Stats -->
+        <div class="rp-section">
+          <div class="rp-section-header">
+            <span class="rp-sec-title">Axiom Stats</span>
+          </div>
+          <div id="axiom-stats-section">
+            <div class="axiom-stats-grid">
+              <div class="axiom-stat">
+                <div class="axiom-stat-val" id="stat-total">12</div>
+                <div class="axiom-stat-lbl">Total Rules</div>
+              </div>
+              <div class="axiom-stat">
+                <div class="axiom-stat-val" id="stat-satisfied">0</div>
+                <div class="axiom-stat-lbl">Satisfied</div>
+              </div>
+              <div class="axiom-stat">
+                <div class="axiom-stat-val danger" id="stat-violated">0</div>
+                <div class="axiom-stat-lbl">Violated</div>
+              </div>
+              <div class="axiom-stat">
+                <div class="axiom-stat-val warn" id="stat-conflicts">0</div>
+                <div class="axiom-stat-lbl">Conflicts</div>
+              </div>
+              <div class="axiom-stat axiom-stat-full">
+                <div class="axiom-stat-val" id="stat-constraints">8</div>
+                <div class="axiom-stat-lbl">Active Constraints</div>
+              </div>
+            </div>
+            <div class="axiom-eval-time">
+              <span class="aet-lbl">Last Eval</span>
+              <span class="aet-val" id="stat-eval-time">— ms</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Snapshot -->
+        <div class="rp-section">
+          <div class="rp-section-header">
+            <span class="rp-sec-title">qa-logic-snapshot</span>
+          </div>
+          <div id="snapshot-section">
+            <div class="snap-display" id="snap-display">Awaiting first evaluation…</div>
+            <div class="snap-actions">
+              <button class="snap-btn" onclick="copySnapshot()">Copy JSON</button>
+              <button class="snap-btn" onclick="runEvaluation()">Re-Eval</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /rp-scroll -->
+    </div><!-- /right-panel -->
+
+  </div><!-- /body -->
+
+  <!-- ══ STATUS BAR ══ -->
+  <div id="status-bar">
+    <div class="sb-item">
+      <div class="sb-dot green" id="sb-engine-dot"></div>
+      <span class="sb-label">Engine</span>
+      <span class="sb-val" id="sb-engine-val">READY</span>
+    </div>
+    <div class="sb-item">
+      <div class="sb-dot blue"></div>
+      <span class="sb-label">Axiom Depth</span>
+      <span class="sb-val" id="sb-depth">4</span>
+    </div>
+    <div class="sb-item">
+      <div class="sb-dot" id="sb-eval-dot" style="background:rgba(255,255,255,.15);"></div>
+      <span class="sb-label">Eval Pass</span>
+      <span class="sb-val" id="sb-eval-val">#0</span>
+    </div>
+    <div class="sb-item">
+      <div class="sb-dot amber" id="sb-conflict-dot" style="display:none;"></div>
+      <div class="sb-dot dim" id="sb-conflict-dim"></div>
+      <span class="sb-label">Conflicts</span>
+      <span class="sb-val" id="sb-conflict-val">0</span>
+    </div>
+    <div class="sb-item">
+      <span class="sb-label">Downstream</span>
+      <span class="sb-val" id="sb-downstream">0 pushes</span>
+    </div>
+    <div class="sb-spacer"></div>
+    <span class="sb-ts" id="sb-ts">—</span>
+  </div>
+
+</div><!-- /shell -->
+
+<!-- ══ JAVASCRIPT ══ -->
+<script>
+'use strict';
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+const STATE = {
+  evalPasses: 0,
+  satisfied: 0,
+  violated: 0,
+  conflicts: 0,
+  lastEvalMs: 0,
+  activeConstraints: 8,
+  axiomDepth: 4,
+  downstreamPushes: 0,
+  evaluating: false,
+  animT: 0,
+  pulseActive: false,
+  pulseNodes: [],      // {nodeId, t, maxT, x, y}
+  pulseEdges: [],      // {fromId, toId, t, maxT}
+  conflictLog: [],
+  selectedComp: 'WRR',
+  selectedNode: null,
+};
+
+// ─────────────────────────────────────────────
+// WORLD RULES
+// ─────────────────────────────────────────────
+const WORLD_RULES = [
+  { id: 'WR01', name: 'Entities cannot occupy same hex',         type: 'world',       priority: 1, enabled: true,  status: 'unknown' },
+  { id: 'WR02', name: 'Society requires ≥3 active members',     type: 'social',      priority: 2, enabled: true,  status: 'unknown' },
+  { id: 'WR03', name: 'Weather ≤ storm during Peace phase',     type: 'constraint',  priority: 2, enabled: true,  status: 'unknown' },
+  { id: 'WR04', name: 'Narrative arc depth ≤ 6 levels',        type: 'narrative',   priority: 3, enabled: true,  status: 'unknown' },
+  { id: 'WR05', name: 'Behavior state must match env temp ±15', type: 'behavioral',  priority: 2, enabled: true,  status: 'unknown' },
+  { id: 'WR06', name: 'No two conflicting factions coexist',    type: 'social',      priority: 1, enabled: true,  status: 'unknown' },
+  { id: 'WR07', name: 'Terrain elevation change ≤ 4 per tick',  type: 'constraint',  priority: 3, enabled: true,  status: 'unknown' },
+  { id: 'WR08', name: 'Sequencer delta ≤ 0.5 per phase',       type: 'world',       priority: 2, enabled: true,  status: 'unknown' },
+  { id: 'WR09', name: 'Story beat cannot skip phase gate',      type: 'narrative',   priority: 1, enabled: true,  status: 'unknown' },
+  { id: 'WR10', name: 'Resource consumption ≤ generation rate', type: 'constraint',  priority: 2, enabled: false, status: 'unknown' },
+  { id: 'WR11', name: 'Agent goal must align with faction',     type: 'behavioral',  priority: 3, enabled: true,  status: 'unknown' },
+  { id: 'WR12', name: 'World entropy bounded by axiom depth',   type: 'world',       priority: 1, enabled: true,  status: 'unknown' },
+];
+
+const RULE_COLORS = {
+  world:      '#20c8d0',
+  constraint: '#e8b84b',
+  behavioral: '#9b7fd4',
+  social:     '#c8a860',
+  narrative:  '#8c50ff',
+};
+
+// ─────────────────────────────────────────────
+// TREE NODES — decision tree structure
+// ─────────────────────────────────────────────
+// Each node: {id, label, type, ruleId, x, y, children[], parent, depth, leaf, pass, conflict, active}
+let TREE_NODES = [];
+let TREE_EDGES = [];
+
+function buildTree() {
+  TREE_NODES = [];
+  TREE_EDGES = [];
+
+  // Root
+  addNode('root',    'WORLD AXIOM ROOT',           'world',      null,   0, true,  true,  false, 0);
+  // Depth 1 branches
+  addNode('b-world', 'World Rules',                'world',      null,   1, true,  true,  false, 1);
+  addNode('b-const', 'Constraints',                'constraint', null,   1, true,  true,  false, 1);
+  addNode('b-agent', 'Agent/Behavior',             'behavioral', null,   1, false, true,  false, 1);
+  // Depth 2 — world subtree
+  addNode('b-hex',   'Hex Occupancy',              'world',      'WR01', 2, false, true,  false, 2);
+  addNode('b-seq',   'Sequencer Sync',             'world',      'WR08', 2, false, true,  false, 2);
+  addNode('b-entr',  'Entropy Bound',              'world',      'WR12', 2, false, true,  false, 2);
+  // Depth 2 — constraint subtree
+  addNode('b-wea',   'Weather Constraint',         'constraint', 'WR03', 2, false, true,  false, 2);
+  addNode('b-terr',  'Terrain Elevation',          'constraint', 'WR07', 2, false, false, false, 2);
+  addNode('b-res',   'Resource Rate',              'constraint', 'WR10', 2, false, false, false, 2);
+  // Depth 2 — agent subtree
+  addNode('b-bhv',   'Behavior State',             'behavioral', 'WR05', 2, false, true,  false, 2);
+  addNode('b-goal',  'Agent Goal Alignment',       'behavioral', 'WR11', 2, false, true,  false, 2);
+  // Depth 3 — social/narrative
+  addNode('b-soc',   'Society Rules',              'social',     null,   3, false, true,  false, 3);
+  addNode('b-nar',   'Narrative Rules',            'narrative',  null,   3, false, true,  false, 3);
+  addNode('b-soc2',  'Faction Coexistence',        'social',     'WR06', 3, false, true,  false, 3);
+  addNode('b-soc3',  'Society Member Count',       'social',     'WR02', 3, false, true,  false, 3);
+  addNode('b-nar2',  'Arc Depth Guard',            'narrative',  'WR04', 3, false, true,  false, 3);
+  addNode('b-nar3',  'Phase Gate Check',           'narrative',  'WR09', 3, false, false, false, 3);
+  // Leaves
+  addNode('l-hex-p',  'HEX.PASS',    'leaf', 'WR01', 4, false, true,  false, 4, true, true);
+  addNode('l-seq-p',  'SEQ.PASS',    'leaf', 'WR08', 4, false, true,  false, 4, true, true);
+  addNode('l-entr-p', 'ENTR.PASS',   'leaf', 'WR12', 4, false, true,  false, 4, true, true);
+  addNode('l-wea-p',  'WEA.PASS',    'leaf', 'WR03', 4, false, true,  false, 4, true, true);
+  addNode('l-terr-f', 'TERR.FAIL',   'leaf', 'WR07', 4, false, false, false, 4, true, false);
+  addNode('l-res-f',  'RES.SKIP',    'leaf', 'WR10', 4, false, false, false, 4, true, false);
+  addNode('l-bhv-p',  'BHV.PASS',    'leaf', 'WR05', 4, false, true,  false, 4, true, true);
+  addNode('l-goal-p', 'GOAL.PASS',   'leaf', 'WR11', 4, false, true,  false, 4, true, true);
+  addNode('l-soc2-p', 'FAC.PASS',    'leaf', 'WR06', 4, false, true,  false, 4, true, true);
+  addNode('l-soc3-p', 'SOC.PASS',    'leaf', 'WR02', 4, false, true,  false, 4, true, true);
+  addNode('l-nar2-p', 'ARC.PASS',    'leaf', 'WR04', 4, false, true,  false, 4, true, true);
+  addNode('l-nar3-f', 'GATE.FAIL',   'leaf', 'WR09', 4, false, false, true,  4, true, false);
+
+  // Edges
+  addEdge('root',   'b-world');
+  addEdge('root',   'b-const');
+  addEdge('root',   'b-agent');
+  addEdge('b-world','b-hex');
+  addEdge('b-world','b-seq');
+  addEdge('b-world','b-entr');
+  addEdge('b-const','b-wea');
+  addEdge('b-const','b-terr');
+  addEdge('b-const','b-res');
+  addEdge('b-agent','b-bhv');
+  addEdge('b-agent','b-goal');
+  addEdge('b-hex',  'b-soc');
+  addEdge('b-wea',  'b-nar');
+  addEdge('b-soc',  'b-soc2');
+  addEdge('b-soc',  'b-soc3');
+  addEdge('b-nar',  'b-nar2');
+  addEdge('b-nar',  'b-nar3');
+  addEdge('b-hex',  'l-hex-p');
+  addEdge('b-seq',  'l-seq-p');
+  addEdge('b-entr', 'l-entr-p');
+  addEdge('b-wea',  'l-wea-p');
+  addEdge('b-terr', 'l-terr-f');
+  addEdge('b-res',  'l-res-f');
+  addEdge('b-bhv',  'l-bhv-p');
+  addEdge('b-goal', 'l-goal-p');
+  addEdge('b-soc2', 'l-soc2-p');
+  addEdge('b-soc3', 'l-soc3-p');
+  addEdge('b-nar2', 'l-nar2-p');
+  addEdge('b-nar3', 'l-nar3-f');
+}
+
+function addNode(id, label, type, ruleId, layer, inactive, active, conflict, depth, leaf=false, pass=true) {
+  TREE_NODES.push({id, label, type, ruleId, layer, active, conflict, depth, leaf, pass, x:0, y:0, inactive});
+}
+function addEdge(from, to) {
+  TREE_EDGES.push({from, to, active: true});
+}
+
+// ─────────────────────────────────────────────
+// CANVAS SETUP
+// ─────────────────────────────────────────────
+const canvas = document.getElementById('logic-canvas');
+const ctx = canvas.getContext('2d');
+let W = 0, H = 0;
+
+// Camera
+const CAM = { x: 0, y: 0, zoom: 1 };
+let isDragging = false, dragLast = {x:0,y:0};
+
+function resizeCanvas() {
+  const wrap = document.getElementById('canvas-wrap');
+  W = wrap.clientWidth;
+  H = wrap.clientHeight;
+  canvas.width  = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  layoutTree();
+}
+window.addEventListener('resize', resizeCanvas);
+
+// ─────────────────────────────────────────────
+// TREE LAYOUT — top-down layered
+// ─────────────────────────────────────────────
+const LAYER_Y = [60, 160, 280, 400, 520];
+const NODE_W  = 130;
+const NODE_H  = 36;
+const LEAF_R  = 14;
+
+function layoutTree() {
+  // Group nodes by depth level
+  const layers = {};
+  TREE_NODES.forEach(n => {
+    const d = n.depth;
+    if (!layers[d]) layers[d] = [];
+    layers[d].push(n);
+  });
+
+  const CX = W / 2;
+  Object.entries(layers).forEach(([d, nodes]) => {
+    const count = nodes.length;
+    const spacing = Math.min(160, Math.max(90, (W - 80) / count));
+    const totalW = (count - 1) * spacing;
+    nodes.forEach((n, i) => {
+      n.x = CX - totalW / 2 + i * spacing;
+      n.y = LAYER_Y[+d] || (60 + +d * 130);
+    });
+  });
+
+  // Update edges active status based on parent/child active flags
+  TREE_EDGES.forEach(e => {
+    const from = nodeById(e.from);
+    const to   = nodeById(e.to);
+    e.active = (from && from.active) && (to && to.active);
+  });
+}
+
+function nodeById(id) { return TREE_NODES.find(n => n.id === id); }
+
+// ─────────────────────────────────────────────
+// DRAW
+// ─────────────────────────────────────────────
+let rafId = null;
+let lastFrame = 0;
+
+function startRaf() {
+  if (rafId) return;
+  function loop(ts) {
+    const dt = Math.min((ts - lastFrame) / 1000, 0.05);
+    lastFrame = ts;
+    STATE.animT += dt;
+    tickPulse(dt);
+    draw();
+    rafId = requestAnimationFrame(loop);
+  }
+  rafId = requestAnimationFrame(loop);
+}
+
+function draw() {
+  ctx.save();
+  ctx.clearRect(0, 0, W, H);
+
+  // Background grid
+  drawGrid();
+
+  // Apply camera
+  ctx.translate(CAM.x, CAM.y);
+  ctx.scale(CAM.zoom, CAM.zoom);
+
+  // Edges first
+  TREE_EDGES.forEach(e => drawEdge(e));
+
+  // Pulse overlays on edges
+  STATE.pulseEdges.forEach(pe => drawPulseEdge(pe));
+
+  // Nodes
+  TREE_NODES.forEach(n => drawNode(n));
+
+  // Pulse overlays on nodes
+  STATE.pulseNodes.forEach(pn => drawPulseNode(pn));
+
+  ctx.restore();
+
+  // Update overlay info
+  document.getElementById('ci-nodes').textContent = 'NODES: ' + TREE_NODES.length;
+  document.getElementById('ci-edges').textContent = 'EDGES: ' + TREE_EDGES.length;
+  document.getElementById('ci-zoom').textContent  = 'ZOOM: '  + Math.round(CAM.zoom * 100) + '%';
+}
+
+function drawGrid() {
+  const size = 32 * CAM.zoom;
+  const offX = ((CAM.x % size) + size) % size;
+  const offY = ((CAM.y % size) + size) % size;
+  ctx.strokeStyle = 'rgba(255,255,255,0.022)';
+  ctx.lineWidth = 0.5;
+  for (let x = offX; x < W; x += size) {
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+  }
+  for (let y = offY; y < H; y += size) {
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+}
+
+function drawEdge(e) {
+  const from = nodeById(e.from);
+  const to   = nodeById(e.to);
+  if (!from || !to) return;
+  const x1 = from.x, y1 = from.y + (from.leaf ? LEAF_R : NODE_H / 2);
+  const x2 = to.x,   y2 = to.y   - (to.leaf   ? LEAF_R : NODE_H / 2);
+
+  ctx.save();
+  if (!e.active) {
+    ctx.setLineDash([4, 6]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 0.8;
+  } else {
+    ctx.setLineDash([]);
+    const col = RULE_COLORS[to.type] || '#20c8d0';
+    ctx.strokeStyle = col + '55';
+    ctx.lineWidth = 1.2;
+  }
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  // slight bezier
+  ctx.bezierCurveTo(x1, y1 + 30, x2, y2 - 30, x2, y2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawPulseEdge(pe) {
+  const from = nodeById(pe.fromId);
+  const to   = nodeById(pe.toId);
+  if (!from || !to) return;
+  const prog = pe.t / pe.maxT;
+  const x1 = from.x, y1 = from.y + NODE_H / 2;
+  const x2 = to.x,   y2 = to.y   - NODE_H / 2;
+
+  // Interpolate along bezier
+  const px = bezierPoint(x1, x1, x2, x2, prog);
+  const py = bezierPoint(y1, y1 + 30, y2 - 30, y2, prog);
+
+  ctx.save();
+  const grd = ctx.createRadialGradient(px, py, 0, px, py, 8);
+  grd.addColorStop(0, 'rgba(32,200,208,0.9)');
+  grd.addColorStop(1, 'rgba(32,200,208,0)');
+  ctx.fillStyle = grd;
+  ctx.beginPath();
+  ctx.arc(px, py, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function bezierPoint(p0, p1, p2, p3, t) {
+  const mt = 1 - t;
+  return mt*mt*mt*p0 + 3*mt*mt*t*p1 + 3*mt*t*t*p2 + t*t*t*p3;
+}
+
+function drawNode(n) {
+  ctx.save();
+  const col = RULE_COLORS[n.type] || '#20c8d0';
+
+  if (n.leaf) {
+    // Circle leaf
+    const alpha = n.active ? 1 : 0.35;
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, LEAF_R, 0, Math.PI * 2);
+    const leafCol = n.pass ? '#4dc8a0' : '#d45b5b';
+    ctx.fillStyle = leafCol + '22';
+    ctx.fill();
+    ctx.strokeStyle = leafCol;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Label
+    ctx.globalAlpha = alpha * 0.8;
+    ctx.fillStyle = leafCol;
+    ctx.font = `300 9px 'JetBrains Mono', monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(n.label, n.x, n.y + LEAF_R + 10);
+  } else {
+    // Rounded rect branch
+    const rx = n.x - NODE_W / 2;
+    const ry = n.y - NODE_H / 2;
+    const alpha = n.active ? 1 : 0.3;
+    ctx.globalAlpha = alpha;
+
+    // Glow for root
+    if (n.id === 'root') {
+      ctx.shadowColor = col;
+      ctx.shadowBlur = 18;
+    }
+
+    // Fill
+    ctx.beginPath();
+    roundRect(ctx, rx, ry, NODE_W, NODE_H, 5);
+    ctx.fillStyle = col + '18';
+    ctx.fill();
+    ctx.strokeStyle = col + (n.id === 'root' ? 'dd' : '88');
+    ctx.lineWidth = n.id === 'root' ? 1.8 : 1.2;
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+
+    // Label
+    ctx.fillStyle = n.id === 'root' ? col : 'rgba(255,255,255,0.75)';
+    ctx.font = n.id === 'root'
+      ? `700 10px 'Orbitron', monospace`
+      : `400 9px 'Orbitron', monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(n.label, n.x, n.y);
+
+    // Rule ID badge
+    if (n.ruleId) {
+      ctx.fillStyle = col + 'aa';
+      ctx.font = `300 7px 'JetBrains Mono', monospace`;
+      ctx.fillText(n.ruleId, n.x + NODE_W/2 - 18, n.y - NODE_H/2 + 6);
+    }
+  }
+
+  // Conflict blink overlay
+  if (n.conflict) {
+    const blink = Math.sin(STATE.animT * 4) > 0;
+    if (blink) {
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle = '#d45b5b';
+      ctx.font = `bold 13px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✗', n.x + (n.leaf ? LEAF_R : NODE_W/2 - 6), n.y - (n.leaf ? LEAF_R : NODE_H/2 - 6));
+    }
+  }
+
+  // Selected highlight
+  if (STATE.selectedNode === n.id) {
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    if (n.leaf) {
+      ctx.arc(n.x, n.y, LEAF_R + 4, 0, Math.PI * 2);
+    } else {
+      roundRect(ctx, n.x - NODE_W/2 - 4, n.y - NODE_H/2 - 4, NODE_W + 8, NODE_H + 8, 7);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.restore();
+}
+
+function drawPulseNode(pn) {
+  const n = nodeById(pn.nodeId);
+  if (!n) return;
+  const prog = Math.min(pn.t / pn.maxT, 1);
+  const alpha = prog < 0.3 ? prog / 0.3 : prog > 0.7 ? (1 - prog) / 0.3 : 1;
+
+  ctx.save();
+  ctx.globalAlpha = alpha * 0.7;
+
+  if (n.leaf) {
+    const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, LEAF_R * 2.5);
+    grd.addColorStop(0, 'rgba(32,200,208,0.8)');
+    grd.addColorStop(1, 'rgba(32,200,208,0)');
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, LEAF_R * 2.5, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, NODE_W * 0.7);
+    grd.addColorStop(0, 'rgba(32,200,208,0.6)');
+    grd.addColorStop(1, 'rgba(32,200,208,0)');
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, NODE_W * 0.7, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+}
+
+// ─────────────────────────────────────────────
+// PULSE ANIMATION
+// ─────────────────────────────────────────────
+const PULSE_SPEED = 200; // px/sec in world space
+
+function startEvalPulse() {
+  STATE.pulseNodes = [];
+  STATE.pulseEdges = [];
+  STATE.pulseActive = true;
+
+  // BFS through active edges, scheduling each edge/node
+  let delay = 0;
+  const visited = new Set();
+
+  function scheduleSubtree(nodeId, d) {
+    if (visited.has(nodeId)) return;
+    visited.add(nodeId);
+    const n = nodeById(nodeId);
+    if (!n || !n.active) return;
+
+    // Schedule node pulse
+    const dur = 0.45;
+    const nd = n;
+    setTimeout(() => {
+      STATE.pulseNodes.push({ nodeId, t: 0, maxT: dur, x: nd.x, y: nd.y });
+    }, d * 1000);
+
+    // Schedule children
+    TREE_EDGES.forEach(e => {
+      if (e.from === nodeId && e.active) {
+        const to = nodeById(e.to);
+        if (!to) return;
+        const dist = Math.hypot(to.x - n.x, to.y - n.y);
+        const travelTime = dist / PULSE_SPEED;
+        const childDelay = d + dur * 0.5;
+
+        // Edge pulse
+        const edD = childDelay;
+        setTimeout(() => {
+          STATE.pulseEdges.push({ fromId: nodeId, toId: e.to, t: 0, maxT: travelTime });
+        }, edD * 1000);
+
+        scheduleSubtree(e.to, childDelay + travelTime * 0.5);
+      }
+    });
+  }
+  scheduleSubtree('root', 0);
+}
+
+function tickPulse(dt) {
+  STATE.pulseNodes = STATE.pulseNodes.filter(pn => {
+    pn.t += dt;
+    return pn.t < pn.maxT * 1.2;
+  });
+  STATE.pulseEdges = STATE.pulseEdges.filter(pe => {
+    pe.t += dt;
+    return pe.t < pe.maxT;
+  });
+}
+
+// ─────────────────────────────────────────────
+// EVALUATION
+// ─────────────────────────────────────────────
+let evalPassCount = 0;
+
+function runEvaluation() {
+  if (STATE.evaluating) return;
+  STATE.evaluating = true;
+
+  const btn1 = document.getElementById('btn-evaluate');
+  const btn2 = document.getElementById('rp-evaluate-btn');
+  btn1.classList.add('running');
+  btn2.classList.add('running');
+  btn2.textContent = '⊢ Evaluating…';
+
+  // Mark components as running
+  setCompStatus('WRR', 'run');
+  setCompStatus('CSV', 'run');
+  setCompStatus('PEV', 'run');
+  setCompStatus('RPS', 'run');
+
+  const t0 = performance.now();
+
+  // Simulate async evaluation
+  setTimeout(() => {
+    const t1 = performance.now();
+    STATE.lastEvalMs = Math.round(t1 - t0);
+    evalPassCount++;
+    STATE.evalPasses = evalPassCount;
+
+    runConstraintPass();
+    startEvalPulse();
+
+    // Save snapshot
+    saveSnapshot();
+    updateUI();
+
+    // Restore buttons
+    btn1.classList.remove('running');
+    btn2.classList.remove('running');
+    btn2.textContent = '⊢ Run Evaluation Pass';
+    STATE.evaluating = false;
+
+    setCompStatus('WRR', 'on');
+    setCompStatus('CSV', 'on');
+    setCompStatus('PEV', 'on');
+    setCompStatus('RPS', 'on');
+    setCompStatus('CTB', 'on');
+    setCompStatus('BRR', 'on');
+    setCompStatus('CDD', 'idle');
+    setCompStatus('RSP', 'idle');
+    setCompStatus('LSS', 'idle');
+    setCompStatus('APB', 'idle');
+
+    updateStatusBar();
+  }, 800 + Math.random() * 400);
+}
+
+function runConstraintPass() {
+  // Evaluate each enabled rule probabilistically (weighted simulation)
+  let satisfied = 0, violated = 0;
+  const conflicts = [];
+
+  WORLD_RULES.forEach(r => {
+    if (!r.enabled) {
+      r.status = 'unknown';
+      return;
+    }
+    // Weighted random: most rules pass, edge cases fail
+    const roll = Math.random();
+    const threshold = r.priority === 1 ? 0.88 : r.priority === 2 ? 0.82 : 0.75;
+    if (roll < threshold) {
+      r.status = 'satisfied';
+      satisfied++;
+    } else {
+      r.status = 'violated';
+      violated++;
+      // Record conflict
+      conflicts.push({
+        id:       'CONF-' + (evalPassCount * 100 + conflicts.length + 1),
+        src:      r.type.toUpperCase().slice(0,3),
+        ruleId:   r.id,
+        ruleName: r.name,
+        desc:     'Constraint "' + r.name + '" violated during pass #' + evalPassCount,
+        strategy: pickResolutionStrategy(r.type),
+        resolved: Math.random() > 0.4,
+        time:     new Date().toISOString().slice(11,19),
+      });
+    }
+  });
+
+  STATE.satisfied = satisfied;
+  STATE.violated  = violated;
+  STATE.conflicts = conflicts.length;
+
+  // Update tree node conflict/pass states based on results
+  WORLD_RULES.forEach(r => {
+    const linkedNodes = TREE_NODES.filter(n => n.ruleId === r.id);
+    linkedNodes.forEach(n => {
+      if (n.leaf) {
+        n.pass     = r.status === 'satisfied';
+        n.conflict = r.status === 'violated';
+      } else {
+        n.conflict = r.status === 'violated';
+      }
+    });
+  });
+
+  // Also update active edges
+  TREE_EDGES.forEach(e => {
+    const from = nodeById(e.from);
+    const to   = nodeById(e.to);
+    e.active = from && to && from.active && to.active;
+  });
+
+  // Append to conflict log (keep last 20)
+  STATE.conflictLog.push(...conflicts);
+  if (STATE.conflictLog.length > 20) STATE.conflictLog = STATE.conflictLog.slice(-20);
+
+  // Downstream pushes increment
+  STATE.downstreamPushes += satisfied > 0 ? 1 : 0;
+
+  renderRuleList();
+  renderConflictLog();
+}
+
+function pickResolutionStrategy(type) {
+  const strategies = {
+    world:      'Override Stack — priority escalation',
+    constraint: 'Constraint Relaxation — soft boundary applied',
+    behavioral: 'Behavioral Replan — agent goal revised',
+    social:     'Consensus Arbiter — faction vote triggered',
+    narrative:  'Story Rewind — beat gate reset',
+  };
+  return strategies[type] || 'Default Fallback Strategy';
+}
+
+// ─────────────────────────────────────────────
+// UI RENDERING
+// ─────────────────────────────────────────────
+function renderRuleList() {
+  const list = document.getElementById('rule-list');
+  list.innerHTML = '';
+  WORLD_RULES.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'rule-row';
+
+    const tog = document.createElement('div');
+    tog.className = 'rule-toggle' + (r.enabled ? ' enabled' : '');
+    tog.title = r.enabled ? 'Click to disable' : 'Click to enable';
+    tog.onclick = () => { r.enabled = !r.enabled; r.status = 'unknown'; renderRuleList(); };
+    row.appendChild(tog);
+
+    const name = document.createElement('span');
+    name.className = 'rule-name';
+    name.textContent = '[' + r.id + '] ' + r.name;
+    row.appendChild(name);
+
+    const status = document.createElement('span');
+    status.className = 'rule-status ' + (r.status === 'satisfied' ? 'satisfied' : r.status === 'violated' ? 'violated' : 'unknown');
+    status.textContent = r.status === 'satisfied' ? '✓' : r.status === 'violated' ? '✗' : '·';
+    status.title = r.status;
+    row.appendChild(status);
+
+    list.appendChild(row);
+  });
+
+  const enabledCount = WORLD_RULES.filter(r => r.enabled).length;
+  document.getElementById('rp-rule-badge').textContent = enabledCount + ' RULES';
+  document.getElementById('stat-total').textContent = WORLD_RULES.length;
+  STATE.activeConstraints = enabledCount;
+}
+
+function renderConflictLog() {
+  const list = document.getElementById('conflict-list');
+  const empty = document.getElementById('conflict-empty');
+
+  if (STATE.conflictLog.length === 0) {
+    list.innerHTML = '';
+    list.appendChild(empty);
+    empty.style.display = '';
+    document.getElementById('rp-conflict-badge').textContent = '0 CONFLICTS';
+    return;
+  }
+
+  empty.style.display = 'none';
+  list.innerHTML = '';
+
+  const recent = STATE.conflictLog.slice(-8).reverse();
+  recent.forEach(c => {
+    const entry = document.createElement('div');
+    entry.className = 'conflict-entry' + (c.resolved ? ' resolved' : '');
+
+    const hdr = document.createElement('div');
+    hdr.className = 'ce-header';
+    const src  = document.createElement('span'); src.className = 'ce-src';  src.textContent = c.src + ' · ' + c.ruleId;
+    const time = document.createElement('span'); time.className = 'ce-time'; time.textContent = c.time;
+    hdr.appendChild(src); hdr.appendChild(time);
+
+    const desc = document.createElement('div'); desc.className = 'ce-desc'; desc.textContent = c.desc;
+    const res  = document.createElement('div');
+    res.className = 'ce-res' + (c.resolved ? '' : ' pending');
+    res.textContent = (c.resolved ? '✓ ' : '⋯ ') + c.strategy;
+
+    entry.appendChild(hdr);
+    entry.appendChild(desc);
+    entry.appendChild(res);
+    list.appendChild(entry);
+  });
+
+  const total = STATE.conflictLog.length;
+  document.getElementById('rp-conflict-badge').textContent = total + ' CONFLICT' + (total !== 1 ? 'S' : '');
+}
+
+function updateUI() {
+  document.getElementById('stat-satisfied').textContent  = STATE.satisfied;
+  document.getElementById('stat-violated').textContent   = STATE.violated;
+  document.getElementById('stat-conflicts').textContent  = STATE.conflicts;
+  document.getElementById('stat-constraints').textContent = STATE.activeConstraints;
+  document.getElementById('stat-eval-time').textContent  = STATE.lastEvalMs + ' ms';
+
+  const violEl = document.getElementById('stat-violated');
+  violEl.className = 'axiom-stat-val' + (STATE.violated > 0 ? ' danger' : '');
+
+  const confEl = document.getElementById('stat-conflicts');
+  confEl.className = 'axiom-stat-val' + (STATE.conflicts > 0 ? ' warn' : '');
+}
+
+function updateStatusBar() {
+  document.getElementById('sb-eval-val').textContent = '#' + evalPassCount;
+  document.getElementById('sb-conflict-val').textContent = STATE.conflicts;
+
+  const dot = document.getElementById('sb-conflict-dot');
+  const dim = document.getElementById('sb-conflict-dim');
+  if (STATE.conflicts > 0) {
+    dot.style.display = '';
+    dim.style.display = 'none';
+  } else {
+    dot.style.display = 'none';
+    dim.style.display = '';
+  }
+
+  document.getElementById('sb-downstream').textContent = STATE.downstreamPushes + ' push' + (STATE.downstreamPushes !== 1 ? 'es' : '');
+  document.getElementById('sb-ts').textContent = new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+}
+
+// ─────────────────────────────────────────────
+// SNAPSHOT
+// ─────────────────────────────────────────────
+function saveSnapshot() {
+  const snap = {
+    system:            'Quantum Atlas',
+    module:            '13 · Logic',
+    generated:         new Date().toISOString(),
+    total_rules:       WORLD_RULES.length,
+    satisfied:         STATE.satisfied,
+    violated:          STATE.violated,
+    conflicts:         STATE.conflicts,
+    evaluation_passes: evalPassCount,
+    last_eval_ms:      STATE.lastEvalMs,
+    active_constraints:STATE.activeConstraints,
+    axiom_depth:       STATE.axiomDepth,
+    downstream_pushes: STATE.downstreamPushes,
+  };
+  try {
+    localStorage.setItem('qa-logic-snapshot', JSON.stringify(snap));
+  } catch(e) {}
+  document.getElementById('snap-display').textContent = JSON.stringify(snap, null, 2);
+  // Update downstream chip
+  document.querySelector('.tb-link-chip[title="qa-logic-snapshot"]').classList.replace('dim','lit');
+}
+
+function copySnapshot() {
+  const txt = document.getElementById('snap-display').textContent;
+  navigator.clipboard.writeText(txt).catch(() => {});
+}
+
+// ─────────────────────────────────────────────
+// CAMERA / PAN / ZOOM
+// ─────────────────────────────────────────────
+canvas.addEventListener('mousedown', e => {
+  isDragging = true;
+  dragLast = {x: e.clientX, y: e.clientY};
+  canvas.classList.add('dragging');
+});
+canvas.addEventListener('mousemove', e => {
+  if (isDragging) {
+    CAM.x += e.clientX - dragLast.x;
+    CAM.y += e.clientY - dragLast.y;
+    dragLast = {x: e.clientX, y: e.clientY};
+  } else {
+    showTooltip(e);
+  }
+});
+canvas.addEventListener('mouseup', e => {
+  if (!isDragging) return;
+  isDragging = false;
+  canvas.classList.remove('dragging');
+  // Check if it was essentially a click (no drag)
+  const dx = e.clientX - dragLast.x;
+  const dy = e.clientY - dragLast.y;
+  if (Math.abs(dx) < 3 && Math.abs(dy) < 3) handleCanvasClick(e);
+});
+canvas.addEventListener('mouseleave', () => {
+  isDragging = false;
+  canvas.classList.remove('dragging');
+  hideTooltip();
+});
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.1 : 0.91;
+  const mx = e.clientX, my = e.clientY;
+  // Zoom around mouse
+  CAM.x = mx - (mx - CAM.x) * factor;
+  CAM.y = my - (my - CAM.y) * factor;
+  CAM.zoom = Math.max(0.25, Math.min(3, CAM.zoom * factor));
+}, {passive: false});
+
+document.getElementById('cc-zoom-in').onclick  = () => zoomBy(1.2);
+document.getElementById('cc-zoom-out').onclick = () => zoomBy(0.83);
+document.getElementById('cc-fit').onclick      = fitView;
+document.getElementById('cc-center').onclick   = centerRoot;
+document.getElementById('btn-reset-view').onclick = fitView;
+
+function zoomBy(f) {
+  CAM.zoom = Math.max(0.25, Math.min(3, CAM.zoom * f));
+  CAM.x = W/2 - (W/2 - CAM.x) * f;
+  CAM.y = H/2 - (H/2 - CAM.y) * f;
+}
+
+function fitView() {
+  if (TREE_NODES.length === 0) return;
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  TREE_NODES.forEach(n => {
+    minX = Math.min(minX, n.x - NODE_W/2);
+    minY = Math.min(minY, n.y - NODE_H);
+    maxX = Math.max(maxX, n.x + NODE_W/2);
+    maxY = Math.max(maxY, n.y + NODE_H);
+  });
+  const tw = maxX - minX, th = maxY - minY;
+  const scaleX = (W - 80) / tw, scaleY = (H - 80) / th;
+  CAM.zoom = Math.min(scaleX, scaleY, 1.4);
+  CAM.x = W/2 - (minX + tw/2) * CAM.zoom;
+  CAM.y = H/2 - (minY + th/2) * CAM.zoom;
+}
+
+function centerRoot() {
+  const root = nodeById('root');
+  if (!root) return;
+  CAM.x = W/2 - root.x * CAM.zoom;
+  CAM.y = 60  - root.y * CAM.zoom;
+}
+
+// ─────────────────────────────────────────────
+// TOOLTIP
+// ─────────────────────────────────────────────
+const tooltip = document.getElementById('canvas-tooltip');
+
+function worldToCanvas(wx, wy) {
+  return { x: wx * CAM.zoom + CAM.x, y: wy * CAM.zoom + CAM.y };
+}
+function canvasToWorld(cx, cy) {
+  return { x: (cx - CAM.x) / CAM.zoom, y: (cy - CAM.y) / CAM.zoom };
+}
+
+function hitTest(ex, ey) {
+  const w = canvasToWorld(ex, ey);
+  for (let i = TREE_NODES.length - 1; i >= 0; i--) {
+    const n = TREE_NODES[i];
+    if (n.leaf) {
+      const d = Math.hypot(w.x - n.x, w.y - n.y);
+      if (d <= LEAF_R + 4) return n;
+    } else {
+      if (Math.abs(w.x - n.x) <= NODE_W/2 + 4 && Math.abs(w.y - n.y) <= NODE_H/2 + 4) return n;
+    }
+  }
+  return null;
+}
+
+function showTooltip(e) {
+  const rect = canvas.getBoundingClientRect();
+  const ex = e.clientX - rect.left;
+  const ey = e.clientY - rect.top;
+  const n = hitTest(ex, ey);
+  if (n) {
+    tooltip.style.display = 'block';
+    tooltip.style.left = (e.clientX + 12) + 'px';
+    tooltip.style.top  = (e.clientY - 10) + 'px';
+    const rule = n.ruleId ? WORLD_RULES.find(r => r.id === n.ruleId) : null;
+    const status = rule ? rule.status : (n.id === 'root' ? 'root' : n.active ? 'active' : 'inactive');
+    tooltip.textContent = n.label + (n.ruleId ? ' · ' + n.ruleId : '') + ' · ' + status.toUpperCase();
+  } else {
+    hideTooltip();
+  }
+}
+function hideTooltip() {
+  tooltip.style.display = 'none';
+}
+
+// ─────────────────────────────────────────────
+// CANVAS CLICK — node detail
+// ─────────────────────────────────────────────
+function handleCanvasClick(e) {
+  const rect = canvas.getBoundingClientRect();
+  const ex = e.clientX - rect.left;
+  const ey = e.clientY - rect.top;
+  const n = hitTest(ex, ey);
+  if (n) {
+    showNodeDetail(n, e.clientX, e.clientY);
+    STATE.selectedNode = n.id;
+  } else {
+    hideNodeDetail();
+    STATE.selectedNode = null;
+  }
+}
+
+function showNodeDetail(n, cx, cy) {
+  const det = document.getElementById('node-detail');
+  det.classList.add('visible');
+  document.getElementById('nd-title').textContent = n.label;
+
+  const rule = n.ruleId ? WORLD_RULES.find(r => r.id === n.ruleId) : null;
+
+  document.getElementById('nd-type').textContent     = n.type.charAt(0).toUpperCase() + n.type.slice(1);
+  document.getElementById('nd-rule').textContent     = rule ? '[' + rule.id + '] ' + rule.name : n.leaf ? 'Leaf Terminal' : 'Branch Gate';
+  document.getElementById('nd-status').textContent   = rule ? rule.status : (n.active ? 'active' : 'inactive');
+  document.getElementById('nd-depth').textContent    = 'Level ' + n.depth;
+  document.getElementById('nd-children').textContent = TREE_EDGES.filter(e => e.from === n.id).length + ' child(ren)';
+  document.getElementById('nd-priority').textContent = rule ? 'P' + rule.priority : (n.id === 'root' ? 'ROOT — highest' : '—');
+}
+
+function hideNodeDetail() {
+  document.getElementById('node-detail').classList.remove('visible');
+  STATE.selectedNode = null;
+}
+document.getElementById('nd-close').onclick = hideNodeDetail;
+
+// ─────────────────────────────────────────────
+// LEFT PANEL
+// ─────────────────────────────────────────────
+function toggleSection(id) {
+  const sec = document.getElementById(id);
+  sec.classList.toggle('collapsed');
+}
+
+function selectComp(el, code) {
+  document.querySelectorAll('.comp-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  STATE.selectedComp = code;
+}
+
+function setCompStatus(code, status) {
+  const card = document.querySelector('.comp-card[data-comp="'+code+'"]');
+  if (!card) return;
+  const dot = card.querySelector('.comp-status');
+  if (!dot) return;
+  dot.className = 'comp-status ' + status;
+}
+
+// ─────────────────────────────────────────────
+// TOP BAR TABS
+// ─────────────────────────────────────────────
+document.querySelectorAll('.tb-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tb-tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+  });
+});
+
+document.getElementById('btn-evaluate').onclick   = runEvaluation;
+document.getElementById('btn-clear-conflicts').onclick = () => {
+  STATE.conflictLog = [];
+  STATE.conflicts = 0;
+  renderConflictLog();
+  updateUI();
+  updateStatusBar();
+};
+
+// ─────────────────────────────────────────────
+// CLOCK TICK
+// ─────────────────────────────────────────────
+function clockTick() {
+  document.getElementById('sb-ts').textContent =
+    new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+}
+setInterval(clockTick, 1000);
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+function init() {
+  buildTree();
+  resizeCanvas();
+  fitView();
+  renderRuleList();
+  renderConflictLog();
+  updateUI();
+  updateStatusBar();
+  startRaf();
+  clockTick();
+
+  // Load existing snapshot if any
+  try {
+    const snap = JSON.parse(localStorage.getItem('qa-logic-snapshot') || 'null');
+    if (snap) {
+      document.getElementById('snap-display').textContent = JSON.stringify(snap, null, 2);
+    }
+  } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+<!-- ══ THEME SYNC IIFE ══ -->
+<script>
+(function() {
+  const MAP = {
+    'c-bg':'--bg','c-surf':'--surface','c-surf2':'--surface2',
+    'c-edge':'--edge','c-edge-hi':'--edge-hi','c-accent1':'--venturan',
+    'c-accent2':'--amber','c-accent3':'--emerald','c-accent4':'--fusion',
+    'c-danger':'--blood','c-warm':'--solari','c-text':'--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+</script>
+</body>
+</html>
