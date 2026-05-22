@@ -41,7 +41,7 @@
   --c-architect: #64b4ff;
   --c-lighting:  #e0d8ff;
   --c-society:   #c8a860;
-  --c-bridge:    #4dc8a0;
+  --c-network:   #ffffff;
   --c-ecology:   #7fd4c8;
   --c-behavior:  #9030d0;
   --c-modeling:      #f4c025;
@@ -898,15 +898,10 @@ html,body{
         <span class="ni-icon">⚑</span>
         <span class="ni-label">Society</span>
       </div>
-      <div class="nav-item" id="nav-bridge" data-layer="bridge"
-           style="--lc:var(--c-bridge)" onclick="switchLayer('bridge')" title="Quantum Atlas · 06 Bridge">
+      <div class="nav-item" id="nav-network" data-layer="network"
+           style="--lc:var(--c-network)" onclick="switchLayer('network')" title="16 · Network | Nexus">
         <span class="ni-icon">⇋</span>
-        <span class="ni-label">Bridge</span>
-      </div>
-      <div class="nav-item" id="nav-ecology" data-layer="ecology"
-           style="--lc:var(--c-ecology)" onclick="switchLayer('ecology')" title="Quantum Atlas · 07 Ecology">
-        <span class="ni-icon">⚘</span>
-        <span class="ni-label">Ecology</span>
+        <span class="ni-label">Network</span>
       </div>
       <div class="nav-item" id="nav-sequencer" data-layer="sequencer"
            style="--lc:var(--c-sequencer)" onclick="switchLayer('sequencer')" title="09 · Sequencer | Chronicle">
@@ -1109,24 +1104,14 @@ html,body{
         onload="frameLoaded('society')"></iframe>
 
       <!-- 16 · Network | Nexus -->
-      <div class="frame-loader" id="loader-bridge">
+      <div class="frame-loader" id="loader-network">
         <div class="loader-glyph" style="color:#ffffff">⇋</div>
         <div class="loader-lbl">Loading 16 · Network | Nexus</div>
         <div class="loader-bar"><div class="loader-fill" style="background:#ffffff"></div></div>
       </div>
-      <iframe class="layer-frame" id="frame-bridge"
+      <iframe class="layer-frame" id="frame-network"
         src="quantum-atlas-network.html"
-        onload="frameLoaded('bridge')"></iframe>
-
-      <!-- Atlas · 07 Ecology -->
-      <div class="frame-loader" id="loader-ecology">
-        <div class="loader-glyph" style="color:#7fd4c8">⚘</div>
-        <div class="loader-lbl">Loading Quantum Atlas · Ecology</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:#7fd4c8"></div></div>
-      </div>
-      <iframe class="layer-frame" id="frame-ecology"
-        src="quantum-atlas-ecology.html"
-        onload="frameLoaded('ecology')"></iframe>
+        onload="frameLoaded('network')"></iframe>
 
       <!-- Atlas · 15 Forge | Forge -->
       <div class="frame-loader" id="loader-forge">
@@ -1594,7 +1579,7 @@ const LAYERS = {
   simulation:    { label:'14 · Simulation   | Continuum',icon:'∿', color:'var(--c-simulation)',      file:'quantum-atlas-simulation.html'    },
   forge:         { label:'15 · Forge        | Forge',    icon:'⚒', color:'var(--c-forge)',           file:'quantum-atlas-forge.html'         },
   society:  { label:'08 · Society   | Order',   icon:'⚑', color:'var(--c-society)',  file:'quantum-atlas-society.html'      },
-  bridge:   { label:'16 · Network   | Nexus',   icon:'⇋', color:'var(--c-bridge)',   file:'quantum-atlas-network.html'      },
+  network:  { label:'16 · Network    | Nexus',   icon:'⇋', color:'var(--c-network)', file:'quantum-atlas-network.html'      },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
