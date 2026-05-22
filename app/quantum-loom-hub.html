@@ -52,6 +52,7 @@
   --c-sound:         #dc8c1e;
   --c-logic:         #20c8d0;
   --c-simulation:    #30e060;
+  --c-forge:         #ff6400;
 }
 
 html,body{
@@ -937,6 +938,11 @@ html,body{
         <span class="ni-icon">∿</span>
         <span class="ni-label">Sim</span>
       </div>
+      <div class="nav-item" id="nav-forge" data-layer="forge"
+           style="--lc:var(--c-forge)" onclick="switchLayer('forge')" title="15 · Forge | Forge">
+        <span class="ni-icon">⚒</span>
+        <span class="ni-label">Forge</span>
+      </div>
       <div class="nav-item" id="nav-behavior" data-layer="behavior"
            style="--lc:var(--c-behavior)" onclick="switchLayer('behavior')" title="07 · Behavior | Instinct">
         <span class="ni-icon">⊙</span>
@@ -1121,6 +1127,16 @@ html,body{
       <iframe class="layer-frame" id="frame-ecology"
         src="quantum-atlas-ecology.html"
         onload="frameLoaded('ecology')"></iframe>
+
+      <!-- Atlas · 15 Forge | Forge -->
+      <div class="frame-loader" id="loader-forge">
+        <div class="loader-glyph" style="color:#ff6400">⚒</div>
+        <div class="loader-lbl">Loading 15 · Forge | Forge</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#ff6400"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-forge"
+        src="quantum-atlas-forge.html"
+        onload="frameLoaded('forge')"></iframe>
 
       <!-- Atlas · 14 Simulation | Continuum -->
       <div class="frame-loader" id="loader-simulation">
@@ -1576,6 +1592,7 @@ const LAYERS = {
   sound:         { label:'12 · Sound        | Composer', icon:'♪', color:'var(--c-sound)',           file:'quantum-atlas-sound.html'         },
   logic:         { label:'13 · Logic        | Axiom',    icon:'⊢', color:'var(--c-logic)',           file:'quantum-atlas-logic.html'         },
   simulation:    { label:'14 · Simulation   | Continuum',icon:'∿', color:'var(--c-simulation)',      file:'quantum-atlas-simulation.html'    },
+  forge:         { label:'15 · Forge        | Forge',    icon:'⚒', color:'var(--c-forge)',           file:'quantum-atlas-forge.html'         },
   society:  { label:'08 · Society   | Order',   icon:'⚑', color:'var(--c-society)',  file:'quantum-atlas-society.html'      },
   bridge:   { label:'16 · Network   | Nexus',   icon:'⇋', color:'var(--c-bridge)',   file:'quantum-atlas-network.html'      },
 };
