@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 12 · Sound</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04050a;
+  --surface:rgba(8,11,18,.98);
+  --surface2:rgba(12,16,24,.97);
+  --edge:rgba(255,255,255,.055);
+  --edge-hi:rgba(255,255,255,.12);
+  --venturan:#b1d0f0;
+  --amber:#e8b84b;
+  --emerald:#4dc8a0;
+  --solari:#f98f3b;
+  --fusion:#9b7fd4;
+  --blood:#d45b5b;
+  --totem:#7fd4c8;
+  --sound:#dc8c1e;
+  --text:#e2e8f0;
+  --fm:'Orbitron',monospace;
+  --fd:'Space Grotesk',sans-serif;
+  --fc:'JetBrains Mono',monospace;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-family:var(--fd);font-size:13px;}
+#shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;
+}
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--sound);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;color:var(--sound);
+  animation:breathe 4s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes breathe{
+  0%,100%{opacity:.7;box-shadow:0 0 4px rgba(220,140,30,.2);}
+  50%{opacity:1;box-shadow:0 0 14px rgba(220,140,30,.6);}
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--sound);white-space:nowrap;
+}
+.tb-subcrest{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.18em;
+  color:rgba(220,140,30,.42);text-transform:uppercase;
+}
+.tb-module-stack{display:flex;flex-direction:column;gap:2px;}
+
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  padding:0 12px;height:100%;display:flex;align-items:center;
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);cursor:pointer;border-bottom:2px solid transparent;
+  transition:all .15s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);}
+.tb-tab.active{color:var(--sound);border-bottom-color:var(--sound);}
+
+.tb-spacer{flex:1;}
+
+.tb-upstream{
+  display:flex;align-items:center;gap:4px;
+  padding:0 10px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.up-chip{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.06em;
+  padding:2px 7px;border-radius:2px;border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.3);text-transform:uppercase;transition:all .25s;cursor:default;
+}
+.up-chip.lit{border-color:rgba(77,200,160,.45);color:var(--emerald);background:rgba(77,200,160,.07);}
+
+.tb-actions{
+  display:flex;gap:4px;padding:0 10px;height:100%;align-items:center;flex-shrink:0;
+}
+.tb-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);
+  white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff;}
+.tb-btn.hot{
+  border-color:rgba(220,140,30,.55);background:rgba(220,140,30,.12);
+  color:var(--sound);font-weight:600;
+}
+.tb-btn.hot:hover{background:rgba(220,140,30,.2);box-shadow:0 0 14px rgba(220,140,30,.3);}
+
+/* ── BODY ── */
+#body{flex:1;display:flex;overflow:hidden;}
+
+/* ── LEFT PANEL ── */
+#left-panel{
+  width:240px;flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.lp-scroll::-webkit-scrollbar{width:3px;}
+.lp-scroll::-webkit-scrollbar-track{background:transparent;}
+.lp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+.sec-header{
+  padding:7px 10px 6px;border-bottom:1px solid var(--edge);
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--sound);opacity:.85;flex-shrink:0;
+  display:flex;align-items:center;gap:6px;
+}
+.sec-header-count{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.3);
+  padding:1px 5px;background:rgba(255,255,255,.04);
+  border:1px solid var(--edge);border-radius:8px;margin-left:auto;
+}
+
+/* 4×4 Component grid */
+.comp-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;
+  padding:8px;
+}
+.comp-card{
+  background:rgba(255,255,255,.025);border:1px solid var(--edge);
+  border-radius:4px;padding:6px 7px;cursor:pointer;
+  transition:all .15s;position:relative;overflow:hidden;
+}
+.comp-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg, rgba(220,140,30,.04) 0%, transparent 60%);
+  opacity:0;transition:opacity .2s;
+}
+.comp-card:hover{background:rgba(220,140,30,.06);border-color:rgba(220,140,30,.25);}
+.comp-card:hover::before{opacity:1;}
+.comp-card.active{
+  background:rgba(220,140,30,.1);border-color:rgba(220,140,30,.45);
+  box-shadow:0 0 10px rgba(220,140,30,.15);
+}
+.comp-card.active::before{opacity:1;}
+.cc-code{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.05em;
+  color:var(--sound);margin-bottom:3px;opacity:.8;
+}
+.cc-name{
+  font-family:var(--fd);font-size:.35rem;
+  color:rgba(255,255,255,.75);line-height:1.3;margin-bottom:4px;
+}
+.cc-footer{display:flex;align-items:center;justify-content:space-between;}
+.cc-wire{
+  font-family:var(--fc);font-size:.25rem;letter-spacing:.05em;
+  padding:1px 4px;border-radius:2px;border:1px solid currentColor;
+  opacity:.65;
+}
+.wire-DAT{color:var(--blood);}
+.wire-TMP{color:var(--venturan);}
+.wire-VIS{color:var(--totem);}
+.wire-NAR{color:var(--amber);}
+.wire-BHV{color:var(--emerald);}
+.wire-IDN{color:var(--fusion);}
+.wire-SOC{color:var(--solari);}
+.wire-EVT{color:var(--solari);}
+.wire-AST{color:var(--fusion);}
+.wire-AUD{color:var(--sound);}
+.cc-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);
+  flex-shrink:0;
+}
+.cc-dot.on{background:var(--emerald);border-color:var(--emerald);box-shadow:0 0 5px rgba(77,200,160,.6);}
+.cc-dot.warn{background:var(--amber);border-color:var(--amber);}
+.cc-dot.act{background:var(--sound);border-color:var(--sound);box-shadow:0 0 5px rgba(220,140,30,.6);}
+
+/* Layer dividers */
+.layer-divider{
+  padding:4px 8px 2px;
+  font-family:var(--fm);font-size:.26rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.2);
+  border-top:1px solid var(--edge);margin-top:2px;
+}
+.layer-divider:first-child{border-top:none;margin-top:0;}
+
+/* ── CENTER / CANVAS ── */
+#center{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  background:var(--bg);position:relative;
+}
+.canvas-toolbar{
+  height:28px;flex-shrink:0;
+  background:var(--surface2);border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;gap:6px;padding:0 10px;
+}
+.cvt-label{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);
+}
+.cvt-pill{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.06em;
+  padding:2px 7px;border-radius:10px;border:1px solid rgba(220,140,30,.3);
+  color:var(--sound);background:rgba(220,140,30,.07);
+  transition:all .2s;
+}
+.cvt-pill:hover{background:rgba(220,140,30,.15);cursor:pointer;}
+.cvt-pill.dimmed{opacity:.35;border-color:var(--edge);}
+.cvt-sep{width:1px;height:16px;background:var(--edge);margin:0 2px;}
+.cvt-val{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.45);
+  margin-left:auto;
+}
+.cvt-indicator{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--sound);
+  box-shadow:0 0 6px rgba(220,140,30,.7);
+  animation:pulseInd 1s ease-in-out infinite;
+}
+@keyframes pulseInd{
+  0%,100%{opacity:.5;transform:scale(.9);}
+  50%{opacity:1;transform:scale(1.1);}
+}
+
+.canvas-wrap{
+  flex:1;position:relative;overflow:hidden;
+}
+#viz-canvas{
+  display:block;width:100%;height:100%;
+}
+
+/* canvas section labels */
+.canvas-section-label{
+  position:absolute;top:8px;font-family:var(--fc);
+  font-size:.28rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.18);pointer-events:none;
+}
+#lbl-wave{left:10px;}
+#lbl-spectrum{left:calc(33% + 10px);}
+#lbl-layers{right:10px;}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:280px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.rp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-track{background:transparent;}
+.rp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+/* Compose button */
+.compose-section{
+  padding:10px;border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.compose-btn{
+  width:100%;padding:9px 0;
+  font-family:var(--fm);font-size:.4rem;letter-spacing:.18em;
+  text-transform:uppercase;cursor:pointer;border-radius:4px;
+  border:1px solid rgba(220,140,30,.5);
+  background:linear-gradient(135deg, rgba(220,140,30,.18) 0%, rgba(220,140,30,.08) 100%);
+  color:var(--sound);transition:all .18s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.compose-btn:hover{
+  background:linear-gradient(135deg, rgba(220,140,30,.28) 0%, rgba(220,140,30,.14) 100%);
+  box-shadow:0 0 18px rgba(220,140,30,.28);border-color:rgba(220,140,30,.75);
+}
+.compose-btn:active{transform:scale(.98);}
+.compose-btn .btn-glyph{font-size:.9rem;}
+
+/* Active layers toggles */
+.layer-toggles-section{
+  padding:8px 10px;border-bottom:1px solid var(--edge);
+}
+.lt-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:7px;
+}
+.layer-toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;border-bottom:1px solid rgba(255,255,255,.025);
+}
+.layer-toggle-row:last-child{border-bottom:none;}
+.lt-name{
+  font-family:var(--fd);font-size:.35rem;color:rgba(255,255,255,.65);
+  display:flex;align-items:center;gap:7px;
+}
+.lt-swatch{
+  width:8px;height:8px;border-radius:50%;
+  flex-shrink:0;
+}
+/* Toggle switch */
+.toggle-sw{
+  width:30px;height:16px;border-radius:8px;
+  background:rgba(255,255,255,.08);border:1px solid var(--edge);
+  position:relative;cursor:pointer;transition:background .2s,border-color .2s;
+  flex-shrink:0;
+}
+.toggle-sw::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:10px;height:10px;border-radius:50%;
+  background:rgba(255,255,255,.3);
+  transition:transform .2s,background .2s;
+}
+.toggle-sw.on{
+  background:rgba(220,140,30,.22);border-color:rgba(220,140,30,.5);
+}
+.toggle-sw.on::after{
+  transform:translateX(14px);
+  background:var(--sound);
+  box-shadow:0 0 6px rgba(220,140,30,.7);
+}
+
+/* Parameters display */
+.params-section{
+  padding:8px 10px;border-bottom:1px solid var(--edge);
+}
+.ps-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:7px;
+}
+.param-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:3px 0;border-bottom:1px solid rgba(255,255,255,.02);
+}
+.param-row:last-child{border-bottom:none;}
+.pr-key{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.3);text-transform:uppercase;
+}
+.pr-val{
+  font-family:var(--fc);font-size:.32rem;
+  color:rgba(255,255,255,.7);
+  transition:color .3s;
+}
+.pr-val.highlight{color:var(--sound);}
+.pr-val.dim{color:rgba(255,255,255,.2);font-style:italic;}
+
+/* Tension meter */
+.tension-bar-wrap{
+  margin-top:6px;padding:0;
+}
+.tension-label-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:3px;
+}
+.tension-track{
+  height:5px;background:rgba(255,255,255,.07);border-radius:3px;
+  overflow:hidden;
+}
+.tension-fill{
+  height:100%;border-radius:3px;
+  background:linear-gradient(90deg, var(--emerald), var(--amber), var(--blood));
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+  width:0%;
+}
+
+/* Audio export */
+.export-section{
+  padding:8px 10px;
+}
+.export-header{
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;padding:3px 0;
+}
+.exp-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);
+}
+.exp-toggle{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.3);
+  transition:transform .2s;
+}
+.exp-toggle.open{transform:rotate(90deg);}
+.export-pre-wrap{
+  max-height:0;overflow:hidden;
+  transition:max-height .3s cubic-bezier(.4,0,.2,1);
+}
+.export-pre-wrap.open{max-height:400px;}
+.export-pre{
+  font-family:var(--fc);font-size:.28rem;line-height:1.6;
+  color:rgba(220,140,30,.75);
+  background:rgba(0,0,0,.3);border:1px solid var(--edge);
+  border-radius:3px;padding:8px;margin-top:6px;
+  overflow-x:auto;white-space:pre;
+}
+.export-pre::-webkit-scrollbar{height:3px;}
+.export-pre::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+/* Upstream snapshot summary */
+.snapshot-info{
+  padding:8px 10px;border-top:1px solid var(--edge);border-bottom:1px solid var(--edge);
+}
+.snap-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:6px;
+}
+.snap-row{
+  display:flex;align-items:center;gap:6px;
+  padding:2px 0;
+}
+.snap-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(255,255,255,.15);flex-shrink:0;
+}
+.snap-dot.ok{background:var(--emerald);box-shadow:0 0 4px rgba(77,200,160,.5);}
+.snap-dot.miss{background:rgba(255,255,255,.1);}
+.snap-key{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.25);
+  letter-spacing:.04em;
+}
+.snap-val{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.45);
+  margin-left:auto;max-width:110px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;
+}
+
+/* Motif list */
+.motif-section{
+  padding:8px 10px;border-bottom:1px solid var(--edge);
+}
+.motif-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;
+}
+.motif-row{
+  display:flex;align-items:center;gap:7px;
+  padding:3px 0;border-bottom:1px solid rgba(255,255,255,.02);
+}
+.motif-row:last-child{border-bottom:none;}
+.motif-idx{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);
+  width:14px;flex-shrink:0;text-align:right;
+}
+.motif-name{
+  font-family:var(--fd);font-size:.33rem;color:rgba(255,255,255,.6);flex:1;
+}
+.motif-bars{
+  display:flex;gap:2px;align-items:flex-end;height:14px;
+}
+.motif-bar{
+  width:3px;border-radius:1px;
+  background:var(--sound);opacity:.6;
+}
+
+/* Entity voice panel */
+.voice-section{
+  padding:8px 10px;border-bottom:1px solid var(--edge);
+}
+.voice-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;
+}
+.voice-row{
+  display:flex;align-items:center;gap:6px;
+  padding:3px 0;
+}
+.voice-type{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.35);
+  width:52px;flex-shrink:0;
+}
+.voice-bar-track{
+  flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;
+}
+.voice-bar-fill{
+  height:100%;border-radius:2px;background:var(--fusion);
+  transition:width .4s ease;
+}
+.voice-count{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);
+  width:20px;text-align:right;flex-shrink:0;
+}
+
+/* Stinger library */
+.stinger-section{
+  padding:8px 10px;border-bottom:1px solid var(--edge);
+}
+.stinger-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.stinger-count-badge{
+  font-family:var(--fc);font-size:.28rem;color:var(--sound);
+  background:rgba(220,140,30,.12);border:1px solid rgba(220,140,30,.3);
+  padding:1px 6px;border-radius:8px;
+}
+.stinger-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:3px;
+}
+.stinger-cell{
+  background:rgba(255,255,255,.03);border:1px solid var(--edge);
+  border-radius:3px;padding:3px 4px;cursor:pointer;
+  transition:all .15s;
+}
+.stinger-cell:hover{background:rgba(220,140,30,.08);border-color:rgba(220,140,30,.3);}
+.stinger-cell.fired{
+  background:rgba(220,140,30,.18);border-color:rgba(220,140,30,.5);
+  box-shadow:0 0 6px rgba(220,140,30,.25);
+}
+.sc-code{
+  font-family:var(--fc);font-size:.24rem;color:rgba(255,255,255,.3);
+}
+.sc-name{
+  font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.55);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Transition scheduler */
+.transition-section{
+  padding:8px 10px;border-bottom:1px solid var(--edge);
+}
+.tr-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;
+}
+.tr-row{
+  display:flex;align-items:center;gap:6px;
+  padding:3px 0;border-bottom:1px solid rgba(255,255,255,.02);
+}
+.tr-row:last-child{border-bottom:none;}
+.tr-from{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.35);
+  flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.tr-arrow{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);}
+.tr-to{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.55);
+  flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right;
+}
+.tr-beats{
+  font-family:var(--fc);font-size:.26rem;color:var(--amber);
+  background:rgba(232,184,75,.08);border:1px solid rgba(232,184,75,.2);
+  padding:1px 5px;border-radius:2px;flex-shrink:0;
+}
+
+/* ── STATUS BAR ── */
+#status-bar{
+  height:26px;flex-shrink:0;
+  background:var(--surface);border-top:1px solid var(--edge);
+  display:flex;align-items:center;gap:0;padding:0;
+  font-family:var(--fc);font-size:.3rem;
+}
+.sb-cell{
+  padding:0 12px;height:100%;
+  display:flex;align-items:center;gap:6px;
+  border-right:1px solid var(--edge);
+  color:rgba(255,255,255,.3);letter-spacing:.06em;white-space:nowrap;
+}
+.sb-cell .sb-val{color:rgba(255,255,255,.6);}
+.sb-cell .sb-val.live{color:var(--sound);}
+.sb-spacer{flex:1;}
+.sb-module-tag{
+  padding:0 12px;height:100%;
+  display:flex;align-items:center;
+  font-family:var(--fm);font-size:.26rem;letter-spacing:.18em;
+  color:rgba(220,140,30,.3);text-transform:uppercase;
+  border-left:1px solid var(--edge);
+}
+
+/* ── DETAIL PANEL for comp click ── */
+.detail-drawer{
+  position:absolute;bottom:0;left:0;right:0;
+  background:var(--surface2);border-top:1px solid var(--edge);
+  padding:10px 14px;z-index:15;
+  transform:translateY(100%);transition:transform .2s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+}
+.detail-drawer.open{transform:translateY(0);pointer-events:all;}
+.dd-header{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;
+}
+.dd-title{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.14em;
+  color:var(--sound);text-transform:uppercase;
+}
+.dd-close{
+  width:20px;height:20px;border-radius:3px;
+  border:1px solid var(--edge);background:transparent;
+  color:rgba(255,255,255,.4);font-size:.5rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .12s;
+}
+.dd-close:hover{background:rgba(255,255,255,.07);color:#fff;}
+.dd-body{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;
+}
+.dd-field{
+  display:flex;flex-direction:column;gap:3px;
+}
+.dd-field-key{
+  font-family:var(--fc);font-size:.26rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.25);text-transform:uppercase;
+}
+.dd-field-val{
+  font-family:var(--fd);font-size:.35rem;color:rgba(255,255,255,.7);
+}
+
+/* BPM pulse ring */
+.bpm-ring{
+  position:absolute;border-radius:50%;
+  border:2px solid var(--sound);pointer-events:none;
+  animation:bpmRing .4s ease-out forwards;
+}
+@keyframes bpmRing{
+  0%{opacity:.9;transform:translate(-50%,-50%) scale(0.3);}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.8);}
+}
+
+/* Scrollbar for rp-scroll */
+.rp-scroll::-webkit-scrollbar-thumb{background:rgba(220,140,30,.2);}
+.rp-scroll::-webkit-scrollbar-thumb:hover{background:rgba(220,140,30,.35);}
+
+/* Compose animation */
+@keyframes composeFlash{
+  0%{background:rgba(220,140,30,.3);}
+  100%{background:transparent;}
+}
+.compose-flash{animation:composeFlash .5s ease-out;}
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- TOP BAR -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">♪</div>
+      <div class="tb-module-stack">
+        <div class="tb-module-id">12 · Sound</div>
+        <div class="tb-subcrest">Composer · NarrativeSystems</div>
+      </div>
+    </div>
+
+    <div class="tb-tabs">
+      <div class="tb-tab active" data-tab="visualizer">Visualizer</div>
+      <div class="tb-tab" data-tab="matrix">Matrix</div>
+      <div class="tb-tab" data-tab="composer">Composer</div>
+      <div class="tb-tab" data-tab="export">Export</div>
+    </div>
+
+    <div class="tb-spacer"></div>
+
+    <div class="tb-upstream">
+      <div class="up-chip" id="chip-environ">environ</div>
+      <div class="up-chip" id="chip-behavior">behavior</div>
+      <div class="up-chip" id="chip-memory">memory</div>
+      <div class="up-chip" id="chip-sequencer">sequencer</div>
+    </div>
+
+    <div class="tb-actions">
+      <button class="tb-btn hot" id="btn-compose-top">Compose Scene</button>
+      <button class="tb-btn" id="btn-export">Export AEP</button>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div id="body">
+
+    <!-- LEFT PANEL -->
+    <div id="left-panel">
+      <div class="sec-header">
+        Components
+        <span class="sec-header-count">16</span>
+      </div>
+      <div class="lp-scroll">
+
+        <div class="layer-divider">I — Ambient</div>
+        <div class="comp-grid">
+          <div class="comp-card active" data-comp="BAM">
+            <div class="cc-code">01 · BAM</div>
+            <div class="cc-name">Biome Audio Mapper</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-DAT">DAT</span>
+              <span class="cc-dot on"></span>
+            </div>
+          </div>
+          <div class="comp-card active" data-comp="WSL">
+            <div class="cc-code">02 · WSL</div>
+            <div class="cc-name">Weather Sound Layer</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-DAT">DAT</span>
+              <span class="cc-dot on"></span>
+            </div>
+          </div>
+          <div class="comp-card" data-comp="TDM">
+            <div class="cc-code">03 · TDM</div>
+            <div class="cc-name">Time-of-Day Mixer</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-TMP">TMP</span>
+              <span class="cc-dot warn"></span>
+            </div>
+          </div>
+          <div class="comp-card" data-comp="SRS">
+            <div class="cc-code">04 · SRS</div>
+            <div class="cc-name">Spatial Reverb Setter</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-VIS">VIS</span>
+              <span class="cc-dot"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="layer-divider">II — Music</div>
+        <div class="comp-grid">
+          <div class="comp-card active" data-comp="KMS">
+            <div class="cc-code">05 · KMS</div>
+            <div class="cc-name">Key &amp; Mode Selector</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-DAT">DAT</span>
+              <span class="cc-dot on"></span>
+            </div>
+          </div>
+          <div class="comp-card active" data-comp="MSG">
+            <div class="cc-code">06 · MSG</div>
+            <div class="cc-name">Motif Seed Generator</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-NAR">NAR</span>
+              <span class="cc-dot on"></span>
+            </div>
+          </div>
+          <div class="comp-card" data-comp="HTE">
+            <div class="cc-code">07 · HTE</div>
+            <div class="cc-name">Harmonic Tension Engine</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-BHV">BHV</span>
+              <span class="cc-dot warn"></span>
+            </div>
+          </div>
+          <div class="comp-card" data-comp="RPB">
+            <div class="cc-code">08 · RPB</div>
+            <div class="cc-name">Rhythm Pattern Builder</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-TMP">TMP</span>
+              <span class="cc-dot"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="layer-divider">III — Voice</div>
+        <div class="comp-grid">
+          <div class="comp-card" data-comp="EVC">
+            <div class="cc-code">09 · EVC</div>
+            <div class="cc-name">Entity Voice Classifier</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-IDN">IDN</span>
+              <span class="cc-dot"></span>
+            </div>
+          </div>
+          <div class="comp-card" data-comp="DPM">
+            <div class="cc-code">10 · DPM</div>
+            <div class="cc-name">Dialogue Pitch Modeler</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-IDN">IDN</span>
+              <span class="cc-dot"></span>
+            </div>
+          </div>
+          <div class="comp-card" data-comp="CNS">
+            <div class="cc-code">11 · CNS</div>
+            <div class="cc-name">Crowd Noise Simulator</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-SOC">SOC</span>
+              <span class="cc-dot warn"></span>
+            </div>
+          </div>
+          <div class="comp-card" data-comp="ETM">
+            <div class="cc-code">12 · ETM</div>
+            <div class="cc-name">Emotional Tone Mapper</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-BHV">BHV</span>
+              <span class="cc-dot"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="layer-divider">IV — Cue</div>
+        <div class="comp-grid">
+          <div class="comp-card" data-comp="EST">
+            <div class="cc-code">13 · EST</div>
+            <div class="cc-name">Event Sound Trigger</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-EVT">EVT</span>
+              <span class="cc-dot"></span>
+            </div>
+          </div>
+          <div class="comp-card" data-comp="SLI">
+            <div class="cc-code">14 · SLI</div>
+            <div class="cc-name">Stinger Library Index</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-AST">AST</span>
+              <span class="cc-dot on"></span>
+            </div>
+          </div>
+          <div class="comp-card" data-comp="MTS">
+            <div class="cc-code">15 · MTS</div>
+            <div class="cc-name">Music Transition Scheduler</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-TMP">TMP</span>
+              <span class="cc-dot warn"></span>
+            </div>
+          </div>
+          <div class="comp-card active" data-comp="AEP">
+            <div class="cc-code">16 · AEP</div>
+            <div class="cc-name">Audio Export Packet</div>
+            <div class="cc-footer">
+              <span class="cc-wire wire-AUD">AUD</span>
+              <span class="cc-dot act"></span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- lp-scroll -->
+    </div><!-- left-panel -->
+
+    <!-- CENTER CANVAS -->
+    <div id="center">
+      <div class="canvas-toolbar">
+        <div class="cvt-label">Viz</div>
+        <div class="cvt-sep"></div>
+        <div class="cvt-pill" id="pill-waveform">Waveform</div>
+        <div class="cvt-pill" id="pill-spectrum">Spectrum</div>
+        <div class="cvt-pill" id="pill-layers">Layers</div>
+        <div class="cvt-pill" id="pill-bpm">BPM Pulse</div>
+        <div class="cvt-sep"></div>
+        <div class="cvt-label" id="lbl-mode-display">Mode: —</div>
+        <div class="cvt-val" id="lbl-bpm-display">BPM: —</div>
+        <div class="cvt-indicator" id="anim-indicator"></div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="viz-canvas"></canvas>
+        <div class="canvas-section-label" id="lbl-wave">Waveform</div>
+        <div class="canvas-section-label" id="lbl-spectrum">Spectrum</div>
+        <div class="canvas-section-label" id="lbl-layers">Active Layers</div>
+      </div>
+
+      <!-- Detail Drawer -->
+      <div id="detail-drawer" class="detail-drawer">
+        <div class="dd-header">
+          <div class="dd-title" id="dd-title">Component Detail</div>
+          <button class="dd-close" id="dd-close">×</button>
+        </div>
+        <div class="dd-body" id="dd-body"></div>
+      </div>
+    </div><!-- center -->
+
+    <!-- RIGHT PANEL -->
+    <div id="right-panel">
+      <!-- Compose button -->
+      <div class="compose-section">
+        <button class="compose-btn" id="btn-compose">
+          <span class="btn-glyph">♪</span>
+          Compose Scene
+        </button>
+      </div>
+
+      <div class="rp-scroll">
+
+        <!-- Upstream snapshots -->
+        <div class="snapshot-info">
+          <div class="snap-title">Upstream Snapshots</div>
+          <div class="snap-row">
+            <span class="snap-dot" id="sdot-environ"></span>
+            <span class="snap-key">qa-environ</span>
+            <span class="snap-val" id="sval-environ">—</span>
+          </div>
+          <div class="snap-row">
+            <span class="snap-dot" id="sdot-behavior"></span>
+            <span class="snap-key">qa-behavior</span>
+            <span class="snap-val" id="sval-behavior">—</span>
+          </div>
+          <div class="snap-row">
+            <span class="snap-dot" id="sdot-memory"></span>
+            <span class="snap-key">qa-memory</span>
+            <span class="snap-val" id="sval-memory">—</span>
+          </div>
+          <div class="snap-row">
+            <span class="snap-dot" id="sdot-sequencer"></span>
+            <span class="snap-key">qa-sequencer</span>
+            <span class="snap-val" id="sval-sequencer">—</span>
+          </div>
+        </div>
+
+        <!-- Active layers toggles -->
+        <div class="layer-toggles-section">
+          <div class="lt-title">Active Layers</div>
+          <div class="layer-toggle-row">
+            <div class="lt-name">
+              <div class="lt-swatch" style="background:#4dc8a0;"></div>
+              Biome
+            </div>
+            <div class="toggle-sw on" data-layer="biome" id="tog-biome"></div>
+          </div>
+          <div class="layer-toggle-row">
+            <div class="lt-name">
+              <div class="lt-swatch" style="background:#b1d0f0;"></div>
+              Weather
+            </div>
+            <div class="toggle-sw on" data-layer="weather" id="tog-weather"></div>
+          </div>
+          <div class="layer-toggle-row">
+            <div class="lt-name">
+              <div class="lt-swatch" style="background:#9b7fd4;"></div>
+              Music
+            </div>
+            <div class="toggle-sw on" data-layer="music" id="tog-music"></div>
+          </div>
+          <div class="layer-toggle-row">
+            <div class="lt-name">
+              <div class="lt-swatch" style="background:#dc8c1e;"></div>
+              Voice
+            </div>
+            <div class="toggle-sw" data-layer="voice" id="tog-voice"></div>
+          </div>
+          <div class="layer-toggle-row">
+            <div class="lt-name">
+              <div class="lt-swatch" style="background:#f98f3b;"></div>
+              Cue
+            </div>
+            <div class="toggle-sw" data-layer="cue" id="tog-cue"></div>
+          </div>
+          <div class="layer-toggle-row">
+            <div class="lt-name">
+              <div class="lt-swatch" style="background:#d45b5b;"></div>
+              Tension
+            </div>
+            <div class="toggle-sw on" data-layer="tension" id="tog-tension"></div>
+          </div>
+        </div>
+
+        <!-- Parameters -->
+        <div class="params-section">
+          <div class="ps-title">Audio Parameters</div>
+          <div class="param-row">
+            <span class="pr-key">Key</span>
+            <span class="pr-val dim" id="prv-key">—</span>
+          </div>
+          <div class="param-row">
+            <span class="pr-key">Mode</span>
+            <span class="pr-val dim" id="prv-mode">—</span>
+          </div>
+          <div class="param-row">
+            <span class="pr-key">BPM</span>
+            <span class="pr-val dim" id="prv-bpm">—</span>
+          </div>
+          <div class="param-row">
+            <span class="pr-key">Biome</span>
+            <span class="pr-val dim" id="prv-biome">—</span>
+          </div>
+          <div class="param-row">
+            <span class="pr-key">Weather</span>
+            <span class="pr-val dim" id="prv-weather">—</span>
+          </div>
+          <div class="param-row">
+            <span class="pr-key">Active Motifs</span>
+            <span class="pr-val dim" id="prv-motifs">—</span>
+          </div>
+          <div class="tension-bar-wrap">
+            <div class="tension-label-row">
+              <span class="pr-key">Tension Level</span>
+              <span class="pr-val dim" id="prv-tension">—</span>
+            </div>
+            <div class="tension-track">
+              <div class="tension-fill" id="tension-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Motif seeds -->
+        <div class="motif-section">
+          <div class="motif-title">Active Motifs</div>
+          <div id="motif-list">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Entity voice classifiers -->
+        <div class="voice-section">
+          <div class="voice-title">Entity Voice Distribution</div>
+          <div id="voice-list">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Stinger library -->
+        <div class="stinger-section">
+          <div class="stinger-title">
+            Stinger Library
+            <span class="stinger-count-badge" id="stinger-badge">0</span>
+          </div>
+          <div class="stinger-grid" id="stinger-grid">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Transition scheduler -->
+        <div class="transition-section">
+          <div class="tr-title">Transition Queue</div>
+          <div id="tr-list">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Audio export -->
+        <div class="export-section">
+          <div class="export-header" id="export-toggle">
+            <div class="exp-title">Audio Export Packet</div>
+            <div class="exp-toggle" id="exp-caret">▶</div>
+          </div>
+          <div class="export-pre-wrap" id="export-pre-wrap">
+            <pre class="export-pre" id="export-pre">// Compose a scene to generate the export packet</pre>
+          </div>
+        </div>
+
+      </div><!-- rp-scroll -->
+    </div><!-- right-panel -->
+
+  </div><!-- body -->
+
+  <!-- STATUS BAR -->
+  <div id="status-bar">
+    <div class="sb-cell">
+      Module <span class="sb-val">12 · Sound</span>
+    </div>
+    <div class="sb-cell">
+      Dept <span class="sb-val">NarrativeSystems</span>
+    </div>
+    <div class="sb-cell">
+      Key <span class="sb-val live" id="sb-key">—</span>
+    </div>
+    <div class="sb-cell">
+      BPM <span class="sb-val live" id="sb-bpm">—</span>
+    </div>
+    <div class="sb-cell">
+      Tension <span class="sb-val" id="sb-tension">—</span>
+    </div>
+    <div class="sb-cell">
+      Layers <span class="sb-val" id="sb-layers">3</span>
+    </div>
+    <div class="sb-cell">
+      Status <span class="sb-val live" id="sb-status">Ready</span>
+    </div>
+    <div class="sb-spacer"></div>
+    <div class="sb-module-tag">QA · Sound · v1.0</div>
+  </div>
+
+</div><!-- shell -->
+
+<script>
+'use strict';
+
+// ─────────────────────────────────────────────
+// DATA TABLES
+// ─────────────────────────────────────────────
+const KEYS = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const SCALES = ['Minor','Major','Harmonic Minor','Melodic Minor'];
+const MODES = ['Dorian','Phrygian','Lydian','Mixolydian','Aeolian','Locrian','Ionian'];
+const BIOMES = [
+  'Dense Forest','Open Grassland','Desert Dunes','Arctic Tundra',
+  'Coastal Cliffs','Deep Cavern','Volcanic Plains','Wetland Marsh',
+  'Mountain Peak','Urban Ruins','Sacred Grove','Sunken City'
+];
+const WEATHERS = [
+  'Clear Sky','Light Breeze','Heavy Rain + Thunder','Fog Bank',
+  'Blizzard','Sandstorm','Drizzle','Hailstorm','Calm Night','Gale Force Winds'
+];
+const MOTIF_NAMES = [
+  'Hero Call','Shadow Stalk','Ancient Lament','Victory Fanfare',
+  'Tension Rise','Pastoral Theme','Chase Motif','Mystery Walk',
+  'Battle Cry','Elegy','Discovery Sting','Descent Theme'
+];
+const VOICE_TYPES = [
+  {type:'Warrior',color:'#d45b5b'},
+  {type:'Mage',color:'#9b7fd4'},
+  {type:'Merchant',color:'#e8b84b'},
+  {type:'Elder',color:'#4dc8a0'},
+  {type:'Creature',color:'#dc8c1e'},
+  {type:'Crowd',color:'#b1d0f0'}
+];
+const STINGERS = [
+  {code:'STG-01',name:'Combat Start'},
+  {code:'STG-02',name:'Quest Complete'},
+  {code:'STG-03',name:'Item Found'},
+  {code:'STG-04',name:'Danger Near'},
+  {code:'STG-05',name:'Level Up'},
+  {code:'STG-06',name:'Boss Appear'},
+  {code:'STG-07',name:'Door Open'},
+  {code:'STG-08',name:'Secret Found'},
+  {code:'STG-09',name:'Player Death'},
+  {code:'STG-10',name:'Checkpoint'},
+  {code:'STG-11',name:'Ambush'},
+  {code:'STG-12',name:'Peace Restored'}
+];
+const COMP_DATA = {
+  BAM:{name:'Biome Audio Mapper',layer:'I — Ambient',wire:'DAT',desc:'Maps current biome state to ambient sound profile. Reads biome_type, flora_density, fauna_activity from environ snapshot. Outputs looping ambient bed parameters.'},
+  WSL:{name:'Weather Sound Layer',layer:'I — Ambient',wire:'DAT',desc:'Generates rain, wind, thunder, atmospheric layer parameters from weather snapshot data. Blends multiple weather layers by intensity.'},
+  TDM:{name:'Time-of-Day Mixer',layer:'I — Ambient',wire:'TMP',desc:'Cross-fades between dawn, day, dusk, night ambient profiles based on time-of-day value from sequencer snapshot. Uses smooth envelope curves.'},
+  SRS:{name:'Spatial Reverb Setter',layer:'I — Ambient',wire:'VIS',desc:'Calculates reverb parameters (room size, wet/dry mix, early reflections) based on terrain geometry and biome type from environment snapshot.'},
+  KMS:{name:'Key & Mode Selector',layer:'II — Music',wire:'DAT',desc:'Selects musical key and mode based on dominant emotion, biome, and story arc phase. Ensures harmonic coherence across all music layers.'},
+  MSG:{name:'Motif Seed Generator',layer:'II — Music',wire:'NAR',desc:'Generates melodic motif seeds from narrative state. Each entity archetype, location, and story beat has associated motif DNA that shapes generated melodies.'},
+  HTE:{name:'Harmonic Tension Engine',layer:'II — Music',wire:'BHV',desc:'Maps entity behavior states to harmonic tension values (0-10). High tension triggers dissonant chord extensions; low tension produces consonant resolutions.'},
+  RPB:{name:'Rhythm Pattern Builder',layer:'II — Music',wire:'TMP',desc:'Constructs percussion and rhythm patterns from BPM and time-signature data. Synchronizes with sequencer timeline events for dramatic beat hits.'},
+  EVC:{name:'Entity Voice Classifier',layer:'III — Voice',wire:'IDN',desc:'Classifies entities by voice archetype (warrior, mage, elder, etc.) from identity snapshot. Assigns pitch range, timbre profile, and speech rhythm parameters.'},
+  DPM:{name:'Dialogue Pitch Modeler',layer:'III — Voice',wire:'IDN',desc:'Models pitch modulation curves for entity dialogue based on emotional state, social rank, and context from memory snapshot. Outputs real-time pitch envelope data.'},
+  CNS:{name:'Crowd Noise Simulator',layer:'III — Voice',wire:'SOC',desc:'Simulates crowd noise profiles from society snapshot. Scales number of voice layers, chatter density, and crowd emotion from population and tension data.'},
+  ETM:{name:'Emotional Tone Mapper',layer:'III — Voice',wire:'BHV',desc:'Maps entity emotional states to vocal tone descriptors (bright, hollow, tense, warm). Drives timbre filters and vibrato parameters for voice synthesis.'},
+  EST:{name:'Event Sound Trigger',layer:'IV — Cue',wire:'EVT',desc:'Monitors incoming event stream and fires appropriate sound triggers. Queues simultaneous trigger limits and handles priority-based trigger suppression.'},
+  SLI:{name:'Stinger Library Index',layer:'IV — Cue',wire:'AST',desc:'Indexes all available stinger audio assets by category and trigger condition. Manages stinger cooldowns to prevent repeated playback of the same cue.'},
+  MTS:{name:'Music Transition Scheduler',layer:'IV — Cue',wire:'TMP',desc:'Schedules musically-correct transitions between music states on bar/phrase boundaries. Reads sequencer BPM and beat position to time crossfades.'},
+  AEP:{name:'Audio Export Packet',layer:'IV — Cue',wire:'AUD',desc:'Assembles all audio parameter data into a renderer-agnostic JSON packet. Compatible with FMOD, Wwise, Web Audio API, and theater sound systems.'}
+};
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+const state = {
+  composed: false,
+  key: '',
+  mode: '',
+  bpm: 80,
+  biome: '',
+  weather: '',
+  tension: 0,
+  activeMotifs: 0,
+  entityVoiceCount: 0,
+  stingerCount: 12,
+  audioExportReady: false,
+  activeLayers: {biome:true, weather:true, music:true, voice:false, cue:false, tension:true},
+  motifs: [],
+  voices: [],
+  transitions: [],
+  waveOffset: 0,
+  animT: 0,
+  lastBeat: 0,
+  bpmRings: [],
+  voiceBumps: [],
+  vizToggles: {waveform:true, spectrum:true, layers:true, bpm:true},
+  intensity: 0.5,
+  freqPhases: Array.from({length:32}, ()=>Math.random()*Math.PI*2),
+  freqBaseFreqs: Array.from({length:32}, (_,i)=> 0.3 + i*0.18 + Math.random()*0.1)
+};
+
+// ─────────────────────────────────────────────
+// CANVAS SETUP
+// ─────────────────────────────────────────────
+const canvas = document.getElementById('viz-canvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas(){
+  const wrap = canvas.parentElement;
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// ─────────────────────────────────────────────
+// ANIMATION LOOP
+// ─────────────────────────────────────────────
+let rafId = null;
+function animate(ts){
+  state.animT = ts / 1000;
+  state.waveOffset -= 2;
+  drawFrame();
+  // BPM pulse
+  if(state.composed && state.bpm > 0){
+    const beatInterval = 60 / state.bpm;
+    if(state.animT - state.lastBeat >= beatInterval){
+      state.lastBeat = state.animT;
+      if(state.vizToggles.bpm){
+        spawnBpmRing();
+      }
+    }
+  }
+  // voice bumps decay
+  state.voiceBumps = state.voiceBumps.filter(b=>(state.animT - b.t) < 0.8);
+  // bpm rings decay
+  state.bpmRings = state.bpmRings.filter(r=>(state.animT - r.t) < 0.45);
+  rafId = requestAnimationFrame(animate);
+}
+rafId = requestAnimationFrame(animate);
+
+function spawnBpmRing(){
+  const w = canvas.width;
+  const h = canvas.height;
+  // center of spectrum section (center third)
+  const x = w * 0.33 + (w * 0.34)/2;
+  const y = h / 2;
+  state.bpmRings.push({x, y, t: state.animT});
+}
+
+function spawnVoiceBump(){
+  const w = canvas.width;
+  const x = w * 0.33 + Math.random() * w * 0.34;
+  const y = canvas.height/2 + (Math.random()-0.5)*40;
+  state.voiceBumps.push({x, y, t: state.animT, amp: 8 + Math.random()*12});
+}
+
+// ─────────────────────────────────────────────
+// DRAW FRAME
+// ─────────────────────────────────────────────
+function drawFrame(){
+  const W = canvas.width;
+  const H = canvas.height;
+  const t = state.animT;
+
+  // Clear
+  ctx.fillStyle = '#04050a';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  drawGrid(W, H);
+
+  const waveW = W * 0.30;
+  const specW = W * 0.37;
+  const layerW = W * 0.33;
+  const waveX = 0;
+  const specX = waveW;
+  const layerX = waveW + specW;
+
+  // Section dividers
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(waveX + waveW, 0);
+  ctx.lineTo(waveX + waveW, H);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(layerX, 0);
+  ctx.lineTo(layerX, H);
+  ctx.stroke();
+
+  if(state.vizToggles.waveform) drawWaveform(waveX, waveW, H, t);
+  if(state.vizToggles.spectrum) drawSpectrum(specX, specW, H, t);
+  drawLayerStack(layerX, layerW, H, t);
+
+  // BPM rings
+  if(state.vizToggles.bpm){
+    state.bpmRings.forEach(r=>{
+      const age = t - r.t;
+      const progress = age / 0.45;
+      const radius = 12 + progress * 55;
+      const alpha = (1 - progress) * 0.85;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = '#dc8c1e';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, radius, 0, Math.PI*2);
+      ctx.stroke();
+      ctx.restore();
+    });
+  }
+
+  // Voice bumps overlay on waveform
+  state.voiceBumps.forEach(b=>{
+    const age = t - b.t;
+    const alpha = Math.max(0, 1 - age/0.8);
+    const scale = 1 - age/0.8;
+    const bx = b.x;
+    const by = b.y;
+    ctx.save();
+    ctx.globalAlpha = alpha * 0.7;
+    ctx.strokeStyle = '#9b7fd4';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for(let i=0; i<30; i++){
+      const px = bx + (i-15)*3;
+      const py = by + Math.sin(i * 0.8 + t*8) * b.amp * scale;
+      i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+    ctx.restore();
+  });
+}
+
+function drawGrid(W, H){
+  ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+  ctx.lineWidth = 0.5;
+  const gridSz = 40;
+  for(let x=0; x<W; x+=gridSz){
+    ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
+  }
+  for(let y=0; y<H; y+=gridSz){
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
+  }
+}
+
+function drawWaveform(x, w, H, t){
+  const midY = H / 2;
+  const intensity = state.intensity;
+  const amp = (H * 0.35) * intensity;
+
+  // Background tint
+  ctx.fillStyle = 'rgba(220,140,30,0.02)';
+  ctx.fillRect(x, 0, w, H);
+
+  // Oscilloscope glow fill
+  ctx.save();
+  const gradFill = ctx.createLinearGradient(x, midY-amp, x, midY+amp);
+  gradFill.addColorStop(0, 'rgba(220,140,30,0.0)');
+  gradFill.addColorStop(0.5, 'rgba(220,140,30,0.07)');
+  gradFill.addColorStop(1, 'rgba(220,140,30,0.0)');
+
+  ctx.beginPath();
+  ctx.moveTo(x, midY);
+  const steps = Math.ceil(w) + 4;
+  for(let i=0; i<=steps; i++){
+    const px = x + i;
+    const phase = (px + state.waveOffset) * 0.04;
+    const noise1 = Math.sin(phase + t * 1.3) * 0.6;
+    const noise2 = Math.sin(phase * 2.1 + t * 2.7) * 0.25;
+    const noise3 = Math.sin(phase * 3.7 + t * 0.8) * 0.15;
+    const py = midY + (noise1 + noise2 + noise3) * amp;
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.lineTo(x + steps, midY);
+  ctx.closePath();
+  ctx.fillStyle = gradFill;
+  ctx.fill();
+  ctx.restore();
+
+  // Main waveform line
+  ctx.save();
+  ctx.strokeStyle = '#dc8c1e';
+  ctx.lineWidth = 1.8;
+  ctx.shadowBlur = 6;
+  ctx.shadowColor = 'rgba(220,140,30,0.5)';
+  ctx.beginPath();
+  for(let i=0; i<=steps; i++){
+    const px = x + i;
+    const phase = (px + state.waveOffset) * 0.04;
+    const noise1 = Math.sin(phase + t * 1.3) * 0.6;
+    const noise2 = Math.sin(phase * 2.1 + t * 2.7) * 0.25;
+    const noise3 = Math.sin(phase * 3.7 + t * 0.8) * 0.15;
+    const py = midY + (noise1 + noise2 + noise3) * amp;
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.restore();
+
+  // Center line
+  ctx.save();
+  ctx.strokeStyle = 'rgba(220,140,30,0.15)';
+  ctx.lineWidth = 0.5;
+  ctx.setLineDash([4,6]);
+  ctx.beginPath();
+  ctx.moveTo(x, midY);
+  ctx.lineTo(x+w, midY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  // Intensity label
+  if(state.composed){
+    ctx.save();
+    ctx.font = '400 10px "JetBrains Mono"';
+    ctx.fillStyle = 'rgba(220,140,30,0.4)';
+    ctx.fillText(`INT ${(intensity*100).toFixed(0)}%`, x+8, H-10);
+    ctx.restore();
+  }
+}
+
+function drawSpectrum(x, w, H, t){
+  const nBars = 32;
+  const barW = (w - (nBars+1)*2) / nBars;
+  const maxBarH = H * 0.75;
+
+  // Background tint
+  ctx.fillStyle = 'rgba(220,140,30,0.015)';
+  ctx.fillRect(x, 0, w, H);
+
+  // Floor line
+  ctx.strokeStyle = 'rgba(220,140,30,0.12)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(x, H - 20);
+  ctx.lineTo(x + w, H - 20);
+  ctx.stroke();
+
+  for(let i=0; i<nBars; i++){
+    const freq = state.freqBaseFreqs[i];
+    const phase = state.freqPhases[i];
+    const raw = (Math.sin(t * freq + phase) + 1) / 2;
+    const raw2 = (Math.sin(t * freq * 1.7 + phase + 1.2) + 1) / 2;
+    const barHeight = (raw * 0.65 + raw2 * 0.35) * maxBarH * state.intensity;
+
+    const bx = x + 2 + i * (barW + 2);
+    const by = H - 20 - barHeight;
+
+    // Bar gradient
+    const grad = ctx.createLinearGradient(bx, by, bx, H-20);
+    grad.addColorStop(0, '#f4c025');
+    grad.addColorStop(0.5, '#dc8c1e');
+    grad.addColorStop(1, 'rgba(220,140,30,0.4)');
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(bx, by, Math.max(1, barW), barHeight);
+
+    // Reflection
+    ctx.globalAlpha = 0.12;
+    ctx.fillStyle = grad;
+    ctx.fillRect(bx, H-19, Math.max(1, barW), barHeight * 0.25);
+    ctx.globalAlpha = 1;
+
+    // Peak marker
+    const peakY = by;
+    ctx.fillStyle = 'rgba(244,192,37,0.8)';
+    ctx.fillRect(bx, peakY, Math.max(1, barW), 1.5);
+  }
+}
+
+const LAYER_CONFIGS = [
+  {key:'biome',   label:'Biome',   color:'#4dc8a0'},
+  {key:'weather', label:'Weather', color:'#b1d0f0'},
+  {key:'music',   label:'Music',   color:'#9b7fd4'},
+  {key:'voice',   label:'Voice',   color:'#dc8c1e'},
+  {key:'cue',     label:'Cue',     color:'#f98f3b'},
+  {key:'tension', label:'Tension', color:'#d45b5b'}
+];
+
+function drawLayerStack(x, w, H, t){
+  const nLayers = 6;
+  const stripH = Math.floor((H - 20) / nLayers) - 4;
+  const padTop = 10;
+
+  // Background tint
+  ctx.fillStyle = 'rgba(12,16,24,0.5)';
+  ctx.fillRect(x, 0, w, H);
+
+  LAYER_CONFIGS.forEach((lc, i)=>{
+    const sy = padTop + i * (stripH + 4);
+    const active = state.activeLayers[lc.key];
+
+    // Strip background
+    ctx.fillStyle = active ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.01)';
+    ctx.fillRect(x+4, sy, w-8, stripH);
+
+    // Border
+    ctx.strokeStyle = active ? lc.color + '55' : 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(x+4, sy, w-8, stripH);
+
+    // Color swatch
+    ctx.fillStyle = active ? lc.color : 'rgba(255,255,255,0.15)';
+    ctx.fillRect(x+8, sy + (stripH-10)/2, 4, 10);
+
+    // Label
+    ctx.save();
+    ctx.font = '400 10px "JetBrains Mono"';
+    ctx.fillStyle = active ? '#fff' : 'rgba(255,255,255,0.3)';
+    ctx.fillText(lc.label.toUpperCase(), x+18, sy + stripH/2 + 4);
+    ctx.restore();
+
+    // Intensity bar
+    if(active){
+      const barX = x + 72;
+      const barW2 = w - 76 - 32;
+      const barH = 3;
+      const barY = sy + stripH/2 - barH/2;
+
+      // Track
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      ctx.fillRect(barX, barY, barW2, barH);
+
+      // Fill with animation
+      const fillRatio = 0.3 + 0.5 * ((Math.sin(t * 0.7 + i * 1.1) + 1)/2) * (state.intensity);
+      const grad = ctx.createLinearGradient(barX, 0, barX+barW2, 0);
+      grad.addColorStop(0, lc.color + 'aa');
+      grad.addColorStop(1, lc.color + 'ff');
+      ctx.fillStyle = grad;
+      ctx.fillRect(barX, barY, barW2 * fillRatio, barH);
+
+      // Intensity value
+      ctx.save();
+      ctx.font = '300 9px "JetBrains Mono"';
+      ctx.fillStyle = lc.color + 'bb';
+      ctx.textAlign = 'right';
+      ctx.fillText((fillRatio*100).toFixed(0)+'%', x+w-6, sy+stripH/2+4);
+      ctx.restore();
+    }
+
+    // "OFF" text when inactive
+    if(!active){
+      ctx.save();
+      ctx.font = '300 9px "JetBrains Mono"';
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      ctx.textAlign = 'right';
+      ctx.fillText('OFF', x+w-6, sy+stripH/2+4);
+      ctx.restore();
+    }
+  });
+
+  // "Active Layers" header
+  ctx.save();
+  ctx.font = '400 9px "JetBrains Mono"';
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.textAlign = 'left';
+  ctx.fillText('ACTIVE LAYERS', x+8, H-6);
+  ctx.restore();
+}
+
+// ─────────────────────────────────────────────
+// UPSTREAM SNAPSHOT LOADING
+// ─────────────────────────────────────────────
+function loadUpstreamSnapshots(){
+  const keys = {
+    'qa-environ-snapshot': {dot:'sdot-environ', val:'sval-environ', chip:'chip-environ'},
+    'qa-behavior-snapshot': {dot:'sdot-behavior', val:'sval-behavior', chip:'chip-behavior'},
+    'qa-memory-snapshot': {dot:'sdot-memory', val:'sval-memory', chip:'chip-memory'},
+    'qa-sequencer-snapshot': {dot:'sdot-sequencer', val:'sval-sequencer', chip:'chip-sequencer'}
+  };
+  const results = {};
+  Object.entries(keys).forEach(([k,ids])=>{
+    try{
+      const raw = localStorage.getItem(k);
+      if(raw){
+        const data = JSON.parse(raw);
+        results[k] = data;
+        document.getElementById(ids.dot).classList.add('ok');
+        document.getElementById(ids.dot).classList.remove('miss');
+        // show something meaningful
+        const label = data.module || data.biome_type || data.generated || 'OK';
+        document.getElementById(ids.val).textContent = String(label).slice(0,18);
+        document.getElementById(ids.chip).classList.add('lit');
+      } else {
+        document.getElementById(ids.dot).classList.remove('ok');
+        document.getElementById(ids.dot).classList.add('miss');
+        document.getElementById(ids.val).textContent = 'missing';
+        document.getElementById(ids.chip).classList.remove('lit');
+      }
+    } catch(e){
+      document.getElementById(ids.val).textContent = 'error';
+    }
+  });
+  return results;
+}
+
+// ─────────────────────────────────────────────
+// COMPOSE SCENE
+// ─────────────────────────────────────────────
+function composeScene(){
+  const snaps = loadUpstreamSnapshots();
+
+  // Read BPM from sequencer snapshot
+  let bpmFromSeq = 80;
+  const seqSnap = snaps['qa-sequencer-snapshot'];
+  if(seqSnap && seqSnap.bpm) bpmFromSeq = seqSnap.bpm;
+
+  // Read biome from environ
+  let biomeFromEnv = null;
+  const envSnap = snaps['qa-environ-snapshot'];
+  if(envSnap && envSnap.biome_type) biomeFromEnv = envSnap.biome_type;
+
+  // Read tension from behavior
+  let tensionFromBhv = null;
+  const bhvSnap = snaps['qa-behavior-snapshot'];
+  if(bhvSnap && bhvSnap.tension_level !== undefined) tensionFromBhv = bhvSnap.tension_level;
+
+  // Generate params
+  const key = KEYS[Math.floor(Math.random()*KEYS.length)];
+  const scale = SCALES[Math.floor(Math.random()*SCALES.length)];
+  const mode = MODES[Math.floor(Math.random()*MODES.length)];
+  const bpm = bpmFromSeq || (60 + Math.floor(Math.random()*80));
+  const biome = biomeFromEnv || BIOMES[Math.floor(Math.random()*BIOMES.length)];
+  const weather = WEATHERS[Math.floor(Math.random()*WEATHERS.length)];
+  const tension = tensionFromBhv !== null ? tensionFromBhv : Math.floor(Math.random()*10);
+  const activeMotifs = 2 + Math.floor(Math.random()*5);
+  const entityVoiceCount = 4 + Math.floor(Math.random()*12);
+
+  // Generate motifs
+  const motifs = [];
+  const motifsShuffled = [...MOTIF_NAMES].sort(()=>Math.random()-0.5);
+  for(let i=0; i<activeMotifs; i++){
+    motifs.push({
+      name: motifsShuffled[i],
+      bars: Array.from({length:8}, ()=>Math.floor(Math.random()*14)+2)
+    });
+  }
+
+  // Generate voice distribution
+  const voices = VOICE_TYPES.map(v=>({
+    ...v,
+    count: Math.floor(Math.random()*8),
+    maxCount: 8
+  }));
+
+  // Generate transitions
+  const transitionCount = 2 + Math.floor(Math.random()*3);
+  const transitions = [];
+  const transFrom = ['Ambient Bed','Combat Theme','Exploration','Cutscene','Boss Battle'];
+  const transTo = ['Victory Theme','Ambient Fade','Tension Build','Peace Theme','Battle Prelude'];
+  for(let i=0; i<transitionCount; i++){
+    transitions.push({
+      from: transFrom[Math.floor(Math.random()*transFrom.length)],
+      to: transTo[Math.floor(Math.random()*transTo.length)],
+      beats: (Math.floor(Math.random()*8)+1)*2
+    });
+  }
+
+  // Update state
+  state.composed = true;
+  state.key = `${key} ${scale}`;
+  state.mode = mode;
+  state.bpm = bpm;
+  state.biome = biome;
+  state.weather = weather;
+  state.tension = tension;
+  state.activeMotifs = activeMotifs;
+  state.entityVoiceCount = entityVoiceCount;
+  state.stingerCount = STINGERS.length;
+  state.audioExportReady = true;
+  state.motifs = motifs;
+  state.voices = voices;
+  state.transitions = transitions;
+  state.intensity = 0.4 + (tension/10)*0.6;
+  state.lastBeat = state.animT;
+
+  updateUI();
+  buildSnapshot();
+
+  // Flash animation
+  const center = document.getElementById('center');
+  center.classList.remove('compose-flash');
+  void center.offsetWidth;
+  center.classList.add('compose-flash');
+
+  // Trigger a few voice bumps
+  for(let i=0; i<3; i++){
+    setTimeout(()=>spawnVoiceBump(), i*200);
+  }
+
+  setStatus('Composed · ' + new Date().toLocaleTimeString());
+}
+
+// ─────────────────────────────────────────────
+// UI UPDATE
+// ─────────────────────────────────────────────
+function updateUI(){
+  // Params
+  setParam('prv-key', state.key, true);
+  setParam('prv-mode', state.mode, true);
+  setParam('prv-bpm', state.bpm + ' bpm', true);
+  setParam('prv-biome', state.biome, true);
+  setParam('prv-weather', state.weather, true);
+  setParam('prv-motifs', state.activeMotifs + ' active', true);
+  setParam('prv-tension', state.tension + ' / 10', state.tension > 6);
+
+  // Tension fill
+  document.getElementById('tension-fill').style.width = (state.tension/10*100)+'%';
+
+  // Status bar
+  document.getElementById('sb-key').textContent = state.key;
+  document.getElementById('sb-bpm').textContent = state.bpm;
+  document.getElementById('sb-tension').textContent = state.tension + '/10';
+  updateLayerCount();
+
+  // Canvas toolbar
+  document.getElementById('lbl-mode-display').textContent = 'Mode: ' + state.mode;
+  document.getElementById('lbl-bpm-display').textContent = 'BPM: ' + state.bpm;
+
+  // Motif list
+  buildMotifList();
+
+  // Voice list
+  buildVoiceList();
+
+  // Stinger grid
+  buildStingerGrid();
+
+  // Transition list
+  buildTransitionList();
+
+  // Export pre
+  buildExportPre();
+}
+
+function setParam(id, val, highlight){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = val;
+  el.classList.remove('dim','highlight');
+  el.classList.add(highlight ? 'highlight' : '');
+}
+
+function updateLayerCount(){
+  const count = Object.values(state.activeLayers).filter(Boolean).length;
+  document.getElementById('sb-layers').textContent = count;
+}
+
+function buildMotifList(){
+  const el = document.getElementById('motif-list');
+  if(!state.motifs.length){
+    el.innerHTML = '<div style="font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);padding:4px 0;">No motifs generated</div>';
+    return;
+  }
+  el.innerHTML = state.motifs.map((m,i)=>`
+    <div class="motif-row">
+      <span class="motif-idx">${i+1}</span>
+      <span class="motif-name">${m.name}</span>
+      <div class="motif-bars">
+        ${m.bars.map(h=>`<div class="motif-bar" style="height:${h}px;"></div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function buildVoiceList(){
+  const el = document.getElementById('voice-list');
+  el.innerHTML = state.voices.map(v=>`
+    <div class="voice-row">
+      <span class="voice-type">${v.type}</span>
+      <div class="voice-bar-track">
+        <div class="voice-bar-fill" style="width:${(v.count/v.maxCount*100)}%;background:${v.color};"></div>
+      </div>
+      <span class="voice-count">${v.count}</span>
+    </div>
+  `).join('');
+}
+
+function buildStingerGrid(){
+  const el = document.getElementById('stinger-grid');
+  document.getElementById('stinger-badge').textContent = STINGERS.length;
+  el.innerHTML = STINGERS.map((s,i)=>`
+    <div class="stinger-cell" data-stinger="${i}" title="${s.name}">
+      <div class="sc-code">${s.code}</div>
+      <div class="sc-name">${s.name}</div>
+    </div>
+  `).join('');
+  el.querySelectorAll('.stinger-cell').forEach(cell=>{
+    cell.addEventListener('click', ()=>{
+      cell.classList.add('fired');
+      spawnVoiceBump();
+      setTimeout(()=>cell.classList.remove('fired'), 600);
+    });
+  });
+}
+
+function buildTransitionList(){
+  const el = document.getElementById('tr-list');
+  if(!state.transitions.length){
+    el.innerHTML = '<div style="font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);padding:4px 0;">No transitions queued</div>';
+    return;
+  }
+  el.innerHTML = state.transitions.map(tr=>`
+    <div class="tr-row">
+      <span class="tr-from">${tr.from}</span>
+      <span class="tr-arrow">→</span>
+      <span class="tr-to">${tr.to}</span>
+      <span class="tr-beats">${tr.beats}b</span>
+    </div>
+  `).join('');
+}
+
+function buildExportPre(){
+  const activeLayers = Object.entries(state.activeLayers)
+    .filter(([,v])=>v).map(([k])=>k);
+  const snap = {
+    system: 'Quantum Atlas',
+    module: '12 · Sound',
+    generated: new Date().toISOString(),
+    key: state.key,
+    mode: state.mode,
+    bpm: state.bpm,
+    biome_layer: state.biome,
+    weather_layer: state.weather,
+    tension: state.tension,
+    active_motifs: state.activeMotifs,
+    active_layers: activeLayers,
+    entity_voice_count: state.entityVoiceCount,
+    stinger_count: state.stingerCount,
+    audio_export_ready: state.audioExportReady,
+    motif_names: state.motifs.map(m=>m.name),
+    voice_distribution: state.voices.reduce((acc,v)=>{acc[v.type.toLowerCase()]=v.count;return acc;},{}),
+    transition_queue: state.transitions,
+    reverb_profile: state.activeLayers.biome ? 'biome-matched' : 'dry',
+    spatial_mode: 'HRTF-stereo',
+    engine_targets: ['FMOD','Wwise','WebAudio','Theater']
+  };
+  document.getElementById('export-pre').textContent = JSON.stringify(snap, null, 2);
+}
+
+function buildSnapshot(){
+  const activeLayers = Object.entries(state.activeLayers)
+    .filter(([,v])=>v).map(([k])=>k);
+  const snap = {
+    system: 'Quantum Atlas',
+    module: '12 · Sound',
+    generated: new Date().toISOString(),
+    key: state.key,
+    mode: state.mode,
+    bpm: state.bpm,
+    biome_layer: state.biome,
+    weather_layer: state.weather,
+    tension: state.tension,
+    active_motifs: state.activeMotifs,
+    active_layers: activeLayers,
+    entity_voice_count: state.entityVoiceCount,
+    stinger_count: state.stingerCount,
+    audio_export_ready: state.audioExportReady
+  };
+  try{
+    localStorage.setItem('qa-sound-snapshot', JSON.stringify(snap));
+  } catch(e){}
+}
+
+function setStatus(msg){
+  document.getElementById('sb-status').textContent = msg;
+}
+
+// ─────────────────────────────────────────────
+// COMPONENT CARD DETAIL DRAWER
+// ─────────────────────────────────────────────
+function openDetail(comp){
+  const data = COMP_DATA[comp];
+  if(!data) return;
+  document.getElementById('dd-title').textContent = comp + ' · ' + data.name;
+  document.getElementById('dd-body').innerHTML = `
+    <div class="dd-field">
+      <div class="dd-field-key">Layer</div>
+      <div class="dd-field-val">${data.layer}</div>
+    </div>
+    <div class="dd-field">
+      <div class="dd-field-key">Wire</div>
+      <div class="dd-field-val">${data.wire}</div>
+    </div>
+    <div class="dd-field" style="grid-column:span 1;">
+      <div class="dd-field-key">Status</div>
+      <div class="dd-field-val" style="color:var(--emerald);">Active</div>
+    </div>
+    <div class="dd-field" style="grid-column:1/-1;">
+      <div class="dd-field-key">Description</div>
+      <div class="dd-field-val" style="font-size:.32rem;color:rgba(255,255,255,.55);line-height:1.5;">${data.desc}</div>
+    </div>
+  `;
+  document.getElementById('detail-drawer').classList.add('open');
+}
+
+document.getElementById('dd-close').addEventListener('click', ()=>{
+  document.getElementById('detail-drawer').classList.remove('open');
+});
+
+document.querySelectorAll('.comp-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    document.querySelectorAll('.comp-card').forEach(c=>c.classList.remove('active'));
+    card.classList.add('active');
+    openDetail(card.dataset.comp);
+  });
+});
+
+// ─────────────────────────────────────────────
+// LAYER TOGGLES
+// ─────────────────────────────────────────────
+document.querySelectorAll('.toggle-sw').forEach(tog=>{
+  tog.addEventListener('click', ()=>{
+    const layer = tog.dataset.layer;
+    state.activeLayers[layer] = !state.activeLayers[layer];
+    tog.classList.toggle('on', state.activeLayers[layer]);
+    updateLayerCount();
+    if(state.composed) buildSnapshot();
+  });
+});
+
+// ─────────────────────────────────────────────
+// EXPORT TOGGLE
+// ─────────────────────────────────────────────
+document.getElementById('export-toggle').addEventListener('click', ()=>{
+  const wrap = document.getElementById('export-pre-wrap');
+  const caret = document.getElementById('exp-caret');
+  const isOpen = wrap.classList.toggle('open');
+  caret.classList.toggle('open', isOpen);
+});
+
+// ─────────────────────────────────────────────
+// COMPOSE BUTTONS
+// ─────────────────────────────────────────────
+document.getElementById('btn-compose').addEventListener('click', composeScene);
+document.getElementById('btn-compose-top').addEventListener('click', composeScene);
+
+// ─────────────────────────────────────────────
+// EXPORT AEP BUTTON
+// ─────────────────────────────────────────────
+document.getElementById('btn-export').addEventListener('click', ()=>{
+  if(!state.composed){
+    setStatus('Compose a scene first');
+    return;
+  }
+  // Open export pre if closed
+  const wrap = document.getElementById('export-pre-wrap');
+  const caret = document.getElementById('exp-caret');
+  wrap.classList.add('open');
+  caret.classList.add('open');
+  // Scroll right panel to bottom
+  document.querySelector('.rp-scroll').scrollTop = 9999;
+  setStatus('AEP Ready · ' + new Date().toLocaleTimeString());
+});
+
+// ─────────────────────────────────────────────
+// VIZ TOGGLE PILLS
+// ─────────────────────────────────────────────
+['waveform','spectrum','layers','bpm'].forEach(key=>{
+  const pill = document.getElementById('pill-'+key);
+  pill.addEventListener('click', ()=>{
+    state.vizToggles[key] = !state.vizToggles[key];
+    pill.classList.toggle('dimmed', !state.vizToggles[key]);
+  });
+});
+
+// ─────────────────────────────────────────────
+// TAB SWITCHING (cosmetic)
+// ─────────────────────────────────────────────
+document.querySelectorAll('.tb-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tb-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+loadUpstreamSnapshots();
+buildStingerGrid();
+
+// Populate motif list with placeholder state
+document.getElementById('motif-list').innerHTML =
+  '<div style="font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);padding:4px 0;">Compose to generate motifs</div>';
+
+// Populate voice list with zero state
+document.getElementById('voice-list').innerHTML = VOICE_TYPES.map(v=>`
+  <div class="voice-row">
+    <span class="voice-type">${v.type}</span>
+    <div class="voice-bar-track">
+      <div class="voice-bar-fill" style="width:0%;background:${v.color};"></div>
+    </div>
+    <span class="voice-count">—</span>
+  </div>
+`).join('');
+
+// Populate transition list placeholder
+document.getElementById('tr-list').innerHTML =
+  '<div style="font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);padding:4px 0;">No transitions queued</div>';
+
+</script>
+
+<!-- THEME SYNC -->
+<script>
+(function() {
+  const MAP = {
+    'c-bg':'--bg','c-surf':'--surface','c-surf2':'--surface2',
+    'c-edge':'--edge','c-edge-hi':'--edge-hi','c-accent1':'--venturan',
+    'c-accent2':'--amber','c-accent3':'--emerald','c-accent4':'--fusion',
+    'c-danger':'--blood','c-warm':'--solari','c-text':'--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+</script>
+
+</body>
+</html>

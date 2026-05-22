@@ -36,18 +36,23 @@
   --c-subgraph:  #d45b5b;
   --c-ionodes:   #b1d0f0;
   --c-output:    #c8973a;
-  --c-atlas:     #1e8cff;
-  --c-environ:   #8050e0;
-  --c-architect: #64b4ff;
-  --c-lighting:  #e0d8ff;
-  --c-society:   #c8a860;
-  --c-bridge:    #4dc8a0;
-  --c-ecology:   #7fd4c8;
-  --c-behavior:  #9030d0;
+  /* Atlas module accent colors (01–16) */
+  --c-atlas:         #1e8cff;
+  --c-environ:       #8050e0;
+  --c-architect:     #64b4ff;
+  --c-lighting:      #e0d8ff;
   --c-modeling:      #f4c025;
   --c-choreography:  #dc3c78;
-  --c-sequencer:     #b08030;
+  --c-behavior:      #9030d0;
+  --c-society:       #c8a860;
+  --c-atlas-seq:     #b08030;
   --c-story:         #8c50ff;
+  --c-memory:        #00c060;
+  --c-sound:         #dc8c1e;
+  --c-logic:         #20c8d0;
+  --c-simulation:    #30e060;
+  --c-forge:         #ff6400;
+  --c-network:       #ffffff;
 }
 
 html,body{
@@ -893,25 +898,45 @@ html,body{
         <span class="ni-icon">⚑</span>
         <span class="ni-label">Society</span>
       </div>
-      <div class="nav-item" id="nav-bridge" data-layer="bridge"
-           style="--lc:var(--c-bridge)" onclick="switchLayer('bridge')" title="Quantum Atlas · 06 Bridge">
+      <div class="nav-item" id="nav-network" data-layer="network"
+           style="--lc:var(--c-network)" onclick="switchLayer('network')" title="16 · Network | Nexus">
         <span class="ni-icon">⇋</span>
-        <span class="ni-label">Bridge</span>
+        <span class="ni-label">Network</span>
       </div>
-      <div class="nav-item" id="nav-ecology" data-layer="ecology"
-           style="--lc:var(--c-ecology)" onclick="switchLayer('ecology')" title="Quantum Atlas · 07 Ecology">
-        <span class="ni-icon">⚘</span>
-        <span class="ni-label">Ecology</span>
-      </div>
-      <div class="nav-item" id="nav-sequencer" data-layer="sequencer"
-           style="--lc:var(--c-sequencer)" onclick="switchLayer('sequencer')" title="09 · Sequencer | Chronicle">
+      <div class="nav-item" id="nav-atlas-seq" data-layer="atlas-seq"
+           style="--lc:var(--c-atlas-seq)" onclick="switchLayer('atlas-seq')" title="09 · Sequencer | Chronicle">
         <span class="ni-icon">▶</span>
-        <span class="ni-label">Sequencer</span>
+        <span class="ni-label">Chronicle</span>
       </div>
       <div class="nav-item" id="nav-story" data-layer="story"
            style="--lc:var(--c-story)" onclick="switchLayer('story')" title="10 · Story | Quill">
         <span class="ni-icon">✎</span>
         <span class="ni-label">Story</span>
+      </div>
+      <div class="nav-item" id="nav-memory" data-layer="memory"
+           style="--lc:var(--c-memory)" onclick="switchLayer('memory')" title="11 · Memory | Codex">
+        <span class="ni-icon">◎</span>
+        <span class="ni-label">Memory</span>
+      </div>
+      <div class="nav-item" id="nav-sound" data-layer="sound"
+           style="--lc:var(--c-sound)" onclick="switchLayer('sound')" title="12 · Sound | Composer">
+        <span class="ni-icon">♪</span>
+        <span class="ni-label">Sound</span>
+      </div>
+      <div class="nav-item" id="nav-logic" data-layer="logic"
+           style="--lc:var(--c-logic)" onclick="switchLayer('logic')" title="13 · Logic | Axiom">
+        <span class="ni-icon">⊢</span>
+        <span class="ni-label">Logic</span>
+      </div>
+      <div class="nav-item" id="nav-simulation" data-layer="simulation"
+           style="--lc:var(--c-simulation)" onclick="switchLayer('simulation')" title="14 · Simulation | Continuum">
+        <span class="ni-icon">∿</span>
+        <span class="ni-label">Sim</span>
+      </div>
+      <div class="nav-item" id="nav-forge" data-layer="forge"
+           style="--lc:var(--c-forge)" onclick="switchLayer('forge')" title="15 · Forge | Forge">
+        <span class="ni-icon">⚒</span>
+        <span class="ni-label">Forge</span>
       </div>
       <div class="nav-item" id="nav-behavior" data-layer="behavior"
            style="--lc:var(--c-behavior)" onclick="switchLayer('behavior')" title="07 · Behavior | Instinct">
@@ -1079,24 +1104,64 @@ html,body{
         onload="frameLoaded('society')"></iframe>
 
       <!-- 16 · Network | Nexus -->
-      <div class="frame-loader" id="loader-bridge">
+      <div class="frame-loader" id="loader-network">
         <div class="loader-glyph" style="color:#ffffff">⇋</div>
         <div class="loader-lbl">Loading 16 · Network | Nexus</div>
         <div class="loader-bar"><div class="loader-fill" style="background:#ffffff"></div></div>
       </div>
-      <iframe class="layer-frame" id="frame-bridge"
+      <iframe class="layer-frame" id="frame-network"
         src="quantum-atlas-network.html"
-        onload="frameLoaded('bridge')"></iframe>
+        onload="frameLoaded('network')"></iframe>
 
-      <!-- Atlas · 07 Ecology -->
-      <div class="frame-loader" id="loader-ecology">
-        <div class="loader-glyph" style="color:#7fd4c8">⚘</div>
-        <div class="loader-lbl">Loading Quantum Atlas · Ecology</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:#7fd4c8"></div></div>
+      <!-- Atlas · 15 Forge | Forge -->
+      <div class="frame-loader" id="loader-forge">
+        <div class="loader-glyph" style="color:#ff6400">⚒</div>
+        <div class="loader-lbl">Loading 15 · Forge | Forge</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#ff6400"></div></div>
       </div>
-      <iframe class="layer-frame" id="frame-ecology"
-        src="quantum-atlas-ecology.html"
-        onload="frameLoaded('ecology')"></iframe>
+      <iframe class="layer-frame" id="frame-forge"
+        src="quantum-atlas-forge.html"
+        onload="frameLoaded('forge')"></iframe>
+
+      <!-- Atlas · 14 Simulation | Continuum -->
+      <div class="frame-loader" id="loader-simulation">
+        <div class="loader-glyph" style="color:#30e060">∿</div>
+        <div class="loader-lbl">Loading 14 · Simulation | Continuum</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#30e060"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-simulation"
+        src="quantum-atlas-simulation.html"
+        onload="frameLoaded('simulation')"></iframe>
+
+      <!-- Atlas · 13 Logic | Axiom -->
+      <div class="frame-loader" id="loader-logic">
+        <div class="loader-glyph" style="color:#20c8d0">⊢</div>
+        <div class="loader-lbl">Loading 13 · Logic | Axiom</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#20c8d0"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-logic"
+        src="quantum-atlas-logic.html"
+        onload="frameLoaded('logic')"></iframe>
+
+      <!-- Atlas · 12 Sound | Composer -->
+      <div class="frame-loader" id="loader-sound">
+        <div class="loader-glyph" style="color:#dc8c1e">♪</div>
+        <div class="loader-lbl">Loading 12 · Sound | Composer</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#dc8c1e"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-sound"
+        src="quantum-atlas-sound.html"
+        onload="frameLoaded('sound')"></iframe>
+
+      <!-- Atlas · 11 Memory | Codex -->
+      <div class="frame-loader" id="loader-memory">
+        <div class="loader-glyph" style="color:#00c060">◎</div>
+        <div class="loader-lbl">Loading 11 · Memory | Codex</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#00c060"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-memory"
+        src="quantum-atlas-memory.html"
+        onload="frameLoaded('memory')"></iframe>
 
       <!-- Atlas · 10 Story | Quill -->
       <div class="frame-loader" id="loader-story">
@@ -1109,14 +1174,14 @@ html,body{
         onload="frameLoaded('story')"></iframe>
 
       <!-- Atlas · 09 Sequencer | Chronicle -->
-      <div class="frame-loader" id="loader-sequencer">
+      <div class="frame-loader" id="loader-atlas-seq">
         <div class="loader-glyph" style="color:#b08030">▶</div>
         <div class="loader-lbl">Loading 09 · Sequencer | Chronicle</div>
         <div class="loader-bar"><div class="loader-fill" style="background:#b08030"></div></div>
       </div>
-      <iframe class="layer-frame" id="frame-sequencer"
+      <iframe class="layer-frame" id="frame-atlas-seq"
         src="quantum-atlas-sequencer.html"
-        onload="frameLoaded('sequencer')"></iframe>
+        onload="frameLoaded('atlas-seq')"></iframe>
 
       <!-- Atlas · 08 Behavior -->
       <div class="frame-loader" id="loader-behavior">
@@ -1506,14 +1571,19 @@ const LAYERS = {
   modeling:      { label:'05 · Modeling      | Animus',  icon:'✦', color:'var(--c-modeling)',      file:'quantum-atlas-modeling.html'      },
   choreography:  { label:'06 · Choreography | Loom',    icon:'⟳', color:'var(--c-choreography)',  file:'quantum-atlas-choreography.html'  },
   behavior:      { label:'07 · Behavior     | Instinct', icon:'⊙', color:'var(--c-behavior)',      file:'quantum-atlas-behavior.html'      },
-  sequencer:     { label:'09 · Sequencer    | Chronicle',icon:'▶', color:'var(--c-sequencer)',     file:'quantum-atlas-sequencer.html'     },
+  'atlas-seq':   { label:'09 · Sequencer    | Chronicle',icon:'▶', color:'var(--c-atlas-seq)',    file:'quantum-atlas-sequencer.html'     },
   story:         { label:'10 · Story        | Quill',    icon:'✎', color:'var(--c-story)',          file:'quantum-atlas-story.html'         },
+  memory:        { label:'11 · Memory       | Codex',    icon:'◎', color:'var(--c-memory)',         file:'quantum-atlas-memory.html'        },
+  sound:         { label:'12 · Sound        | Composer', icon:'♪', color:'var(--c-sound)',           file:'quantum-atlas-sound.html'         },
+  logic:         { label:'13 · Logic        | Axiom',    icon:'⊢', color:'var(--c-logic)',           file:'quantum-atlas-logic.html'         },
+  simulation:    { label:'14 · Simulation   | Continuum',icon:'∿', color:'var(--c-simulation)',      file:'quantum-atlas-simulation.html'    },
+  forge:         { label:'15 · Forge        | Forge',    icon:'⚒', color:'var(--c-forge)',           file:'quantum-atlas-forge.html'         },
   society:  { label:'08 · Society   | Order',   icon:'⚑', color:'var(--c-society)',  file:'quantum-atlas-society.html'      },
-  bridge:   { label:'16 · Network   | Nexus',   icon:'⇋', color:'var(--c-bridge)',   file:'quantum-atlas-network.html'      },
+  network:  { label:'16 · Network    | Nexus',   icon:'⇋', color:'var(--c-network)', file:'quantum-atlas-network.html'      },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
-const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-choreography-snapshot','qa-behavior-snapshot','qa-sequencer-snapshot','qa-story-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot'];
+const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-choreography-snapshot','qa-behavior-snapshot','qa-sequencer-snapshot','qa-story-snapshot','qa-memory-snapshot','qa-sound-snapshot','qa-logic-snapshot','qa-simulation-snapshot','qa-forge-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot'];
 
 /* ── State ────────────────────────────────────────────────────────── */
 let activeLayer  = 'workspace';

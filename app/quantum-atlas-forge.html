@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 15 · Forge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #04050a;
+  --surface:  rgba(8,11,18,.98);
+  --surface2: rgba(12,16,24,.97);
+  --edge:     rgba(255,255,255,.055);
+  --edge-hi:  rgba(255,255,255,.12);
+  --venturan: #b1d0f0;
+  --amber:    #e8b84b;
+  --emerald:  #4dc8a0;
+  --solari:   #f98f3b;
+  --fusion:   #9b7fd4;
+  --blood:    #d45b5b;
+  --totem:    #7fd4c8;
+  --forge:    #ff6400;
+  --text:     rgba(255,255,255,.82);
+  --fm:'Orbitron',monospace;
+  --fd:'Space Grotesk',sans-serif;
+  --fc:'JetBrains Mono',monospace;
+}
+
+html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-family:var(--fd);font-size:13px;}
+#shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;overflow:hidden;
+}
+
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--forge);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;color:var(--forge);
+  animation:forge-breathe 3s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes forge-breathe{
+  0%,100%{box-shadow:0 0 4px rgba(255,100,0,.25);}
+  50%{box-shadow:0 0 18px rgba(255,100,0,.7),0 0 4px rgba(255,100,0,.4) inset;}
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--forge);white-space:nowrap;
+}
+.tb-subcrest{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.16em;
+  color:rgba(255,100,0,.5);text-transform:uppercase;margin-top:2px;
+}
+
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:0 10px;height:100%;
+  display:flex;align-items:center;cursor:pointer;
+  color:rgba(255,255,255,.35);border-bottom:2px solid transparent;
+  transition:all .12s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03);}
+.tb-tab.active{color:var(--forge);border-bottom-color:var(--forge);}
+
+.tb-links{
+  display:flex;align-items:center;gap:5px;padding:0 10px;
+  border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-link-chip{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:10px;border:1px solid;cursor:default;transition:all .15s;
+}
+.tb-link-chip.lit{color:#4dc8a0;border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.07);}
+.tb-link-chip.dim{color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.07);background:transparent;}
+
+.tb-actions{display:flex;gap:4px;padding:0 10px;height:100%;align-items:center;flex-shrink:0;}
+.tb-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff;}
+.tb-btn.hot{
+  border-color:rgba(255,100,0,.45);background:rgba(255,100,0,.08);color:var(--forge);
+}
+.tb-btn.hot:hover{background:rgba(255,100,0,.16);box-shadow:0 0 12px rgba(255,100,0,.2);}
+
+.tb-spacer{flex:1;}
+.tb-dept{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.18);padding:0 14px;white-space:nowrap;
+}
+
+/* ── BODY ── */
+#body{flex:1;display:flex;overflow:hidden;}
+
+/* ── LEFT PANEL ── */
+#left-panel{
+  width:240px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;
+}
+
+.lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.lp-scroll::-webkit-scrollbar{width:3px;}
+.lp-scroll::-webkit-scrollbar-track{background:transparent;}
+.lp-scroll::-webkit-scrollbar-thumb{background:var(--forge);border-radius:2px;opacity:.4;}
+
+.lp-header{
+  padding:8px 10px;border-bottom:1px solid var(--edge);flex-shrink:0;
+  display:flex;align-items:center;gap:6px;
+}
+.lp-header-title{font-family:var(--fm);font-size:.38rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.5);}
+.lp-header-badge{
+  font-family:var(--fc);font-size:.26rem;padding:1px 6px;border-radius:8px;
+  border:1px solid rgba(255,100,0,.3);background:rgba(255,100,0,.07);color:var(--forge);
+  margin-left:auto;
+}
+
+.lp-section{border-bottom:1px solid var(--edge);}
+.lp-section-header{
+  padding:7px 10px;display:flex;align-items:center;gap:6px;
+  cursor:pointer;user-select:none;transition:background .1s;
+}
+.lp-section-header:hover{background:rgba(255,255,255,.025);}
+.lp-sec-num{font-family:var(--fm);font-size:.38rem;color:var(--forge);letter-spacing:.06em;opacity:.75;}
+.lp-sec-name{font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);flex:1;}
+.lp-sec-chevron{font-size:.5rem;color:rgba(255,255,255,.25);transition:transform .18s;}
+.lp-section.collapsed .lp-sec-chevron{transform:rotate(-90deg);}
+.lp-section-body{overflow:hidden;transition:max-height .22s ease;}
+.lp-section.collapsed .lp-section-body{max-height:0!important;}
+
+/* Component cards */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:6px 8px;}
+.comp-card{
+  background:rgba(255,255,255,.03);border:1px solid var(--edge);border-radius:4px;
+  padding:6px 7px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;
+}
+.comp-card:hover{background:rgba(255,100,0,.06);border-color:rgba(255,100,0,.25);}
+.comp-card.active{background:rgba(255,100,0,.1);border-color:rgba(255,100,0,.45);}
+.comp-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--forge),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.comp-card.active::before{opacity:1;}
+.comp-card.building{
+  border-color:rgba(255,100,0,.6);
+  animation:card-build-pulse .8s ease-in-out infinite alternate;
+}
+@keyframes card-build-pulse{
+  from{background:rgba(255,100,0,.06);}
+  to{background:rgba(255,100,0,.16);}
+}
+.comp-card.done{border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.05);}
+.comp-card.done::before{opacity:1;background:linear-gradient(90deg,transparent,var(--emerald),transparent);}
+.comp-code{font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;color:var(--forge);text-transform:uppercase;}
+.comp-card.done .comp-code{color:var(--emerald);}
+.comp-name{font-family:var(--fd);font-size:.3rem;color:rgba(255,255,255,.55);margin-top:2px;line-height:1.3;}
+.comp-dept{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.2);margin-top:3px;text-transform:uppercase;letter-spacing:.06em;}
+.comp-status{
+  display:inline-block;width:5px;height:5px;border-radius:50%;
+  position:absolute;top:6px;right:6px;
+}
+.comp-status.on{background:var(--emerald);box-shadow:0 0 4px var(--emerald);}
+.comp-status.idle{background:rgba(255,255,255,.2);}
+.comp-status.run{background:var(--forge);animation:pulse-dot .7s ease-in-out infinite alternate;}
+@keyframes pulse-dot{from{opacity:.4;}to{opacity:1;box-shadow:0 0 6px var(--forge);}}
+
+/* ── CANVAS ── */
+#canvas-wrap{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  position:relative;background:#04050a;
+}
+#forge-canvas{display:block;width:100%;height:100%;}
+
+.canvas-overlay-info{
+  position:absolute;top:8px;left:8px;
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.22);pointer-events:none;line-height:1.9;
+}
+
+.canvas-controls{
+  position:absolute;bottom:36px;right:8px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.cc-btn{
+  font-family:var(--fc);font-size:.32rem;letter-spacing:.06em;
+  width:26px;height:26px;border-radius:3px;border:1px solid var(--edge);
+  background:var(--surface);color:rgba(255,255,255,.45);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .12s;
+}
+.cc-btn:hover{background:rgba(255,100,0,.12);border-color:rgba(255,100,0,.35);color:var(--forge);}
+
+.canvas-legend{
+  position:absolute;bottom:36px;left:8px;
+  display:flex;flex-direction:column;gap:4px;pointer-events:none;
+}
+.legend-item{display:flex;align-items:center;gap:6px;}
+.legend-swatch{width:24px;height:4px;border-radius:2px;flex-shrink:0;}
+.legend-lbl{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.28);letter-spacing:.06em;text-transform:uppercase;}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:280px;flex-shrink:0;background:var(--surface);
+  border-left:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;
+}
+.rp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-track{background:transparent;}
+.rp-scroll::-webkit-scrollbar-thumb{background:var(--forge);border-radius:2px;}
+
+.rp-section{border-bottom:1px solid var(--edge);padding:10px 12px;}
+.rp-section-title{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.4);margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+.rp-section-title::before{
+  content:'';width:3px;height:10px;border-radius:2px;background:var(--forge);flex-shrink:0;
+}
+
+/* Forge Build Button */
+.forge-btn{
+  width:100%;padding:10px 0;border-radius:4px;
+  font-family:var(--fm);font-size:.45rem;letter-spacing:.18em;text-transform:uppercase;
+  cursor:pointer;transition:all .18s;border:1.5px solid var(--forge);
+  background:rgba(255,100,0,.1);color:var(--forge);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  position:relative;overflow:hidden;
+}
+.forge-btn::before{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,100,0,.15),transparent);
+  transition:left .4s;
+}
+.forge-btn:hover::before{left:100%;}
+.forge-btn:hover{background:rgba(255,100,0,.2);box-shadow:0 0 20px rgba(255,100,0,.25);}
+.forge-btn:active{transform:scale(.98);}
+.forge-btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+.forge-btn.building{
+  border-color:rgba(255,100,0,.8);
+  animation:btn-forge-pulse 1s ease-in-out infinite alternate;
+}
+@keyframes btn-forge-pulse{
+  from{box-shadow:0 0 8px rgba(255,100,0,.3);}
+  to{box-shadow:0 0 24px rgba(255,100,0,.6);}
+}
+
+/* Stage progress bars */
+.stage-list{display:flex;flex-direction:column;gap:5px;margin-top:6px;}
+.stage-row{display:flex;flex-direction:column;gap:3px;}
+.stage-hdr{display:flex;align-items:center;justify-content:space-between;}
+.stage-name{font-family:var(--fc);font-size:.3rem;letter-spacing:.07em;color:rgba(255,255,255,.55);}
+.stage-badge{
+  font-family:var(--fc);font-size:.26rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:1px 5px;border-radius:3px;
+}
+.stage-badge.idle{background:rgba(255,255,255,.05);color:rgba(255,255,255,.25);}
+.stage-badge.building{background:rgba(255,100,0,.15);color:var(--forge);}
+.stage-badge.done{background:rgba(77,200,160,.1);color:var(--emerald);}
+.stage-badge.error{background:rgba(212,91,91,.15);color:var(--blood);}
+.stage-bar-bg{height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;}
+.stage-bar-fill{height:100%;border-radius:2px;transition:width .05s linear;background:var(--forge);}
+.stage-bar-fill.done{background:var(--emerald);}
+.stage-bar-fill.error{background:var(--blood);}
+
+/* Upstream inputs */
+.upstream-list{display:flex;flex-direction:column;gap:3px;margin-top:4px;}
+.upstream-item{
+  display:flex;align-items:center;gap:6px;padding:3px 6px;border-radius:3px;
+  background:rgba(255,255,255,.025);border:1px solid var(--edge);
+}
+.upstream-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.upstream-dot.ok{background:var(--emerald);box-shadow:0 0 4px var(--emerald);}
+.upstream-dot.miss{background:rgba(255,255,255,.15);}
+.upstream-key{font-family:var(--fc);font-size:.28rem;letter-spacing:.05em;color:rgba(255,255,255,.5);flex:1;}
+.upstream-val{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.2);}
+
+/* Build output stats */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px;}
+.stat-cell{
+  background:rgba(255,255,255,.03);border:1px solid var(--edge);border-radius:3px;
+  padding:5px 7px;
+}
+.stat-val{font-family:var(--fm);font-size:.5rem;color:var(--forge);}
+.stat-val.built{color:var(--emerald);}
+.stat-lbl{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.3);letter-spacing:.05em;text-transform:uppercase;margin-top:2px;}
+
+/* Output targets */
+.target-list{display:flex;flex-direction:column;gap:4px;margin-top:4px;}
+.target-item{
+  display:flex;align-items:center;gap:8px;padding:5px 8px;
+  border:1px solid var(--edge);border-radius:3px;background:rgba(255,255,255,.02);
+  transition:all .12s;
+}
+.target-item:hover{background:rgba(255,100,0,.04);border-color:rgba(255,100,0,.15);}
+.target-toggle{position:relative;width:28px;height:14px;flex-shrink:0;}
+.target-toggle input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-track{
+  position:absolute;inset:0;border-radius:7px;background:rgba(255,255,255,.08);
+  border:1px solid var(--edge);cursor:pointer;transition:all .18s;
+}
+.target-toggle input:checked+.toggle-track{background:rgba(255,100,0,.3);border-color:rgba(255,100,0,.5);}
+.toggle-thumb{
+  position:absolute;top:2px;left:2px;width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.3);transition:all .18s;
+}
+.target-toggle input:checked~.toggle-thumb{left:16px;background:var(--forge);}
+.target-name{font-family:var(--fd);font-size:.32rem;color:rgba(255,255,255,.6);flex:1;}
+.target-fmt{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.22);letter-spacing:.05em;}
+
+/* Export button */
+.export-btn{
+  width:100%;padding:7px 0;border-radius:4px;
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;text-transform:uppercase;
+  cursor:pointer;transition:all .15s;
+  border:1px solid rgba(77,200,160,.4);background:rgba(77,200,160,.07);color:var(--emerald);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.export-btn:hover{background:rgba(77,200,160,.15);box-shadow:0 0 14px rgba(77,200,160,.2);}
+.export-btn:active{transform:scale(.98);}
+.export-btn:disabled{opacity:.3;cursor:not-allowed;pointer-events:none;}
+
+/* JSON output box */
+.json-box{
+  background:rgba(0,0,0,.5);border:1px solid var(--edge);border-radius:4px;
+  padding:8px;font-family:var(--fc);font-size:.28rem;line-height:1.65;
+  color:rgba(255,255,255,.5);overflow-x:auto;max-height:160px;overflow-y:auto;
+  word-break:break-all;margin-top:6px;
+  display:none;
+}
+.json-box.visible{display:block;}
+.json-key{color:var(--venturan);}
+.json-str{color:var(--amber);}
+.json-num{color:var(--forge);}
+.json-bool{color:var(--fusion);}
+.json-box::-webkit-scrollbar{width:3px;height:3px;}
+.json-box::-webkit-scrollbar-thumb{background:var(--forge);border-radius:2px;}
+
+/* ── STATUS BAR ── */
+#status-bar{
+  height:26px;flex-shrink:0;background:var(--surface2);
+  border-top:1px solid var(--edge);
+  display:flex;align-items:center;padding:0 12px;gap:14px;
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.07em;color:rgba(255,255,255,.22);
+  text-transform:uppercase;overflow:hidden;
+}
+.sb-item{display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.sb-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.15);flex-shrink:0;}
+.sb-dot.forge{background:var(--forge);box-shadow:0 0 4px var(--forge);}
+.sb-dot.ok{background:var(--emerald);box-shadow:0 0 4px var(--emerald);}
+.sb-dot.warn{background:var(--amber);}
+.sb-spacer{flex:1;}
+#sb-time{color:rgba(255,255,255,.3);}
+#sb-build-status{color:var(--forge);}
+
+/* Scrollbar for rp and lp */
+.lp-scroll::-webkit-scrollbar,
+.rp-scroll::-webkit-scrollbar{width:3px;}
+
+/* Tooltip */
+.tooltip-wrap{position:relative;display:inline-flex;}
+.tooltip{
+  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:rgba(4,5,10,.95);border:1px solid var(--edge);border-radius:3px;
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.7);padding:4px 8px;white-space:nowrap;
+  pointer-events:none;opacity:0;transition:opacity .12s;z-index:100;
+}
+.tooltip-wrap:hover .tooltip{opacity:1;}
+
+/* Notif toast */
+#toast{
+  position:fixed;bottom:36px;left:50%;transform:translateX(-50%);
+  background:rgba(8,11,18,.97);border:1px solid rgba(255,100,0,.4);
+  border-radius:4px;padding:7px 16px;
+  font-family:var(--fc);font-size:.32rem;letter-spacing:.07em;color:var(--forge);
+  opacity:0;pointer-events:none;transition:opacity .25s;z-index:200;white-space:nowrap;
+}
+#toast.show{opacity:1;}
+
+/* Spark canvas overlay */
+#spark-canvas{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:5;
+}
+
+/* Stage highlight on canvas */
+.stage-focus-ring{animation:sfr .8s ease-in-out infinite alternate;}
+@keyframes sfr{from{opacity:.3;}to{opacity:.9;}}
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- ── TOP BAR ── -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">⚒</div>
+      <div>
+        <div class="tb-module-id">15 · FORGE</div>
+        <div class="tb-subcrest">FORGE · PipelineSystems</div>
+      </div>
+    </div>
+
+    <div class="tb-tabs">
+      <div class="tb-tab active" data-tab="pipeline">Pipeline</div>
+      <div class="tb-tab" data-tab="geometry">Geometry</div>
+      <div class="tb-tab" data-tab="material">Material</div>
+      <div class="tb-tab" data-tab="animation">Animation</div>
+      <div class="tb-tab" data-tab="manifest">Manifest</div>
+    </div>
+
+    <div class="tb-links">
+      <span class="tb-link-chip lit">QA:TERRAIN</span>
+      <span class="tb-link-chip lit">QA:ENV</span>
+      <span class="tb-link-chip lit">QA:LOGIC</span>
+      <span class="tb-link-chip dim">QA:NETWORK</span>
+    </div>
+
+    <div class="tb-actions">
+      <button class="tb-btn hot" id="btn-forge-top">⚒ FORGE BUILD</button>
+      <button class="tb-btn" id="btn-reset-top">↺ RESET</button>
+      <button class="tb-btn" id="btn-export-top">↓ EXPORT</button>
+    </div>
+
+    <div class="tb-spacer"></div>
+    <div class="tb-dept">PipelineSystems · MODULE 15</div>
+  </div>
+
+  <!-- ── BODY ── -->
+  <div id="body">
+
+    <!-- ── LEFT PANEL ── -->
+    <div id="left-panel">
+      <div class="lp-header">
+        <span class="lp-header-title">Components</span>
+        <span class="lp-header-badge">16 / 4 LAYERS</span>
+      </div>
+      <div class="lp-scroll" id="lp-scroll">
+
+        <!-- Layer I: Geometry -->
+        <div class="lp-section" id="sec-geometry">
+          <div class="lp-section-header" onclick="toggleSection('sec-geometry')">
+            <span class="lp-sec-num">I</span>
+            <span class="lp-sec-name">Geometry</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:300px">
+            <div class="comp-grid">
+              <div class="comp-card" id="card-mcm" onclick="selectComp('mcm')">
+                <span class="comp-status idle" id="dot-mcm"></span>
+                <div class="comp-code">MCM</div>
+                <div class="comp-name">Mesh Compiler</div>
+                <div class="comp-dept">→ AST</div>
+              </div>
+              <div class="comp-card" id="card-ldg" onclick="selectComp('ldg')">
+                <span class="comp-status idle" id="dot-ldg"></span>
+                <div class="comp-code">LDG</div>
+                <div class="comp-name">LOD Generator</div>
+                <div class="comp-dept">→ AST</div>
+              </div>
+              <div class="comp-card" id="card-chb" onclick="selectComp('chb')">
+                <span class="comp-status idle" id="dot-chb"></span>
+                <div class="comp-code">CHB</div>
+                <div class="comp-name">Collision Hull Baker</div>
+                <div class="comp-dept">→ AST</div>
+              </div>
+              <div class="comp-card" id="card-uap" onclick="selectComp('uap')">
+                <span class="comp-status idle" id="dot-uap"></span>
+                <div class="comp-code">UAP</div>
+                <div class="comp-name">UV Atlas Packer</div>
+                <div class="comp-dept">→ AST</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer II: Material -->
+        <div class="lp-section" id="sec-material">
+          <div class="lp-section-header" onclick="toggleSection('sec-material')">
+            <span class="lp-sec-num">II</span>
+            <span class="lp-sec-name">Material</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:300px">
+            <div class="comp-grid">
+              <div class="comp-card" id="card-tmb" onclick="selectComp('tmb')">
+                <span class="comp-status idle" id="dot-tmb"></span>
+                <div class="comp-code">TMB</div>
+                <div class="comp-name">Texture Mip Builder</div>
+                <div class="comp-dept">→ AST</div>
+              </div>
+              <div class="comp-card" id="card-spr" onclick="selectComp('spr')">
+                <span class="comp-status idle" id="dot-spr"></span>
+                <div class="comp-code">SPR</div>
+                <div class="comp-name">Shader Param Resolver</div>
+                <div class="comp-dept">→ VIS</div>
+              </div>
+              <div class="comp-card" id="card-mgf" onclick="selectComp('mgf')">
+                <span class="comp-status idle" id="dot-mgf"></span>
+                <div class="comp-code">MGF</div>
+                <div class="comp-name">Material Graph Flattener</div>
+                <div class="comp-dept">→ AST</div>
+              </div>
+              <div class="comp-card" id="card-ppe" onclick="selectComp('ppe')">
+                <span class="comp-status idle" id="dot-ppe"></span>
+                <div class="comp-code">PPE</div>
+                <div class="comp-name">PBR Pack Encoder</div>
+                <div class="comp-dept">→ AST</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer III: Animation -->
+        <div class="lp-section" id="sec-animation">
+          <div class="lp-section-header" onclick="toggleSection('sec-animation')">
+            <span class="lp-sec-num">III</span>
+            <span class="lp-sec-name">Animation</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:300px">
+            <div class="comp-grid">
+              <div class="comp-card" id="card-cts" onclick="selectComp('cts')">
+                <span class="comp-status idle" id="dot-cts"></span>
+                <div class="comp-code">CTS</div>
+                <div class="comp-name">Clip Trim Scheduler</div>
+                <div class="comp-dept">→ TMP</div>
+              </div>
+              <div class="comp-card" id="card-bsb" onclick="selectComp('bsb')">
+                <span class="comp-status idle" id="dot-bsb"></span>
+                <div class="comp-code">BSB</div>
+                <div class="comp-name">Blend Shape Baker</div>
+                <div class="comp-dept">→ AST</div>
+              </div>
+              <div class="comp-card" id="card-rpe" onclick="selectComp('rpe')">
+                <span class="comp-status idle" id="dot-rpe"></span>
+                <div class="comp-code">RPE</div>
+                <div class="comp-name">Rig Pose Exporter</div>
+                <div class="comp-dept">→ AST</div>
+              </div>
+              <div class="comp-card" id="card-aab" onclick="selectComp('aab')">
+                <span class="comp-status idle" id="dot-aab"></span>
+                <div class="comp-code">AAB</div>
+                <div class="comp-name">Animation Atlas Builder</div>
+                <div class="comp-dept">→ AST</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer IV: Manifest -->
+        <div class="lp-section" id="sec-manifest">
+          <div class="lp-section-header" onclick="toggleSection('sec-manifest')">
+            <span class="lp-sec-num">IV</span>
+            <span class="lp-sec-name">Manifest</span>
+            <span class="lp-sec-chevron">▾</span>
+          </div>
+          <div class="lp-section-body" style="max-height:300px">
+            <div class="comp-grid">
+              <div class="comp-card" id="card-smw" onclick="selectComp('smw')">
+                <span class="comp-status idle" id="dot-smw"></span>
+                <div class="comp-code">SMW</div>
+                <div class="comp-name">Scene Manifest Writer</div>
+                <div class="comp-dept">→ NAR</div>
+              </div>
+              <div class="comp-card" id="card-adr" onclick="selectComp('adr')">
+                <span class="comp-status idle" id="dot-adr"></span>
+                <div class="comp-code">ADR</div>
+                <div class="comp-name">Asset Dependency Resolver</div>
+                <div class="comp-dept">→ LGC</div>
+              </div>
+              <div class="comp-card" id="card-bcm" onclick="selectComp('bcm')">
+                <span class="comp-status idle" id="dot-bcm"></span>
+                <div class="comp-code">BCM</div>
+                <div class="comp-name">Build Cache Manager</div>
+                <div class="comp-dept">→ DAT</div>
+              </div>
+              <div class="comp-card" id="card-fop" onclick="selectComp('fop')">
+                <span class="comp-status idle" id="dot-fop"></span>
+                <div class="comp-code">FOP</div>
+                <div class="comp-name">Forge Output Packet</div>
+                <div class="comp-dept">→ AST</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end lp-scroll -->
+    </div><!-- end left-panel -->
+
+    <!-- ── CANVAS ── -->
+    <div id="canvas-wrap">
+      <canvas id="forge-canvas"></canvas>
+      <canvas id="spark-canvas"></canvas>
+
+      <div class="canvas-overlay-info" id="canvas-info">
+        <div id="ci-mode">MODE · PIPELINE VISUALIZER</div>
+        <div id="ci-stage">STAGE · IDLE</div>
+        <div id="ci-fps">FPS · —</div>
+        <div id="ci-t">T · 0.000s</div>
+      </div>
+
+      <div class="canvas-legend">
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:var(--forge);opacity:.8"></div>
+          <div class="legend-lbl">Forge Flow</div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:var(--emerald);opacity:.7"></div>
+          <div class="legend-lbl">Stage Done</div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:var(--venturan);opacity:.5"></div>
+          <div class="legend-lbl">Input Feed</div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:rgba(255,255,255,.12)"></div>
+          <div class="legend-lbl">Idle Stage</div>
+        </div>
+      </div>
+
+      <div class="canvas-controls">
+        <button class="cc-btn tooltip-wrap" id="cc-zoom-in" title="+">
+          <span class="tooltip">Zoom In</span>+
+        </button>
+        <button class="cc-btn tooltip-wrap" id="cc-zoom-out" title="-">
+          <span class="tooltip">Zoom Out</span>−
+        </button>
+        <button class="cc-btn tooltip-wrap" id="cc-reset-view" title="⌂">
+          <span class="tooltip">Reset View</span>⌂
+        </button>
+      </div>
+    </div><!-- end canvas-wrap -->
+
+    <!-- ── RIGHT PANEL ── -->
+    <div id="right-panel">
+      <div class="rp-scroll">
+
+        <!-- Build Pipeline -->
+        <div class="rp-section">
+          <div class="rp-section-title">Build Pipeline</div>
+          <button class="forge-btn" id="btn-forge-main">
+            <span>⚒</span><span id="forge-btn-label">FORGE BUILD</span>
+          </button>
+          <div class="stage-list" style="margin-top:8px;">
+            <div class="stage-row">
+              <div class="stage-hdr">
+                <span class="stage-name">INPUTS</span>
+                <span class="stage-badge idle" id="badge-inputs">IDLE</span>
+              </div>
+              <div class="stage-bar-bg"><div class="stage-bar-fill" id="bar-inputs" style="width:0%"></div></div>
+            </div>
+            <div class="stage-row">
+              <div class="stage-hdr">
+                <span class="stage-name">GEOMETRY FORGE</span>
+                <span class="stage-badge idle" id="badge-geometry">IDLE</span>
+              </div>
+              <div class="stage-bar-bg"><div class="stage-bar-fill" id="bar-geometry" style="width:0%"></div></div>
+            </div>
+            <div class="stage-row">
+              <div class="stage-hdr">
+                <span class="stage-name">MATERIAL BAKE</span>
+                <span class="stage-badge idle" id="badge-material">IDLE</span>
+              </div>
+              <div class="stage-bar-bg"><div class="stage-bar-fill" id="bar-material" style="width:0%"></div></div>
+            </div>
+            <div class="stage-row">
+              <div class="stage-hdr">
+                <span class="stage-name">ANIMATION PACK</span>
+                <span class="stage-badge idle" id="badge-animation">IDLE</span>
+              </div>
+              <div class="stage-bar-bg"><div class="stage-bar-fill" id="bar-animation" style="width:0%"></div></div>
+            </div>
+            <div class="stage-row">
+              <div class="stage-hdr">
+                <span class="stage-name">MANIFEST BUILD</span>
+                <span class="stage-badge idle" id="badge-manifest">IDLE</span>
+              </div>
+              <div class="stage-bar-bg"><div class="stage-bar-fill" id="bar-manifest" style="width:0%"></div></div>
+            </div>
+            <div class="stage-row">
+              <div class="stage-hdr">
+                <span class="stage-name">OUTPUT PACKET</span>
+                <span class="stage-badge idle" id="badge-output">IDLE</span>
+              </div>
+              <div class="stage-bar-bg"><div class="stage-bar-fill" id="bar-output" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upstream Inputs -->
+        <div class="rp-section">
+          <div class="rp-section-title">Upstream Inputs</div>
+          <div class="upstream-list" id="upstream-list">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Build Output Stats -->
+        <div class="rp-section">
+          <div class="rp-section-title">Build Output Stats</div>
+          <div class="stat-grid">
+            <div class="stat-cell">
+              <div class="stat-val" id="stat-mesh">—</div>
+              <div class="stat-lbl">Meshes</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-val" id="stat-tex">—</div>
+              <div class="stat-lbl">Textures</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-val" id="stat-anim">—</div>
+              <div class="stat-lbl">Anim Clips</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-val" id="stat-mat">—</div>
+              <div class="stat-lbl">Materials</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-val" id="stat-sz">—</div>
+              <div class="stat-lbl">Manifest KB</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-val" id="stat-time">—</div>
+              <div class="stat-lbl">Build MS</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Output Targets -->
+        <div class="rp-section">
+          <div class="rp-section-title">Output Targets</div>
+          <div class="target-list" id="target-list">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Export -->
+        <div class="rp-section">
+          <div class="rp-section-title">Forge Packet</div>
+          <button class="export-btn" id="btn-export-main">
+            ↓ EXPORT PACKET
+          </button>
+          <div class="json-box" id="json-output"></div>
+        </div>
+
+      </div><!-- end rp-scroll -->
+    </div><!-- end right-panel -->
+
+  </div><!-- end body -->
+
+  <!-- ── STATUS BAR ── -->
+  <div id="status-bar">
+    <div class="sb-item">
+      <span class="sb-dot forge" id="sb-forge-dot"></span>
+      <span>FORGE</span>
+    </div>
+    <div class="sb-item">
+      <span class="sb-dot" id="sb-up-dot"></span>
+      <span id="sb-upstream-count">0 UPSTREAM</span>
+    </div>
+    <div class="sb-item">
+      <span class="sb-dot" id="sb-build-dot"></span>
+      <span id="sb-build-status">IDLE</span>
+    </div>
+    <div class="sb-item">
+      <span>MESH:<span id="sb-mesh">0</span></span>
+    </div>
+    <div class="sb-item">
+      <span>TEX:<span id="sb-tex">0</span></span>
+    </div>
+    <div class="sb-item">
+      <span>ANIM:<span id="sb-anim">0</span></span>
+    </div>
+    <div class="sb-spacer"></div>
+    <div class="sb-item">
+      <span id="sb-time">—</span>
+    </div>
+  </div>
+
+</div><!-- end shell -->
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+// ── Constants ──────────────────────────────────────────────────────────────
+const FORGE_COLOR    = '#ff6400';
+const EMERALD_COLOR  = '#4dc8a0';
+const AMBER_COLOR    = '#e8b84b';
+const VENTURAN_COLOR = '#b1d0f0';
+const BLOOD_COLOR    = '#d45b5b';
+const TOTEM_COLOR    = '#7fd4c8';
+const FUSION_COLOR   = '#9b7fd4';
+
+const UPSTREAM_KEYS = [
+  { key: 'qa-terrain-snapshot',       label: 'Terrain',       mod: 1  },
+  { key: 'qa-environment-snapshot',   label: 'Environment',   mod: 2  },
+  { key: 'qa-modeling-snapshot',      label: 'Modeling',      mod: 3  },
+  { key: 'qa-lighting-snapshot',      label: 'Lighting',      mod: 4  },
+  { key: 'qa-sound-snapshot',         label: 'Sound',         mod: 5  },
+  { key: 'qa-ecology-snapshot',       label: 'Ecology',       mod: 6  },
+  { key: 'qa-civilization-snapshot',  label: 'Civilization',  mod: 7  },
+  { key: 'qa-society-snapshot',       label: 'Society',       mod: 8  },
+  { key: 'qa-story-snapshot',         label: 'Story',         mod: 9  },
+  { key: 'qa-behavior-snapshot',      label: 'Behavior',      mod: 10 },
+  { key: 'qa-memory-snapshot',        label: 'Memory',        mod: 11 },
+  { key: 'qa-sequencer-snapshot',     label: 'Sequencer',     mod: 12 },
+  { key: 'qa-logic-snapshot',         label: 'Logic',         mod: 13 },
+  { key: 'qa-choreography-snapshot',  label: 'Choreography',  mod: 14 },
+];
+
+const OUTPUT_TARGETS = [
+  { id: 'unreal',   name: 'Unreal Engine', fmt: 'UASSET',       on: true  },
+  { id: 'unity',    name: 'Unity',         fmt: 'ASSET BUNDLE', on: true  },
+  { id: 'godot',    name: 'Godot',         fmt: 'TRES/ESCN',    on: true  },
+  { id: 'blender',  name: 'Blender',       fmt: 'GLTF',         on: true  },
+  { id: 'shadertoy',name: 'ShaderToy',     fmt: 'GLSL',         on: false },
+  { id: 'json',     name: 'Generic JSON',  fmt: 'JSON',         on: false },
+];
+
+const PIPELINE_STAGES = [
+  { id: 'inputs',   label: 'INPUTS',          dur: 0.6  },
+  { id: 'geometry', label: 'GEOMETRY FORGE',  dur: 1.2  },
+  { id: 'material', label: 'MATERIAL BAKE',   dur: 1.0  },
+  { id: 'animation',label: 'ANIMATION PACK',  dur: 1.0  },
+  { id: 'manifest', label: 'MANIFEST BUILD',  dur: 0.8  },
+  { id: 'output',   label: 'OUTPUT PACKET',   dur: 0.5  },
+];
+
+// ── State ──────────────────────────────────────────────────────────────────
+let buildState = {
+  running: false,
+  complete: false,
+  startTime: 0,
+  endTime: 0,
+  currentStage: -1,
+  stageProgress: {},
+  meshCount: 0,
+  texCount: 0,
+  animCount: 0,
+  matCount: 0,
+  manifestKB: 0,
+};
+
+let activeComp = null;
+let animT      = 0;
+let lastTs     = 0;
+let fpsCounter = 0;
+let fpsTime    = 0;
+let fpsCurrent = 0;
+
+// Canvas stage layout (computed in resize)
+let stageLayout = [];
+const STAGE_LABELS = ['INPUTS','GEO FORGE','MAT BAKE','ANIM PACK','MANIFEST','OUTPUT'];
+const STAGE_COLORS = [VENTURAN_COLOR, FORGE_COLOR, AMBER_COLOR, TOTEM_COLOR, FUSION_COLOR, EMERALD_COLOR];
+const STAGE_ICONS  = ['↓','⚒','◼','▶','☰','✓'];
+
+// Zoom/pan
+let viewScale = 1;
+let viewOffX  = 0;
+let viewOffY  = 0;
+
+// Sparks
+let sparks = [];
+
+// Build sequence timing
+let buildSeqStart  = 0;
+let buildSeqStages = [];
+let totalBuildDur  = PIPELINE_STAGES.reduce((s,x) => s+x.dur, 0);
+
+// ── DOM Refs ───────────────────────────────────────────────────────────────
+const canvas      = document.getElementById('forge-canvas');
+const ctx         = canvas.getContext('2d');
+const sparkCanvas = document.getElementById('spark-canvas');
+const sCtx        = sparkCanvas.getContext('2d');
+
+// ── Init ───────────────────────────────────────────────────────────────────
+function init() {
+  buildUpstreamList();
+  buildTargetList();
+  resetStageUI();
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  requestAnimationFrame(frame);
+  updateStatusBar();
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Buttons
+  document.getElementById('btn-forge-main').addEventListener('click', startBuild);
+  document.getElementById('btn-forge-top').addEventListener('click', startBuild);
+  document.getElementById('btn-reset-top').addEventListener('click', resetBuild);
+  document.getElementById('btn-export-main').addEventListener('click', exportPacket);
+  document.getElementById('btn-export-top').addEventListener('click', exportPacket);
+  document.getElementById('cc-zoom-in').addEventListener('click', () => { viewScale = Math.min(viewScale * 1.25, 3); });
+  document.getElementById('cc-zoom-out').addEventListener('click', () => { viewScale = Math.max(viewScale / 1.25, 0.4); });
+  document.getElementById('cc-reset-view').addEventListener('click', () => { viewScale=1; viewOffX=0; viewOffY=0; });
+
+  // Tab switching
+  document.querySelectorAll('.tb-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tb-tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+    });
+  });
+
+  // Try to read upstream data
+  refreshUpstreamStatus();
+}
+
+// ── Upstream ───────────────────────────────────────────────────────────────
+function buildUpstreamList() {
+  const ul = document.getElementById('upstream-list');
+  ul.innerHTML = '';
+  UPSTREAM_KEYS.forEach(u => {
+    const item = document.createElement('div');
+    item.className = 'upstream-item';
+    item.id = 'upstream-' + u.id;
+    item.innerHTML = `
+      <span class="upstream-dot miss" id="updot-${u.mod}"></span>
+      <span class="upstream-key">qa-mod${String(u.mod).padStart(2,'0')} · ${u.label}</span>
+      <span class="upstream-val" id="upval-${u.mod}">—</span>
+    `;
+    ul.appendChild(item);
+  });
+}
+
+function refreshUpstreamStatus() {
+  let found = 0;
+  UPSTREAM_KEYS.forEach(u => {
+    const raw = localStorage.getItem(u.key);
+    const dot = document.getElementById('updot-' + u.mod);
+    const val = document.getElementById('upval-' + u.mod);
+    if (raw) {
+      found++;
+      if (dot) { dot.className='upstream-dot ok'; }
+      try {
+        const parsed = JSON.parse(raw);
+        if (val) val.textContent = parsed.module || 'OK';
+      } catch(e) {
+        if (val) val.textContent = 'OK';
+      }
+    } else {
+      if (dot) dot.className='upstream-dot miss';
+      if (val) val.textContent = '—';
+    }
+  });
+  document.getElementById('sb-upstream-count').textContent = found + ' UPSTREAM';
+  const upDot = document.getElementById('sb-up-dot');
+  if (upDot) upDot.className = found > 0 ? 'sb-dot ok' : 'sb-dot warn';
+  return found;
+}
+
+// ── Output Targets ─────────────────────────────────────────────────────────
+function buildTargetList() {
+  const tl = document.getElementById('target-list');
+  tl.innerHTML = '';
+  OUTPUT_TARGETS.forEach(t => {
+    const item = document.createElement('div');
+    item.className = 'target-item';
+    const chkId = 'tgt-' + t.id;
+    item.innerHTML = `
+      <label class="target-toggle">
+        <input type="checkbox" id="${chkId}" ${t.on ? 'checked':''}>
+        <span class="toggle-track"></span>
+        <span class="toggle-thumb"></span>
+      </label>
+      <span class="target-name">${t.name}</span>
+      <span class="target-fmt">${t.fmt}</span>
+    `;
+    tl.appendChild(item);
+  });
+}
+
+function getActiveTargets() {
+  return OUTPUT_TARGETS.filter(t => {
+    const el = document.getElementById('tgt-' + t.id);
+    return el && el.checked;
+  }).map(t => t.name);
+}
+
+// ── Build Sequence ─────────────────────────────────────────────────────────
+function startBuild() {
+  if (buildState.running) return;
+  resetBuildState();
+  buildState.running = true;
+  buildState.startTime = performance.now();
+  buildSeqStart = animT;
+
+  // Compute cumulative start times per stage
+  let cum = 0;
+  buildSeqStages = PIPELINE_STAGES.map(s => {
+    const entry = { id: s.id, start: cum, end: cum + s.dur, dur: s.dur };
+    cum += s.dur;
+    return entry;
+  });
+
+  const btn = document.getElementById('btn-forge-main');
+  const lbl = document.getElementById('forge-btn-label');
+  btn.classList.add('building');
+  if (lbl) lbl.textContent = 'FORGING…';
+  btn.disabled = true;
+
+  document.getElementById('btn-forge-top').disabled = true;
+
+  updateSBBuildStatus('BUILDING', FORGE_COLOR);
+  showToast('⚒ Forge build started');
+}
+
+function resetBuildState() {
+  buildState = {
+    running: false, complete: false,
+    startTime: 0, endTime: 0, currentStage: -1,
+    stageProgress: {},
+    meshCount: 0, texCount: 0, animCount: 0, matCount: 0,
+    manifestKB: 0,
+  };
+}
+
+function resetBuild() {
+  resetBuildState();
+  resetStageUI();
+  sparks = [];
+  setStatValues('—','—','—','—','—','—');
+  updateSBBuildStatus('IDLE', null);
+  updateSBMeshTex(0, 0, 0);
+  const btn = document.getElementById('btn-forge-main');
+  const lbl = document.getElementById('forge-btn-label');
+  btn.classList.remove('building');
+  btn.disabled = false;
+  if (lbl) lbl.textContent = 'FORGE BUILD';
+  document.getElementById('btn-forge-top').disabled = false;
+  document.getElementById('json-output').classList.remove('visible');
+
+  // Reset all comp cards
+  document.querySelectorAll('.comp-card').forEach(c => {
+    c.classList.remove('building','done');
+  });
+  document.querySelectorAll('.comp-status').forEach(d => {
+    d.className='comp-status idle';
+  });
+  showToast('Pipeline reset');
+}
+
+function resetStageUI() {
+  PIPELINE_STAGES.forEach(s => {
+    setStageStatus(s.id, 'idle', 0);
+  });
+}
+
+function updateBuildSequence(t) {
+  if (!buildState.running) return;
+  const elapsed = t - buildSeqStart;
+
+  let allDone = true;
+  buildSeqStages.forEach((s, i) => {
+    const localT = elapsed - s.start;
+    if (localT < 0) { allDone = false; return; }
+    const pct = Math.min(1, localT / s.dur);
+    buildState.stageProgress[s.id] = pct;
+
+    if (pct < 1) {
+      allDone = false;
+      setStageStatus(s.id, 'building', pct * 100);
+      buildState.currentStage = i;
+
+      // Trigger component build animations for this stage
+      triggerCompAnimForStage(i, pct);
+
+      // Emit sparks from geometry stage
+      if (s.id === 'geometry' && Math.random() < 0.25) {
+        emitSparkBurst();
+      }
+    } else {
+      setStageStatus(s.id, 'done', 100);
+      // Mark components done
+      markCompsDoneForStage(i);
+    }
+  });
+
+  if (allDone) {
+    finalizeBuild();
+  }
+}
+
+function triggerCompAnimForStage(stageIdx, pct) {
+  const stageCompMap = [
+    [],
+    ['mcm','ldg','chb','uap'],
+    ['tmb','spr','mgf','ppe'],
+    ['cts','bsb','rpe','aab'],
+    ['smw','adr','bcm','fop'],
+    [],
+  ];
+  const comps = stageCompMap[stageIdx] || [];
+  comps.forEach((id, i) => {
+    const card = document.getElementById('card-' + id);
+    const dot  = document.getElementById('dot-' + id);
+    if (!card) return;
+    if (card.classList.contains('done')) return;
+    const compPct = Math.min(1, (pct * comps.length) - i);
+    if (compPct > 0 && compPct < 1) {
+      card.classList.add('building');
+      if (dot) dot.className='comp-status run';
+    }
+  });
+}
+
+function markCompsDoneForStage(stageIdx) {
+  const stageCompMap = [
+    [],
+    ['mcm','ldg','chb','uap'],
+    ['tmb','spr','mgf','ppe'],
+    ['cts','bsb','rpe','aab'],
+    ['smw','adr','bcm','fop'],
+    [],
+  ];
+  const comps = stageCompMap[stageIdx] || [];
+  comps.forEach(id => {
+    const card = document.getElementById('card-'+id);
+    const dot  = document.getElementById('dot-'+id);
+    if (card) { card.classList.remove('building'); card.classList.add('done'); }
+    if (dot) dot.className='comp-status on';
+  });
+}
+
+function finalizeBuild() {
+  buildState.running   = false;
+  buildState.complete  = true;
+  buildState.endTime   = performance.now();
+  const elapsed        = Math.round(buildState.endTime - buildState.startTime);
+
+  const upstream = refreshUpstreamStatus();
+  buildState.meshCount  = 120 + Math.floor(Math.random()*400) + upstream*18;
+  buildState.texCount   = 64  + Math.floor(Math.random()*200) + upstream*8;
+  buildState.animCount  = 40  + Math.floor(Math.random()*100) + upstream*5;
+  buildState.matCount   = 32  + Math.floor(Math.random()*80)  + upstream*4;
+  buildState.manifestKB = Math.round((buildState.meshCount * 0.4 + buildState.texCount * 0.2 + buildState.animCount * 0.3) * 10) / 10;
+
+  setStatValues(
+    buildState.meshCount,
+    buildState.texCount,
+    buildState.animCount,
+    buildState.matCount,
+    buildState.manifestKB,
+    elapsed
+  );
+  updateSBBuildStatus('COMPLETE', EMERALD_COLOR);
+  updateSBMeshTex(buildState.meshCount, buildState.texCount, buildState.animCount);
+
+  const btn = document.getElementById('btn-forge-main');
+  const lbl = document.getElementById('forge-btn-label');
+  btn.classList.remove('building');
+  btn.disabled = false;
+  if (lbl) lbl.textContent = 'FORGE BUILD';
+  document.getElementById('btn-forge-top').disabled = false;
+
+  saveSnapshot(elapsed);
+  showToast('✓ Forge build complete — ' + elapsed + 'ms');
+  emitBigSpark();
+}
+
+// ── Stage UI ───────────────────────────────────────────────────────────────
+function setStageStatus(id, status, pct) {
+  const badge = document.getElementById('badge-' + id);
+  const bar   = document.getElementById('bar-' + id);
+  if (badge) {
+    badge.className = 'stage-badge ' + status;
+    badge.textContent = status.toUpperCase();
+  }
+  if (bar) {
+    bar.style.width = pct + '%';
+    bar.className   = 'stage-bar-fill ' + (status === 'done' ? 'done' : status === 'error' ? 'error' : '');
+  }
+}
+
+// ── Stats UI ───────────────────────────────────────────────────────────────
+function setStatValues(mesh, tex, anim, mat, sz, time) {
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = val;
+    if (val !== '—') el.classList.add('built');
+    else el.classList.remove('built');
+  };
+  set('stat-mesh', mesh);
+  set('stat-tex',  tex);
+  set('stat-anim', anim);
+  set('stat-mat',  mat);
+  set('stat-sz',   sz);
+  set('stat-time', time);
+}
+
+// ── Snapshot ───────────────────────────────────────────────────────────────
+function saveSnapshot(elapsedMs) {
+  const snap = {
+    system:          'Quantum Atlas',
+    module:          '15 · Forge',
+    generated:       new Date().toISOString(),
+    build_complete:  true,
+    build_time_ms:   elapsedMs,
+    mesh_count:      buildState.meshCount,
+    texture_count:   buildState.texCount,
+    animation_clips: buildState.animCount,
+    material_defs:   buildState.matCount,
+    manifest_size_kb: buildState.manifestKB,
+    upstream_inputs: refreshUpstreamStatus(),
+    output_targets:  getActiveTargets(),
+    last_build:      new Date().toISOString(),
+  };
+  localStorage.setItem('qa-forge-snapshot', JSON.stringify(snap));
+}
+
+// ── Export ─────────────────────────────────────────────────────────────────
+function exportPacket() {
+  const snap = {
+    system:          'Quantum Atlas',
+    module:          '15 · Forge',
+    generated:       new Date().toISOString(),
+    build_complete:  buildState.complete,
+    build_time_ms:   buildState.complete ? Math.round(buildState.endTime - buildState.startTime) : 0,
+    mesh_count:      buildState.meshCount,
+    texture_count:   buildState.texCount,
+    animation_clips: buildState.animCount,
+    material_defs:   buildState.matCount,
+    manifest_size_kb: buildState.manifestKB,
+    upstream_inputs: refreshUpstreamStatus(),
+    output_targets:  getActiveTargets(),
+    last_build:      buildState.complete ? new Date().toISOString() : null,
+  };
+  localStorage.setItem('qa-forge-snapshot', JSON.stringify(snap));
+
+  const box = document.getElementById('json-output');
+  box.innerHTML = syntaxHighlightJSON(snap);
+  box.classList.add('visible');
+  showToast('Packet exported to qa-forge-snapshot');
+}
+
+function syntaxHighlightJSON(obj) {
+  const raw = JSON.stringify(obj, null, 2);
+  return raw
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {
+      if (/^"/.test(m)) {
+        if (/:$/.test(m)) return '<span class="json-key">' + m + '</span>';
+        return '<span class="json-str">' + m + '</span>';
+      }
+      if (/true|false/.test(m)) return '<span class="json-bool">' + m + '</span>';
+      if (/null/.test(m)) return '<span class="json-bool">' + m + '</span>';
+      return '<span class="json-num">' + m + '</span>';
+    });
+}
+
+// ── Status Bar ─────────────────────────────────────────────────────────────
+function updateSBBuildStatus(text, color) {
+  const el  = document.getElementById('sb-build-status');
+  const dot = document.getElementById('sb-build-dot');
+  if (el) { el.textContent = text; el.style.color = color || ''; }
+  if (dot) {
+    if (color === FORGE_COLOR) dot.className = 'sb-dot forge';
+    else if (color === EMERALD_COLOR) dot.className = 'sb-dot ok';
+    else dot.className = 'sb-dot warn';
+  }
+}
+function updateSBMeshTex(m, t, a) {
+  const em = document.getElementById('sb-mesh');
+  const et = document.getElementById('sb-tex');
+  const ea = document.getElementById('sb-anim');
+  if (em) em.textContent = m;
+  if (et) et.textContent = t;
+  if (ea) ea.textContent = a;
+}
+function updateStatusBar() {
+  refreshUpstreamStatus();
+}
+
+// ── Clock ──────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const el  = document.getElementById('sb-time');
+  if (el) el.textContent = now.toLocaleTimeString('en-US',{hour12:false});
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ── Comp Selection ─────────────────────────────────────────────────────────
+function selectComp(id) {
+  document.querySelectorAll('.comp-card').forEach(c => c.classList.remove('active'));
+  const card = document.getElementById('card-' + id);
+  if (card) card.classList.add('active');
+  activeComp = id;
+}
+
+// ── Section Toggle ─────────────────────────────────────────────────────────
+function toggleSection(id) {
+  const sec = document.getElementById(id);
+  if (!sec) return;
+  sec.classList.toggle('collapsed');
+  const body = sec.querySelector('.lp-section-body');
+  if (body) {
+    if (sec.classList.contains('collapsed')) body.style.maxHeight = '0px';
+    else body.style.maxHeight = '300px';
+  }
+}
+
+// ── Sparks ─────────────────────────────────────────────────────────────────
+function emitSparkBurst() {
+  if (!stageLayout.length) return;
+  const geoStage = stageLayout[1]; // GEOMETRY FORGE
+  if (!geoStage) return;
+  const cx = geoStage.x + geoStage.w * 0.5;
+  const cy = geoStage.y + geoStage.h * 0.5;
+  for (let i = 0; i < 2; i++) {
+    sparks.push({
+      x:  cx + (Math.random()-0.5)*40,
+      y:  cy + (Math.random()-0.5)*20,
+      vx: (Math.random()-0.5)*80,
+      vy: -(30 + Math.random()*120),
+      life: 1.0,
+      decay: 0.6 + Math.random()*0.8,
+      size: 1.5 + Math.random()*3,
+      color: Math.random() < 0.7 ? FORGE_COLOR : AMBER_COLOR,
+    });
+  }
+  // Trim excess
+  if (sparks.length > 120) sparks = sparks.slice(-120);
+}
+
+function emitBigSpark() {
+  if (!stageLayout.length) return;
+  const geoStage = stageLayout[1];
+  if (!geoStage) return;
+  const cx = geoStage.x + geoStage.w * 0.5;
+  const cy = geoStage.y + geoStage.h * 0.5;
+  for (let i = 0; i < 40; i++) {
+    const angle = (Math.PI * 2 * i / 40) - Math.PI / 2;
+    const speed = 60 + Math.random()*120;
+    sparks.push({
+      x: cx, y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 60,
+      life: 1.0,
+      decay: 0.5 + Math.random()*0.7,
+      size: 2 + Math.random()*4,
+      color: [FORGE_COLOR, AMBER_COLOR, '#ffaa44', '#ff8800'][Math.floor(Math.random()*4)],
+    });
+  }
+}
+
+function updateSparks(dt) {
+  sparks = sparks.filter(s => s.life > 0);
+  sparks.forEach(s => {
+    s.x    += s.vx * dt;
+    s.y    += s.vy * dt;
+    s.vy   += 200 * dt; // gravity
+    s.life -= s.decay * dt;
+    s.vx   *= (1 - 2*dt);
+  });
+}
+
+function drawSparks() {
+  sCtx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+  sparks.forEach(s => {
+    const a = Math.max(0, s.life);
+    sCtx.save();
+    sCtx.globalAlpha = a;
+    sCtx.fillStyle   = s.color;
+    sCtx.shadowColor = s.color;
+    sCtx.shadowBlur  = 6;
+    sCtx.beginPath();
+    sCtx.arc(s.x, s.y, s.size * a, 0, Math.PI*2);
+    sCtx.fill();
+    sCtx.restore();
+  });
+}
+
+// ── Canvas Layout ──────────────────────────────────────────────────────────
+function resizeCanvas() {
+  const w = canvas.parentElement.clientWidth;
+  const h = canvas.parentElement.clientHeight;
+  canvas.width      = w;
+  canvas.height     = h;
+  sparkCanvas.width = w;
+  sparkCanvas.height= h;
+  computeStageLayout(w, h);
+}
+
+function computeStageLayout(W, H) {
+  const n     = STAGE_LABELS.length;
+  const padX  = 40;
+  const padY  = 60;
+  const stageW= Math.max(80, Math.min(130, (W - padX*2 - (n-1)*24) / n));
+  const stageH= 90;
+  const totalW= n * stageW + (n-1)*24;
+  const startX= (W - totalW) / 2;
+  const cy    = H / 2 - stageH / 2;
+
+  stageLayout = STAGE_LABELS.map((lbl, i) => ({
+    x: startX + i * (stageW + 24),
+    y: cy,
+    w: stageW,
+    h: stageH,
+    label: lbl,
+    color: STAGE_COLORS[i],
+    icon:  STAGE_ICONS[i],
+  }));
+}
+
+// ── Canvas Draw ────────────────────────────────────────────────────────────
+function drawCanvas(t) {
+  const W = canvas.width;
+  const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background grid
+  drawGrid(W, H, t);
+
+  ctx.save();
+  ctx.translate(viewOffX, viewOffY);
+  ctx.scale(viewScale, viewScale);
+
+  // Draw flow lines between stages
+  drawFlowLines(t);
+
+  // Draw stage boxes
+  stageLayout.forEach((s, i) => drawStageBox(s, i, t));
+
+  // Draw input chips column
+  drawInputChips(t);
+
+  ctx.restore();
+}
+
+function drawGrid(W, H, t) {
+  const gridSize = 32;
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,100,0,0.025)';
+  ctx.lineWidth   = 0.5;
+  const oX = (t * 8) % gridSize;
+  const oY = (t * 4) % gridSize;
+  for (let x = -gridSize+oX; x < W+gridSize; x += gridSize) {
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+  }
+  for (let y = -gridSize+oY; y < H+gridSize; y += gridSize) {
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawFlowLines(t) {
+  if (stageLayout.length < 2) return;
+  for (let i = 0; i < stageLayout.length - 1; i++) {
+    const a = stageLayout[i];
+    const b = stageLayout[i+1];
+    const x1 = a.x + a.w;
+    const x2 = b.x;
+    const y  = a.y + a.h/2;
+
+    const progress = buildState.stageProgress[PIPELINE_STAGES[i]?.id] || 0;
+    const nextProg  = buildState.stageProgress[PIPELINE_STAGES[i+1]?.id] || 0;
+
+    // Base line
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth   = 3;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(x1, y);
+    ctx.lineTo(x2, y);
+    ctx.stroke();
+
+    // Animated forge flow
+    if (buildState.running || buildState.complete) {
+      const dashLen = 10;
+      const gapLen  = 8;
+      const speed   = 80;
+      const offset  = -(t * speed) % (dashLen + gapLen);
+
+      ctx.strokeStyle = i < buildState.currentStage + 1
+        ? (buildState.complete ? EMERALD_COLOR : FORGE_COLOR)
+        : 'rgba(255,100,0,0.2)';
+      ctx.lineWidth   = 3;
+      ctx.setLineDash([dashLen, gapLen]);
+      ctx.lineDashOffset = offset;
+      ctx.beginPath();
+      ctx.moveTo(x1, y);
+      ctx.lineTo(x2, y);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Arrow head
+    const ax = x2 - 4;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,100,0,0.3)';
+    ctx.beginPath();
+    ctx.moveTo(ax + 6, y);
+    ctx.lineTo(ax,     y - 4);
+    ctx.lineTo(ax,     y + 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+function drawStageBox(s, idx, t) {
+  const stageId  = PIPELINE_STAGES[idx]?.id;
+  const progress = buildState.stageProgress[stageId] || 0;
+  const isDone   = progress >= 1;
+  const isActive = !isDone && progress > 0;
+  const isInput  = idx === 0;
+  const isOutput = idx === STAGE_LABELS.length - 1;
+
+  ctx.save();
+
+  // Glow
+  if (isActive) {
+    ctx.shadowColor = s.color;
+    ctx.shadowBlur  = 20;
+  } else if (isDone) {
+    ctx.shadowColor = EMERALD_COLOR;
+    ctx.shadowBlur  = 10;
+  }
+
+  // Box fill
+  let bg = 'rgba(8,11,18,0.95)';
+  if (isActive) bg = `rgba(255,100,0,0.12)`;
+  if (isDone)   bg = `rgba(77,200,160,0.08)`;
+  if (isInput && isDone) bg = `rgba(177,208,240,0.08)`;
+  if (isOutput && isDone) bg = `rgba(77,200,160,0.15)`;
+
+  // Rounded rect helper
+  const r = 6;
+  roundRect(ctx, s.x, s.y, s.w, s.h, r);
+  ctx.fillStyle = bg;
+  ctx.fill();
+
+  // Border
+  let borderColor = 'rgba(255,255,255,0.06)';
+  if (isActive) borderColor = s.color;
+  if (isDone)   borderColor = EMERALD_COLOR;
+  ctx.strokeStyle = borderColor;
+  ctx.lineWidth   = isDone || isActive ? 1.5 : 1;
+  roundRect(ctx, s.x, s.y, s.w, s.h, r);
+  ctx.stroke();
+
+  // Top accent bar
+  const barW = s.w * progress;
+  if (progress > 0) {
+    ctx.fillStyle = isDone ? EMERALD_COLOR : s.color;
+    roundRect(ctx, s.x, s.y, barW, 3, 1.5);
+    ctx.fill();
+  }
+
+  ctx.shadowBlur = 0;
+
+  // Icon
+  const iconY = s.y + 22;
+  ctx.font      = `16px "Space Grotesk"`;
+  ctx.fillStyle = isDone ? EMERALD_COLOR : isActive ? s.color : 'rgba(255,255,255,0.2)';
+  ctx.textAlign = 'center';
+  ctx.fillText(s.icon, s.x + s.w/2, iconY);
+
+  // Label
+  ctx.font      = `700 8px "Orbitron"`;
+  ctx.fillStyle = isDone ? EMERALD_COLOR : isActive ? s.color : 'rgba(255,255,255,0.4)';
+  ctx.textAlign = 'center';
+  ctx.fillText(s.label, s.x + s.w/2, s.y + 40);
+
+  // Status badge
+  let statusText = 'IDLE';
+  let statusColor = 'rgba(255,255,255,0.2)';
+  if (isActive)                { statusText='BUILDING'; statusColor=s.color; }
+  if (isDone && !isOutput)      { statusText='DONE';     statusColor=EMERALD_COLOR; }
+  if (isOutput && isDone)       { statusText='READY';    statusColor=EMERALD_COLOR; }
+
+  ctx.font      = `400 7px "JetBrains Mono"`;
+  ctx.fillStyle = statusColor;
+  ctx.textAlign = 'center';
+  ctx.fillText(statusText, s.x + s.w/2, s.y + 56);
+
+  // Progress pct if building
+  if (isActive) {
+    ctx.font      = `400 7px "JetBrains Mono"`;
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.textAlign = 'center';
+    ctx.fillText(Math.round(progress*100)+'%', s.x + s.w/2, s.y + 68);
+  }
+
+  // Mini spinning ring for active stage
+  if (isActive) {
+    const cx2 = s.x + s.w/2;
+    const cy2 = s.y + s.h - 14;
+    const rad  = 6;
+    const sweep= t * 3;
+    ctx.beginPath();
+    ctx.arc(cx2, cy2, rad, sweep, sweep + Math.PI*1.4);
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth   = 1.5;
+    ctx.stroke();
+  }
+
+  // Output READY badge (big)
+  if (isOutput && isDone) {
+    ctx.save();
+    ctx.fillStyle   = 'rgba(77,200,160,0.15)';
+    ctx.strokeStyle = EMERALD_COLOR;
+    ctx.lineWidth   = 1;
+    roundRect(ctx, s.x + s.w/2 - 24, s.y + s.h - 20, 48, 12, 4);
+    ctx.fill();
+    ctx.stroke();
+    ctx.font      = `700 6px "Orbitron"`;
+    ctx.fillStyle = EMERALD_COLOR;
+    ctx.textAlign = 'center';
+    ctx.fillText('✓ READY', s.x + s.w/2, s.y + s.h - 11);
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+function drawInputChips(t) {
+  if (!stageLayout.length) return;
+  const first = stageLayout[0];
+  const chipH = 14;
+  const chipW = first.w - 8;
+  const chipX = first.x + 4;
+  const visible = Math.min(UPSTREAM_KEYS.length, 8);
+  const totalChipH = visible * (chipH + 3);
+  let startY = first.y - totalChipH - 12;
+  if (startY < 4) startY = 4;
+
+  UPSTREAM_KEYS.slice(0, visible).forEach((u, i) => {
+    const cy = startY + i * (chipH + 3);
+    const raw = localStorage.getItem(u.key);
+    const hasData = !!raw;
+
+    ctx.save();
+    ctx.fillStyle   = hasData ? 'rgba(177,208,240,0.08)' : 'rgba(255,255,255,0.03)';
+    ctx.strokeStyle = hasData ? 'rgba(177,208,240,0.3)'  : 'rgba(255,255,255,0.05)';
+    ctx.lineWidth   = 0.75;
+    roundRect(ctx, chipX, cy, chipW, chipH, 3);
+    ctx.fill();
+    ctx.stroke();
+
+    // Dot
+    ctx.beginPath();
+    ctx.arc(chipX + 7, cy + chipH/2, 3, 0, Math.PI*2);
+    ctx.fillStyle = hasData ? EMERALD_COLOR : 'rgba(255,255,255,0.12)';
+    if (hasData) { ctx.shadowColor=EMERALD_COLOR; ctx.shadowBlur=4; }
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.font      = `300 6.5px "JetBrains Mono"`;
+    ctx.fillStyle = hasData ? 'rgba(177,208,240,0.8)' : 'rgba(255,255,255,0.25)';
+    ctx.textAlign = 'left';
+    ctx.fillText(u.label.toUpperCase(), chipX + 14, cy + chipH/2 + 2.5);
+    ctx.restore();
+  });
+
+  // Connector line from input chips zone to INPUTS stage
+  if (buildState.running || buildState.complete) {
+    const lineX = first.x + first.w/2;
+    const lineY1 = startY + totalChipH + 4;
+    const lineY2 = first.y;
+    ctx.save();
+    ctx.strokeStyle = `rgba(177,208,240,0.3)`;
+    ctx.lineWidth   = 1;
+    ctx.setLineDash([4,4]);
+    ctx.lineDashOffset = -(t*30)%8;
+    ctx.beginPath();
+    ctx.moveTo(lineX, lineY1);
+    ctx.lineTo(lineX, lineY2);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+// ── Round Rect Helper ──────────────────────────────────────────────────────
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+// ── Canvas Info Overlay ────────────────────────────────────────────────────
+function updateCanvasInfo(t) {
+  const modeEl  = document.getElementById('ci-mode');
+  const stageEl = document.getElementById('ci-stage');
+  const fpsEl   = document.getElementById('ci-fps');
+  const tEl     = document.getElementById('ci-t');
+
+  if (modeEl)  modeEl.textContent  = 'MODE · PIPELINE VISUALIZER';
+  if (stageEl) {
+    let stageName = 'IDLE';
+    if (buildState.running && buildState.currentStage >= 0) {
+      stageName = STAGE_LABELS[buildState.currentStage] || 'RUNNING';
+    } else if (buildState.complete) {
+      stageName = 'COMPLETE';
+    }
+    stageEl.textContent = 'STAGE · ' + stageName;
+  }
+  if (fpsEl) fpsEl.textContent = 'FPS · ' + fpsCurrent;
+  if (tEl)   tEl.textContent   = 'T · ' + t.toFixed(3) + 's';
+}
+
+// ── rAF Loop ───────────────────────────────────────────────────────────────
+function frame(ts) {
+  const dt = Math.min(0.05, (ts - lastTs) / 1000);
+  lastTs   = ts;
+  animT    = ts / 1000;
+
+  // FPS
+  fpsCounter++;
+  fpsTime += dt;
+  if (fpsTime >= 0.5) {
+    fpsCurrent = Math.round(fpsCounter / fpsTime);
+    fpsCounter = 0;
+    fpsTime    = 0;
+  }
+
+  // Build sequence update
+  if (buildState.running) {
+    updateBuildSequence(animT);
+  }
+
+  // Sparks
+  updateSparks(dt);
+
+  // Draw
+  drawCanvas(animT);
+  drawSparks();
+  updateCanvasInfo(animT);
+
+  requestAnimationFrame(frame);
+}
+
+// ── Start ──────────────────────────────────────────────────────────────────
+init();
+</script>
+
+<!-- ── Theme Sync IIFE ── -->
+<script>
+(function() {
+  const MAP = {
+    'c-bg':'--bg','c-surf':'--surface','c-surf2':'--surface2',
+    'c-edge':'--edge','c-edge-hi':'--edge-hi','c-accent1':'--venturan',
+    'c-accent2':'--amber','c-accent3':'--emerald','c-accent4':'--fusion',
+    'c-danger':'--blood','c-warm':'--solari','c-text':'--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+</script>
+</body>
+</html>

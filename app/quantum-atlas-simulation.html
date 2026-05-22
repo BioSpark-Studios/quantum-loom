@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 14 · Simulation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04050a;
+  --surface:rgba(8,11,18,.98);
+  --surface2:rgba(12,16,24,.97);
+  --edge:rgba(255,255,255,.055);
+  --edge-hi:rgba(255,255,255,.12);
+  --venturan:#b1d0f0;
+  --amber:#e8b84b;
+  --emerald:#4dc8a0;
+  --solari:#f98f3b;
+  --fusion:#9b7fd4;
+  --blood:#d45b5b;
+  --totem:#7fd4c8;
+  --simulation:#30e060;
+  --text:#e0e8f4;
+  --fm:'Orbitron',monospace;
+  --fd:'Space Grotesk',sans-serif;
+  --fc:'JetBrains Mono',monospace;
+}
+
+html,body{
+  height:100%;overflow:hidden;
+  background:var(--bg);color:#fff;
+  font-family:var(--fd);font-size:13px;
+}
+
+#shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;
+}
+
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--simulation);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;color:var(--simulation);
+  animation:breathe 4s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes breathe{
+  0%,100%{opacity:.7;box-shadow:0 0 4px rgba(48,224,96,.2);}
+  50%{opacity:1;box-shadow:0 0 12px rgba(48,224,96,.5);}
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--simulation);white-space:nowrap;
+}
+.tb-subcrest{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.18em;
+  color:rgba(48,224,96,.45);text-transform:uppercase;
+}
+
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:0 10px;height:100%;
+  display:flex;align-items:center;cursor:pointer;
+  color:rgba(255,255,255,.35);border-bottom:2px solid transparent;
+  transition:all .12s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03);}
+.tb-tab.active{color:var(--simulation);border-bottom-color:var(--simulation);}
+
+.tb-spacer{flex:1;}
+
+.tb-upstream{
+  display:flex;align-items:center;gap:4px;
+  padding:0 10px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.up-chip{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;
+  padding:2px 6px;border-radius:2px;border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.3);text-transform:uppercase;transition:all .2s;cursor:default;
+}
+.up-chip.lit{border-color:rgba(48,224,96,.4);color:var(--simulation);background:rgba(48,224,96,.06);}
+
+.tb-actions{
+  display:flex;gap:4px;padding:0 10px;height:100%;align-items:center;
+  border-left:1px solid var(--edge);flex-shrink:0;
+}
+.tb-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);
+  white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff;}
+.tb-btn.hot{
+  border-color:rgba(48,224,96,.55);background:rgba(48,224,96,.12);
+  color:var(--simulation);font-weight:600;
+}
+.tb-btn.hot:hover{background:rgba(48,224,96,.2);box-shadow:0 0 14px rgba(48,224,96,.3);}
+.tb-btn.danger{border-color:rgba(212,91,91,.45);color:var(--blood);}
+.tb-btn.danger:hover{background:rgba(212,91,91,.1);}
+.tb-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* ── BODY ── */
+#body{flex:1;display:flex;overflow:hidden;}
+
+/* ── LEFT PANEL ── */
+#left-panel{
+  width:240px;flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.lp-scroll::-webkit-scrollbar{width:3px;}
+.lp-scroll::-webkit-scrollbar-track{background:transparent;}
+.lp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+.sec-header{
+  padding:7px 10px 6px;border-bottom:1px solid var(--edge);
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--simulation);opacity:.8;flex-shrink:0;
+  display:flex;align-items:center;gap:6px;
+}
+.sec-header-count{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.3);
+  padding:1px 5px;background:rgba(255,255,255,.04);
+  border:1px solid var(--edge);border-radius:8px;margin-left:auto;
+}
+
+/* Component matrix grid */
+.comp-matrix{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+}
+.comp-card{
+  padding:8px 8px 7px;
+  border-right:1px solid var(--edge);
+  border-bottom:1px solid var(--edge);
+  cursor:pointer;transition:background .1s;
+  position:relative;overflow:hidden;
+}
+.comp-card:nth-child(even){border-right:none;}
+.comp-card:hover{background:rgba(255,255,255,.025);}
+.comp-card.active{background:rgba(48,224,96,.05);border-bottom-color:rgba(48,224,96,.25);}
+.comp-card.active::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:var(--simulation);opacity:.6;
+}
+.cc-layer{
+  font-family:var(--fc);font-size:.25rem;letter-spacing:.08em;
+  text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:2px;
+}
+.cc-id{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;
+  color:var(--simulation);opacity:.85;margin-bottom:3px;
+}
+.cc-name{
+  font-family:var(--fd);font-size:.36rem;color:rgba(255,255,255,.75);
+  margin-bottom:4px;line-height:1.3;
+}
+.cc-badge{
+  display:inline-flex;align-items:center;
+  font-family:var(--fc);font-size:.26rem;letter-spacing:.06em;
+  padding:1px 4px;border-radius:2px;border:1px solid currentColor;opacity:.7;
+}
+.cc-badge.DAT{color:#b1d0f0;}
+.cc-badge.VIS{color:#30e060;}
+.cc-badge.LGC{color:#9b7fd4;}
+.cc-badge.EVT{color:#e8b84b;}
+.cc-badge.TMP{color:#f98f3b;}
+.cc-status{
+  position:absolute;top:6px;right:6px;
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(255,255,255,.1);
+}
+.cc-status.run{background:var(--simulation);
+  box-shadow:0 0 5px rgba(48,224,96,.6);
+  animation:pulse-dot 1.5s ease-in-out infinite;}
+.cc-status.idle{background:rgba(255,255,255,.15);}
+.cc-status.warn{background:var(--amber);}
+@keyframes pulse-dot{
+  0%,100%{opacity:.6;}50%{opacity:1;}
+}
+
+/* Layer section headers */
+.layer-header{
+  padding:5px 10px 4px;
+  background:rgba(255,255,255,.015);
+  border-bottom:1px solid var(--edge);
+  font-family:var(--fm);font-size:.28rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);
+  display:flex;align-items:center;gap:6px;
+}
+.layer-roman{
+  font-family:var(--fm);font-size:.3rem;color:var(--simulation);opacity:.6;
+  background:rgba(48,224,96,.08);border:1px solid rgba(48,224,96,.2);
+  padding:0 4px;border-radius:2px;
+}
+
+/* Bottom snapshot status */
+#lp-bottom{
+  flex-shrink:0;padding:8px 10px;border-top:1px solid var(--edge);
+}
+.snap-row{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;
+}
+.snap-lbl{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase;}
+.snap-val{font-family:var(--fc);font-size:.3rem;color:var(--simulation);}
+.snap-btn{
+  width:100%;font-family:var(--fm);font-size:.3rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:5px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(48,224,96,.3);background:rgba(48,224,96,.05);
+  color:var(--simulation);transition:all .12s;margin-top:4px;
+}
+.snap-btn:hover{background:rgba(48,224,96,.12);}
+
+/* ── CANVAS AREA ── */
+#canvas-wrap{
+  flex:1;position:relative;overflow:hidden;background:#020408;
+}
+#main-canvas{display:block;width:100%;height:100%;}
+
+/* Canvas HUD overlays */
+#canvas-hud-tl{
+  position:absolute;top:8px;left:8px;
+  display:flex;gap:4px;z-index:10;
+}
+.hud-btn{
+  height:26px;padding:0 8px;border-radius:3px;
+  background:rgba(4,5,10,.85);border:1px solid var(--edge);
+  display:flex;align-items:center;gap:5px;
+  cursor:pointer;font-family:var(--fc);font-size:.3rem;
+  color:rgba(255,255,255,.4);transition:all .12s;white-space:nowrap;
+}
+.hud-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:rgba(255,255,255,.7);}
+.hud-btn.active{border-color:rgba(48,224,96,.45);color:var(--simulation);background:rgba(48,224,96,.08);}
+.hud-swatch{width:7px;height:7px;border-radius:1px;flex-shrink:0;}
+
+#canvas-hud-br{
+  position:absolute;bottom:8px;right:8px;z-index:10;
+  display:flex;gap:6px;align-items:flex-end;
+}
+.hud-stat-box{
+  background:rgba(4,5,10,.88);border:1px solid var(--edge);border-radius:3px;
+  padding:5px 8px;
+}
+.hud-stat-label{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
+.hud-stat-val{font-family:var(--fm);font-size:.48rem;color:var(--simulation);}
+
+#canvas-hud-tick{
+  position:absolute;top:8px;right:8px;z-index:10;
+  background:rgba(4,5,10,.88);border:1px solid rgba(48,224,96,.25);border-radius:3px;
+  padding:5px 10px;display:flex;align-items:center;gap:8px;
+}
+.hud-tick-label{font-family:var(--fc);font-size:.28rem;color:rgba(48,224,96,.5);letter-spacing:.1em;text-transform:uppercase;}
+.hud-tick-val{font-family:var(--fm);font-size:.5rem;color:var(--simulation);}
+.hud-running-dot{
+  width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15);
+}
+.hud-running-dot.on{
+  background:var(--simulation);
+  box-shadow:0 0 6px rgba(48,224,96,.7);
+  animation:pulse-dot 1s ease-in-out infinite;
+}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:280px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.rp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-track{background:transparent;}
+.rp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+/* Run controls */
+.run-controls{
+  padding:10px;border-bottom:1px solid var(--edge);
+}
+.rctl-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;
+}
+.rctl-btns{display:flex;gap:5px;margin-bottom:8px;}
+.rctl-btn{
+  flex:1;font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:6px 4px;border-radius:3px;cursor:pointer;
+  transition:all .12s;border:1px solid var(--edge);background:transparent;
+  color:rgba(255,255,255,.4);
+}
+.rctl-btn:hover{background:rgba(255,255,255,.06);color:#fff;border-color:var(--edge-hi);}
+.rctl-btn.start{
+  border-color:rgba(48,224,96,.5);background:rgba(48,224,96,.1);color:var(--simulation);
+}
+.rctl-btn.start:hover{background:rgba(48,224,96,.2);box-shadow:0 0 12px rgba(48,224,96,.25);}
+.rctl-btn.start.running{
+  border-color:rgba(232,184,75,.5);background:rgba(232,184,75,.08);color:var(--amber);
+}
+.rctl-btn.start.running:hover{background:rgba(232,184,75,.15);}
+.rctl-btn.reset:hover{border-color:rgba(212,91,91,.4);color:var(--blood);}
+.rctl-btn:disabled{opacity:.25;cursor:not-allowed;}
+
+.speed-row{display:flex;align-items:center;gap:8px;margin-top:2px;}
+.speed-lbl{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.35);flex-shrink:0;letter-spacing:.06em;text-transform:uppercase;}
+.speed-val{font-family:var(--fm);font-size:.32rem;color:var(--simulation);flex-shrink:0;min-width:26px;text-align:right;}
+input[type=range].sim-slider{
+  flex:1;height:4px;-webkit-appearance:none;appearance:none;
+  background:rgba(255,255,255,.08);border-radius:2px;cursor:pointer;outline:none;
+}
+input[type=range].sim-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+  background:var(--simulation);border:none;cursor:pointer;
+  box-shadow:0 0 6px rgba(48,224,96,.4);
+}
+input[type=range].sim-slider::-moz-range-thumb{
+  width:12px;height:12px;border-radius:50%;border:none;
+  background:var(--simulation);cursor:pointer;
+}
+
+/* Layer toggles */
+.layer-toggles{
+  padding:10px;border-bottom:1px solid var(--edge);
+}
+.lt-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;
+}
+.toggle-row{
+  display:flex;align-items:center;gap:8px;
+  padding:4px 0;border-bottom:1px solid rgba(255,255,255,.025);
+  cursor:pointer;user-select:none;
+}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-row:hover .toggle-name{color:rgba(255,255,255,.75);}
+.toggle-swatch{width:9px;height:9px;border-radius:2px;flex-shrink:0;transition:opacity .15s;}
+.toggle-check{
+  width:14px;height:14px;border-radius:2px;border:1px solid rgba(255,255,255,.2);
+  background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all .12s;
+}
+.toggle-check.on{
+  border-color:rgba(48,224,96,.5);background:rgba(48,224,96,.15);
+}
+.toggle-check.on::after{
+  content:'✓';font-size:.4rem;color:var(--simulation);line-height:1;
+}
+.toggle-name{
+  font-family:var(--fd);font-size:.38rem;color:rgba(255,255,255,.55);
+  flex:1;transition:color .1s;
+}
+
+/* Parameters */
+.params-block{
+  padding:10px;border-bottom:1px solid var(--edge);
+}
+.params-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;
+}
+.param-row{margin-bottom:10px;}
+.param-row:last-child{margin-bottom:0;}
+.param-label{
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.4);margin-bottom:4px;text-transform:uppercase;
+}
+.param-val{color:var(--simulation);font-size:.32rem;}
+input[type=range].param-slider{
+  width:100%;height:4px;-webkit-appearance:none;appearance:none;
+  background:rgba(255,255,255,.08);border-radius:2px;cursor:pointer;outline:none;
+}
+input[type=range].param-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:11px;height:11px;border-radius:50%;
+  background:var(--simulation);border:none;cursor:pointer;
+  box-shadow:0 0 5px rgba(48,224,96,.4);
+}
+input[type=range].param-slider::-moz-range-thumb{
+  width:11px;height:11px;border-radius:50%;border:none;
+  background:var(--simulation);cursor:pointer;
+}
+
+/* Live stats */
+.stats-block{
+  padding:10px;border-bottom:1px solid var(--edge);
+}
+.stats-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;
+}
+.stat-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:4px 0;border-bottom:1px solid rgba(255,255,255,.02);
+}
+.stat-row:last-child{border-bottom:none;}
+.stat-lbl{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.35);letter-spacing:.05em;}
+.stat-val{font-family:var(--fm);font-size:.36rem;color:var(--simulation);}
+.stat-val.amber{color:var(--amber);}
+.stat-val.blood{color:var(--blood);}
+.stat-val.totem{color:var(--totem);}
+.stat-val.fusion{color:var(--fusion);}
+
+/* Mini sparklines */
+.spark-row{
+  padding:6px 10px;border-bottom:1px solid var(--edge);
+}
+.spark-title{
+  font-family:var(--fm);font-size:.28rem;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:6px;
+}
+.spark-canvas{display:block;width:100%;height:36px;}
+
+/* Event log */
+.event-log{
+  flex:1;min-height:80px;overflow-y:auto;
+}
+.event-log::-webkit-scrollbar{width:3px;}
+.event-log::-webkit-scrollbar-track{background:transparent;}
+.event-log::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+.el-title{
+  padding:7px 10px 5px;
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);
+  border-bottom:1px solid var(--edge);
+  position:sticky;top:0;background:var(--surface);z-index:1;
+}
+.el-entry{
+  display:flex;gap:6px;align-items:flex-start;
+  padding:4px 10px;border-bottom:1px solid rgba(255,255,255,.02);
+}
+.el-tick{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);
+  flex-shrink:0;padding-top:1px;min-width:24px;
+}
+.el-msg{font-family:var(--fd);font-size:.33rem;color:rgba(255,255,255,.5);line-height:1.4;}
+.el-msg.warn{color:var(--amber);}
+.el-msg.danger{color:var(--blood);}
+.el-msg.good{color:var(--simulation);}
+.el-msg.info{color:var(--venturan);}
+.el-empty{
+  padding:16px 10px;
+  font-family:var(--fd);font-size:.35rem;
+  color:rgba(255,255,255,.2);text-align:center;
+}
+
+/* ── STATUS BAR ── */
+#status-bar{
+  height:26px;flex-shrink:0;
+  background:var(--surface);border-top:1px solid var(--edge);
+  display:flex;align-items:center;gap:0;padding:0;
+  font-family:var(--fc);font-size:.3rem;z-index:20;
+  overflow:hidden;
+}
+.sb-seg{
+  display:flex;align-items:center;gap:5px;
+  padding:0 10px;height:100%;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.sb-label{color:rgba(255,255,255,.25);letter-spacing:.06em;text-transform:uppercase;}
+.sb-val{color:rgba(255,255,255,.55);}
+.sb-val.sim{color:var(--simulation);}
+.sb-val.amber{color:var(--amber);}
+.sb-val.blood{color:var(--blood);}
+.sb-spacer{flex:1;}
+.sb-dept{
+  font-family:var(--fm);font-size:.28rem;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(48,224,96,.3);
+  padding:0 10px;border-left:1px solid var(--edge);
+}
+.sb-snap-dot{
+  width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.12);flex-shrink:0;
+}
+.sb-snap-dot.on{background:var(--simulation);box-shadow:0 0 5px rgba(48,224,96,.5);}
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- ── TOP BAR ── -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">∿</div>
+      <div>
+        <div class="tb-module-id">14 · Simulation</div>
+        <div class="tb-subcrest">Continuum</div>
+      </div>
+    </div>
+
+    <div class="tb-tabs">
+      <div class="tb-tab active">Field View</div>
+      <div class="tb-tab">Physics</div>
+      <div class="tb-tab">Ecology</div>
+      <div class="tb-tab">Climate</div>
+      <div class="tb-tab">Systems</div>
+    </div>
+
+    <div class="tb-spacer"></div>
+
+    <div class="tb-upstream">
+      <div class="up-chip lit" id="chip-terrain">TERRAIN</div>
+      <div class="up-chip lit" id="chip-environ">ENVIRON</div>
+      <div class="up-chip lit" id="chip-logic">LOGIC</div>
+      <div class="up-chip lit" id="chip-society">SOCIETY</div>
+    </div>
+
+    <div class="tb-actions">
+      <button class="tb-btn" id="btn-export-snap">Export Snap</button>
+      <button class="tb-btn hot" id="btn-write-snap">Write Snapshot</button>
+    </div>
+  </div>
+
+  <!-- ── BODY ── -->
+  <div id="body">
+
+    <!-- ── LEFT PANEL ── -->
+    <div id="left-panel">
+      <div class="lp-scroll">
+
+        <!-- Layer I — Physics -->
+        <div class="layer-header">
+          <span class="layer-roman">I</span>
+          Physics
+        </div>
+        <div class="comp-matrix" id="matrix-physics">
+          <div class="comp-card active" data-comp="FDS">
+            <div class="cc-status run"></div>
+            <div class="cc-layer">Physics</div>
+            <div class="cc-id">FDS</div>
+            <div class="cc-name">Fluid Dynamics Solver</div>
+            <span class="cc-badge DAT">DAT</span>
+          </div>
+          <div class="comp-card" data-comp="PFE">
+            <div class="cc-status run"></div>
+            <div class="cc-layer">Physics</div>
+            <div class="cc-id">PFE</div>
+            <div class="cc-name">Particle Field Engine</div>
+            <span class="cc-badge VIS">VIS</span>
+          </div>
+          <div class="comp-card" data-comp="ERC">
+            <div class="cc-status idle"></div>
+            <div class="cc-layer">Physics</div>
+            <div class="cc-id">ERC</div>
+            <div class="cc-name">Erosion Rate Calculator</div>
+            <span class="cc-badge DAT">DAT</span>
+          </div>
+          <div class="comp-card" data-comp="GWM">
+            <div class="cc-status idle"></div>
+            <div class="cc-layer">Physics</div>
+            <div class="cc-id">GWM</div>
+            <div class="cc-name">Gravity Well Modeler</div>
+            <span class="cc-badge DAT">DAT</span>
+          </div>
+        </div>
+
+        <!-- Layer II — Ecology -->
+        <div class="layer-header">
+          <span class="layer-roman">II</span>
+          Ecology
+        </div>
+        <div class="comp-matrix" id="matrix-ecology">
+          <div class="comp-card" data-comp="FGS">
+            <div class="cc-status run"></div>
+            <div class="cc-layer">Ecology</div>
+            <div class="cc-id">FGS</div>
+            <div class="cc-name">Flora Growth Simulator</div>
+            <span class="cc-badge DAT">DAT</span>
+          </div>
+          <div class="comp-card" data-comp="FDT">
+            <div class="cc-status run"></div>
+            <div class="cc-layer">Ecology</div>
+            <div class="cc-id">FDT</div>
+            <div class="cc-name">Fauna Density Tracker</div>
+            <span class="cc-badge DAT">DAT</span>
+          </div>
+          <div class="comp-card" data-comp="DVP">
+            <div class="cc-status idle"></div>
+            <div class="cc-layer">Ecology</div>
+            <div class="cc-id">DVP</div>
+            <div class="cc-name">Disease Vector Propagator</div>
+            <span class="cc-badge DAT">DAT</span>
+          </div>
+          <div class="comp-card" data-comp="FWB">
+            <div class="cc-status idle"></div>
+            <div class="cc-layer">Ecology</div>
+            <div class="cc-id">FWB</div>
+            <div class="cc-name">Food Web Balancer</div>
+            <span class="cc-badge LGC">LGC</span>
+          </div>
+        </div>
+
+        <!-- Layer III — Climate -->
+        <div class="layer-header">
+          <span class="layer-roman">III</span>
+          Climate
+        </div>
+        <div class="comp-matrix" id="matrix-climate">
+          <div class="comp-card" data-comp="TDE">
+            <div class="cc-status idle"></div>
+            <div class="cc-layer">Climate</div>
+            <div class="cc-id">TDE</div>
+            <div class="cc-name">Temperature Drift Engine</div>
+            <span class="cc-badge TMP">TMP</span>
+          </div>
+          <div class="comp-card" data-comp="PCM">
+            <div class="cc-status idle"></div>
+            <div class="cc-layer">Climate</div>
+            <div class="cc-id">PCM</div>
+            <div class="cc-name">Precipitation Cycle Model</div>
+            <span class="cc-badge DAT">DAT</span>
+          </div>
+          <div class="comp-card" data-comp="SLA">
+            <div class="cc-status idle"></div>
+            <div class="cc-layer">Climate</div>
+            <div class="cc-id">SLA</div>
+            <div class="cc-name">Sea Level Adjuster</div>
+            <span class="cc-badge DAT">DAT</span>
+          </div>
+          <div class="comp-card" data-comp="BSC">
+            <div class="cc-status idle"></div>
+            <div class="cc-layer">Climate</div>
+            <div class="cc-id">BSC</div>
+            <div class="cc-name">Biome Shift Calculator</div>
+            <span class="cc-badge LGC">LGC</span>
+          </div>
+        </div>
+
+        <!-- Layer IV — Systems -->
+        <div class="layer-header">
+          <span class="layer-roman">IV</span>
+          Systems
+        </div>
+        <div class="comp-matrix" id="matrix-systems">
+          <div class="comp-card" data-comp="CTR">
+            <div class="cc-status idle"></div>
+            <div class="cc-layer">Systems</div>
+            <div class="cc-id">CTR</div>
+            <div class="cc-name">Cascade Trigger Resolver</div>
+            <span class="cc-badge EVT">EVT</span>
+          </div>
+          <div class="comp-card" data-comp="FLD">
+            <div class="cc-status idle"></div>
+            <div class="cc-layer">Systems</div>
+            <div class="cc-id">FLD</div>
+            <div class="cc-name">Feedback Loop Detector</div>
+            <span class="cc-badge LGC">LGC</span>
+          </div>
+          <div class="comp-card" data-comp="SSR">
+            <div class="cc-status run"></div>
+            <div class="cc-layer">Systems</div>
+            <div class="cc-id">SSR</div>
+            <div class="cc-name">Simulation State Recorder</div>
+            <span class="cc-badge DAT">DAT</span>
+          </div>
+          <div class="comp-card" data-comp="CEP">
+            <div class="cc-status idle"></div>
+            <div class="cc-layer">Systems</div>
+            <div class="cc-id">CEP</div>
+            <div class="cc-name">Continuum Export Packet</div>
+            <span class="cc-badge DAT">DAT</span>
+          </div>
+        </div>
+
+      </div><!-- end lp-scroll -->
+
+      <div id="lp-bottom">
+        <div class="snap-row">
+          <span class="snap-lbl">Snapshot</span>
+          <span class="snap-val" id="snap-status-lbl">—</span>
+        </div>
+        <div class="snap-row">
+          <span class="snap-lbl">Last written</span>
+          <span class="snap-val" id="snap-time-lbl">—</span>
+        </div>
+        <button class="snap-btn" id="btn-force-snap">Force Write Now</button>
+      </div>
+    </div><!-- end left-panel -->
+
+    <!-- ── CANVAS ── -->
+    <div id="canvas-wrap">
+      <canvas id="main-canvas"></canvas>
+
+      <!-- Top-left layer toggles HUD -->
+      <div id="canvas-hud-tl">
+        <div class="hud-btn active" id="hud-flora" data-layer="flora">
+          <div class="hud-swatch" style="background:#30e060;"></div>Flora
+        </div>
+        <div class="hud-btn active" id="hud-fauna" data-layer="fauna">
+          <div class="hud-swatch" style="background:#e8b84b;"></div>Fauna
+        </div>
+        <div class="hud-btn active" id="hud-disease" data-layer="disease">
+          <div class="hud-swatch" style="background:#d45b5b;"></div>Disease
+        </div>
+        <div class="hud-btn active" id="hud-erosion" data-layer="erosion">
+          <div class="hud-swatch" style="background:#b1d0f0;"></div>Erosion
+        </div>
+        <div class="hud-btn active" id="hud-particles" data-layer="particles">
+          <div class="hud-swatch" style="background:#4dc8a0;"></div>Particles
+        </div>
+      </div>
+
+      <!-- Top-right tick counter HUD -->
+      <div id="canvas-hud-tick">
+        <div class="hud-running-dot" id="hud-running-dot"></div>
+        <div class="hud-tick-label">Tick</div>
+        <div class="hud-tick-val" id="hud-tick-display">0</div>
+      </div>
+
+      <!-- Bottom-right stats HUD -->
+      <div id="canvas-hud-br">
+        <div class="hud-stat-box">
+          <div class="hud-stat-label">Flora %</div>
+          <div class="hud-stat-val" id="hud-flora-pct">0.0</div>
+        </div>
+        <div class="hud-stat-box">
+          <div class="hud-stat-label">Fauna</div>
+          <div class="hud-stat-val" id="hud-fauna-count">0</div>
+        </div>
+        <div class="hud-stat-box">
+          <div class="hud-stat-label">Infected</div>
+          <div class="hud-stat-val" id="hud-infected">0</div>
+        </div>
+      </div>
+    </div><!-- end canvas-wrap -->
+
+    <!-- ── RIGHT PANEL ── -->
+    <div id="right-panel">
+      <div class="rp-scroll">
+
+        <!-- Run controls -->
+        <div class="run-controls">
+          <div class="rctl-title">Run Controls</div>
+          <div class="rctl-btns">
+            <button class="rctl-btn start" id="btn-start">Start Sim</button>
+            <button class="rctl-btn reset" id="btn-reset">Reset</button>
+          </div>
+          <div class="speed-row">
+            <span class="speed-lbl">Speed</span>
+            <input type="range" class="sim-slider" id="speed-slider" min="0.5" max="4" step="0.5" value="1">
+            <span class="speed-val" id="speed-display">1×</span>
+          </div>
+        </div>
+
+        <!-- Layer toggles -->
+        <div class="layer-toggles">
+          <div class="lt-title">Layer Toggles</div>
+          <div class="toggle-row" data-toggle="flora">
+            <div class="toggle-swatch" style="background:#30e060;"></div>
+            <div class="toggle-check on" id="tc-flora"></div>
+            <div class="toggle-name">Flora Growth</div>
+          </div>
+          <div class="toggle-row" data-toggle="fauna">
+            <div class="toggle-swatch" style="background:#e8b84b;"></div>
+            <div class="toggle-check on" id="tc-fauna"></div>
+            <div class="toggle-name">Fauna / Predators</div>
+          </div>
+          <div class="toggle-row" data-toggle="disease">
+            <div class="toggle-swatch" style="background:#d45b5b;"></div>
+            <div class="toggle-check on" id="tc-disease"></div>
+            <div class="toggle-name">Disease Spread</div>
+          </div>
+          <div class="toggle-row" data-toggle="erosion">
+            <div class="toggle-swatch" style="background:#b1d0f0;"></div>
+            <div class="toggle-check on" id="tc-erosion"></div>
+            <div class="toggle-name">Erosion Layer</div>
+          </div>
+          <div class="toggle-row" data-toggle="particles">
+            <div class="toggle-swatch" style="background:#4dc8a0;"></div>
+            <div class="toggle-check on" id="tc-particles"></div>
+            <div class="toggle-name">Particle Field</div>
+          </div>
+        </div>
+
+        <!-- Parameters -->
+        <div class="params-block">
+          <div class="params-title">Parameters</div>
+
+          <div class="param-row">
+            <div class="param-label">
+              <span>Flora Spread Rate</span>
+              <span class="param-val" id="pv-flora">0.05</span>
+            </div>
+            <input type="range" class="param-slider" id="ps-flora" min="0.01" max="0.2" step="0.005" value="0.05">
+          </div>
+
+          <div class="param-row">
+            <div class="param-label">
+              <span>Predator / Prey Ratio</span>
+              <span class="param-val" id="pv-ratio">0.25</span>
+            </div>
+            <input type="range" class="param-slider" id="ps-ratio" min="0.1" max="2.0" step="0.05" value="0.25">
+          </div>
+
+          <div class="param-row">
+            <div class="param-label">
+              <span>Disease R₀</span>
+              <span class="param-val" id="pv-r0">1.8</span>
+            </div>
+            <input type="range" class="param-slider" id="ps-r0" min="0.5" max="5.0" step="0.1" value="1.8">
+          </div>
+
+          <div class="param-row">
+            <div class="param-label">
+              <span>Erosion Rate</span>
+              <span class="param-val" id="pv-erosion">0.01</span>
+            </div>
+            <input type="range" class="param-slider" id="ps-erosion" min="0.001" max="0.05" step="0.001" value="0.01">
+          </div>
+        </div>
+
+        <!-- Live stats -->
+        <div class="stats-block">
+          <div class="stats-title">Live Statistics</div>
+          <div class="stat-row">
+            <span class="stat-lbl">Flora Coverage</span>
+            <span class="stat-val" id="st-flora">0.0%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl">Predators</span>
+            <span class="stat-val blood" id="st-predators">12</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl">Prey</span>
+            <span class="stat-val amber" id="st-prey">48</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl">Infected Cells</span>
+            <span class="stat-val blood" id="st-infected">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl">Recovered Cells</span>
+            <span class="stat-val totem" id="st-recovered">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl">Erosion Avg</span>
+            <span class="stat-val" id="st-erosion">0.000</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl">Cascade Events</span>
+            <span class="stat-val fusion" id="st-cascade">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl">Feedback Loops</span>
+            <span class="stat-val fusion" id="st-feedback">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl">Tick Count</span>
+            <span class="stat-val" id="st-tick">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl">Elapsed Time</span>
+            <span class="stat-val" id="st-elapsed">0s</span>
+          </div>
+        </div>
+
+        <!-- Sparklines -->
+        <div class="spark-row">
+          <div class="spark-title">Flora History</div>
+          <canvas class="spark-canvas" id="spark-flora" width="260" height="36"></canvas>
+        </div>
+        <div class="spark-row">
+          <div class="spark-title">Fauna History</div>
+          <canvas class="spark-canvas" id="spark-fauna" width="260" height="36"></canvas>
+        </div>
+        <div class="spark-row">
+          <div class="spark-title">Disease History</div>
+          <canvas class="spark-canvas" id="spark-disease" width="260" height="36"></canvas>
+        </div>
+
+        <!-- Event log -->
+        <div class="event-log" id="event-log">
+          <div class="el-title">Event Log</div>
+          <div class="el-empty" id="el-empty">No events yet — start simulation.</div>
+        </div>
+
+      </div><!-- end rp-scroll -->
+    </div><!-- end right-panel -->
+
+  </div><!-- end body -->
+
+  <!-- ── STATUS BAR ── -->
+  <div id="status-bar">
+    <div class="sb-seg">
+      <span class="sb-label">Module</span>
+      <span class="sb-val sim">14 · Simulation</span>
+    </div>
+    <div class="sb-seg">
+      <span class="sb-label">State</span>
+      <span class="sb-val" id="sb-state">Idle</span>
+    </div>
+    <div class="sb-seg">
+      <span class="sb-label">Tick</span>
+      <span class="sb-val sim" id="sb-tick">0</span>
+    </div>
+    <div class="sb-seg">
+      <span class="sb-label">Elapsed</span>
+      <span class="sb-val" id="sb-elapsed">0s</span>
+    </div>
+    <div class="sb-seg">
+      <span class="sb-label">Speed</span>
+      <span class="sb-val" id="sb-speed">1×</span>
+    </div>
+    <div class="sb-seg">
+      <span class="sb-snap-dot" id="sb-snap-dot"></span>
+      <span class="sb-label">Snapshot</span>
+      <span class="sb-val" id="sb-snap-val">—</span>
+    </div>
+    <div class="sb-spacer"></div>
+    <div class="sb-dept">PipelineSystems</div>
+  </div>
+
+</div><!-- end shell -->
+
+<script>
+// ── SIMULATION ENGINE ──────────────────────────────────────────────────────────
+
+(function SimulationEngine() {
+
+  // ── Canvas setup
+  const canvas = document.getElementById('main-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    const wrap = canvas.parentElement;
+    canvas.width = wrap.clientWidth;
+    canvas.height = wrap.clientHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', () => { resizeCanvas(); initHexGrid(); });
+
+  // ── Hex grid parameters
+  const HEX_RADIUS = 10;
+  let HEX_SIZE = 24; // px flat-to-flat half
+  let hexGrid = [];   // array of {cx, cy, q, r, index}
+  let COLS = 0, ROWS = 0;
+
+  function hexToPixel(q, r) {
+    const x = HEX_SIZE * 1.5 * q;
+    const y = HEX_SIZE * Math.sqrt(3) * (r + q * 0.5);
+    return { x, y };
+  }
+
+  function initHexGrid() {
+    hexGrid = [];
+    const W = canvas.width;
+    const H = canvas.height;
+    const offsetX = W / 2;
+    const offsetY = H / 2;
+    for (let q = -HEX_RADIUS; q <= HEX_RADIUS; q++) {
+      const r1 = Math.max(-HEX_RADIUS, -q - HEX_RADIUS);
+      const r2 = Math.min(HEX_RADIUS, -q + HEX_RADIUS);
+      for (let r = r1; r <= r2; r++) {
+        const px = hexToPixel(q, r);
+        hexGrid.push({
+          cx: px.x + offsetX,
+          cy: px.y + offsetY,
+          q, r,
+          index: hexGrid.length
+        });
+      }
+    }
+    // Init state arrays if not already correct length
+    if (simState.flora.length !== hexGrid.length) {
+      initSimArrays();
+    }
+  }
+
+  // ── Simulation state
+  const simState = {
+    running: false,
+    tick: 0,
+    elapsedSeconds: 0,
+    speed: 1,
+    frameCount: 0,
+    framesPerTick: 60,
+    // Per-hex arrays
+    flora: [],
+    erosion: [],
+    disease: [],   // 0=S, 1=I, 2=R
+    // Fauna entities
+    fauna: [],
+    // System counters
+    cascadeEvents: 0,
+    feedbackLoops: 0,
+    biomeShifts: 0,
+    // Params
+    floraRate: 0.05,
+    predPreyRatio: 0.25,
+    diseaseR0: 1.8,
+    erosionRate: 0.01,
+    // History arrays for sparklines
+    floraHistory: [],
+    faunaHistory: [],
+    diseaseHistory: [],
+  };
+
+  function initSimArrays() {
+    const n = hexGrid.length;
+    simState.flora = new Float32Array(n).fill(0);
+    simState.erosion = new Float32Array(n).fill(0);
+    simState.disease = new Uint8Array(n).fill(0); // 0=S 1=I 2=R
+
+    // Seed a few flora patches
+    for (let i = 0; i < Math.floor(n * 0.05); i++) {
+      const idx = Math.floor(Math.random() * n);
+      simState.flora[idx] = 0.3 + Math.random() * 0.4;
+    }
+    // Seed erosion
+    for (let i = 0; i < n; i++) {
+      simState.erosion[i] = Math.random() * 0.08;
+    }
+  }
+
+  function initFauna() {
+    simState.fauna = [];
+    const n = hexGrid.length;
+    const preyCount = 48;
+    const predCount = 12;
+    for (let i = 0; i < preyCount; i++) {
+      const hex = hexGrid[Math.floor(Math.random() * n)];
+      simState.fauna.push({
+        type: 'prey',
+        x: hex.cx + (Math.random() - 0.5) * 20,
+        y: hex.cy + (Math.random() - 0.5) * 20,
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: (Math.random() - 0.5) * 0.8,
+        energy: 0.5 + Math.random() * 0.5,
+        age: Math.random() * 20
+      });
+    }
+    for (let i = 0; i < predCount; i++) {
+      const hex = hexGrid[Math.floor(Math.random() * n)];
+      simState.fauna.push({
+        type: 'predator',
+        x: hex.cx + (Math.random() - 0.5) * 20,
+        y: hex.cy + (Math.random() - 0.5) * 20,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        energy: 0.4 + Math.random() * 0.4,
+        age: Math.random() * 20
+      });
+    }
+  }
+
+  function initSim() {
+    initHexGrid();
+    initFauna();
+    simState.tick = 0;
+    simState.elapsedSeconds = 0;
+    simState.frameCount = 0;
+    simState.cascadeEvents = 0;
+    simState.feedbackLoops = 0;
+    simState.biomeShifts = 0;
+    simState.floraHistory = [];
+    simState.faunaHistory = [];
+    simState.diseaseHistory = [];
+    logEvent(0, 'Simulation initialized. Awaiting start.', 'info');
+  }
+
+  // ── Particles
+  const PARTICLE_COUNT = 200;
+  let particles = [];
+
+  function initParticles() {
+    particles = [];
+    const W = canvas.width;
+    const H = canvas.height;
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        angle: Math.random() * Math.PI * 2,
+        speed: 0.4 + Math.random() * 0.8,
+        life: Math.random(),
+        maxLife: 0.6 + Math.random() * 0.4,
+        size: 0.5 + Math.random() * 1.5
+      });
+    }
+  }
+
+  function updateParticles() {
+    const W = canvas.width;
+    const H = canvas.height;
+    for (const p of particles) {
+      p.x += Math.cos(p.angle) * p.speed;
+      p.y += Math.sin(p.angle) * p.speed;
+      p.angle += (Math.random() - 0.5) * 0.08; // slight drift
+      p.life += 0.003;
+      if (p.life > p.maxLife || p.x < 0 || p.x > W || p.y < 0 || p.y > H) {
+        p.x = Math.random() * W;
+        p.y = Math.random() * H;
+        p.angle = Math.random() * Math.PI * 2;
+        p.life = 0;
+        p.speed = 0.4 + Math.random() * 0.8;
+        p.size = 0.5 + Math.random() * 1.5;
+      }
+    }
+  }
+
+  // ── Simulation tick logic ──────────────────────────────────────────────────
+
+  function doTick() {
+    simState.tick++;
+    simState.elapsedSeconds = simState.tick;
+
+    const n = hexGrid.length;
+    const rate = simState.floraRate;
+    const erosionRate = simState.erosionRate;
+    const r0 = simState.diseaseR0;
+
+    // ── Flora: logistic growth  d += rate*(1-d)
+    const newFlora = new Float32Array(simState.flora);
+    for (let i = 0; i < n; i++) {
+      const d = simState.flora[i];
+      let dd = d + rate * (1 - d) * 0.1;
+      // Spread to neighbors
+      if (d > 0.2 && Math.random() < 0.05) {
+        const nbr = randomNeighbor(i);
+        if (nbr >= 0) {
+          newFlora[nbr] = Math.min(1, newFlora[nbr] + 0.08);
+        }
+      }
+      newFlora[i] = Math.min(1, Math.max(0, dd));
+    }
+    // Grazing: prey eat flora
+    for (const f of simState.fauna) {
+      if (f.type !== 'prey') continue;
+      const hi = closestHex(f.x, f.y);
+      if (hi >= 0 && newFlora[hi] > 0.05) {
+        newFlora[hi] = Math.max(0, newFlora[hi] - 0.012);
+        f.energy = Math.min(1, f.energy + 0.008);
+      }
+    }
+    simState.flora = newFlora;
+
+    // ── Erosion: slow accumulation
+    for (let i = 0; i < n; i++) {
+      simState.erosion[i] = Math.min(1, simState.erosion[i] + erosionRate * 0.05 * (1 - simState.flora[i]));
+    }
+
+    // ── Disease: SIR model
+    const newDisease = new Uint8Array(simState.disease);
+    const infectedList = [];
+    for (let i = 0; i < n; i++) {
+      if (simState.disease[i] === 1) infectedList.push(i);
+    }
+    // Spread
+    for (const ii of infectedList) {
+      const nbrs = getNeighbors(ii);
+      for (const ni of nbrs) {
+        if (simState.disease[ni] === 0) {
+          const p = (r0 / 10) * 0.04;
+          if (Math.random() < p) newDisease[ni] = 1;
+        }
+      }
+      // Recovery
+      if (Math.random() < 0.08) newDisease[ii] = 2;
+    }
+    // Occasional new infection seed
+    if (simState.tick % 40 === 0 && infectedList.length < 3) {
+      const seed = Math.floor(Math.random() * n);
+      if (newDisease[seed] === 0) {
+        newDisease[seed] = 1;
+        logEvent(simState.tick, `DVP: New disease seed at hex ${seed}`, 'warn');
+      }
+    }
+    simState.disease = newDisease;
+
+    // ── Fauna: Lotka-Volterra dynamics
+    updateFaunaLV();
+
+    // ── Cascade detection
+    const floraAvg = getFloraAvg();
+    const prevFloraAvg = simState.floraHistory.length > 0 ? simState.floraHistory[simState.floraHistory.length - 1] : 0;
+    if (Math.abs(floraAvg - prevFloraAvg) > 0.05 && simState.tick > 5) {
+      simState.cascadeEvents++;
+      logEvent(simState.tick, `CTR: Flora cascade detected (Δ${((floraAvg - prevFloraAvg) * 100).toFixed(1)}%)`, 'warn');
+    }
+
+    // ── Feedback loop detection
+    const preyCount = countFauna('prey');
+    const predCount = countFauna('predator');
+    if (preyCount > 0 && predCount > 0) {
+      const ratio = predCount / preyCount;
+      if (ratio > 0.5 || ratio < 0.05) {
+        simState.feedbackLoops++;
+        if (simState.tick % 10 === 0) {
+          logEvent(simState.tick, `FLD: Predator-prey imbalance (ratio ${ratio.toFixed(2)})`, 'warn');
+        }
+      }
+    }
+
+    // ── Biome shifts
+    if (simState.tick % 20 === 0) {
+      if (floraAvg > 0.6 && Math.random() < 0.3) {
+        simState.biomeShifts++;
+        logEvent(simState.tick, `BSC: Biome shift — high flora coverage (${(floraAvg * 100).toFixed(0)}%)`, 'info');
+      }
+    }
+
+    // ── History
+    simState.floraHistory.push(floraAvg);
+    simState.faunaHistory.push(preyCount + predCount);
+    simState.diseaseHistory.push(countDisease(1));
+    if (simState.floraHistory.length > 80) simState.floraHistory.shift();
+    if (simState.faunaHistory.length > 80) simState.faunaHistory.shift();
+    if (simState.diseaseHistory.length > 80) simState.diseaseHistory.shift();
+
+    // ── Occasional log entries
+    if (simState.tick % 5 === 0) {
+      const faunaTotal = preyCount + predCount;
+      if (faunaTotal === 0) {
+        logEvent(simState.tick, `FDT: Extinction event — all fauna dead.`, 'danger');
+        if (Math.random() < 0.5) respawnFauna();
+      }
+    }
+    if (simState.tick % 15 === 0) {
+      const infCount = countDisease(1);
+      if (infCount > 5) {
+        logEvent(simState.tick, `DVP: Epidemic spreading — ${infCount} infected cells.`, 'danger');
+      }
+    }
+    if (simState.tick % 25 === 0) {
+      logEvent(simState.tick, `SSR: State recorded. Flora=${(floraAvg*100).toFixed(1)}% Fauna=${preyCount+predCount}`, 'good');
+    }
+
+    // ── Write snapshot
+    writeSnapshot();
+    updateUI();
+  }
+
+  function updateFaunaLV() {
+    const W = canvas.width;
+    const H = canvas.height;
+    const alpha = 0.6;  // prey birth rate
+    const beta  = 0.02; // predation rate
+    const gamma = 0.5;  // predator death rate
+    const delta = 0.01; // predator growth from eating
+
+    const prey = simState.fauna.filter(f => f.type === 'prey');
+    const preds = simState.fauna.filter(f => f.type === 'predator');
+
+    // Update prey
+    for (const p of prey) {
+      // Move
+      p.vx += (Math.random() - 0.5) * 0.15;
+      p.vy += (Math.random() - 0.5) * 0.15;
+      const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      if (spd > 1.2) { p.vx *= 1.2 / spd; p.vy *= 1.2 / spd; }
+      p.x += p.vx;
+      p.y += p.vy;
+      // Bounce
+      if (p.x < 10) { p.x = 10; p.vx = Math.abs(p.vx); }
+      if (p.x > W - 10) { p.x = W - 10; p.vx = -Math.abs(p.vx); }
+      if (p.y < 10) { p.y = 10; p.vy = Math.abs(p.vy); }
+      if (p.y > H - 10) { p.y = H - 10; p.vy = -Math.abs(p.vy); }
+      p.age++;
+      // Energy drain
+      p.energy -= 0.003;
+    }
+
+    // Update predators — chase nearest prey
+    for (const pd of preds) {
+      let closest = null;
+      let minDist = Infinity;
+      for (const p of prey) {
+        const dx = p.x - pd.x;
+        const dy = p.y - pd.y;
+        const d = dx * dx + dy * dy;
+        if (d < minDist) { minDist = d; closest = p; }
+      }
+      if (closest && minDist < 200 * 200) {
+        const dx = closest.x - pd.x;
+        const dy = closest.y - pd.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        pd.vx += (dx / d) * 0.12;
+        pd.vy += (dy / d) * 0.12;
+      } else {
+        pd.vx += (Math.random() - 0.5) * 0.1;
+        pd.vy += (Math.random() - 0.5) * 0.1;
+      }
+      const spd = Math.sqrt(pd.vx * pd.vx + pd.vy * pd.vy);
+      if (spd > 0.9) { pd.vx *= 0.9 / spd; pd.vy *= 0.9 / spd; }
+      pd.x += pd.vx;
+      pd.y += pd.vy;
+      if (pd.x < 10) { pd.x = 10; pd.vx = Math.abs(pd.vx); }
+      if (pd.x > W - 10) { pd.x = W - 10; pd.vx = -Math.abs(pd.vx); }
+      if (pd.y < 10) { pd.y = 10; pd.vy = Math.abs(pd.vy); }
+      if (pd.y > H - 10) { pd.y = H - 10; pd.vy = -Math.abs(pd.vy); }
+      pd.age++;
+      pd.energy -= 0.004;
+    }
+
+    // Predation: eat nearby prey
+    const eaten = new Set();
+    for (const pd of preds) {
+      if (pd.energy <= 0) continue;
+      for (const p of prey) {
+        if (eaten.has(p)) continue;
+        const dx = p.x - pd.x;
+        const dy = p.y - pd.y;
+        if (dx * dx + dy * dy < 100) {
+          eaten.add(p);
+          pd.energy = Math.min(1, pd.energy + 0.35);
+          break;
+        }
+      }
+    }
+
+    // Reproduction — prey
+    const newFauna = [];
+    const preyBirthChance = 0.005 * alpha;
+    for (const p of prey) {
+      if (!eaten.has(p) && p.energy > 0) {
+        newFauna.push(p);
+        if (p.energy > 0.7 && Math.random() < preyBirthChance && simState.fauna.filter(f=>f.type==='prey').length < 120) {
+          newFauna.push({
+            type:'prey', x:p.x+(Math.random()-0.5)*15, y:p.y+(Math.random()-0.5)*15,
+            vx:(Math.random()-0.5)*0.8, vy:(Math.random()-0.5)*0.8,
+            energy:0.4, age:0
+          });
+        }
+      }
+    }
+
+    // Reproduction — predators
+    const predBirthChance = 0.003 * delta;
+    for (const pd of preds) {
+      if (pd.energy > 0) {
+        newFauna.push(pd);
+        if (pd.energy > 0.8 && Math.random() < predBirthChance && simState.fauna.filter(f=>f.type==='predator').length < 30) {
+          newFauna.push({
+            type:'predator', x:pd.x+(Math.random()-0.5)*15, y:pd.y+(Math.random()-0.5)*15,
+            vx:(Math.random()-0.5)*0.5, vy:(Math.random()-0.5)*0.5,
+            energy:0.35, age:0
+          });
+        }
+      }
+    }
+
+    simState.fauna = newFauna;
+  }
+
+  function respawnFauna() {
+    logEvent(simState.tick, 'FDT: Repopulating fauna from reserve.', 'info');
+    const n = hexGrid.length;
+    for (let i = 0; i < 20; i++) {
+      const hex = hexGrid[Math.floor(Math.random() * n)];
+      simState.fauna.push({ type:'prey', x:hex.cx, y:hex.cy,
+        vx:(Math.random()-0.5)*0.8, vy:(Math.random()-0.5)*0.8, energy:0.6, age:0 });
+    }
+    for (let i = 0; i < 5; i++) {
+      const hex = hexGrid[Math.floor(Math.random() * n)];
+      simState.fauna.push({ type:'predator', x:hex.cx, y:hex.cy,
+        vx:(Math.random()-0.5)*0.5, vy:(Math.random()-0.5)*0.5, energy:0.5, age:0 });
+    }
+  }
+
+  function randomNeighbor(idx) {
+    const nbrs = getNeighbors(idx);
+    if (!nbrs.length) return -1;
+    return nbrs[Math.floor(Math.random() * nbrs.length)];
+  }
+
+  const neighborDirs = [[1,-1,0],[1,0,-1],[0,1,-1],[-1,1,0],[-1,0,1],[0,-1,1]];
+
+  function getNeighbors(idx) {
+    const h = hexGrid[idx];
+    const result = [];
+    const s = -h.q - h.r;
+    for (const [dq, dr, ds] of neighborDirs) {
+      const nq = h.q + dq, nr = h.r + dr;
+      // Find in hexGrid
+      for (let i = 0; i < hexGrid.length; i++) {
+        if (hexGrid[i].q === nq && hexGrid[i].r === nr) {
+          result.push(i);
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+  function closestHex(px, py) {
+    let best = -1, bestD = Infinity;
+    for (let i = 0; i < hexGrid.length; i++) {
+      const dx = hexGrid[i].cx - px;
+      const dy = hexGrid[i].cy - py;
+      const d = dx * dx + dy * dy;
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    return best;
+  }
+
+  function getFloraAvg() {
+    if (!simState.flora.length) return 0;
+    let sum = 0;
+    for (let i = 0; i < simState.flora.length; i++) sum += simState.flora[i];
+    return sum / simState.flora.length;
+  }
+
+  function countFauna(type) {
+    return simState.fauna.filter(f => f.type === type).length;
+  }
+
+  function countDisease(state) {
+    let c = 0;
+    for (let i = 0; i < simState.disease.length; i++) if (simState.disease[i] === state) c++;
+    return c;
+  }
+
+  // ── Layer visibility
+  const layers = { flora:true, fauna:true, disease:true, erosion:true, particles:true };
+
+  // ── Drawing ──────────────────────────────────────────────────────────────────
+
+  function drawFrame() {
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    ctx.fillStyle = '#020408';
+    ctx.fillRect(0, 0, W, H);
+
+    // Draw hex grid base
+    drawHexGrid();
+
+    // Draw layers
+    if (layers.erosion) drawErosionLayer();
+    if (layers.flora) drawFloraLayer();
+    if (layers.disease) drawDiseaseLayer();
+    if (layers.fauna) drawFaunaLayer();
+    if (layers.particles) drawParticles();
+  }
+
+  function drawHexPath(h) {
+    ctx.beginPath();
+    for (let a = 0; a < 6; a++) {
+      const angle = Math.PI / 180 * (60 * a + 30);
+      const px = h.cx + HEX_SIZE * 0.97 * Math.cos(angle);
+      const py = h.cy + HEX_SIZE * 0.97 * Math.sin(angle);
+      if (a === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+  }
+
+  function drawHexGrid() {
+    ctx.strokeStyle = 'rgba(48,224,96,0.06)';
+    ctx.lineWidth = 0.7;
+    for (const h of hexGrid) {
+      drawHexPath(h);
+      ctx.stroke();
+    }
+  }
+
+  function drawFloraLayer() {
+    for (let i = 0; i < hexGrid.length; i++) {
+      const d = simState.flora[i];
+      if (d < 0.02) continue;
+      const h = hexGrid[i];
+      drawHexPath(h);
+      const alpha = d * 0.55;
+      ctx.fillStyle = `rgba(48,224,96,${alpha.toFixed(3)})`;
+      ctx.fill();
+    }
+  }
+
+  function drawErosionLayer() {
+    for (let i = 0; i < hexGrid.length; i++) {
+      const e = simState.erosion[i];
+      if (e < 0.01) continue;
+      const h = hexGrid[i];
+      drawHexPath(h);
+      const alpha = e * 0.35;
+      ctx.fillStyle = `rgba(177,208,240,${alpha.toFixed(3)})`;
+      ctx.fill();
+    }
+  }
+
+  function drawDiseaseLayer() {
+    for (let i = 0; i < hexGrid.length; i++) {
+      const ds = simState.disease[i];
+      if (ds === 0) continue;
+      const h = hexGrid[i];
+      drawHexPath(h);
+      if (ds === 1) {
+        // Infected — pulsing red
+        const alpha = 0.35 + 0.15 * Math.sin(Date.now() * 0.004 + i * 0.7);
+        ctx.fillStyle = `rgba(212,91,91,${alpha.toFixed(3)})`;
+        ctx.fill();
+        // Glow ring
+        ctx.strokeStyle = `rgba(212,91,91,0.5)`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      } else if (ds === 2) {
+        // Recovered — dim gray
+        ctx.fillStyle = 'rgba(120,120,130,0.12)';
+        ctx.fill();
+      }
+    }
+  }
+
+  function drawFaunaLayer() {
+    for (const f of simState.fauna) {
+      if (f.type === 'prey') {
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(232,184,75,${0.5 + f.energy * 0.5})`;
+        ctx.fill();
+      } else {
+        // Predator — larger with glow
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(212,91,91,${0.5 + f.energy * 0.5})`;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(212,91,91,0.3)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+  }
+
+  function drawParticles() {
+    for (const p of particles) {
+      const alpha = (1 - p.life / p.maxLife) * 0.35;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(77,200,160,${alpha.toFixed(3)})`;
+      ctx.fill();
+    }
+  }
+
+  // ── Sparklines ──────────────────────────────────────────────────────────────
+
+  function drawSparkline(canvasEl, data, color, maxVal) {
+    const W = canvasEl.width;
+    const H = canvasEl.height;
+    const sCtx = canvasEl.getContext('2d');
+    sCtx.clearRect(0, 0, W, H);
+    if (data.length < 2) return;
+    const max = maxVal || (Math.max(...data) || 1);
+    sCtx.beginPath();
+    for (let i = 0; i < data.length; i++) {
+      const x = (i / (data.length - 1)) * W;
+      const y = H - (data[i] / max) * (H - 4) - 2;
+      if (i === 0) sCtx.moveTo(x, y);
+      else sCtx.lineTo(x, y);
+    }
+    sCtx.strokeStyle = color;
+    sCtx.lineWidth = 1.5;
+    sCtx.stroke();
+    // Fill below
+    sCtx.lineTo(W, H);
+    sCtx.lineTo(0, H);
+    sCtx.closePath();
+    sCtx.fillStyle = color.replace(')', ',0.12)').replace('rgb', 'rgba');
+    sCtx.fill();
+  }
+
+  function updateSparklines() {
+    drawSparkline(
+      document.getElementById('spark-flora'),
+      simState.floraHistory, '#30e060', 1
+    );
+    const fMax = Math.max(...simState.faunaHistory, 60);
+    drawSparkline(
+      document.getElementById('spark-fauna'),
+      simState.faunaHistory, '#e8b84b', fMax
+    );
+    const dMax = Math.max(...simState.diseaseHistory, 10);
+    drawSparkline(
+      document.getElementById('spark-disease'),
+      simState.diseaseHistory, '#d45b5b', dMax
+    );
+  }
+
+  // ── UI updates ──────────────────────────────────────────────────────────────
+
+  function updateUI() {
+    const floraAvg = getFloraAvg();
+    const preyCount = countFauna('prey');
+    const predCount = countFauna('predator');
+    const infCount = countDisease(1);
+    const recCount = countDisease(2);
+    let erosionAvg = 0;
+    for (let i = 0; i < simState.erosion.length; i++) erosionAvg += simState.erosion[i];
+    if (simState.erosion.length) erosionAvg /= simState.erosion.length;
+
+    // Right panel stats
+    setText('st-flora', (floraAvg * 100).toFixed(1) + '%');
+    setText('st-predators', predCount);
+    setText('st-prey', preyCount);
+    setText('st-infected', infCount);
+    setText('st-recovered', recCount);
+    setText('st-erosion', erosionAvg.toFixed(3));
+    setText('st-cascade', simState.cascadeEvents);
+    setText('st-feedback', simState.feedbackLoops);
+    setText('st-tick', simState.tick);
+    setText('st-elapsed', formatTime(simState.elapsedSeconds));
+
+    // Canvas HUD
+    setText('hud-tick-display', simState.tick);
+    setText('hud-flora-pct', (floraAvg * 100).toFixed(1));
+    setText('hud-fauna-count', preyCount + predCount);
+    setText('hud-infected', infCount);
+
+    // Status bar
+    setText('sb-tick', simState.tick);
+    setText('sb-elapsed', formatTime(simState.elapsedSeconds));
+    setText('sb-state', simState.running ? 'Running' : 'Paused');
+
+    // Running dot
+    const runDot = document.getElementById('hud-running-dot');
+    if (runDot) runDot.classList.toggle('on', simState.running);
+
+    // Sparklines
+    updateSparklines();
+  }
+
+  function formatTime(secs) {
+    if (secs < 60) return secs + 's';
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}m ${s}s`;
+  }
+
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  // ── Event log ──────────────────────────────────────────────────────────────
+
+  const eventLog = [];
+  const MAX_LOG = 50;
+
+  function logEvent(tick, msg, type) {
+    const entry = { tick, msg, type };
+    eventLog.push(entry);
+    if (eventLog.length > MAX_LOG) eventLog.shift();
+    renderEventLog();
+  }
+
+  function renderEventLog() {
+    const el = document.getElementById('event-log');
+    const empty = document.getElementById('el-empty');
+    if (empty) empty.style.display = 'none';
+
+    // Remove old entries (keep title)
+    const title = el.querySelector('.el-title');
+    el.innerHTML = '';
+    if (title) el.appendChild(title);
+    else {
+      const t = document.createElement('div');
+      t.className = 'el-title';
+      t.textContent = 'Event Log';
+      el.appendChild(t);
+    }
+
+    // Add entries in reverse
+    const entries = [...eventLog].reverse().slice(0, 20);
+    for (const e of entries) {
+      const row = document.createElement('div');
+      row.className = 'el-entry';
+      row.innerHTML = `<span class="el-tick">${e.tick}</span><span class="el-msg ${e.type}">${e.msg}</span>`;
+      el.appendChild(row);
+    }
+    el.scrollTop = 0;
+  }
+
+  // ── Snapshot ──────────────────────────────────────────────────────────────
+
+  function buildSnapshot() {
+    const floraAvg = getFloraAvg();
+    let erosionAvg = 0;
+    for (let i = 0; i < simState.erosion.length; i++) erosionAvg += simState.erosion[i];
+    if (simState.erosion.length) erosionAvg /= simState.erosion.length;
+
+    return {
+      system: 'Quantum Atlas',
+      module: '14 · Simulation',
+      generated: new Date().toISOString(),
+      tick: simState.tick,
+      elapsed_seconds: simState.elapsedSeconds,
+      flora_coverage: parseFloat(floraAvg.toFixed(4)),
+      fauna_predator: countFauna('predator'),
+      fauna_prey: countFauna('prey'),
+      infected_cells: countDisease(1),
+      recovered_cells: countDisease(2),
+      erosion_avg: parseFloat(erosionAvg.toFixed(4)),
+      cascade_events: simState.cascadeEvents,
+      feedback_loops: simState.feedbackLoops,
+      biome_shifts: simState.biomeShifts,
+      running: simState.running
+    };
+  }
+
+  function writeSnapshot() {
+    try {
+      const snap = buildSnapshot();
+      localStorage.setItem('qa-simulation-snapshot', JSON.stringify(snap));
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString();
+      setText('snap-status-lbl', 'OK');
+      setText('snap-time-lbl', timeStr);
+      setText('sb-snap-val', `T${simState.tick}`);
+      const dot = document.getElementById('sb-snap-dot');
+      if (dot) {
+        dot.classList.add('on');
+        setTimeout(() => dot.classList.remove('on'), 300);
+      }
+    } catch (e) {
+      setText('snap-status-lbl', 'ERR');
+    }
+  }
+
+  // ── Animation loop ──────────────────────────────────────────────────────────
+
+  let rafId = null;
+  let lastTickFrame = 0;
+
+  function animLoop(timestamp) {
+    rafId = requestAnimationFrame(animLoop);
+
+    simState.frameCount++;
+
+    // Update particles every frame
+    if (layers.particles) updateParticles();
+
+    // Advance fauna positions every frame for smooth motion
+    if (simState.running) {
+      const framesNeeded = Math.max(1, Math.round(simState.framesPerTick / simState.speed));
+      if (simState.frameCount - lastTickFrame >= framesNeeded) {
+        lastTickFrame = simState.frameCount;
+        doTick();
+      } else {
+        // Still move fauna smoothly between ticks
+        updateFaunaPositionsOnly();
+      }
+    }
+
+    drawFrame();
+  }
+
+  function updateFaunaPositionsOnly() {
+    const W = canvas.width;
+    const H = canvas.height;
+    for (const f of simState.fauna) {
+      f.x += f.vx * 0.3;
+      f.y += f.vy * 0.3;
+      if (f.x < 5) f.x = 5;
+      if (f.x > W - 5) f.x = W - 5;
+      if (f.y < 5) f.y = 5;
+      if (f.y > H - 5) f.y = H - 5;
+    }
+  }
+
+  function startLoop() {
+    if (!rafId) {
+      rafId = requestAnimationFrame(animLoop);
+    }
+  }
+
+  // ── Controls ───────────────────────────────────────────────────────────────
+
+  const btnStart = document.getElementById('btn-start');
+  const btnReset = document.getElementById('btn-reset');
+
+  btnStart.addEventListener('click', () => {
+    simState.running = !simState.running;
+    if (simState.running) {
+      btnStart.textContent = 'Pause';
+      btnStart.classList.add('running');
+      logEvent(simState.tick, `Simulation started. Speed: ${simState.speed}×`, 'good');
+    } else {
+      btnStart.textContent = 'Start Sim';
+      btnStart.classList.remove('running');
+      logEvent(simState.tick, 'Simulation paused.', 'info');
+    }
+    const sbState = document.getElementById('sb-state');
+    if (sbState) sbState.textContent = simState.running ? 'Running' : 'Paused';
+  });
+
+  btnReset.addEventListener('click', () => {
+    simState.running = false;
+    btnStart.textContent = 'Start Sim';
+    btnStart.classList.remove('running');
+    lastTickFrame = simState.frameCount;
+    initSim();
+    initParticles();
+    updateUI();
+    logEvent(0, 'Simulation reset.', 'info');
+    const sbState = document.getElementById('sb-state');
+    if (sbState) sbState.textContent = 'Idle';
+  });
+
+  // Speed slider
+  const speedSlider = document.getElementById('speed-slider');
+  speedSlider.addEventListener('input', () => {
+    simState.speed = parseFloat(speedSlider.value);
+    const disp = simState.speed % 1 === 0 ? simState.speed + '×' : simState.speed + '×';
+    setText('speed-display', disp);
+    setText('sb-speed', disp);
+  });
+
+  // Parameter sliders
+  const psFlora = document.getElementById('ps-flora');
+  psFlora.addEventListener('input', () => {
+    simState.floraRate = parseFloat(psFlora.value);
+    setText('pv-flora', simState.floraRate.toFixed(3));
+  });
+
+  const psRatio = document.getElementById('ps-ratio');
+  psRatio.addEventListener('input', () => {
+    simState.predPreyRatio = parseFloat(psRatio.value);
+    setText('pv-ratio', simState.predPreyRatio.toFixed(2));
+  });
+
+  const psR0 = document.getElementById('ps-r0');
+  psR0.addEventListener('input', () => {
+    simState.diseaseR0 = parseFloat(psR0.value);
+    setText('pv-r0', simState.diseaseR0.toFixed(1));
+  });
+
+  const psErosion = document.getElementById('ps-erosion');
+  psErosion.addEventListener('input', () => {
+    simState.erosionRate = parseFloat(psErosion.value);
+    setText('pv-erosion', simState.erosionRate.toFixed(3));
+  });
+
+  // Layer toggles (right panel)
+  document.querySelectorAll('.toggle-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const layer = row.dataset.toggle;
+      layers[layer] = !layers[layer];
+      const check = row.querySelector('.toggle-check');
+      if (check) check.classList.toggle('on', layers[layer]);
+      // Sync HUD button
+      const hudBtn = document.querySelector(`[data-layer="${layer}"]`);
+      if (hudBtn) hudBtn.classList.toggle('active', layers[layer]);
+    });
+  });
+
+  // Layer toggles (canvas HUD)
+  document.querySelectorAll('.hud-btn[data-layer]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const layer = btn.dataset.layer;
+      layers[layer] = !layers[layer];
+      btn.classList.toggle('active', layers[layer]);
+      // Sync right panel
+      const check = document.getElementById(`tc-${layer}`);
+      if (check) check.classList.toggle('on', layers[layer]);
+    });
+  });
+
+  // Component cards
+  document.querySelectorAll('.comp-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.comp-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+    });
+  });
+
+  // Top bar tabs
+  document.querySelectorAll('.tb-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // Snapshot buttons
+  document.getElementById('btn-write-snap').addEventListener('click', () => {
+    writeSnapshot();
+    logEvent(simState.tick, 'CEP: Manual snapshot written to qa-simulation-snapshot.', 'good');
+  });
+  document.getElementById('btn-export-snap').addEventListener('click', () => {
+    const snap = buildSnapshot();
+    const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `qa-simulation-snapshot-t${simState.tick}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    logEvent(simState.tick, 'CEP: Snapshot exported as JSON file.', 'good');
+  });
+  document.getElementById('btn-force-snap').addEventListener('click', () => {
+    writeSnapshot();
+    logEvent(simState.tick, 'SSR: Forced snapshot write.', 'good');
+  });
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+
+  // Load upstream snapshots
+  function loadUpstreamSnapshots() {
+    const keys = ['qa-terrain-snapshot', 'qa-environ-snapshot', 'qa-logic-snapshot', 'qa-society-snapshot'];
+    const chipIds = ['chip-terrain', 'chip-environ', 'chip-logic', 'chip-society'];
+    keys.forEach((key, i) => {
+      try {
+        const data = localStorage.getItem(key);
+        const chip = document.getElementById(chipIds[i]);
+        if (data && chip) {
+          chip.classList.add('lit');
+        } else if (chip) {
+          chip.classList.remove('lit');
+        }
+      } catch(e) {}
+    });
+  }
+
+  loadUpstreamSnapshots();
+  initSim();
+  initParticles();
+  startLoop();
+  writeSnapshot();
+
+})();
+</script>
+
+<!-- Theme Sync IIFE -->
+<script>
+(function() {
+  const MAP = {
+    'c-bg':'--bg','c-surf':'--surface','c-surf2':'--surface2',
+    'c-edge':'--edge','c-edge-hi':'--edge-hi','c-accent1':'--venturan',
+    'c-accent2':'--amber','c-accent3':'--emerald','c-accent4':'--fusion',
+    'c-danger':'--blood','c-warm':'--solari','c-text':'--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+</script>
+
+</body>
+</html>
