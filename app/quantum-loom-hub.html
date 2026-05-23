@@ -160,6 +160,152 @@ html,body{
 }
 .hh-btn.hot:hover{background:rgba(77,200,160,.14);box-shadow:0 0 10px rgba(77,200,160,.15)}
 
+/* ── Right Properties Panel ──────────────────────────── */
+#hub-right-panel{
+  width:280px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;
+  transition:width .24s cubic-bezier(.2,.8,.2,1), opacity .2s;
+  position:relative;z-index:8;
+}
+#hub-right-panel::-webkit-scrollbar{width:3px}
+#hub-right-panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+#hub-right-panel.collapsed{
+  width:0;opacity:0;pointer-events:none;overflow:hidden;
+}
+/* Toggle button sits on the right edge of #hub-content (the iframe area) */
+#rp-toggle{
+  position:absolute;right:0;top:50%;transform:translateY(-50%);
+  width:14px;height:44px;background:var(--surface);border:1px solid var(--edge);
+  border-right:none;border-radius:5px 0 0 5px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:.7rem;color:rgba(255,255,255,.35);
+  transition:color .12s, background .12s;
+  z-index:20;pointer-events:all;
+}
+#rp-toggle:hover{color:#fff;background:rgba(255,255,255,.06)}
+.rp-head{
+  padding:10px 14px 8px;border-bottom:1px solid var(--edge);flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+}
+.rp-title{
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);flex:1;
+}
+.rp-section{
+  border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.rp-sec-hd{
+  padding:7px 14px;display:flex;align-items:center;gap:6px;cursor:pointer;
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);transition:color .12s;user-select:none;
+}
+.rp-sec-hd:hover{color:rgba(255,255,255,.6)}
+.rp-sec-arrow{font-size:.5rem;transition:transform .15s;flex-shrink:0}
+.rp-sec-hd.open .rp-sec-arrow{transform:rotate(90deg)}
+.rp-sec-body{
+  padding:6px 14px 10px;display:none;
+}
+.rp-sec-body.open{display:block}
+.rp-layer-chip{
+  display:flex;align-items:center;gap:8px;padding:6px 8px;
+  border-radius:5px;background:rgba(255,255,255,.03);border:1px solid var(--edge);
+}
+.rp-color-chip{
+  width:10px;height:10px;border-radius:50%;flex-shrink:0;
+}
+.rp-layer-label{
+  font-family:var(--fm);font-size:.38rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.65);flex:1;
+}
+.rp-layer-file{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.25);margin-top:3px;
+}
+.rp-snapshot-pre{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.45);
+  background:rgba(0,0,0,.3);border-radius:4px;padding:6px 8px;
+  max-height:200px;overflow-y:auto;overflow-x:auto;
+  line-height:1.6;margin:0;white-space:pre-wrap;word-break:break-all;
+}
+.rp-snapshot-pre::-webkit-scrollbar{width:3px;height:3px}
+.rp-snapshot-pre::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.rp-snapshot-empty{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);
+  font-style:italic;padding:2px 0;
+}
+.rp-actions-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:5px;
+}
+.rp-act-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 6px;border-radius:4px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.4);
+  text-align:center;
+}
+.rp-act-btn:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8)}
+.rp-act-btn.danger{border-color:rgba(212,91,91,.3);color:rgba(212,91,91,.5)}
+.rp-act-btn.danger:hover{background:rgba(212,91,91,.08);color:#d45b5b}
+
+/* ── Atlas Footer Bar ────────────────────────────────── */
+#atlas-footer{
+  height:72px;flex-shrink:0;
+  display:flex;align-items:center;
+  background:var(--surface);border-top:1px solid var(--edge);
+  position:relative;z-index:15;
+  overflow:hidden;
+}
+.af-label{
+  padding:0 14px;flex-shrink:0;border-right:1px solid var(--edge);
+  display:flex;flex-direction:column;justify-content:center;gap:3px;height:100%;
+}
+.af-title{
+  font-family:var(--fm);font-size:.45rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--venturan);
+}
+.af-module-name{
+  font-family:var(--fm);font-size:.38rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--amber);opacity:.8;
+}
+.af-strip-wrap{
+  flex:1;overflow-x:auto;overflow-y:hidden;
+  display:flex;align-items:center;padding:0 6px;
+  scrollbar-width:none;
+}
+.af-strip-wrap::-webkit-scrollbar{display:none}
+.af-strip{
+  display:flex;align-items:center;gap:3px;
+  padding:4px 2px;
+}
+.af-module-btn{
+  width:48px;height:52px;border-radius:5px;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;gap:3px;
+  border:1px solid transparent;background:transparent;
+  border-top:2px solid transparent;
+  position:relative;
+}
+.af-module-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge)}
+.af-module-btn.active{
+  background:rgba(255,255,255,.07);
+  border-color:var(--mc, var(--venturan));
+  border-top-color:var(--mc, var(--venturan));
+}
+.af-glyph{font-size:1.15rem;flex-shrink:0;color:var(--mc,rgba(255,255,255,.45));transition:color .12s}
+.af-module-btn.active .af-glyph{color:var(--mc,var(--venturan))}
+.af-abbr{
+  font-family:var(--fm);font-size:.28rem;letter-spacing:.06em;text-transform:uppercase;
+  color:rgba(255,255,255,.28);transition:color .12s;
+}
+.af-module-btn.active .af-abbr{color:var(--mc,var(--venturan));opacity:.9}
+.af-expand-btn{
+  flex-shrink:0;padding:0 14px;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  border-left:1px solid var(--edge);cursor:pointer;
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);gap:4px;transition:all .13s;
+}
+.af-expand-btn:hover{color:rgba(255,255,255,.7);background:rgba(255,255,255,.04)}
+
 /* ── Body: nav + content ─────────────────────────────── */
 #hub-body{
   flex:1;display:flex;overflow:hidden;
@@ -235,6 +381,11 @@ html,body{
 #hub-nav.expanded .nav-badge{
   position:static;margin-left:auto;
   background:rgba(255,255,255,.07);
+}
+
+/* ── Content wrapper (contains content + right panel) ── */
+#hub-content-wrap{
+  flex:1;display:flex;overflow:hidden;position:relative;
 }
 
 /* ── Iframe content area ─────────────────────────────── */
@@ -784,6 +935,34 @@ html,body{
     <span id="proj-name" onclick="openProjModal()" title="Click to rename project">Untitled Project</span>
     <input id="proj-name-input" type="text" placeholder="Project name…" onblur="saveProjName()" onkeydown="if(event.key==='Enter')saveProjName()">
 
+    <!-- CENTERED MAIN NAV TABS -->
+    <div id="hub-main-nav">
+      <div class="hn-tab active" id="hnt-workspace" onclick="switchLayer('workspace')" title="Character Workspace">
+        <span class="hn-icon">◈</span>Workspace
+      </div>
+      <div class="hn-tab" id="hnt-library" onclick="switchLayer('library')" title="Capsule Library">
+        <span class="hn-icon">⊞</span>Library
+      </div>
+      <div class="hn-tab" id="hnt-zones" onclick="switchLayer('zones')" title="Zone Canvas">
+        <span class="hn-icon">⊙</span>Zones
+      </div>
+      <div class="hn-tab" id="hnt-scenes" onclick="switchLayer('scenes')" title="Scene Manager">
+        <span class="hn-icon">◎</span>Scenes
+      </div>
+      <div class="hn-tab" id="hnt-sequencer" onclick="switchLayer('sequencer')" title="Track Sequencer">
+        <span class="hn-icon">⧖</span>Sequencer
+      </div>
+      <div class="hn-tab" id="hnt-rack" onclick="switchLayer('rack')" title="Instrument Rack">
+        <span class="hn-icon">◫</span>Rack
+      </div>
+      <div class="hn-tab" id="hnt-subgraph" onclick="switchLayer('subgraph')" title="Node Graph">
+        <span class="hn-icon">⬡</span>IO Nodes
+      </div>
+      <div class="hn-tab" id="hnt-output" onclick="switchLayer('output')" title="Output Renderer">
+        <span class="hn-icon">⥘</span>Output
+      </div>
+    </div>
+
     <div class="hh-spacer"></div>
       <span id="theme-lbl" onclick="openThemeModal()" title="Change theme">🌌 Void-Tech</span>
 
@@ -810,9 +989,8 @@ html,body{
     <div class="hh-actions">
       <button class="hh-btn" onclick="openProjModal()">⊞ Project</button>
       <button class="hh-btn" id="llm-btn" onclick="openLLMPanel()" title="AI Assistant">🤖</button>
-      <button class="hh-btn" id="theme-btn" onclick="openThemeModal()" title="Change theme" id="theme-header-btn">🎨</button>
+      <button class="hh-btn" id="theme-btn" onclick="openThemeModal()" title="Change theme">🎨</button>
       <button class="hh-btn" id="fb-btn" onclick="openFBModal()">🔥 Cloud</button>
-      <button class="hh-btn" onclick="switchLayer('output')">⎘ Output</button>
       <button class="hh-btn hot" onclick="saveProject()">↓ Save</button>
     </div>
   </div>
@@ -820,9 +998,8 @@ html,body{
   <!-- BODY -->
   <div id="hub-body">
 
-    <!-- LEFT NAV -->
+    <!-- LEFT NAV — Loom tools only -->
     <div id="hub-nav">
-      <!-- Layers -->
       <div class="nav-item active" id="nav-workspace" data-layer="workspace"
            style="--lc:var(--c-workspace)" onclick="switchLayer('workspace')" title="Character Workspace">
         <span class="ni-icon">◈</span>
@@ -874,100 +1051,21 @@ html,body{
         <span class="ni-icon">⇌</span>
         <span class="ni-label">I/O Bus</span>
       </div>
-
       <div class="nav-item" id="nav-output" data-layer="output"
            style="--lc:var(--c-output)" onclick="switchLayer('output')" title="Output Renderer">
         <span class="ni-icon">⥘</span>
         <span class="ni-label">Output</span>
       </div>
 
-      <div class="nav-div"></div>
-
-      <div class="nav-item" id="nav-atlas" data-layer="atlas"
-           style="--lc:var(--c-atlas)" onclick="switchLayer('atlas')" title="Quantum Atlas · 01 Terrain">
-        <span class="ni-icon">⬡</span>
-        <span class="ni-label">Atlas</span>
-      </div>
-      <div class="nav-item" id="nav-environ" data-layer="environ"
-           style="--lc:var(--c-environ)" onclick="switchLayer('environ')" title="02 · Environment | Mythos">
-        <span class="ni-icon">◉</span>
-        <span class="ni-label">Environ</span>
-      </div>
-      <div class="nav-item" id="nav-architect" data-layer="architect"
-           style="--lc:var(--c-architect)" onclick="switchLayer('architect')" title="03 · Architect | Architect">
-        <span class="ni-icon">⊓</span>
-        <span class="ni-label">Architect</span>
-      </div>
-      <div class="nav-item" id="nav-lighting" data-layer="lighting"
-           style="--lc:var(--c-lighting)" onclick="switchLayer('lighting')" title="04 · Lighting | Prism">
-        <span class="ni-icon">◐</span>
-        <span class="ni-label">Lighting</span>
-      </div>
-      <div class="nav-item" id="nav-modeling" data-layer="modeling"
-           style="--lc:var(--c-modeling)" onclick="switchLayer('modeling')" title="05 · Modeling | Animus">
-        <span class="ni-icon">✦</span>
-        <span class="ni-label">Modeling</span>
-      </div>
-      <div class="nav-item" id="nav-choreography" data-layer="choreography"
-           style="--lc:var(--c-choreography)" onclick="switchLayer('choreography')" title="06 · Choreography | Loom">
-        <span class="ni-icon">⟳</span>
-        <span class="ni-label">Choreo</span>
-      </div>
-      <div class="nav-item" id="nav-society" data-layer="society"
-           style="--lc:var(--c-society)" onclick="switchLayer('society')" title="08 · Society | Order">
-        <span class="ni-icon">⚑</span>
-        <span class="ni-label">Society</span>
-      </div>
-      <div class="nav-item" id="nav-network" data-layer="network"
-           style="--lc:var(--c-network)" onclick="switchLayer('network')" title="16 · Network | Nexus">
-        <span class="ni-icon">⇋</span>
-        <span class="ni-label">Network</span>
-      </div>
-      <div class="nav-item" id="nav-atlas-seq" data-layer="atlas-seq"
-           style="--lc:var(--c-atlas-seq)" onclick="switchLayer('atlas-seq')" title="09 · Sequencer | Chronicle">
-        <span class="ni-icon">▶</span>
-        <span class="ni-label">Chronicle</span>
-      </div>
-      <div class="nav-item" id="nav-story" data-layer="story"
-           style="--lc:var(--c-story)" onclick="switchLayer('story')" title="10 · Story | Quill">
-        <span class="ni-icon">✎</span>
-        <span class="ni-label">Story</span>
-      </div>
-      <div class="nav-item" id="nav-memory" data-layer="memory"
-           style="--lc:var(--c-memory)" onclick="switchLayer('memory')" title="11 · Memory | Codex">
-        <span class="ni-icon">◎</span>
-        <span class="ni-label">Memory</span>
-      </div>
-      <div class="nav-item" id="nav-sound" data-layer="sound"
-           style="--lc:var(--c-sound)" onclick="switchLayer('sound')" title="12 · Sound | Composer">
-        <span class="ni-icon">♪</span>
-        <span class="ni-label">Sound</span>
-      </div>
-      <div class="nav-item" id="nav-logic" data-layer="logic"
-           style="--lc:var(--c-logic)" onclick="switchLayer('logic')" title="13 · Logic | Axiom">
-        <span class="ni-icon">⊢</span>
-        <span class="ni-label">Logic</span>
-      </div>
-      <div class="nav-item" id="nav-simulation" data-layer="simulation"
-           style="--lc:var(--c-simulation)" onclick="switchLayer('simulation')" title="14 · Simulation | Continuum">
-        <span class="ni-icon">∿</span>
-        <span class="ni-label">Sim</span>
-      </div>
-      <div class="nav-item" id="nav-forge" data-layer="forge"
-           style="--lc:var(--c-forge)" onclick="switchLayer('forge')" title="15 · Forge | Forge">
-        <span class="ni-icon">⚒</span>
-        <span class="ni-label">Forge</span>
-      </div>
-      <div class="nav-item" id="nav-behavior" data-layer="behavior"
-           style="--lc:var(--c-behavior)" onclick="switchLayer('behavior')" title="07 · Behavior | Instinct">
-        <span class="ni-icon">⊙</span>
-        <span class="ni-label">Behavior</span>
-      </div>
       <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
     </div>
 
+    <!-- CONTENT WRAPPER (content + right panel) -->
+    <div id="hub-content-wrap" class="panel-collapsed">
+
     <!-- CONTENT AREA -->
     <div id="hub-content">
+    <div id="rp-toggle" onclick="toggleRightPanel()" title="Toggle properties panel">‹</div>
 
       <!-- Workspace -->
       <div class="frame-loader" id="loader-workspace">
@@ -1230,6 +1328,137 @@ html,body{
         onload="frameLoaded('network')"></iframe>
 
     </div>
+
+    <!-- RIGHT PROPERTIES PANEL -->
+    <div id="hub-right-panel" class="collapsed">
+
+      <div class="rp-head">
+        <span class="rp-title">Properties</span>
+      </div>
+
+      <!-- ACTIVE LAYER section -->
+      <div class="rp-section">
+        <div class="rp-sec-hd open" id="rp-hd-layer" onclick="rpToggleSection('layer')">
+          <span class="rp-sec-arrow">›</span>
+          Active Layer
+        </div>
+        <div class="rp-sec-body open" id="rp-body-layer">
+          <div class="rp-layer-chip">
+            <div class="rp-color-chip" id="rp-color-chip"></div>
+            <div>
+              <div class="rp-layer-label" id="rp-layer-label">Workspace</div>
+              <div class="rp-layer-file" id="rp-layer-file">quantum-loom-workspace.html</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SNAPSHOT DATA section -->
+      <div class="rp-section">
+        <div class="rp-sec-hd" id="rp-hd-snap" onclick="rpToggleSection('snap')">
+          <span class="rp-sec-arrow">›</span>
+          Snapshot Data
+        </div>
+        <div class="rp-sec-body" id="rp-body-snap">
+          <pre class="rp-snapshot-pre" id="rp-snapshot-pre"><span class="rp-snapshot-empty">No snapshot for this layer</span></pre>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS section -->
+      <div class="rp-section">
+        <div class="rp-sec-hd" id="rp-hd-actions" onclick="rpToggleSection('actions')">
+          <span class="rp-sec-arrow">›</span>
+          Quick Actions
+        </div>
+        <div class="rp-sec-body" id="rp-body-actions">
+          <div class="rp-actions-grid">
+            <button class="rp-act-btn" onclick="rpReloadFrame()" title="Reload the active layer iframe">↻ Reload</button>
+            <button class="rp-act-btn danger" onclick="rpClearSnapshot()" title="Clear snapshot data for this layer">✕ Clear</button>
+            <button class="rp-act-btn" onclick="rpCopyJSON()" title="Copy snapshot JSON to clipboard">⎘ Copy</button>
+            <button class="rp-act-btn" onclick="openOutputPanel()" title="Open export panel">↓ Export</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- end hub-content-wrap -->
+  </div><!-- end hub-body -->
+
+  <!-- ATLAS FOOTER BAR -->
+  <div id="atlas-footer">
+    <div class="af-label">
+      <div class="af-title">Quantum Atlas</div>
+      <div class="af-module-name" id="af-module-name">Terrain</div>
+    </div>
+    <div class="af-strip-wrap">
+      <div class="af-strip">
+        <div class="af-module-btn" id="afb-atlas" data-layer="atlas"
+             style="--mc:var(--c-atlas)" onclick="switchLayer('atlas')" title="01 · Terrain | Atlas">
+          <span class="af-glyph">⬡</span><span class="af-abbr">TRN</span>
+        </div>
+        <div class="af-module-btn" id="afb-environ" data-layer="environ"
+             style="--mc:var(--c-environ)" onclick="switchLayer('environ')" title="02 · Environment | Mythos">
+          <span class="af-glyph">◉</span><span class="af-abbr">ENV</span>
+        </div>
+        <div class="af-module-btn" id="afb-architect" data-layer="architect"
+             style="--mc:var(--c-architect)" onclick="switchLayer('architect')" title="03 · Architect">
+          <span class="af-glyph">⊓</span><span class="af-abbr">ARC</span>
+        </div>
+        <div class="af-module-btn" id="afb-lighting" data-layer="lighting"
+             style="--mc:var(--c-lighting)" onclick="switchLayer('lighting')" title="04 · Lighting | Prism">
+          <span class="af-glyph">◐</span><span class="af-abbr">LGT</span>
+        </div>
+        <div class="af-module-btn" id="afb-modeling" data-layer="modeling"
+             style="--mc:var(--c-modeling)" onclick="switchLayer('modeling')" title="05 · Modeling | Animus">
+          <span class="af-glyph">✦</span><span class="af-abbr">MDL</span>
+        </div>
+        <div class="af-module-btn" id="afb-choreography" data-layer="choreography"
+             style="--mc:var(--c-choreography)" onclick="switchLayer('choreography')" title="06 · Choreography">
+          <span class="af-glyph">⟳</span><span class="af-abbr">CHR</span>
+        </div>
+        <div class="af-module-btn" id="afb-behavior" data-layer="behavior"
+             style="--mc:var(--c-behavior)" onclick="switchLayer('behavior')" title="07 · Behavior | Instinct">
+          <span class="af-glyph">⊙</span><span class="af-abbr">BHV</span>
+        </div>
+        <div class="af-module-btn" id="afb-society" data-layer="society"
+             style="--mc:var(--c-society)" onclick="switchLayer('society')" title="08 · Society | Order">
+          <span class="af-glyph">⚑</span><span class="af-abbr">SOC</span>
+        </div>
+        <div class="af-module-btn" id="afb-atlas-seq" data-layer="atlas-seq"
+             style="--mc:var(--c-atlas-seq)" onclick="switchLayer('atlas-seq')" title="09 · Sequencer | Chronicle">
+          <span class="af-glyph">▶</span><span class="af-abbr">STR</span>
+        </div>
+        <div class="af-module-btn" id="afb-story" data-layer="story"
+             style="--mc:var(--c-story)" onclick="switchLayer('story')" title="10 · Story | Quill">
+          <span class="af-glyph">✎</span><span class="af-abbr">QLL</span>
+        </div>
+        <div class="af-module-btn" id="afb-memory" data-layer="memory"
+             style="--mc:var(--c-memory)" onclick="switchLayer('memory')" title="11 · Memory | Codex">
+          <span class="af-glyph">◎</span><span class="af-abbr">MEM</span>
+        </div>
+        <div class="af-module-btn" id="afb-sound" data-layer="sound"
+             style="--mc:var(--c-sound)" onclick="switchLayer('sound')" title="12 · Sound | Composer">
+          <span class="af-glyph">♪</span><span class="af-abbr">SND</span>
+        </div>
+        <div class="af-module-btn" id="afb-logic" data-layer="logic"
+             style="--mc:var(--c-logic)" onclick="switchLayer('logic')" title="13 · Logic | Axiom">
+          <span class="af-glyph">⊢</span><span class="af-abbr">LGC</span>
+        </div>
+        <div class="af-module-btn" id="afb-simulation" data-layer="simulation"
+             style="--mc:var(--c-simulation)" onclick="switchLayer('simulation')" title="14 · Simulation">
+          <span class="af-glyph">∿</span><span class="af-abbr">SIM</span>
+        </div>
+        <div class="af-module-btn" id="afb-forge" data-layer="forge"
+             style="--mc:var(--c-forge)" onclick="switchLayer('forge')" title="15 · Forge">
+          <span class="af-glyph">⚒</span><span class="af-abbr">FRG</span>
+        </div>
+        <div class="af-module-btn" id="afb-network" data-layer="network"
+             style="--mc:var(--c-network)" onclick="switchLayer('network')" title="16 · Network | Nexus">
+          <span class="af-glyph">⇋</span><span class="af-abbr">NET</span>
+        </div>
+      </div>
+    </div>
+    <div class="af-expand-btn" title="Atlas panel (future)">ATLAS ▸</div>
   </div>
 
   <!-- FOOTER -->
@@ -1992,6 +2221,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateStatusBar();
   updateNavBadges();
+  updateLayerUI('workspace');
 
   // Click outside project modal to close
   document.getElementById('proj-modal').addEventListener('click', e => {
@@ -3016,6 +3246,171 @@ function broadcastChapter(chapter) {
   if (!_broadcastReady || typeof LoomBroadcast === 'undefined') return;
   LoomBroadcast.tick(chapter);
 }
+
+/* ══════════════════════════════════════════════════════════════
+   RIGHT PANEL — toggle, sections, data display
+══════════════════════════════════════════════════════════════ */
+
+let rightPanelOpen = false;
+
+function toggleRightPanel() {
+  rightPanelOpen = !rightPanelOpen;
+  const panel = document.getElementById('hub-right-panel');
+  const btn   = document.getElementById('rp-toggle');
+  panel.classList.toggle('collapsed', !rightPanelOpen);
+  if (btn) btn.textContent = rightPanelOpen ? '›' : '‹';
+  localStorage.setItem('ql-right-panel-open', rightPanelOpen ? '1' : '0');
+  if (rightPanelOpen) rpRefresh();
+}
+
+function rpToggleSection(name) {
+  const hd   = document.getElementById('rp-hd-' + name);
+  const body = document.getElementById('rp-body-' + name);
+  if (!hd || !body) return;
+  const isOpen = body.classList.contains('open');
+  hd.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+const ATLAS_SNAPSHOT_KEYS = {
+  atlas:'qa-terrain-snapshot', environ:'qa-environ-snapshot',
+  architect:'qa-architect-snapshot', lighting:'qa-lighting-snapshot',
+  modeling:'qa-modeling-snapshot', choreography:'qa-choreography-snapshot',
+  behavior:'qa-behavior-snapshot', 'atlas-seq':'qa-sequencer-snapshot',
+  story:'qa-story-snapshot', memory:'qa-memory-snapshot',
+  sound:'qa-sound-snapshot', logic:'qa-logic-snapshot',
+  simulation:'qa-simulation-snapshot', forge:'qa-forge-snapshot',
+  society:'qa-society-snapshot', network:'qa-network-snapshot',
+};
+const LOOM_SNAPSHOT_KEYS = {
+  workspace:'ql-workspace', library:'ql-library', zones:'ql-zones',
+  scenes:'ql-scenes', rack:'ql-rack', sequencer:'ql-sequencer',
+  subgraph:'ql-graphs', ionodes:'ql-signal-bus', output:null,
+};
+
+function rpRefresh() {
+  if (!rightPanelOpen) return;
+  const layer = LAYERS[activeLayer];
+  if (!layer) return;
+
+  // Update layer chip
+  const colorEl = document.getElementById('rp-color-chip');
+  const labelEl = document.getElementById('rp-layer-label');
+  const fileEl  = document.getElementById('rp-layer-file');
+  if (colorEl) colorEl.style.background = layer.color.replace('var(','').replace(')','').trim()
+    ? getComputedStyle(document.documentElement).getPropertyValue(
+        layer.color.replace('var(','').replace(')','')
+      ).trim() || layer.color
+    : layer.color;
+  if (labelEl) labelEl.textContent = layer.label;
+  if (fileEl)  fileEl.textContent  = layer.file;
+
+  // Snapshot data
+  const snapKey = ATLAS_SNAPSHOT_KEYS[activeLayer] || LOOM_SNAPSHOT_KEYS[activeLayer];
+  const preEl   = document.getElementById('rp-snapshot-pre');
+  if (preEl) {
+    if (snapKey) {
+      const raw = localStorage.getItem(snapKey);
+      if (raw) {
+        try {
+          preEl.textContent = JSON.stringify(JSON.parse(raw), null, 2);
+        } catch(e) {
+          preEl.textContent = raw;
+        }
+      } else {
+        preEl.innerHTML = '<span class="rp-snapshot-empty">No snapshot for this layer</span>';
+      }
+    } else {
+      preEl.innerHTML = '<span class="rp-snapshot-empty">No snapshot key for this layer</span>';
+    }
+  }
+}
+
+function rpReloadFrame() {
+  const frame = document.getElementById('frame-' + activeLayer);
+  if (frame) {
+    loadedFrames.delete(activeLayer);
+    frame.src = frame.src;
+    toast('↻ Reloading ' + (LAYERS[activeLayer]?.label || activeLayer));
+  }
+}
+
+function rpClearSnapshot() {
+  const snapKey = ATLAS_SNAPSHOT_KEYS[activeLayer] || LOOM_SNAPSHOT_KEYS[activeLayer];
+  if (!snapKey) { toast('No snapshot key for this layer'); return; }
+  if (!confirm('Clear snapshot for ' + (LAYERS[activeLayer]?.label || activeLayer) + '?')) return;
+  localStorage.removeItem(snapKey);
+  toast('✕ Snapshot cleared');
+  rpRefresh();
+}
+
+function rpCopyJSON() {
+  const snapKey = ATLAS_SNAPSHOT_KEYS[activeLayer] || LOOM_SNAPSHOT_KEYS[activeLayer];
+  if (!snapKey) { toast('No snapshot key'); return; }
+  const raw = localStorage.getItem(snapKey);
+  if (!raw) { toast('No data to copy'); return; }
+  try {
+    navigator.clipboard.writeText(JSON.stringify(JSON.parse(raw), null, 2));
+    toast('⎘ JSON copied to clipboard');
+  } catch(e) { toast('⚠ Clipboard not available'); }
+}
+
+// Init right panel state from localStorage
+(function initRightPanel() {
+  const saved = localStorage.getItem('ql-right-panel-open');
+  if (saved === '1') {
+    // starts collapsed by default; only open if explicitly saved as open
+    rightPanelOpen = false; // keep collapsed on load per spec
+  }
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   HEADER NAV TABS + ATLAS FOOTER — sync active state
+══════════════════════════════════════════════════════════════ */
+
+// Atlas layers set — for determining which UI section to highlight
+const ATLAS_LAYERS = new Set(['atlas','environ','architect','lighting','modeling',
+  'choreography','behavior','society','atlas-seq','story','memory','sound',
+  'logic','simulation','forge','network']);
+
+// Loom layer tab IDs (maps layer key → header tab id)
+const LOOM_TAB_MAP = {
+  workspace:'hnt-workspace', library:'hnt-library', zones:'hnt-zones',
+  scenes:'hnt-scenes', sequencer:'hnt-sequencer', rack:'hnt-rack',
+  subgraph:'hnt-subgraph', ionodes:'hnt-subgraph', output:'hnt-output',
+};
+
+function updateLayerUI(layerId) {
+  // Header nav tabs
+  document.querySelectorAll('.hn-tab').forEach(t => t.classList.remove('active'));
+  const tabId = LOOM_TAB_MAP[layerId];
+  if (tabId) document.getElementById(tabId)?.classList.add('active');
+
+  // Left nav items
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (!ATLAS_LAYERS.has(layerId)) {
+    document.getElementById('nav-' + layerId)?.classList.add('active');
+  }
+
+  // Atlas footer buttons
+  document.querySelectorAll('.af-module-btn').forEach(b => b.classList.remove('active'));
+  if (ATLAS_LAYERS.has(layerId)) {
+    document.getElementById('afb-' + layerId)?.classList.add('active');
+    const moduleLabel = LAYERS[layerId]?.label?.replace(/^\d+\s·\s/,'').split('|')[0].trim() || layerId;
+    const nameEl = document.getElementById('af-module-name');
+    if (nameEl) nameEl.textContent = moduleLabel;
+  }
+
+  // Right panel refresh
+  rpRefresh();
+}
+
+/* Patch switchLayer to call updateLayerUI */
+const _baseSwitchLayer = switchLayer;
+switchLayer = function(layerId) {
+  _baseSwitchLayer(layerId);
+  updateLayerUI(layerId);
+};
 
 /* Hook into hub message relay — sequencer posts these */
 const _origMsgHandler = window.onmessage;
