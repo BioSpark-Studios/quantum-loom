@@ -525,6 +525,19 @@ html,body{
 }
 @keyframes fadein{from{opacity:0}to{opacity:1}}
 
+/* ── Tooltip system ────────────────────────────── */
+#ql-tooltip {
+  position:fixed; z-index:9999; pointer-events:none;
+  background:rgba(4,5,10,.97); border:1px solid rgba(177,208,240,.18);
+  color:#b1d0f0; font-family:'Space Grotesk',sans-serif; font-size:.78rem;
+  padding:5px 10px; border-radius:4px; white-space:nowrap;
+  opacity:0; transition:opacity .15s; max-width:280px; white-space:normal;
+  line-height:1.4; box-shadow:0 4px 16px rgba(0,0,0,.5);
+}
+#ql-tooltip.visible { opacity:1; }
+#ql-tooltip .tt-title { font-family:'Orbitron',monospace; font-size:.62rem; letter-spacing:.1em; color:#fff; display:block; margin-bottom:2px; }
+#ql-tooltip .tt-sub { color:rgba(177,208,240,.6); font-size:.72rem; }
+
 /* ── Output panel ─────────────────────────────────────── */
 #output-panel{
   display:none;position:fixed;inset:0;z-index:200;
@@ -1040,28 +1053,28 @@ html,body{
 
     <!-- CENTERED MAIN NAV TABS -->
     <div id="hub-main-nav">
-      <div class="hn-tab active" id="hnt-workspace" onclick="switchLayer('workspace')" title="Character Workspace">
+      <div class="hn-tab active" id="hnt-workspace" onclick="switchLayer('workspace')" title="Character Workspace" data-tip="Node canvas — build signal flow graphs and connect modules" data-tip-title="WORKSPACE">
         <span class="hn-icon">◈</span>Workspace
       </div>
-      <div class="hn-tab" id="hnt-library" onclick="switchLayer('library')" title="Capsule Library">
+      <div class="hn-tab" id="hnt-library" onclick="switchLayer('library')" title="Capsule Library" data-tip="Browse and import assets, presets, and genesis containers" data-tip-title="LIBRARY">
         <span class="hn-icon">⊞</span>Library
       </div>
-      <div class="hn-tab" id="hnt-zones" onclick="switchLayer('zones')" title="Zone Canvas">
+      <div class="hn-tab" id="hnt-zones" onclick="switchLayer('zones')" title="Zone Canvas" data-tip="Define biome regions, territories, and spatial zones" data-tip-title="ZONES">
         <span class="hn-icon">⊙</span>Zones
       </div>
-      <div class="hn-tab" id="hnt-scenes" onclick="switchLayer('scenes')" title="Scene Manager">
+      <div class="hn-tab" id="hnt-scenes" onclick="switchLayer('scenes')" title="Scene Manager" data-tip="Compose and sequence world scenes and chapters" data-tip-title="SCENES">
         <span class="hn-icon">◎</span>Scenes
       </div>
-      <div class="hn-tab" id="hnt-sequencer" onclick="switchLayer('sequencer')" title="Track Sequencer">
+      <div class="hn-tab" id="hnt-sequencer" onclick="switchLayer('sequencer')" title="Track Sequencer" data-tip="DAW-style timeline — arrange events, beats, and scene triggers" data-tip-title="SEQUENCER">
         <span class="hn-icon">⧖</span>Sequencer
       </div>
-      <div class="hn-tab" id="hnt-rack" onclick="switchLayer('rack')" title="Instrument Rack">
+      <div class="hn-tab" id="hnt-rack" onclick="switchLayer('rack')" title="Instrument Rack" data-tip="Modular instrument and signal processing rack with patch cables" data-tip-title="RACK">
         <span class="hn-icon">◫</span>Rack
       </div>
-      <div class="hn-tab" id="hnt-subgraph" onclick="switchLayer('subgraph')" title="Node Graph">
+      <div class="hn-tab" id="hnt-subgraph" onclick="switchLayer('subgraph')" title="Node Graph" data-tip="Configure external input/output connections (MIDI, OSC, WebSocket)" data-tip-title="IO NODES">
         <span class="hn-icon">⬡</span>IO Nodes
       </div>
-      <div class="hn-tab" id="hnt-output" onclick="switchLayer('output')" title="Output Renderer">
+      <div class="hn-tab" id="hnt-output" onclick="switchLayer('output')" title="Output Renderer" data-tip="Render and export final world output to target renderers" data-tip-title="OUTPUT">
         <span class="hn-icon">⥘</span>Output
       </div>
     </div>
@@ -1091,10 +1104,10 @@ html,body{
 
     <div class="hh-actions">
       <button class="hh-btn" onclick="openProjModal()">⊞ Project</button>
-      <button class="hh-btn" id="btn-import-genesis" onclick="document.getElementById('genesis-file-input').click()" title="Import .qgenesis container">↑ Import</button>
-      <button class="hh-btn" id="btn-export-genesis" onclick="genesisExport()" title="Export .qgenesis container">↓ Export</button>
-      <button class="hh-btn" id="llm-btn" onclick="openLLMPanel()" title="AI Assistant">🤖</button>
-      <button class="hh-btn" id="theme-btn" onclick="openThemeModal()" title="Change theme">🎨</button>
+      <button class="hh-btn" id="btn-import-genesis" onclick="document.getElementById('genesis-file-input').click()" title="Import .qgenesis container" data-tip="Import a .qgenesis world container file" data-tip-title="IMPORT">↑ Import</button>
+      <button class="hh-btn" id="btn-export-genesis" onclick="genesisExport()" title="Export .qgenesis container" data-tip="Export the current world state as a .qgenesis file" data-tip-title="EXPORT">↓ Export</button>
+      <button class="hh-btn" id="llm-btn" onclick="openLLMPanel()" title="AI Assistant" data-tip="Open AI assistant panel" data-tip-title="AI">🤖</button>
+      <button class="hh-btn" id="theme-btn" onclick="openThemeModal()" title="Change theme" data-tip="Open theme settings and colour palette" data-tip-title="THEME">🎨</button>
       <button class="hh-btn" id="fb-btn" onclick="openFBModal()">🔥 Cloud</button>
       <button class="hh-btn hot" onclick="saveProject()">↓ Save</button>
     </div>
@@ -1110,18 +1123,18 @@ html,body{
     <!-- LEFT NAV — Loom tools only -->
     <div id="hub-nav">
       <div class="nav-item active" id="nav-workspace" data-layer="workspace"
-           style="--lc:var(--c-workspace)" onclick="switchLayer('workspace')" title="Character Workspace">
+           style="--lc:var(--c-workspace)" onclick="switchLayer('workspace')" title="Character Workspace" data-tip="Node canvas workspace">
         <span class="ni-icon">◈</span>
         <span class="ni-label">Workspace</span>
       </div>
       <div class="nav-item" id="nav-library" data-layer="library"
-           style="--lc:var(--c-library)" onclick="switchLayer('library')" title="Capsule Library">
+           style="--lc:var(--c-library)" onclick="switchLayer('library')" title="Capsule Library" data-tip="Asset library">
         <span class="ni-icon">⊞</span>
         <span class="ni-label">Library</span>
         <span class="nav-badge" id="nb-library">0</span>
       </div>
       <div class="nav-item" id="nav-zones" data-layer="zones"
-           style="--lc:var(--c-zones)" onclick="switchLayer('zones')" title="Zone Canvas">
+           style="--lc:var(--c-zones)" onclick="switchLayer('zones')" title="Zone Canvas" data-tip="Zone editor">
         <span class="ni-icon">◫</span>
         <span class="ni-label">Zones</span>
         <span class="nav-badge" id="nb-zones">0</span>
@@ -1130,18 +1143,18 @@ html,body{
       <div class="nav-div"></div>
 
       <div class="nav-item" id="nav-scenes" data-layer="scenes"
-           style="--lc:var(--c-scenes)" onclick="switchLayer('scenes')" title="Scene Manager">
+           style="--lc:var(--c-scenes)" onclick="switchLayer('scenes')" title="Scene Manager" data-tip="Scene composer">
         <span class="ni-icon">⌚</span>
         <span class="ni-label">Scenes</span>
         <span class="nav-badge" id="nb-scenes">0</span>
       </div>
       <div class="nav-item" id="nav-rack" data-layer="rack"
-           style="--lc:var(--c-rack)" onclick="switchLayer('rack')" title="Instrument Rack">
+           style="--lc:var(--c-rack)" onclick="switchLayer('rack')" title="Instrument Rack" data-tip="Instrument rack">
         <span class="ni-icon">⚙</span>
         <span class="ni-label">Rack</span>
       </div>
       <div class="nav-item" id="nav-sequencer" data-layer="sequencer"
-           style="--lc:var(--c-sequencer)" onclick="switchLayer('sequencer')" title="Track Sequencer">
+           style="--lc:var(--c-sequencer)" onclick="switchLayer('sequencer')" title="Track Sequencer" data-tip="Track sequencer">
         <span class="ni-icon">⧖</span>
         <span class="ni-label">Sequencer</span>
         <span class="nav-badge" id="nb-tracks">0</span>
@@ -1150,18 +1163,18 @@ html,body{
       <div class="nav-div"></div>
 
       <div class="nav-item" id="nav-subgraph" data-layer="subgraph"
-           style="--lc:var(--c-subgraph)" onclick="switchLayer('subgraph')" title="Sub-Graph Canvas">
+           style="--lc:var(--c-subgraph)" onclick="switchLayer('subgraph')" title="Sub-Graph Canvas" data-tip="Sub-graph editor">
         <span class="ni-icon">⬡</span>
         <span class="ni-label">Graph</span>
         <span class="nav-badge" id="nb-compiled">0</span>
       </div>
       <div class="nav-item" id="nav-ionodes" data-layer="ionodes"
-           style="--lc:var(--c-ionodes)" onclick="switchLayer('ionodes')" title="Signal Bus & I/O Nodes">
+           style="--lc:var(--c-ionodes)" onclick="switchLayer('ionodes')" title="Signal Bus & I/O Nodes" data-tip="IO node configuration">
         <span class="ni-icon">⇌</span>
         <span class="ni-label">I/O Bus</span>
       </div>
       <div class="nav-item" id="nav-output" data-layer="output"
-           style="--lc:var(--c-output)" onclick="switchLayer('output')" title="Output Renderer">
+           style="--lc:var(--c-output)" onclick="switchLayer('output')" title="Output Renderer" data-tip="Output renderer">
         <span class="ni-icon">⥘</span>
         <span class="ni-label">Output</span>
       </div>
@@ -1481,10 +1494,10 @@ html,body{
         </div>
         <div class="rp-sec-body" id="rp-body-actions">
           <div class="rp-actions-grid">
-            <button class="rp-act-btn" onclick="rpReloadFrame()" title="Reload the active layer iframe">↻ Reload</button>
-            <button class="rp-act-btn danger" onclick="rpClearSnapshot()" title="Clear snapshot data for this layer">✕ Clear</button>
-            <button class="rp-act-btn" onclick="rpCopyJSON()" title="Copy snapshot JSON to clipboard">⎘ Copy</button>
-            <button class="rp-act-btn" onclick="openOutputPanel()" title="Open export panel">↓ Export</button>
+            <button class="rp-act-btn" onclick="rpReloadFrame()" title="Reload the active layer iframe" data-tip="Reload the active module iframe to pick up new snapshot data">↻ Reload</button>
+            <button class="rp-act-btn danger" onclick="rpClearSnapshot()" title="Clear snapshot data for this layer" data-tip="Delete this module's localStorage snapshot">✕ Clear</button>
+            <button class="rp-act-btn" onclick="rpCopyJSON()" title="Copy snapshot JSON to clipboard" data-tip="Copy the snapshot JSON to clipboard">⎘ Copy</button>
+            <button class="rp-act-btn" onclick="openOutputPanel()" title="Open export panel" data-tip="Download snapshot as JSON file">↓ Export</button>
           </div>
         </div>
       </div>
@@ -1502,67 +1515,83 @@ html,body{
     <div class="af-strip-wrap">
       <div class="af-strip">
         <div class="af-module-btn" id="afb-atlas" data-layer="atlas"
-             style="--mc:var(--c-atlas)" onclick="switchLayer('atlas')" title="01 · Terrain | Atlas">
+             style="--mc:var(--c-atlas)" onclick="switchLayer('atlas')" title="01 · Terrain | Atlas"
+             data-tip="Hex grid terrain generation — elevation, biomes, erosion, rivers" data-tip-title="01 · TERRAIN | ATLAS">
           <span class="af-glyph">⬡</span><span class="af-abbr">TRN</span>
         </div>
         <div class="af-module-btn" id="afb-environ" data-layer="environ"
-             style="--mc:var(--c-environ)" onclick="switchLayer('environ')" title="02 · Environment | Mythos">
+             style="--mc:var(--c-environ)" onclick="switchLayer('environ')" title="02 · Environment | Mythos"
+             data-tip="World environment systems — weather, atmosphere, day/night cycles" data-tip-title="02 · ENVIRONMENT | MYTHOS">
           <span class="af-glyph">◉</span><span class="af-abbr">ENV</span>
         </div>
         <div class="af-module-btn" id="afb-architect" data-layer="architect"
-             style="--mc:var(--c-architect)" onclick="switchLayer('architect')" title="03 · Architect">
+             style="--mc:var(--c-architect)" onclick="switchLayer('architect')" title="03 · Architect"
+             data-tip="Structural design — buildings, settlements, ruins, and spatial layouts" data-tip-title="03 · ARCHITECT | ARCHITECT">
           <span class="af-glyph">⊓</span><span class="af-abbr">ARC</span>
         </div>
         <div class="af-module-btn" id="afb-lighting" data-layer="lighting"
-             style="--mc:var(--c-lighting)" onclick="switchLayer('lighting')" title="04 · Lighting | Prism">
+             style="--mc:var(--c-lighting)" onclick="switchLayer('lighting')" title="04 · Lighting | Prism"
+             data-tip="Scene lighting — sun, moon, artificial lights, shadow and ambience" data-tip-title="04 · LIGHTING | PRISM">
           <span class="af-glyph">◐</span><span class="af-abbr">LGT</span>
         </div>
         <div class="af-module-btn" id="afb-modeling" data-layer="modeling"
-             style="--mc:var(--c-modeling)" onclick="switchLayer('modeling')" title="05 · Modeling | Animus">
+             style="--mc:var(--c-modeling)" onclick="switchLayer('modeling')" title="05 · Modeling | Animus"
+             data-tip="3D entity modeling — characters, props, creatures, and assets" data-tip-title="05 · MODELING | ANIMUS">
           <span class="af-glyph">✦</span><span class="af-abbr">MDL</span>
         </div>
         <div class="af-module-btn" id="afb-choreography" data-layer="choreography"
-             style="--mc:var(--c-choreography)" onclick="switchLayer('choreography')" title="06 · Choreography">
+             style="--mc:var(--c-choreography)" onclick="switchLayer('choreography')" title="06 · Choreography"
+             data-tip="Animation and motion — pose, sequence, and choreograph entity movement" data-tip-title="06 · CHOREOGRAPHY | LOOM">
           <span class="af-glyph">⟳</span><span class="af-abbr">CHR</span>
         </div>
         <div class="af-module-btn" id="afb-behavior" data-layer="behavior"
-             style="--mc:var(--c-behavior)" onclick="switchLayer('behavior')" title="07 · Behavior | Instinct">
+             style="--mc:var(--c-behavior)" onclick="switchLayer('behavior')" title="07 · Behavior | Instinct"
+             data-tip="AI behavior trees — drives, instincts, decision-making, and reactions" data-tip-title="07 · BEHAVIOR | INSTINCT">
           <span class="af-glyph">⊙</span><span class="af-abbr">BHV</span>
         </div>
         <div class="af-module-btn" id="afb-society" data-layer="society"
-             style="--mc:var(--c-society)" onclick="switchLayer('society')" title="08 · Society | Order">
+             style="--mc:var(--c-society)" onclick="switchLayer('society')" title="08 · Society | Order"
+             data-tip="Civilisation systems — factions, politics, economy, and social order" data-tip-title="08 · SOCIETY | ORDER">
           <span class="af-glyph">⚑</span><span class="af-abbr">SOC</span>
         </div>
         <div class="af-module-btn" id="afb-atlas-seq" data-layer="atlas-seq"
-             style="--mc:var(--c-atlas-seq)" onclick="switchLayer('atlas-seq')" title="09 · Sequencer | Chronicle">
+             style="--mc:var(--c-atlas-seq)" onclick="switchLayer('atlas-seq')" title="09 · Sequencer | Chronicle"
+             data-tip="Atlas event sequencer — timeline of world events and historical chronicle" data-tip-title="09 · SEQUENCER | CHRONICLE">
           <span class="af-glyph">▶</span><span class="af-abbr">STR</span>
         </div>
         <div class="af-module-btn" id="afb-story" data-layer="story"
-             style="--mc:var(--c-story)" onclick="switchLayer('story')" title="10 · Story | Quill">
+             style="--mc:var(--c-story)" onclick="switchLayer('story')" title="10 · Story | Quill"
+             data-tip="Narrative authoring — plot arcs, dialogue trees, and story branches" data-tip-title="10 · STORY | QUILL">
           <span class="af-glyph">✎</span><span class="af-abbr">QLL</span>
         </div>
         <div class="af-module-btn" id="afb-memory" data-layer="memory"
-             style="--mc:var(--c-memory)" onclick="switchLayer('memory')" title="11 · Memory | Codex">
+             style="--mc:var(--c-memory)" onclick="switchLayer('memory')" title="11 · Memory | Codex"
+             data-tip="World knowledge base — lore codex, entity memories, and historical records" data-tip-title="11 · MEMORY | CODEX">
           <span class="af-glyph">◎</span><span class="af-abbr">MEM</span>
         </div>
         <div class="af-module-btn" id="afb-sound" data-layer="sound"
-             style="--mc:var(--c-sound)" onclick="switchLayer('sound')" title="12 · Sound | Composer">
+             style="--mc:var(--c-sound)" onclick="switchLayer('sound')" title="12 · Sound | Composer"
+             data-tip="Spatial audio — ambient soundscapes, music, SFX, and acoustic zones" data-tip-title="12 · SOUND | COMPOSER">
           <span class="af-glyph">♪</span><span class="af-abbr">SND</span>
         </div>
         <div class="af-module-btn" id="afb-logic" data-layer="logic"
-             style="--mc:var(--c-logic)" onclick="switchLayer('logic')" title="13 · Logic | Axiom">
+             style="--mc:var(--c-logic)" onclick="switchLayer('logic')" title="13 · Logic | Axiom"
+             data-tip="Rules engine — world laws, conditional logic, triggers, and constraints" data-tip-title="13 · LOGIC | AXIOM">
           <span class="af-glyph">⊢</span><span class="af-abbr">LGC</span>
         </div>
         <div class="af-module-btn" id="afb-simulation" data-layer="simulation"
-             style="--mc:var(--c-simulation)" onclick="switchLayer('simulation')" title="14 · Simulation">
+             style="--mc:var(--c-simulation)" onclick="switchLayer('simulation')" title="14 · Simulation"
+             data-tip="Physics and simulation — fluid dynamics, particle systems, and continuum" data-tip-title="14 · SIMULATION | CONTINUUM">
           <span class="af-glyph">∿</span><span class="af-abbr">SIM</span>
         </div>
         <div class="af-module-btn" id="afb-forge" data-layer="forge"
-             style="--mc:var(--c-forge)" onclick="switchLayer('forge')" title="15 · Forge">
+             style="--mc:var(--c-forge)" onclick="switchLayer('forge')" title="15 · Forge"
+             data-tip="Asset forge — craft, combine, and temper world objects and equipment" data-tip-title="15 · FORGE | FORGE">
           <span class="af-glyph">⚒</span><span class="af-abbr">FRG</span>
         </div>
         <div class="af-module-btn" id="afb-network" data-layer="network"
-             style="--mc:var(--c-network)" onclick="switchLayer('network')" title="16 · Network | Nexus">
+             style="--mc:var(--c-network)" onclick="switchLayer('network')" title="16 · Network | Nexus"
+             data-tip="Connectivity layer — inter-world links, portals, and signal routing" data-tip-title="16 · NETWORK | NEXUS">
           <span class="af-glyph">⇋</span><span class="af-abbr">NET</span>
         </div>
       </div>
@@ -1573,7 +1602,7 @@ html,body{
   <!-- FOOTER -->
   <div id="hub-footer">
     <div class="hf-item"><div class="sc-dot" style="background:var(--emerald);opacity:.6"></div><b id="hf-save-time">Not saved</b></div>
-    <div class="hf-item">keys: <b id="hf-keys">0</b></div>
+    <div class="hf-item" data-tip="Number of data keys currently saved in localStorage">keys: <b id="hf-keys">0</b></div>
     <div class="hf-item">version <b>1.0.0</b></div>
     <div id="hf-layer-name">Workspace</div>
   </div>
@@ -1986,6 +2015,33 @@ html,body{
    ║            QUANTUM LOOM HUB — INTEGRATION SHELL                 ║
    ║  Wraps all 8 layers, relays storage events, manages project      ║
    ╚══════════════════════════════════════════════════════════════════╝ */
+
+// ── Tooltip Engine ──────────────────────────────
+(function() {
+  const tip = document.createElement('div');
+  tip.id = 'ql-tooltip';
+  document.body.appendChild(tip);
+  let _t;
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest('[data-tip]');
+    if (!el) { clearTimeout(_t); tip.classList.remove('visible'); return; }
+    const text = el.getAttribute('data-tip');
+    const title = el.getAttribute('data-tip-title') || '';
+    clearTimeout(_t);
+    _t = setTimeout(() => {
+      tip.innerHTML = (title ? `<span class="tt-title">${title}</span>` : '') + text;
+      tip.classList.add('visible');
+    }, 600);
+  });
+  document.addEventListener('mousemove', e => {
+    tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 300) + 'px';
+    tip.style.top  = (e.clientY - 8) + 'px';
+  });
+  document.addEventListener('mouseout', e => {
+    if (!e.target.closest('[data-tip]')) { clearTimeout(_t); tip.classList.remove('visible'); }
+  });
+  document.addEventListener('click', () => { clearTimeout(_t); tip.classList.remove('visible'); });
+})();
 
 /* ── Layer registry ───────────────────────────────────────────────── */
 const LAYERS = {
