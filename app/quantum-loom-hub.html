@@ -6,6 +6,7 @@
 <title>Quantum Loom — Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="loom-snapshot.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -2638,6 +2639,12 @@ function lpSelectProv(id) {
   // Default base URL
   const defaults = { ollama:'http://localhost:11434', anythingllm:'http://localhost:3001' };
   if (defaults[id]) document.getElementById('lp-base').value = defaults[id];
+  // Persist provider choice immediately so it survives panel close/reopen
+  try {
+    const cfg = JSON.parse(localStorage.getItem('ql-llm-config') || '{}');
+    cfg.provider = id;
+    localStorage.setItem('ql-llm-config', JSON.stringify(cfg));
+  } catch(e) {}
 }
 
 function lpLoadConfig() {

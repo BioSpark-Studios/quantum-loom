@@ -1430,6 +1430,7 @@ function saveGraph() {
       edges: currentGraph.edges || [],
     };
     localStorage.setItem('ql-graphs', JSON.stringify(stored));
+    window.parent.postMessage({type:'hub:storage:write',key:'ql-graphs',value:JSON.stringify(stored)},'*');
   } catch(e) { console.warn('saveGraph failed', e); }
 }
 
