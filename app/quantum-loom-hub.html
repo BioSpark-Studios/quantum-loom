@@ -1179,6 +1179,14 @@ html,body{
         <span class="ni-label">Output</span>
       </div>
 
+      <div class="nav-div"></div>
+
+      <div class="nav-item" id="nav-manual" data-layer="manual"
+           style="--lc:var(--venturan)" onclick="switchLayer('manual')" title="User Manual" data-tip="Open the Quantum Loom User Manual" data-tip-title="MANUAL (F1)">
+        <span class="ni-icon">📖</span>
+        <span class="ni-label">Manual</span>
+      </div>
+
       <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
     </div>
 
@@ -1448,6 +1456,16 @@ html,body{
       <iframe class="layer-frame" id="frame-network"
         src="quantum-atlas-network.html"
         onload="frameLoaded('network')"></iframe>
+
+      <!-- Manual -->
+      <div class="frame-loader" id="loader-manual">
+        <div class="loader-glyph" style="color:var(--venturan)">📖</div>
+        <div class="loader-lbl">Loading User Manual</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:var(--venturan)"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-manual"
+        src="quantum-loom-manual.html"
+        onload="frameLoaded('manual')"></iframe>
 
     </div>
 
@@ -2070,10 +2088,11 @@ const LAYERS = {
   forge:         { label:'15 · Forge        | Forge',    icon:'⚒', color:'var(--c-forge)',           file:'quantum-atlas-forge.html'         },
   society:  { label:'08 · Society   | Order',   icon:'⚑', color:'var(--c-society)',  file:'quantum-atlas-society.html'      },
   network:  { label:'16 · Network    | Nexus',   icon:'⇋', color:'var(--c-network)', file:'quantum-atlas-network.html'      },
+  manual:   { label:'User Manual',               icon:'📖', color:'var(--venturan)',  file:'quantum-loom-manual.html'        },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
-const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-choreography-snapshot','qa-behavior-snapshot','qa-sequencer-snapshot','qa-story-snapshot','qa-memory-snapshot','qa-sound-snapshot','qa-logic-snapshot','qa-simulation-snapshot','qa-forge-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot'];
+const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-choreography-snapshot','qa-behavior-snapshot','qa-sequencer-snapshot','qa-story-snapshot','qa-memory-snapshot','qa-sound-snapshot','qa-logic-snapshot','qa-simulation-snapshot','qa-forge-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot','qa-manual-snapshot'];
 
 /* ── State ────────────────────────────────────────────────────────── */
 let activeLayer  = 'workspace';
@@ -3886,6 +3905,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Close genesis modal on backdrop click
   document.getElementById('genesis-modal')?.addEventListener('click', e => {
     if (e.target === document.getElementById('genesis-modal')) closeGenesisModal();
+  });
+
+  // F1 → User Manual
+  document.addEventListener('keydown', e => {
+    if (e.key === 'F1') { e.preventDefault(); switchLayer('manual'); }
   });
 });
 
