@@ -5,6 +5,7 @@
   "main": "main.js",
   "author": "Jeremy Dickinson <jerdickinson@gmail.com>",
   "license": "BioSpark-Licensing",
+  "homepage": "https://biospark.studio/quantum-loom",
   "scripts": {
     "start": "electron .",
     "dev": "QL_DEV=1 electron .",
@@ -57,7 +58,7 @@
           ]
         }
       ],
-      "icon": "assets/icon.icns",
+      "icon": "assets/icon.png",
       "category": "public.app-category.education"
     },
     "dmg": {
@@ -85,7 +86,7 @@
         "AppImage",
         "deb"
       ],
-      "icon": "assets/icon.png",
+      "icon": "assets/icon-512.png",
       "category": "Education"
     }
   },
