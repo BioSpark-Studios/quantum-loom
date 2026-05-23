@@ -324,6 +324,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   border-radius:2px;width:0%;transition:width .3s ease;}
 .pip-bar-label{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);
   margin-top:5px;text-align:right;letter-spacing:.06em;}
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
 </style>
 </head>
 <body>
@@ -1449,6 +1456,14 @@ async function delay(ms) {
 
 async function runPipeline() {
   if (state.syncing) return;
+
+  // Warn before overwriting existing Loom data
+  const hasLoomData = Object.values(LOOM_KEYS).some(k => localStorage.getItem(k));
+  if (hasLoomData) {
+    const ok = confirm('This will overwrite existing Loom data (Workspace, Zones, Scenes, Sequencer) with Atlas-generated content.\n\nContinue?');
+    if (!ok) return;
+  }
+
   state.syncing = true;
 
   document.getElementById('sb-status-text').textContent = 'SYNCING';
@@ -1687,13 +1702,14 @@ function injectMockData() {
     ],
   };
 
-  localStorage.setItem(ATLAS_KEYS.terrain,      JSON.stringify(terrain));
-  localStorage.setItem(ATLAS_KEYS.environ,       JSON.stringify(environ));
-  localStorage.setItem(ATLAS_KEYS.architect,     JSON.stringify(architect));
-  localStorage.setItem(ATLAS_KEYS.lighting,      JSON.stringify(lighting));
-  localStorage.setItem(ATLAS_KEYS.civilization,  JSON.stringify(civilization));
+  // Load demo data into memory only — never overwrite real Atlas localStorage keys
+  state.atlasData.terrain      = terrain;
+  state.atlasData.environ      = environ;
+  state.atlasData.architect    = architect;
+  state.atlasData.lighting     = lighting;
+  state.atlasData.civilization = civilization;
 
-  addLog('DEMO', 'Mock Atlas data injected (no real snapshots found)', 'info');
+  addLog('DEMO', 'Mock Atlas data loaded in-memory (no real snapshots found — visit Atlas modules to generate real data)', 'info');
 }
 
 // ═══════════════════════════════════════════════════════

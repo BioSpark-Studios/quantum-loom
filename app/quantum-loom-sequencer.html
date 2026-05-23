@@ -519,6 +519,13 @@ body.insp-collapsed #insp-icon-strip{display:flex}
 #addon-toolbar-slots{display:flex;align-items:center;gap:4px;margin-left:4px}
 .addon-track-overlay{position:absolute;inset:0;pointer-events:none;z-index:15;overflow:hidden}
 .addon-cap-badge{font-family:var(--fcode);font-size:.34rem;padding:1px 4px;border-radius:2px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);display:inline-block;margin-top:1px}
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
 </style>
 </head>
 <body>

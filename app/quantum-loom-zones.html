@@ -293,6 +293,13 @@ body{background:var(--bg);font-family:var(--fd);color:#fff;height:100vh;overflow
 /* Toast */
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(6,6,8,.97);border:1px solid rgba(177,208,240,.2);backdrop-filter:blur(12px);padding:7px 16px;border-radius:5px;font-family:var(--fm);font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--venturan);pointer-events:none;opacity:0;z-index:1000;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.8)}
 #toast.show{animation:toast-in 2.5s ease forwards}
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
 </style>
 </head>
 <body>

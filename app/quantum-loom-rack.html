@@ -530,6 +530,13 @@ body{background:var(--rack-bg);font-family:var(--fd);color:#fff;height:100vh;ove
   border-radius:4px;border:1px solid rgba(255,255,255,.06);display:none;white-space:pre-wrap}
 .ai-output:not(:empty){display:block}
 .ai-output.streaming{border-color:rgba(177,208,240,.18)}
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
 </style>
 </head>
 <body>
