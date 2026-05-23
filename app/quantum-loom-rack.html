@@ -560,6 +560,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   .pf-layout{grid-template-columns:1fr}
   .axc-knobs{grid-template-columns:repeat(2,1fr)}
 }
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
 </style>
 </head>
 

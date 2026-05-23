@@ -372,8 +372,9 @@ html,body{
 .op-close{background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.8rem;padding:2px 6px;border-radius:3px}
 .op-close:hover{color:#fff;background:rgba(255,255,255,.08)}
 .op-body{flex:1;overflow-y:auto;padding:16px 18px}
-.op-body::-webkit-scrollbar{width:3px}
-.op-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.op-body::-webkit-scrollbar{width:5px}
+.op-body::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
+.op-body::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.6)}
 .op-stats{
   display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;
 }
@@ -468,8 +469,9 @@ html,body{
 .fb-tab.active{ color:#c8973a;border-bottom-color:#c8973a }
 .fb-tab:hover:not(.active){ color:rgba(255,255,255,.55) }
 .fb-body{ padding:20px;overflow-y:auto;flex:1 }
-.fb-body::-webkit-scrollbar{ width:3px }
-.fb-body::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08) }
+.fb-body::-webkit-scrollbar{width:5px}
+.fb-body::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
+.fb-body::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.6)}
 .fb-row{ margin-bottom:14px }
 .fb-label{
   font-family:var(--fm);font-size:.36rem;letter-spacing:.18em;text-transform:uppercase;
@@ -540,8 +542,9 @@ html,body{
   color:rgba(255,255,255,.35);max-height:120px;overflow-y:auto;
   background:rgba(0,0,0,.2);border-radius:4px;padding:8px 10px;margin-top:10px;
 }
-.fb-log::-webkit-scrollbar{ width:2px }
-.fb-log::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08) }
+.fb-log::-webkit-scrollbar{width:4px}
+.fb-log::-webkit-scrollbar-thumb{background:rgba(200,151,58,.3)}
+.fb-log::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.55)}
 .fb-log-entry{ color:rgba(255,255,255,.3) }
 .fb-log-entry.ok{ color:rgba(77,200,160,.7) }
 .fb-log-entry.warn{ color:rgba(232,184,75,.6) }
@@ -576,8 +579,9 @@ html,body{
   padding:20px;overflow-y:auto;flex:1;
   display:grid;grid-template-columns:1fr 1fr;gap:12px;
 }
-.tm-body::-webkit-scrollbar{width:3px}
-.tm-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.tm-body::-webkit-scrollbar{width:5px}
+.tm-body::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
+.tm-body::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.6)}
 .theme-card{
   border:1px solid rgba(255,255,255,.07);border-radius:8px;
   padding:14px;cursor:pointer;transition:all .18s;
@@ -649,8 +653,9 @@ html,body{
 
 /* Config tab */
 .lp-body{padding:16px;overflow-y:auto;flex:1}
-.lp-body::-webkit-scrollbar{width:3px}
-.lp-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.lp-body::-webkit-scrollbar{width:5px}
+.lp-body::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
+.lp-body::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.6)}
 .lp-row{margin-bottom:12px}
 .lp-label{
   font-family:var(--fm);font-size:.34rem;letter-spacing:.16em;text-transform:uppercase;
@@ -700,8 +705,9 @@ html,body{
 
 /* Chat tab */
 .lp-chat-msgs{flex:1;overflow-y:auto;padding:14px 14px 0;display:flex;flex-direction:column;gap:10px}
-.lp-chat-msgs::-webkit-scrollbar{width:3px}
-.lp-chat-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.lp-chat-msgs::-webkit-scrollbar{width:5px}
+.lp-chat-msgs::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
+.lp-chat-msgs::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.6)}
 .chat-msg{
   max-width:92%;padding:8px 11px;border-radius:8px;
   font-family:var(--fd);font-size:.62rem;line-height:1.6;
@@ -746,6 +752,13 @@ html,body{
   border-color:rgba(200,151,58,.4);background:rgba(200,151,58,.12);color:#c8973a;
 }
 .lp-act-btn.primary:hover{background:rgba(200,151,58,.22)}
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
 </style>
 </head>
 <body>

@@ -265,6 +265,13 @@ body{background:var(--bg);font-family:var(--fd);color:#fff;height:100vh;overflow
 /* ─── TOAST ──────────────────────────────── */
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(18,22,26,.98);border:1px solid var(--bhi);backdrop-filter:blur(12px);padding:7px 16px;border-radius:var(--rsm);font-family:var(--fm);font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--venturan);pointer-events:none;opacity:0;z-index:1000;white-space:nowrap}
 #toast.show{animation:toast-in 2.8s ease forwards}
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
 </style>
 </head>
 <body>
@@ -962,7 +969,7 @@ function addNode(type) {
 /* ═══ CANVAS EVENTS ═══════════════════════════════════ */
 function cDown(e) {
   if(e.target.closest('#node-toolbar')||e.target.closest('#cctrl')) return;
-  if(e.button===1||(e.button===0&&e.altKey)) {
+  if(e.button===1||(e.button===2&&!e.target.closest('.loom-node'))||(e.button===0&&e.altKey)) {
     isPanning=true; panSX=e.clientX-tx; panSY=e.clientY-ty;
     document.getElementById('canvas').style.cursor='grabbing';
     e.preventDefault();
@@ -1000,6 +1007,21 @@ function zoom(d) {
   applyT();
 }
 function resetView(){ tx=60;ty=50;tz=1;applyT(); }
+
+/* ── Mousewheel zoom ── */
+document.getElementById('canvas').addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY < 0 ? 0.1 : -0.1;
+  const rect = document.getElementById('canvas').getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const nz = Math.min(3, Math.max(0.15, tz + delta * tz));
+  const zr = nz / tz;
+  tx = mx - (mx - tx) * zr;
+  ty = my - (my - ty) * zr;
+  tz = nz;
+  applyT();
+}, { passive: false });
 function fitView(anim=true) {
   if(!currentGraph?.nodes.length) return;
   const cv=document.getElementById('canvas');
