@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 11 · Memory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #04050a;
+  --surface:  rgba(8,11,18,.98);
+  --surface2: rgba(12,16,24,.97);
+  --edge:     rgba(255,255,255,.055);
+  --edge-hi:  rgba(255,255,255,.12);
+  --venturan: #b1d0f0;
+  --amber:    #e8b84b;
+  --emerald:  #4dc8a0;
+  --solari:   #f98f3b;
+  --fusion:   #9b7fd4;
+  --blood:    #d45b5b;
+  --totem:    #7fd4c8;
+  --memory:   #00c060;
+  --text:     rgba(255,255,255,.82);
+  --fm:'Orbitron',monospace;
+  --fd:'Space Grotesk',sans-serif;
+  --fc:'JetBrains Mono',monospace;
+}
+
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--fd);font-size:15px;}
+#shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;overflow:hidden;
+}
+
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--memory);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;color:var(--memory);
+  animation:breathe 4s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes breathe{
+  0%,100%{box-shadow:0 0 4px rgba(0,192,96,.2);}
+  50%{box-shadow:0 0 16px rgba(0,192,96,.6);}
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--memory);white-space:nowrap;
+}
+.tb-subcrest{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.16em;
+  color:rgba(0,192,96,.5);text-transform:uppercase;margin-top:2px;
+}
+
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:0 10px;height:100%;
+  display:flex;align-items:center;cursor:pointer;
+  color:rgba(255,255,255,.35);border-bottom:2px solid transparent;
+  transition:all .12s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03);}
+.tb-tab.active{color:var(--memory);border-bottom-color:var(--memory);}
+
+.tb-links{
+  display:flex;align-items:center;gap:5px;padding:0 10px;
+  border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-link-chip{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:10px;border:1px solid;cursor:default;transition:all .15s;
+}
+.tb-link-chip.lit{color:#4dc8a0;border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.07);}
+.tb-link-chip.dim{color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.07);background:transparent;}
+
+.tb-actions{display:flex;gap:4px;padding:0 10px;height:100%;align-items:center;flex-shrink:0;}
+.tb-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff;}
+.tb-btn.hot{
+  border-color:rgba(0,192,96,.45);background:rgba(0,192,96,.08);color:var(--memory);
+}
+.tb-btn.hot:hover{background:rgba(0,192,96,.16);box-shadow:0 0 12px rgba(0,192,96,.22);}
+
+.tb-spacer{flex:1;}
+
+.tb-clock{
+  font-family:var(--fc);font-size:.34rem;letter-spacing:.1em;
+  color:rgba(255,255,255,.22);padding:0 12px;white-space:nowrap;flex-shrink:0;
+}
+
+/* ── BODY ── */
+#body{flex:1;display:flex;overflow:hidden;}
+
+/* ── LEFT PANEL ── */
+#left-panel{
+  width:240px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;
+}
+
+.lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.lp-scroll::-webkit-scrollbar{width:3px;}
+.lp-scroll::-webkit-scrollbar-track{background:transparent;}
+.lp-scroll::-webkit-scrollbar-thumb{background:rgba(0,192,96,.4);border-radius:2px;}
+
+.lp-header{
+  padding:8px 10px 6px;border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.lp-header-title{
+  font-family:var(--fm);font-size:.38rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--memory);
+}
+.lp-header-sub{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.22);margin-top:2px;
+}
+
+.lp-section{border-bottom:1px solid var(--edge);}
+.lp-section-header{
+  padding:7px 10px;display:flex;align-items:center;gap:6px;
+  cursor:pointer;user-select:none;transition:background .1s;
+}
+.lp-section-header:hover{background:rgba(255,255,255,.025);}
+.lp-sec-num{font-family:var(--fm);font-size:.36rem;color:var(--memory);letter-spacing:.06em;opacity:.75;}
+.lp-sec-name{font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);flex:1;}
+.lp-sec-chevron{font-size:.5rem;color:rgba(255,255,255,.25);transition:transform .18s;}
+.lp-section.collapsed .lp-sec-chevron{transform:rotate(-90deg);}
+.lp-section-body{overflow:hidden;transition:max-height .22s ease;}
+.lp-section.collapsed .lp-section-body{max-height:0!important;}
+
+/* Component cards */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:6px 8px;}
+.comp-card{
+  background:rgba(255,255,255,.03);border:1px solid var(--edge);border-radius:4px;
+  padding:6px 7px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;
+}
+.comp-card:hover{background:rgba(0,192,96,.06);border-color:rgba(0,192,96,.25);}
+.comp-card.active{background:rgba(0,192,96,.1);border-color:rgba(0,192,96,.45);}
+.comp-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--memory),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.comp-card.active::before{opacity:1;}
+.comp-code{font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;color:var(--memory);text-transform:uppercase;}
+.comp-name{font-family:var(--fd);font-size:.3rem;color:rgba(255,255,255,.55);margin-top:2px;line-height:1.3;}
+.comp-dept{font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.2);margin-top:3px;text-transform:uppercase;letter-spacing:.06em;}
+.comp-wire{
+  font-family:var(--fc);font-size:.24rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:1px 4px;border-radius:2px;border:1px solid;margin-top:3px;display:inline-block;
+}
+.comp-status{
+  display:inline-block;width:5px;height:5px;border-radius:50%;
+  position:absolute;top:6px;right:6px;
+}
+.comp-status.on{background:var(--emerald);box-shadow:0 0 4px var(--emerald);}
+.comp-status.idle{background:rgba(255,255,255,.2);}
+.comp-status.run{background:var(--amber);animation:pulse-dot .7s ease-in-out infinite alternate;}
+@keyframes pulse-dot{from{opacity:.4;}to{opacity:1;}}
+
+/* ── CANVAS ── */
+#canvas-wrap{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  position:relative;background:#04050a;
+}
+#memory-canvas{display:block;width:100%;height:100%;cursor:grab;}
+#memory-canvas.dragging{cursor:grabbing;}
+
+.canvas-overlay-info{
+  position:absolute;top:8px;left:8px;
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.2);pointer-events:none;line-height:1.8;
+}
+
+.canvas-legend{
+  position:absolute;bottom:8px;left:8px;
+  display:flex;flex-direction:column;gap:4px;pointer-events:none;
+}
+.legend-item{display:flex;align-items:center;gap:5px;}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.legend-lbl{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase;}
+
+.canvas-controls{
+  position:absolute;bottom:8px;right:8px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.cc-btn{
+  font-family:var(--fc);font-size:.32rem;
+  width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--edge);background:rgba(8,11,18,.9);color:rgba(255,255,255,.4);
+  border-radius:3px;cursor:pointer;transition:all .12s;
+}
+.cc-btn:hover{background:rgba(0,192,96,.12);border-color:rgba(0,192,96,.4);color:var(--memory);}
+
+#encode-overlay{
+  position:absolute;inset:0;background:rgba(4,5,10,.88);
+  display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;
+  z-index:10;
+}
+#encode-overlay.visible{display:flex;}
+.enc-label{font-family:var(--fm);font-size:.6rem;letter-spacing:.2em;color:var(--memory);}
+.enc-progress{width:260px;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;}
+.enc-bar{height:100%;width:0;background:var(--memory);border-radius:2px;transition:width .08s linear;}
+.enc-status{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.35);letter-spacing:.08em;}
+.enc-entity{font-family:var(--fm);font-size:.38rem;letter-spacing:.14em;color:rgba(0,192,96,.7);margin-top:2px;}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:280px;flex-shrink:0;background:var(--surface);
+  border-left:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;
+}
+
+.rp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-track{background:transparent;}
+.rp-scroll::-webkit-scrollbar-thumb{background:rgba(0,192,96,.35);border-radius:2px;}
+
+.rp-section{border-bottom:1px solid var(--edge);}
+.rp-section-title{
+  padding:8px 12px 6px;
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.4);border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;gap:6px;
+}
+.rp-section-title .badge{
+  font-family:var(--fc);font-size:.26rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:1px 5px;border-radius:2px;background:rgba(0,192,96,.12);
+  border:1px solid rgba(0,192,96,.25);color:var(--memory);margin-left:auto;
+}
+
+/* Encode CTA */
+.encode-cta-wrap{padding:10px 12px;}
+.encode-btn{
+  width:100%;padding:9px 0;
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.16em;text-transform:uppercase;
+  background:rgba(0,192,96,.1);border:1px solid rgba(0,192,96,.4);
+  color:var(--memory);border-radius:4px;cursor:pointer;transition:all .14s;
+  position:relative;overflow:hidden;
+}
+.encode-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 40%,rgba(0,192,96,.08) 100%);
+}
+.encode-btn:hover{background:rgba(0,192,96,.18);box-shadow:0 0 18px rgba(0,192,96,.25);border-color:rgba(0,192,96,.65);}
+.encode-btn:active{transform:scale(.99);}
+.encode-btn.running{
+  animation:btn-pulse 1s ease-in-out infinite;
+  cursor:not-allowed;
+}
+@keyframes btn-pulse{
+  0%,100%{box-shadow:0 0 8px rgba(0,192,96,.2);}
+  50%{box-shadow:0 0 22px rgba(0,192,96,.5);}
+}
+
+.enc-mini-prog{height:2px;background:rgba(255,255,255,.06);border-radius:1px;margin-top:6px;overflow:hidden;display:none;}
+.enc-mini-prog.visible{display:block;}
+.enc-mini-bar{height:100%;width:0;background:var(--memory);border-radius:1px;transition:width .1s linear;}
+
+/* Entity list */
+.entity-list{padding:6px 8px;display:flex;flex-direction:column;gap:3px;}
+.entity-row{
+  display:flex;align-items:center;gap:7px;padding:5px 8px;
+  border-radius:3px;border:1px solid transparent;cursor:pointer;transition:all .13s;
+}
+.entity-row:hover{background:rgba(255,255,255,.03);border-color:var(--edge);}
+.entity-row.selected{background:rgba(0,192,96,.07);border-color:rgba(0,192,96,.3);}
+.entity-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.entity-name{font-family:var(--fd);font-size:.72rem;color:rgba(255,255,255,.75);flex:1;}
+.entity-count{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.3);}
+.entity-type-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* Fragment inspector */
+.frag-inspector{padding:10px 12px;}
+.frag-empty{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.18);text-align:center;padding:16px 0;
+}
+.frag-header{
+  display:flex;align-items:center;gap:6px;margin-bottom:8px;
+}
+.frag-id{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.frag-type-badge{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.07em;text-transform:uppercase;
+  padding:2px 6px;border-radius:2px;border:1px solid;flex-shrink:0;
+}
+.frag-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px;}
+.frag-meta-cell{
+  background:rgba(255,255,255,.02);border:1px solid var(--edge);border-radius:3px;
+  padding:5px 7px;
+}
+.frag-meta-label{font-family:var(--fc);font-size:.26rem;letter-spacing:.08em;color:rgba(255,255,255,.25);text-transform:uppercase;}
+.frag-meta-value{font-family:var(--fm);font-size:.36rem;letter-spacing:.06em;color:rgba(255,255,255,.75);margin-top:1px;}
+.frag-salience-bar{
+  height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:4px;overflow:hidden;
+}
+.frag-salience-fill{height:100%;border-radius:2px;background:var(--memory);}
+.frag-text{
+  font-family:var(--fd);font-size:.72rem;line-height:1.55;
+  color:rgba(255,255,255,.6);background:rgba(255,255,255,.02);
+  border:1px solid var(--edge);border-radius:3px;padding:8px 9px;
+  margin-bottom:8px;
+}
+.frag-assoc{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.25);margin-bottom:4px;text-transform:uppercase;
+}
+.frag-assoc-chips{display:flex;flex-wrap:wrap;gap:3px;}
+.frag-assoc-chip{
+  font-family:var(--fc);font-size:.26rem;letter-spacing:.06em;
+  padding:2px 6px;border-radius:2px;background:rgba(255,255,255,.04);
+  border:1px solid var(--edge);color:rgba(255,255,255,.45);
+}
+
+/* Codex stats */
+.codex-stats-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:8px 12px;
+}
+.stat-cell{
+  background:rgba(255,255,255,.02);border:1px solid var(--edge);border-radius:3px;
+  padding:7px 9px;
+}
+.stat-label{font-family:var(--fc);font-size:.26rem;letter-spacing:.08em;color:rgba(255,255,255,.25);text-transform:uppercase;}
+.stat-value{font-family:var(--fm);font-size:.52rem;letter-spacing:.06em;color:var(--memory);margin-top:2px;}
+.stat-sub{font-family:var(--fc);font-size:.24rem;color:rgba(255,255,255,.2);margin-top:1px;}
+
+/* Active component detail */
+.comp-detail{padding:10px 12px;border-bottom:1px solid var(--edge);}
+.comp-detail-code{font-family:var(--fm);font-size:.38rem;letter-spacing:.14em;color:var(--memory);text-transform:uppercase;}
+.comp-detail-name{font-family:var(--fd);font-size:.75rem;color:rgba(255,255,255,.65);margin-top:2px;}
+.comp-detail-desc{font-family:var(--fd);font-size:.68rem;color:rgba(255,255,255,.35);margin-top:6px;line-height:1.5;}
+.comp-detail-wire{
+  margin-top:6px;font-family:var(--fc);font-size:.28rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 6px;border-radius:2px;border:1px solid;display:inline-block;
+}
+
+/* ── STATUS BAR ── */
+#status-bar{
+  height:26px;flex-shrink:0;display:flex;align-items:center;gap:0;
+  background:var(--surface);border-top:1px solid var(--edge);
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.07em;color:rgba(255,255,255,.28);
+  overflow:hidden;
+}
+.sb-seg{
+  padding:0 10px;border-right:1px solid var(--edge);height:100%;
+  display:flex;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0;
+}
+.sb-seg:last-child{border-right:none;}
+.sb-dot{width:4px;height:4px;border-radius:50%;}
+.sb-dot.green{background:var(--memory);box-shadow:0 0 4px var(--memory);}
+.sb-dot.amber{background:var(--amber);}
+.sb-dot.dim{background:rgba(255,255,255,.18);}
+.sb-spacer{flex:1;}
+.sb-pulse{
+  width:6px;height:6px;border-radius:50%;border:1px solid var(--memory);
+  animation:sb-ring 2s ease-out infinite;flex-shrink:0;
+}
+@keyframes sb-ring{
+  0%{transform:scale(.6);opacity:.8;}
+  100%{transform:scale(1.4);opacity:0;}
+}
+
+/* Wire type color helpers */
+.wire-nar{color:#9b7fd4;border-color:rgba(155,127,212,.35);background:rgba(155,127,212,.06);}
+.wire-bhv{color:#e8b84b;border-color:rgba(232,184,75,.35);background:rgba(232,184,75,.06);}
+.wire-lgc{color:#4dc8a0;border-color:rgba(77,200,160,.35);background:rgba(77,200,160,.06);}
+.wire-tmp{color:#b1d0f0;border-color:rgba(177,208,240,.35);background:rgba(177,208,240,.06);}
+.wire-dat{color:#7fd4c8;border-color:rgba(127,212,200,.35);background:rgba(127,212,200,.06);}
+.wire-idn{color:#f98f3b;border-color:rgba(249,143,59,.35);background:rgba(249,143,59,.06);}
+.wire-soc{color:#d45b5b;border-color:rgba(212,91,91,.35);background:rgba(212,91,91,.06);}
+
+/* Fragment type colors */
+.ftype-experience{color:var(--venturan);border-color:rgba(177,208,240,.35);background:rgba(177,208,240,.06);}
+.ftype-emotion{color:var(--amber);border-color:rgba(232,184,75,.35);background:rgba(232,184,75,.06);}
+.ftype-cultural{color:var(--emerald);border-color:rgba(77,200,160,.35);background:rgba(77,200,160,.06);}
+.ftype-trauma{color:var(--blood);border-color:rgba(212,91,91,.35);background:rgba(212,91,91,.06);}
+.ftype-dream{color:var(--fusion);border-color:rgba(155,127,212,.35);background:rgba(155,127,212,.06);}
+
+/* Tooltip */
+.tooltip{
+  position:absolute;z-index:100;pointer-events:none;
+  background:rgba(4,5,10,.95);border:1px solid rgba(0,192,96,.3);
+  border-radius:4px;padding:6px 10px;
+  font-family:var(--fc);font-size:.32rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.75);white-space:nowrap;
+  transition:opacity .12s;
+}
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- ── TOP BAR ── -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">◎</div>
+      <div>
+        <div class="tb-module-id">11 · MEMORY</div>
+        <div class="tb-subcrest">CREST: CODEX · DEPT: NARRATIVESYSTEMS</div>
+      </div>
+    </div>
+
+    <div class="tb-tabs">
+      <div class="tb-tab active" data-tab="web">MEMORY WEB</div>
+      <div class="tb-tab" data-tab="timeline">TIMELINE</div>
+      <div class="tb-tab" data-tab="codex">CODEX</div>
+      <div class="tb-tab" data-tab="archive">ARCHIVE</div>
+    </div>
+
+    <div class="tb-links">
+      <span class="tb-link-chip lit" title="qa-story-snapshot">STORY</span>
+      <span class="tb-link-chip lit" title="qa-behavior-snapshot">BHV</span>
+      <span class="tb-link-chip lit" title="qa-sequencer-snapshot">SEQ</span>
+      <span class="tb-link-chip lit" title="qa-modeling-snapshot">MDL</span>
+      <span class="tb-link-chip dim" title="qa-memory-snapshot">MEM↑</span>
+    </div>
+
+    <div class="tb-actions">
+      <button class="tb-btn hot" id="btn-encode-top">◎ ENCODE CYCLE</button>
+      <button class="tb-btn" id="btn-decay">⏳ DECAY PASS</button>
+      <button class="tb-btn" id="btn-export-snap">⬇ SNAPSHOT</button>
+      <button class="tb-btn" id="btn-reset-memory">↺ RESET</button>
+    </div>
+
+    <div class="tb-spacer"></div>
+    <div class="tb-clock" id="top-clock">--:--:--</div>
+  </div>
+
+  <!-- ── BODY ── -->
+  <div id="body">
+
+    <!-- ── LEFT PANEL ── -->
+    <div id="left-panel">
+      <div class="lp-header">
+        <div class="lp-header-title">Component Matrix</div>
+        <div class="lp-header-sub">4 layers · 16 components</div>
+      </div>
+      <div class="lp-scroll" id="comp-matrix-scroll">
+
+        <!-- Layer I: Encode -->
+        <div class="lp-section" id="sec-encode">
+          <div class="lp-section-header" onclick="toggleSection('sec-encode')">
+            <span class="lp-sec-num">I</span>
+            <span class="lp-sec-name">Encode</span>
+            <span class="lp-sec-chevron">›</span>
+          </div>
+          <div class="lp-section-body" style="max-height:200px">
+            <div class="comp-grid">
+              <div class="comp-card active" data-comp="EIW" onclick="activateComp(this,'EIW')">
+                <span class="comp-status run"></span>
+                <div class="comp-code">EIW</div>
+                <div class="comp-name">Experience Imprint Writer</div>
+                <div class="comp-wire wire-nar">NAR</div>
+              </div>
+              <div class="comp-card" data-comp="ETB" onclick="activateComp(this,'ETB')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">ETB</div>
+                <div class="comp-name">Emotional Tag Binder</div>
+                <div class="comp-wire wire-bhv">BHV</div>
+              </div>
+              <div class="comp-card" data-comp="SLR" onclick="activateComp(this,'SLR')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">SLR</div>
+                <div class="comp-name">Salience Ranker</div>
+                <div class="comp-wire wire-lgc">LGC</div>
+              </div>
+              <div class="comp-card" data-comp="MDT" onclick="activateComp(this,'MDT')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">MDT</div>
+                <div class="comp-name">Memory Decay Timer</div>
+                <div class="comp-wire wire-tmp">TMP</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer II: Index -->
+        <div class="lp-section" id="sec-index">
+          <div class="lp-section-header" onclick="toggleSection('sec-index')">
+            <span class="lp-sec-num">II</span>
+            <span class="lp-sec-name">Index</span>
+            <span class="lp-sec-chevron">›</span>
+          </div>
+          <div class="lp-section-body" style="max-height:200px">
+            <div class="comp-grid">
+              <div class="comp-card" data-comp="AKM" onclick="activateComp(this,'AKM')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">AKM</div>
+                <div class="comp-name">Associative Key Mapper</div>
+                <div class="comp-wire wire-dat">DAT</div>
+              </div>
+              <div class="comp-card" data-comp="TIB" onclick="activateComp(this,'TIB')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">TIB</div>
+                <div class="comp-name">Temporal Index Builder</div>
+                <div class="comp-wire wire-tmp">TMP</div>
+              </div>
+              <div class="comp-card" data-comp="ERL" onclick="activateComp(this,'ERL')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">ERL</div>
+                <div class="comp-name">Entity Ref Linker</div>
+                <div class="comp-wire wire-idn">IDN</div>
+              </div>
+              <div class="comp-card" data-comp="CMH" onclick="activateComp(this,'CMH')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">CMH</div>
+                <div class="comp-name">Cross-Module Hash Table</div>
+                <div class="comp-wire wire-dat">DAT</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer III: Recall -->
+        <div class="lp-section" id="sec-recall">
+          <div class="lp-section-header" onclick="toggleSection('sec-recall')">
+            <span class="lp-sec-num">III</span>
+            <span class="lp-sec-name">Recall</span>
+            <span class="lp-sec-chevron">›</span>
+          </div>
+          <div class="lp-section-body" style="max-height:200px">
+            <div class="comp-grid">
+              <div class="comp-card" data-comp="PME" onclick="activateComp(this,'PME')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">PME</div>
+                <div class="comp-name">Pattern Match Engine</div>
+                <div class="comp-wire wire-lgc">LGC</div>
+              </div>
+              <div class="comp-card" data-comp="CSS" onclick="activateComp(this,'CSS')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">CSS</div>
+                <div class="comp-name">Context Similarity Scorer</div>
+                <div class="comp-wire wire-lgc">LGC</div>
+              </div>
+              <div class="comp-card" data-comp="MFA" onclick="activateComp(this,'MFA')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">MFA</div>
+                <div class="comp-name">Memory Fragment Assembler</div>
+                <div class="comp-wire wire-nar">NAR</div>
+              </div>
+              <div class="comp-card" data-comp="DSS" onclick="activateComp(this,'DSS')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">DSS</div>
+                <div class="comp-name">Dream State Synthesizer</div>
+                <div class="comp-wire wire-bhv">BHV</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer IV: Archive -->
+        <div class="lp-section" id="sec-archive">
+          <div class="lp-section-header" onclick="toggleSection('sec-archive')">
+            <span class="lp-sec-num">IV</span>
+            <span class="lp-sec-name">Archive</span>
+            <span class="lp-sec-chevron">›</span>
+          </div>
+          <div class="lp-section-body" style="max-height:200px">
+            <div class="comp-grid">
+              <div class="comp-card" data-comp="CRK" onclick="activateComp(this,'CRK')">
+                <span class="comp-status on"></span>
+                <div class="comp-code">CRK</div>
+                <div class="comp-name">Cultural Record Keeper</div>
+                <div class="comp-wire wire-soc">SOC</div>
+              </div>
+              <div class="comp-card" data-comp="MCR" onclick="activateComp(this,'MCR')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">MCR</div>
+                <div class="comp-name">Myth Crystallizer</div>
+                <div class="comp-wire wire-nar">NAR</div>
+              </div>
+              <div class="comp-card" data-comp="CPW" onclick="activateComp(this,'CPW')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">CPW</div>
+                <div class="comp-name">Codex Page Writer</div>
+                <div class="comp-wire wire-nar">NAR</div>
+              </div>
+              <div class="comp-card" data-comp="APE" onclick="activateComp(this,'APE')">
+                <span class="comp-status idle"></span>
+                <div class="comp-code">APE</div>
+                <div class="comp-name">Archive Packet Exporter</div>
+                <div class="comp-wire wire-dat">DAT</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /lp-scroll -->
+
+      <!-- Active component detail at bottom of left panel -->
+      <div class="comp-detail" id="comp-detail-box">
+        <div class="comp-detail-code" id="cd-code">EIW</div>
+        <div class="comp-detail-name" id="cd-name">Experience Imprint Writer</div>
+        <div class="comp-detail-desc" id="cd-desc">Receives raw event data from upstream story and behavior snapshots and imprints durable memory traces into the entity memory pool.</div>
+        <div class="comp-detail-wire wire-nar" id="cd-wire">NAR</div>
+      </div>
+    </div><!-- /left-panel -->
+
+    <!-- ── CANVAS ── -->
+    <div id="canvas-wrap">
+      <canvas id="memory-canvas"></canvas>
+
+      <div class="canvas-overlay-info" id="canvas-info">
+        MEMORY WEB VIEW · 60fps<br>
+        ENTITIES: <span id="info-entities">0</span> · FRAGMENTS: <span id="info-fragments">0</span><br>
+        ZOOM: <span id="info-zoom">1.00</span>x
+      </div>
+
+      <div class="canvas-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#b1d0f0"></div><span class="legend-lbl">Experience</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e8b84b"></div><span class="legend-lbl">Emotion</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#4dc8a0"></div><span class="legend-lbl">Cultural</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d45b5b"></div><span class="legend-lbl">Trauma</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#9b7fd4"></div><span class="legend-lbl">Dream</span></div>
+      </div>
+
+      <div class="canvas-controls">
+        <div class="cc-btn" id="cc-zoom-in" title="Zoom In">+</div>
+        <div class="cc-btn" id="cc-zoom-out" title="Zoom Out">−</div>
+        <div class="cc-btn" id="cc-reset-view" title="Reset View">⌖</div>
+      </div>
+
+      <div id="encode-overlay">
+        <div class="enc-label">◎ ENCODING MEMORIES</div>
+        <div class="enc-entity" id="enc-entity-label">INITIALIZING...</div>
+        <div class="enc-progress"><div class="enc-bar" id="enc-bar"></div></div>
+        <div class="enc-status" id="enc-status-text">Preparing encode cycle...</div>
+      </div>
+    </div><!-- /canvas-wrap -->
+
+    <!-- ── RIGHT PANEL ── -->
+    <div id="right-panel">
+      <div class="rp-scroll">
+
+        <!-- Encode CTA -->
+        <div class="rp-section">
+          <div class="rp-section-title">
+            Memory Controls
+            <span class="badge" id="rp-cycle-badge">CYCLE 0</span>
+          </div>
+          <div class="encode-cta-wrap">
+            <button class="encode-btn" id="btn-encode-rp">◎ ENCODE CYCLE</button>
+            <div class="enc-mini-prog" id="enc-mini-prog">
+              <div class="enc-mini-bar" id="enc-mini-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Entity Memory List -->
+        <div class="rp-section">
+          <div class="rp-section-title">
+            Entity Memory List
+            <span class="badge" id="rp-entity-count">0 ENTITIES</span>
+          </div>
+          <div class="entity-list" id="entity-list">
+            <div class="frag-empty">No entities encoded yet.<br>Run an ENCODE CYCLE.</div>
+          </div>
+        </div>
+
+        <!-- Fragment Inspector -->
+        <div class="rp-section">
+          <div class="rp-section-title">
+            Fragment Inspector
+          </div>
+          <div class="frag-inspector" id="frag-inspector">
+            <div class="frag-empty" id="frag-empty-msg">Select an entity or fragment node to inspect.</div>
+            <div id="frag-detail" style="display:none">
+              <div class="frag-header">
+                <div class="frag-id" id="fi-id">--</div>
+                <div class="frag-type-badge" id="fi-type">--</div>
+              </div>
+              <div class="frag-meta-grid">
+                <div class="frag-meta-cell">
+                  <div class="frag-meta-label">Salience</div>
+                  <div class="frag-meta-value" id="fi-salience">0.00</div>
+                  <div class="frag-salience-bar"><div class="frag-salience-fill" id="fi-salience-bar"></div></div>
+                </div>
+                <div class="frag-meta-cell">
+                  <div class="frag-meta-label">Age (ticks)</div>
+                  <div class="frag-meta-value" id="fi-age">0</div>
+                </div>
+                <div class="frag-meta-cell">
+                  <div class="frag-meta-label">Decay</div>
+                  <div class="frag-meta-value" id="fi-decay">0.02</div>
+                </div>
+                <div class="frag-meta-cell">
+                  <div class="frag-meta-label">Opacity</div>
+                  <div class="frag-meta-value" id="fi-opacity">1.00</div>
+                </div>
+              </div>
+              <div class="frag-text" id="fi-text">--</div>
+              <div class="frag-assoc">Associated Entities</div>
+              <div class="frag-assoc-chips" id="fi-assoc"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Codex Stats -->
+        <div class="rp-section">
+          <div class="rp-section-title">Codex Stats</div>
+          <div class="codex-stats-grid">
+            <div class="stat-cell">
+              <div class="stat-label">Total Fragments</div>
+              <div class="stat-value" id="stat-fragments">0</div>
+              <div class="stat-sub">across all entities</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-label">Avg Salience</div>
+              <div class="stat-value" id="stat-salience">0.00</div>
+              <div class="stat-sub">weighted mean</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-label">Decay Rate</div>
+              <div class="stat-value" id="stat-decay">0.020</div>
+              <div class="stat-sub">per second</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-label">Archival Count</div>
+              <div class="stat-value" id="stat-archival">0</div>
+              <div class="stat-sub">below threshold</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-label">Cultural Records</div>
+              <div class="stat-value" id="stat-cultural">0</div>
+              <div class="stat-sub">CRK entries</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-label">Myth Count</div>
+              <div class="stat-value" id="stat-myths">0</div>
+              <div class="stat-sub">MCR crystallized</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-label">Codex Pages</div>
+              <div class="stat-value" id="stat-codex">0</div>
+              <div class="stat-sub">CPW written</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-label">Encode Cycles</div>
+              <div class="stat-value" id="stat-cycles">0</div>
+              <div class="stat-sub">total runs</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /rp-scroll -->
+    </div><!-- /right-panel -->
+
+  </div><!-- /body -->
+
+  <!-- ── STATUS BAR ── -->
+  <div id="status-bar">
+    <div class="sb-seg">
+      <div class="sb-dot green"></div>
+      <span>MEMORY ONLINE</span>
+    </div>
+    <div class="sb-seg">
+      <div class="sb-dot amber" id="sb-eiw-dot"></div>
+      <span id="sb-eiw-text">EIW READY</span>
+    </div>
+    <div class="sb-seg">
+      <div class="sb-dot dim" id="sb-cycle-dot"></div>
+      <span id="sb-cycle-text">AWAITING FIRST CYCLE</span>
+    </div>
+    <div class="sb-seg">
+      <span>DECAY: </span><span id="sb-decay-val">0.020</span>
+    </div>
+    <div class="sb-seg">
+      <span>FRAGS: </span><span id="sb-frags-val">0</span>
+    </div>
+    <div class="sb-spacer"></div>
+    <div class="sb-seg">
+      <div class="sb-pulse"></div>
+      <span id="sb-fps">60 FPS</span>
+    </div>
+    <div class="sb-seg">
+      <span id="sb-time">--:--:--</span>
+    </div>
+  </div><!-- /status-bar -->
+
+</div><!-- /shell -->
+
+<div class="tooltip" id="tooltip" style="display:none;opacity:0"></div>
+
+<script>
+// ─────────────────────────────────────────────
+// QUANTUM ATLAS — MODULE 11: MEMORY
+// ─────────────────────────────────────────────
+
+// ── DATA DEFINITIONS ─────────────────────────
+
+const FRAGMENT_TYPES = ['experience','emotion','cultural','trauma','dream'];
+const FTYPE_COLORS = {
+  experience:'#b1d0f0',
+  emotion:   '#e8b84b',
+  cultural:  '#4dc8a0',
+  trauma:    '#d45b5b',
+  dream:     '#9b7fd4'
+};
+
+const ENTITY_NAMES = [
+  'VAREN','SOREL','KYTHE','MIRA','DRESH',
+  'LONA','TOKAR','CEYN'
+];
+const ENTITY_COLORS = [
+  '#b1d0f0','#e8b84b','#4dc8a0','#f98f3b',
+  '#9b7fd4','#d45b5b','#7fd4c8','#00c060'
+];
+
+const COMP_META = {
+  EIW:{ name:'Experience Imprint Writer',   wire:'NAR', desc:'Receives raw event data from upstream story and behavior snapshots and imprints durable memory traces into the entity memory pool.' },
+  ETB:{ name:'Emotional Tag Binder',        wire:'BHV', desc:'Attaches emotional valence tags to incoming memory fragments, weighting their salience by the intensity of the associated behavioral response.' },
+  SLR:{ name:'Salience Ranker',             wire:'LGC', desc:'Evaluates incoming fragments against contextual relevance scores and assigns normalized salience values between 0.1 and 1.0.' },
+  MDT:{ name:'Memory Decay Timer',          wire:'TMP', desc:'Tracks fragment age and applies configurable exponential decay to opacity and effective salience over simulation time.' },
+  AKM:{ name:'Associative Key Mapper',      wire:'DAT', desc:'Builds a semantic key index for each fragment, enabling rapid associative recall across entity memory pools.' },
+  TIB:{ name:'Temporal Index Builder',      wire:'TMP', desc:'Organizes fragments into temporal buckets, enabling chronological recall and timeline reconstruction from sparse memory data.' },
+  ERL:{ name:'Entity Ref Linker',           wire:'IDN', desc:'Establishes cross-entity reference links within the memory graph, allowing shared memory fragments and witnessed event records.' },
+  CMH:{ name:'Cross-Module Hash Table',     wire:'DAT', desc:'Maintains a global hash index of memory fragments across modules, enabling fast deduplication and cross-reference queries.' },
+  PME:{ name:'Pattern Match Engine',        wire:'LGC', desc:'Scans the memory graph for recurring structural patterns, triggering reinforcement of matched fragment clusters.' },
+  CSS:{ name:'Context Similarity Scorer',   wire:'LGC', desc:'Computes cosine similarity between incoming context vectors and indexed memory fragments to surface contextually relevant recalls.' },
+  MFA:{ name:'Memory Fragment Assembler',   wire:'NAR', desc:'Combines related memory fragments into coherent narrative sequences suitable for injection into story generation pipelines.' },
+  DSS:{ name:'Dream State Synthesizer',     wire:'BHV', desc:'During low-activity cycles, recombines dream-type fragments into surreal sequences that subtly influence entity behavioral biases.' },
+  CRK:{ name:'Cultural Record Keeper',      wire:'SOC', desc:'Maintains collective memory records representing shared cultural experiences, traditions, and social norms within civilization groups.' },
+  MCR:{ name:'Myth Crystallizer',           wire:'NAR', desc:'Identifies high-salience cultural fragments that have been repeatedly recalled and crystallizes them into formal mythological records.' },
+  CPW:{ name:'Codex Page Writer',           wire:'NAR', desc:'Exports selected memory assemblages as structured codex pages suitable for in-world display and narrative system integration.' },
+  APE:{ name:'Archive Packet Exporter',     wire:'DAT', desc:'Packages finalized memory archives into portable data structures for inter-module transfer and persistent storage export.' }
+};
+
+const FRAGMENT_TEXTS = {
+  experience:[
+    'Witnessed the collapse of the bridge at dawn, the sound echoing long after the dust settled.',
+    'Tracked prey through the obsidian forest for three days, returning empty-handed and humbled.',
+    'Survived the flood season by climbing the signal tower, watching the valley fill with silver water.',
+    'Crossed the border unmarked, carrying only the sealed memory of what was left behind.',
+    'Found the abandoned campsite at the ridge — fire still warm, occupants gone without trace.',
+    'Negotiated safe passage through hostile territory using nothing but a borrowed coat and silence.',
+    'Witnessed the execution at the central plaza and could not look away until it was finished.',
+    'Discovered the underwater cave system entirely by accident; mapped it alone over four days.'
+  ],
+  emotion:[
+    'The grief settled like silt after the storm — heavy, obscuring, impossible to move through quickly.',
+    'A flash of unbounded joy at the reunion, quickly suppressed to avoid drawing attention.',
+    'Rage at the injustice crystallized into cold resolve somewhere between midnight and first light.',
+    'Longing for a place that no longer exists as anything but a memory of a memory.',
+    'The fear was not of death but of being forgotten before anything meaningful had been done.',
+    'Pride in the completed work, followed immediately by doubt about whether it mattered at all.',
+    'The shame of cowardice replayed on a loop until it became indistinguishable from identity.',
+    'Tenderness toward the young one — unexpected, disarming, and too large to contain.'
+  ],
+  cultural:[
+    'The harvest ritual performed at the stone circle aligned with the autumn equinox for the seventh time.',
+    'Oral transmission of the founding legend from the elder council to the next generation of speakers.',
+    'The naming ceremony conducted at the river mouth; the new name will carry the old name within it.',
+    'Trade agreement sealed with the exchange of specific symbolic objects whose meaning predates both parties.',
+    'The taboo around speaking the name of the lost city, honored even among those who never knew it.',
+    'Festival of Returned Light marked with painted sigils on every threshold visible from the central road.',
+    'The elder remembered the old language and sang three verses before declaring herself the last.',
+    'Gift economy protocols observed during the neutral season, each transaction witnessed by two outsiders.'
+  ],
+  trauma:[
+    'The wound did not heal properly and every morning the memory of how it happened opened with it.',
+    'Could not re-enter that particular structure type for years afterward — the body remembered faster than the mind.',
+    'The betrayal reframed every prior interaction in a new and irreversible light.',
+    'Lost three within a single season; the grief compressed into a behavioral pattern that outlasted any conscious grief.',
+    'Witnessed something during the siege that was never spoken about but altered every subsequent decision.',
+    'The abandonment was not violent but its mark was as permanent as any blade wound.',
+    'Buried the truth so completely that it eventually became the truth, and the original was lost.',
+    'The moment of failure played on an internal loop, rehearsed and revised, never forgiven.'
+  ],
+  dream:[
+    'In the dream the tower had no top, and climbing it revealed nothing but more tower, endlessly patient.',
+    'The figure at the threshold was familiar but unnamed; it held out both hands showing they were empty.',
+    'Dreamed of water flowing upward into a sky that was the color of memory itself — neither blue nor grey.',
+    'The old place returned intact, everyone still there, the disaster somehow unmade and awaiting its cue.',
+    'Ran toward the signal and arrived to find only the echo of the signal, still oscillating in warm air.',
+    'In the dream the child was already grown and looking back across the distance with complete understanding.',
+    'The map in the dream was accurate but the territory it described did not yet exist, or no longer did.',
+    'Spoke in a language not known while waking; the words dissolved on surfaces like salt in water.'
+  ]
+};
+
+// ── STATE ─────────────────────────────────────
+
+const STATE = {
+  entities: [],          // entity nodes on canvas
+  fragments: [],         // all fragment nodes
+  selectedEntity: null,  // entity index
+  selectedFragment: null,// fragment ref
+  encodeCycles: 0,
+  archivalCount: 0,
+  culturalRecords: 0,
+  mythCount: 0,
+  codexPages: 0,
+  decayRate: 0.02,
+  encodeRunning: false,
+  activeComp: 'EIW',
+
+  // canvas pan / zoom
+  panX: 0,
+  panY: 0,
+  zoom: 1.0,
+  dragging: false,
+  dragStartX: 0,
+  dragStartY: 0,
+  dragPanX: 0,
+  dragPanY: 0,
+
+  animT: 0,
+  frameCount: 0,
+  lastFpsTime: performance.now(),
+  fps: 60
+};
+
+// ── CANVAS SETUP ─────────────────────────────
+
+const canvas = document.getElementById('memory-canvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  const wrap = document.getElementById('canvas-wrap');
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// ── ENTITY INIT ──────────────────────────────
+
+function initEntities() {
+  STATE.entities = ENTITY_NAMES.map((name, i) => ({
+    id: i,
+    name,
+    color: ENTITY_COLORS[i],
+    fragments: [],
+    orbitAngle: (i / ENTITY_NAMES.length) * Math.PI * 2,
+    orbitRadius: 140,
+    orbitSpeed: 0.00018 + i * 0.000025,
+    highlighted: false
+  }));
+  STATE.fragments = [];
+}
+
+initEntities();
+
+// ── ENCODE CYCLE ─────────────────────────────
+
+function randBetween(a, b) { return a + Math.random() * (b - a); }
+function randInt(a, b)     { return Math.floor(randBetween(a, b + 1)); }
+function pickRandom(arr)   { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function generateHash() {
+  const chars = '0123456789abcdef';
+  let h = '';
+  for (let i = 0; i < 12; i++) h += chars[Math.floor(Math.random() * 16)];
+  return h.match(/.{4}/g).join('-');
+}
+
+function generateFragment(entityIndex) {
+  const type = pickRandom(FRAGMENT_TYPES);
+  const textPool = FRAGMENT_TEXTS[type];
+  const text = pickRandom(textPool);
+  const assocCount = randInt(1, 3);
+  const assocEntities = [];
+  const pool = ENTITY_NAMES.filter((_, i) => i !== entityIndex);
+  for (let i = 0; i < assocCount; i++) {
+    const pick = pickRandom(pool);
+    if (!assocEntities.includes(pick)) assocEntities.push(pick);
+  }
+  return {
+    id: generateHash(),
+    type,
+    salience: parseFloat(randBetween(0.3, 1.0).toFixed(2)),
+    opacity: parseFloat(randBetween(0.65, 1.0).toFixed(2)),
+    age: randInt(0, 20),
+    text,
+    assocEntities,
+    entityIndex,
+    orbitAngle: Math.random() * Math.PI * 2,
+    orbitSpeed: 0.0003 + Math.random() * 0.0005,
+    orbitRadius: 42 + Math.random() * 22
+  };
+}
+
+async function runEncodeCycle() {
+  if (STATE.encodeRunning) return;
+  STATE.encodeRunning = true;
+
+  const overlay = document.getElementById('encode-overlay');
+  const bar = document.getElementById('enc-bar');
+  const miniProg = document.getElementById('enc-mini-prog');
+  const miniBar = document.getElementById('enc-mini-bar');
+  const encLabel = document.getElementById('enc-entity-label');
+  const encStatus = document.getElementById('enc-status-text');
+  const encBtn = document.getElementById('btn-encode-rp');
+  const topBtn = document.getElementById('btn-encode-top');
+
+  overlay.classList.add('visible');
+  encBtn.classList.add('running');
+  topBtn.classList.add('running');
+  miniProg.classList.add('visible');
+
+  const totalSteps = STATE.entities.length * 3 + 4;
+  let step = 0;
+
+  function progress(pct, msg, entityName) {
+    bar.style.width = pct + '%';
+    miniBar.style.width = pct + '%';
+    encStatus.textContent = msg;
+    if (entityName) encLabel.textContent = entityName;
+  }
+
+  await delay(180);
+  progress(5, 'Reading upstream snapshots...', 'INITIALIZING');
+  await delay(200);
+  step++;
+
+  // Read upstream snapshots from localStorage (simulate)
+  const storySnap    = tryParseSnap('qa-story-snapshot');
+  const behaviorSnap = tryParseSnap('qa-behavior-snapshot');
+  const seqSnap      = tryParseSnap('qa-sequencer-snapshot');
+  const modelSnap    = tryParseSnap('qa-modeling-snapshot');
+
+  progress(12, 'Upstream snapshots loaded', 'SNAPSHOTS OK');
+  await delay(140);
+  step++;
+
+  progress(18, 'Activating EIW pipeline...', 'EIW ACTIVE');
+  await delay(120);
+  step++;
+
+  // Per-entity encoding
+  for (let i = 0; i < STATE.entities.length; i++) {
+    const entity = STATE.entities[i];
+    const fragCount = randInt(3, 8);
+    const pct = 20 + ((i / STATE.entities.length) * 65);
+
+    progress(pct, `Encoding ${fragCount} fragments...`, entity.name);
+    await delay(90 + Math.random() * 80);
+
+    // Generate fragments
+    for (let j = 0; j < fragCount; j++) {
+      const frag = generateFragment(i);
+      entity.fragments.push(frag);
+      STATE.fragments.push(frag);
+    }
+    step++;
+  }
+
+  progress(88, 'Running SLR salience pass...', 'SALIENCE RANK');
+  await delay(130);
+  step++;
+
+  progress(92, 'Building AKM index...', 'INDEXING');
+  await delay(100);
+
+  // Archive low-salience fragments
+  const archived = STATE.fragments.filter(f => f.salience < 0.25 || f.opacity < 0.15);
+  STATE.archivalCount += archived.length;
+
+  // Cultural / myth / codex bookkeeping
+  const culturalFrags = STATE.fragments.filter(f => f.type === 'cultural');
+  STATE.culturalRecords = Math.min(culturalFrags.length, Math.floor(culturalFrags.length * 0.7));
+  STATE.mythCount = Math.floor(STATE.culturalRecords * 0.35);
+  STATE.codexPages = Math.floor(STATE.mythCount * 0.9) + 1;
+
+  progress(98, 'Writing qa-memory-snapshot...', 'EXPORT');
+  await delay(120);
+
+  STATE.encodeCycles++;
+  saveSnapshot();
+  progress(100, 'Encode cycle complete', 'DONE');
+  await delay(280);
+
+  overlay.classList.remove('visible');
+  encBtn.classList.remove('running');
+  topBtn.classList.remove('running');
+
+  STATE.encodeRunning = false;
+  updateRightPanel();
+  updateStats();
+  updateStatusBar();
+
+  document.getElementById('rp-cycle-badge').textContent = 'CYCLE ' + STATE.encodeCycles;
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function tryParseSnap(key) {
+  try { return JSON.parse(localStorage.getItem(key) || 'null'); }
+  catch(e) { return null; }
+}
+
+// ── SNAPSHOT SAVE ────────────────────────────
+
+function computeAvgSalience() {
+  if (!STATE.fragments.length) return 0;
+  const sum = STATE.fragments.reduce((a, f) => a + f.salience, 0);
+  return parseFloat((sum / STATE.fragments.length).toFixed(2));
+}
+
+function saveSnapshot() {
+  const snap = {
+    system: 'Quantum Atlas',
+    module: '11 · Memory',
+    generated: new Date().toISOString(),
+    total_fragments: STATE.fragments.length,
+    entity_count: STATE.entities.length,
+    avg_salience: computeAvgSalience(),
+    decay_rate: STATE.decayRate,
+    archival_count: STATE.archivalCount,
+    cultural_records: STATE.culturalRecords,
+    myth_count: STATE.mythCount,
+    codex_pages: STATE.codexPages,
+    encode_cycles: STATE.encodeCycles
+  };
+  localStorage.setItem('qa-memory-snapshot', JSON.stringify(snap));
+  // signal write link lit
+  document.querySelector('.tb-link-chip.dim').classList.replace('dim', 'lit');
+  document.querySelector('[title="qa-memory-snapshot"]').title = 'qa-memory-snapshot ✓';
+}
+
+// ── DECAY PASS ───────────────────────────────
+
+function runDecayPass() {
+  STATE.fragments.forEach(f => {
+    f.opacity = Math.max(0.05, f.opacity - STATE.decayRate * 1.2);
+    f.salience = Math.max(0.05, f.salience - STATE.decayRate * 0.6);
+    f.age++;
+  });
+  // Count newly archived
+  const justArchived = STATE.fragments.filter(f => f.opacity < 0.15 && f.salience < 0.12).length;
+  STATE.archivalCount = Math.max(STATE.archivalCount, justArchived);
+  updateStats();
+  updateStatusBar();
+  if (STATE.selectedFragment) showFragment(STATE.selectedFragment);
+}
+
+// ── CANVAS DRAW ──────────────────────────────
+
+function drawFrame(ts) {
+  // FPS counter
+  STATE.frameCount++;
+  if (ts - STATE.lastFpsTime >= 1000) {
+    STATE.fps = STATE.frameCount;
+    STATE.frameCount = 0;
+    STATE.lastFpsTime = ts;
+    document.getElementById('sb-fps').textContent = STATE.fps + ' FPS';
+  }
+
+  STATE.animT = ts * 0.001;
+
+  const W = canvas.width;
+  const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background gradient
+  const bgGrad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.6);
+  bgGrad.addColorStop(0, 'rgba(0,24,10,0.28)');
+  bgGrad.addColorStop(1, 'rgba(4,5,10,0)');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.save();
+  ctx.translate(W / 2 + STATE.panX, H / 2 + STATE.panY);
+  ctx.scale(STATE.zoom, STATE.zoom);
+
+  // Grid lines (faint)
+  drawGrid();
+
+  // Central node
+  const pulse = Math.sin(STATE.animT * 1.4) * 3;
+  const cr = 40 + pulse;
+
+  // Core ring glow
+  const coreGrad = ctx.createRadialGradient(0, 0, cr * 0.3, 0, 0, cr * 2.2);
+  coreGrad.addColorStop(0, 'rgba(0,192,96,0.22)');
+  coreGrad.addColorStop(0.5, 'rgba(0,192,96,0.06)');
+  coreGrad.addColorStop(1, 'rgba(0,192,96,0)');
+  ctx.beginPath();
+  ctx.arc(0, 0, cr * 2.2, 0, Math.PI * 2);
+  ctx.fillStyle = coreGrad;
+  ctx.fill();
+
+  // Outer ring
+  ctx.beginPath();
+  ctx.arc(0, 0, cr + 8, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(0,192,96,0.18)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Core circle
+  ctx.beginPath();
+  ctx.arc(0, 0, cr, 0, Math.PI * 2);
+  const coreFill = ctx.createRadialGradient(0, -8, 0, 0, 0, cr);
+  coreFill.addColorStop(0, 'rgba(0,220,110,0.95)');
+  coreFill.addColorStop(0.6, 'rgba(0,192,96,0.85)');
+  coreFill.addColorStop(1, 'rgba(0,140,60,0.7)');
+  ctx.fillStyle = coreFill;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,255,128,0.55)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Core label
+  ctx.fillStyle = 'rgba(4,5,10,0.85)';
+  ctx.font = `bold 7px "Orbitron", monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('WORLD', 0, -3);
+  ctx.fillText('MEMORY', 0, 5);
+  ctx.fillText('CORE', 0, 13);
+
+  // Entity nodes + fragments
+  STATE.entities.forEach((entity, ei) => {
+    // Advance orbit
+    entity.orbitAngle += entity.orbitSpeed;
+
+    const ex = Math.cos(entity.orbitAngle) * entity.orbitRadius;
+    const ey = Math.sin(entity.orbitAngle) * entity.orbitRadius;
+
+    // Line center → entity
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(ex, ey);
+    ctx.strokeStyle = `rgba(0,192,96,${0.12 + (entity.highlighted ? 0.3 : 0)})`;
+    ctx.lineWidth = entity.highlighted ? 1.5 : 0.7;
+    ctx.stroke();
+
+    // Entity fragment nodes
+    entity.fragments.forEach(frag => {
+      frag.orbitAngle += frag.orbitSpeed;
+      const fx = ex + Math.cos(frag.orbitAngle) * frag.orbitRadius;
+      const fy = ey + Math.sin(frag.orbitAngle) * frag.orbitRadius;
+
+      const lineAlpha = frag.salience * 0.55 * frag.opacity;
+
+      // Line entity → fragment
+      ctx.beginPath();
+      ctx.moveTo(ex, ey);
+      ctx.lineTo(fx, fy);
+      ctx.strokeStyle = `rgba(${hexToRgb(FTYPE_COLORS[frag.type])},${Math.max(0.05, lineAlpha)})`;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+
+      // Fragment circle
+      const fragR = 5 + frag.salience * 5;
+      ctx.beginPath();
+      ctx.arc(fx, fy, fragR, 0, Math.PI * 2);
+      const fragAlpha = Math.max(0.05, frag.opacity * 0.85);
+      ctx.fillStyle = `rgba(${hexToRgb(FTYPE_COLORS[frag.type])},${fragAlpha})`;
+      ctx.fill();
+
+      if (frag === STATE.selectedFragment) {
+        ctx.beginPath();
+        ctx.arc(fx, fy, fragR + 4, 0, Math.PI * 2);
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // Store screen pos for hit testing
+      frag._sx = fx;
+      frag._sy = fy;
+      frag._sr = fragR;
+    });
+
+    // Entity highlight ring
+    if (entity.highlighted) {
+      ctx.beginPath();
+      ctx.arc(ex, ey, 24, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(0,192,96,0.55)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    // Entity node
+    ctx.beginPath();
+    ctx.arc(ex, ey, 20, 0, Math.PI * 2);
+    const eGrad = ctx.createRadialGradient(ex, ey - 5, 0, ex, ey, 20);
+    eGrad.addColorStop(0, hexAlpha(entity.color, 0.85));
+    eGrad.addColorStop(1, hexAlpha(entity.color, 0.35));
+    ctx.fillStyle = eGrad;
+    ctx.fill();
+    ctx.strokeStyle = hexAlpha(entity.color, 0.7);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Entity label
+    ctx.fillStyle = 'rgba(255,255,255,0.88)';
+    ctx.font = `bold 6.5px "Orbitron", monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(entity.name, ex, ey);
+
+    // Fragment count badge
+    if (entity.fragments.length > 0) {
+      ctx.beginPath();
+      ctx.arc(ex + 13, ey - 13, 6, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(4,5,10,0.9)';
+      ctx.fill();
+      ctx.strokeStyle = hexAlpha(entity.color, 0.6);
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      ctx.fillStyle = hexAlpha(entity.color, 0.95);
+      ctx.font = `bold 5.5px "JetBrains Mono", monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(entity.fragments.length, ex + 13, ey - 13);
+    }
+
+    // Store entity screen pos
+    entity._sx = ex;
+    entity._sy = ey;
+  });
+
+  ctx.restore();
+
+  // Update canvas info overlay
+  document.getElementById('info-entities').textContent = STATE.entities.filter(e => e.fragments.length > 0).length;
+  document.getElementById('info-fragments').textContent = STATE.fragments.length;
+  document.getElementById('info-zoom').textContent = STATE.zoom.toFixed(2);
+
+  requestAnimationFrame(drawFrame);
+}
+
+function drawGrid() {
+  const gridSize = 60;
+  const lineColor = 'rgba(0,192,96,0.028)';
+  const W = canvas.width;
+  const H = canvas.height;
+  const halfW = W / (2 * STATE.zoom);
+  const halfH = H / (2 * STATE.zoom);
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = 0.5;
+  for (let x = -halfW - gridSize; x < halfW + gridSize; x += gridSize) {
+    const gx = Math.round(x / gridSize) * gridSize;
+    ctx.beginPath();
+    ctx.moveTo(gx, -halfH - gridSize);
+    ctx.lineTo(gx, halfH + gridSize);
+    ctx.stroke();
+  }
+  for (let y = -halfH - gridSize; y < halfH + gridSize; y += gridSize) {
+    const gy = Math.round(y / gridSize) * gridSize;
+    ctx.beginPath();
+    ctx.moveTo(-halfW - gridSize, gy);
+    ctx.lineTo(halfW + gridSize, gy);
+    ctx.stroke();
+  }
+}
+
+// ── COLOR HELPERS ────────────────────────────
+
+const _rgbCache = {};
+function hexToRgb(hex) {
+  if (_rgbCache[hex]) return _rgbCache[hex];
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  _rgbCache[hex] = `${r},${g},${b}`;
+  return _rgbCache[hex];
+}
+
+function hexAlpha(hex, alpha) {
+  return `rgba(${hexToRgb(hex)},${alpha})`;
+}
+
+// ── CANVAS INTERACTION ───────────────────────
+
+canvas.addEventListener('mousedown', e => {
+  STATE.dragging = true;
+  STATE.dragStartX = e.clientX;
+  STATE.dragStartY = e.clientY;
+  STATE.dragPanX = STATE.panX;
+  STATE.dragPanY = STATE.panY;
+  canvas.classList.add('dragging');
+});
+
+canvas.addEventListener('mousemove', e => {
+  if (STATE.dragging) {
+    STATE.panX = STATE.dragPanX + (e.clientX - STATE.dragStartX);
+    STATE.panY = STATE.dragPanY + (e.clientY - STATE.dragStartY);
+  } else {
+    handleCanvasHover(e);
+  }
+});
+
+canvas.addEventListener('mouseup', e => {
+  if (!STATE.dragging) return;
+  const dx = Math.abs(e.clientX - STATE.dragStartX);
+  const dy = Math.abs(e.clientY - STATE.dragStartY);
+  STATE.dragging = false;
+  canvas.classList.remove('dragging');
+  if (dx < 4 && dy < 4) {
+    handleCanvasClick(e);
+  }
+});
+
+canvas.addEventListener('mouseleave', () => {
+  STATE.dragging = false;
+  canvas.classList.remove('dragging');
+  hideTooltip();
+});
+
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.9 : 1.1;
+  STATE.zoom = Math.max(0.3, Math.min(3.5, STATE.zoom * delta));
+}, { passive: false });
+
+function canvasToWorld(cx, cy) {
+  const W = canvas.width;
+  const H = canvas.height;
+  return {
+    x: (cx - W / 2 - STATE.panX) / STATE.zoom,
+    y: (cy - H / 2 - STATE.panY) / STATE.zoom
+  };
+}
+
+function handleCanvasClick(e) {
+  const rect = canvas.getBoundingClientRect();
+  const cx = e.clientX - rect.left;
+  const cy = e.clientY - rect.top;
+  const { x, y } = canvasToWorld(cx, cy);
+
+  // Check fragments first (smaller, on top)
+  for (const frag of STATE.fragments) {
+    if (frag._sx === undefined) continue;
+    const dx = x - frag._sx;
+    const dy = y - frag._sy;
+    if (Math.sqrt(dx * dx + dy * dy) < (frag._sr + 5)) {
+      STATE.selectedFragment = frag;
+      STATE.selectedEntity = frag.entityIndex;
+      highlightEntity(frag.entityIndex);
+      showFragment(frag);
+      updateEntityList();
+      return;
+    }
+  }
+
+  // Check entity nodes
+  for (const entity of STATE.entities) {
+    if (entity._sx === undefined) continue;
+    const dx = x - entity._sx;
+    const dy = y - entity._sy;
+    if (Math.sqrt(dx * dx + dy * dy) < 22) {
+      STATE.selectedEntity = entity.id;
+      STATE.selectedFragment = null;
+      highlightEntity(entity.id);
+      showEntityFragments(entity);
+      updateEntityList();
+      return;
+    }
+  }
+
+  // Check core
+  if (Math.sqrt(x * x + y * y) < 44) {
+    STATE.selectedEntity = null;
+    STATE.selectedFragment = null;
+    clearHighlights();
+    showCoreInfo();
+    updateEntityList();
+  }
+}
+
+function handleCanvasHover(e) {
+  const rect = canvas.getBoundingClientRect();
+  const cx = e.clientX - rect.left;
+  const cy = e.clientY - rect.top;
+  const { x, y } = canvasToWorld(cx, cy);
+  const tooltip = document.getElementById('tooltip');
+
+  for (const frag of STATE.fragments) {
+    if (frag._sx === undefined) continue;
+    const dx = x - frag._sx;
+    const dy = y - frag._sy;
+    if (Math.sqrt(dx * dx + dy * dy) < (frag._sr + 6)) {
+      showTooltip(e.clientX + 12, e.clientY - 8,
+        `${frag.type.toUpperCase()} · SAL ${frag.salience.toFixed(2)} · AGE ${frag.age}`);
+      return;
+    }
+  }
+
+  for (const entity of STATE.entities) {
+    if (entity._sx === undefined) continue;
+    const dx = x - entity._sx;
+    const dy = y - entity._sy;
+    if (Math.sqrt(dx * dx + dy * dy) < 22) {
+      showTooltip(e.clientX + 12, e.clientY - 8,
+        `${entity.name} · ${entity.fragments.length} FRAGMENTS`);
+      return;
+    }
+  }
+
+  hideTooltip();
+}
+
+function highlightEntity(id) {
+  STATE.entities.forEach(e => { e.highlighted = (e.id === id); });
+}
+
+function clearHighlights() {
+  STATE.entities.forEach(e => { e.highlighted = false; });
+}
+
+// ── TOOLTIP ──────────────────────────────────
+
+function showTooltip(x, y, text) {
+  const tt = document.getElementById('tooltip');
+  tt.textContent = text;
+  tt.style.display = 'block';
+  tt.style.opacity = '1';
+  tt.style.left = x + 'px';
+  tt.style.top  = y + 'px';
+}
+
+function hideTooltip() {
+  const tt = document.getElementById('tooltip');
+  tt.style.display = 'none';
+}
+
+// ── RIGHT PANEL ──────────────────────────────
+
+function updateRightPanel() {
+  updateEntityList();
+  updateStats();
+}
+
+function updateEntityList() {
+  const list = document.getElementById('entity-list');
+  const activeEntities = STATE.entities.filter(e => e.fragments.length > 0);
+  document.getElementById('rp-entity-count').textContent = activeEntities.length + ' ENTITIES';
+
+  if (activeEntities.length === 0) {
+    list.innerHTML = '<div class="frag-empty">No entities encoded yet.<br>Run an ENCODE CYCLE.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  activeEntities.forEach(entity => {
+    const row = document.createElement('div');
+    row.className = 'entity-row' + (STATE.selectedEntity === entity.id ? ' selected' : '');
+    row.onclick = () => {
+      STATE.selectedEntity = entity.id;
+      STATE.selectedFragment = null;
+      highlightEntity(entity.id);
+      showEntityFragments(entity);
+      updateEntityList();
+    };
+
+    // Dominant fragment type
+    const typeCounts = {};
+    entity.fragments.forEach(f => { typeCounts[f.type] = (typeCounts[f.type] || 0) + 1; });
+    const domType = Object.entries(typeCounts).sort((a, b) => b[1] - a[1])[0];
+    const domColor = domType ? FTYPE_COLORS[domType[0]] : '#fff';
+
+    row.innerHTML = `
+      <div class="entity-dot" style="background:${entity.color}"></div>
+      <div class="entity-name">${entity.name}</div>
+      <div class="entity-count">${entity.fragments.length}</div>
+      <div class="entity-type-dot" style="background:${domColor}"></div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function showEntityFragments(entity) {
+  // Show first fragment if any
+  if (entity.fragments.length > 0) {
+    showFragment(entity.fragments[0]);
+  } else {
+    document.getElementById('frag-empty-msg').style.display = '';
+    document.getElementById('frag-detail').style.display = 'none';
+  }
+}
+
+function showFragment(frag) {
+  document.getElementById('frag-empty-msg').style.display = 'none';
+  const detail = document.getElementById('frag-detail');
+  detail.style.display = '';
+
+  document.getElementById('fi-id').textContent = frag.id;
+
+  const typeBadge = document.getElementById('fi-type');
+  typeBadge.textContent = frag.type.toUpperCase();
+  typeBadge.className = 'frag-type-badge ftype-' + frag.type;
+
+  document.getElementById('fi-salience').textContent = frag.salience.toFixed(2);
+  document.getElementById('fi-salience-bar').style.width = (frag.salience * 100) + '%';
+  document.getElementById('fi-age').textContent = frag.age;
+  document.getElementById('fi-decay').textContent = STATE.decayRate.toFixed(3);
+  document.getElementById('fi-opacity').textContent = frag.opacity.toFixed(2);
+  document.getElementById('fi-text').textContent = frag.text;
+
+  const assocWrap = document.getElementById('fi-assoc');
+  assocWrap.innerHTML = '';
+  frag.assocEntities.forEach(name => {
+    const chip = document.createElement('div');
+    chip.className = 'frag-assoc-chip';
+    chip.textContent = name;
+    assocWrap.appendChild(chip);
+  });
+}
+
+function showCoreInfo() {
+  document.getElementById('frag-empty-msg').style.display = '';
+  document.getElementById('frag-empty-msg').textContent = 'WORLD MEMORY CORE selected.\nAll entity memory pools are rooted here.';
+  document.getElementById('frag-detail').style.display = 'none';
+}
+
+function updateStats() {
+  const total = STATE.fragments.length;
+  const avg = computeAvgSalience();
+  const archived = STATE.fragments.filter(f => f.opacity < 0.18).length;
+
+  document.getElementById('stat-fragments').textContent = total;
+  document.getElementById('stat-salience').textContent = avg.toFixed(2);
+  document.getElementById('stat-decay').textContent = STATE.decayRate.toFixed(3);
+  document.getElementById('stat-archival').textContent = archived;
+  document.getElementById('stat-cultural').textContent = STATE.culturalRecords;
+  document.getElementById('stat-myths').textContent = STATE.mythCount;
+  document.getElementById('stat-codex').textContent = STATE.codexPages;
+  document.getElementById('stat-cycles').textContent = STATE.encodeCycles;
+
+  document.getElementById('sb-frags-val').textContent = total;
+  document.getElementById('sb-decay-val').textContent = STATE.decayRate.toFixed(3);
+
+  document.getElementById('info-fragments').textContent = total;
+}
+
+// ── STATUS BAR ───────────────────────────────
+
+function updateStatusBar() {
+  const cycleText = document.getElementById('sb-cycle-text');
+  const cycleDot = document.getElementById('sb-cycle-dot');
+  if (STATE.encodeCycles > 0) {
+    cycleText.textContent = 'CYCLE ' + STATE.encodeCycles + ' COMPLETE';
+    cycleDot.classList.replace('dim', 'green');
+    cycleDot.classList.remove('amber');
+  }
+  if (STATE.encodeRunning) {
+    document.getElementById('sb-eiw-text').textContent = 'EIW RUNNING';
+    document.getElementById('sb-eiw-dot').classList.replace('amber', 'run');
+  } else {
+    document.getElementById('sb-eiw-text').textContent = 'EIW READY';
+  }
+}
+
+// ── CLOCK ────────────────────────────────────
+
+function updateClock() {
+  const now = new Date();
+  const t = now.toTimeString().slice(0, 8);
+  document.getElementById('top-clock').textContent = t;
+  document.getElementById('sb-time').textContent = t;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── COMPONENT ACTIVATION ─────────────────────
+
+function activateComp(card, code) {
+  document.querySelectorAll('.comp-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  STATE.activeComp = code;
+
+  const meta = COMP_META[code];
+  document.getElementById('cd-code').textContent = code;
+  document.getElementById('cd-name').textContent = meta.name;
+  document.getElementById('cd-desc').textContent = meta.desc;
+  const wireEl = document.getElementById('cd-wire');
+  wireEl.textContent = meta.wire;
+  wireEl.className = 'comp-detail-wire wire-' + meta.wire.toLowerCase();
+}
+
+// ── SECTION TOGGLE ───────────────────────────
+
+function toggleSection(id) {
+  const sec = document.getElementById(id);
+  sec.classList.toggle('collapsed');
+  const body = sec.querySelector('.lp-section-body');
+  if (sec.classList.contains('collapsed')) {
+    body.style.maxHeight = '0';
+  } else {
+    body.style.maxHeight = '200px';
+  }
+}
+
+// ── CANVAS CONTROLS ───────────────────────────
+
+document.getElementById('cc-zoom-in').addEventListener('click', () => {
+  STATE.zoom = Math.min(3.5, STATE.zoom * 1.18);
+});
+document.getElementById('cc-zoom-out').addEventListener('click', () => {
+  STATE.zoom = Math.max(0.3, STATE.zoom / 1.18);
+});
+document.getElementById('cc-reset-view').addEventListener('click', () => {
+  STATE.zoom = 1.0;
+  STATE.panX = 0;
+  STATE.panY = 0;
+});
+
+// ── BUTTON BINDINGS ───────────────────────────
+
+document.getElementById('btn-encode-top').addEventListener('click', runEncodeCycle);
+document.getElementById('btn-encode-rp').addEventListener('click', runEncodeCycle);
+
+document.getElementById('btn-decay').addEventListener('click', () => {
+  runDecayPass();
+  flashStatus('DECAY PASS APPLIED');
+});
+
+document.getElementById('btn-export-snap').addEventListener('click', () => {
+  saveSnapshot();
+  flashStatus('SNAPSHOT SAVED');
+});
+
+document.getElementById('btn-reset-memory').addEventListener('click', () => {
+  if (!confirm('Reset all memory data?')) return;
+  initEntities();
+  STATE.encodeCycles = 0;
+  STATE.archivalCount = 0;
+  STATE.culturalRecords = 0;
+  STATE.mythCount = 0;
+  STATE.codexPages = 0;
+  STATE.selectedEntity = null;
+  STATE.selectedFragment = null;
+  updateRightPanel();
+  updateStats();
+  document.getElementById('rp-cycle-badge').textContent = 'CYCLE 0';
+  document.getElementById('frag-empty-msg').textContent = 'Select an entity or fragment node to inspect.';
+  document.getElementById('frag-empty-msg').style.display = '';
+  document.getElementById('frag-detail').style.display = 'none';
+});
+
+// ── TAB SWITCHING ────────────────────────────
+
+document.querySelectorAll('.tb-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    // All tabs currently show the canvas view; this sets visual state only
+    flashStatus('VIEW: ' + tab.dataset.tab.toUpperCase());
+  });
+});
+
+// ── FLASH STATUS ─────────────────────────────
+
+function flashStatus(msg) {
+  const el = document.getElementById('sb-cycle-text');
+  const prev = el.textContent;
+  el.textContent = msg;
+  setTimeout(() => { el.textContent = prev; }, 1800);
+}
+
+// ── KICK OFF RAF ─────────────────────────────
+
+requestAnimationFrame(drawFrame);
+</script>
+
+<!-- ── THEME SYNC IIFE ─────────────────────── -->
+<script>
+(function() {
+  const MAP = {
+    'c-bg':'--bg','c-surf':'--surface','c-surf2':'--surface2',
+    'c-edge':'--edge','c-edge-hi':'--edge-hi','c-accent1':'--venturan',
+    'c-accent2':'--amber','c-accent3':'--emerald','c-accent4':'--fusion',
+    'c-danger':'--blood','c-warm':'--solari','c-text':'--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quantum Atlas — 06 · Bridge</title>
+<title>Quantum Atlas — 16 · Network</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
@@ -16,23 +16,19 @@
   --edge-hi:  rgba(255,255,255,.12);
   --venturan: #b1d0f0;
   --amber:    #e8b84b;
-  --emerald:  #ffffff;
+  --emerald:  #4dc8a0;
   --solari:   #f98f3b;
   --fusion:   #9b7fd4;
   --blood:    #d45b5b;
   --totem:    #7fd4c8;
-  --terrain:  #1e8cff;
-  --environ:  #4ecdc4;
-  --architect:#ffd166;
-  --lighting: #ff9f43;
-  --civilization:#c77dff;
-  --bridge:   #ffffff;
+  --network:  #ffffff;
+  --text:     #e8eaf0;
   --fm:'Orbitron',monospace;
   --fd:'Space Grotesk',sans-serif;
   --fc:'JetBrains Mono',monospace;
 }
 
-html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-family:var(--fd);font-size:14px;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--fd);font-size:15px;}
 #shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
 
 /* ── TOP BAR ── */
@@ -46,22 +42,23 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
 }
 .tb-glyph{
-  width:24px;height:24px;border:1.5px solid var(--bridge);
+  width:24px;height:24px;border:1.5px solid var(--network);
   border-radius:3px;display:flex;align-items:center;justify-content:center;
-  font-size:.85rem;color:var(--bridge);
-  animation:breathe-bridge 4s ease-in-out infinite;flex-shrink:0;
+  font-size:.9rem;color:var(--network);
+  animation:breathe-network 4s ease-in-out infinite;flex-shrink:0;
 }
-@keyframes breathe-bridge{
-  0%,100%{box-shadow:0 0 4px rgba(77,200,160,.2);}
-  50%{box-shadow:0 0 16px rgba(77,200,160,.7);}
+@keyframes breathe-network{
+  0%,100%{box-shadow:0 0 4px rgba(255,255,255,.15);}
+  50%{box-shadow:0 0 18px rgba(255,255,255,.6);}
 }
+.tb-module-label{display:flex;flex-direction:column;justify-content:center;}
 .tb-module-id{
   font-family:var(--fm);font-size:.5rem;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--bridge);white-space:nowrap;
+  text-transform:uppercase;color:var(--network);white-space:nowrap;
 }
 .tb-subcrest{
-  font-family:var(--fc);font-size:.3rem;letter-spacing:.16em;
-  color:rgba(77,200,160,.5);text-transform:uppercase;margin-top:2px;
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.16em;
+  color:rgba(255,255,255,.35);text-transform:uppercase;margin-top:2px;
 }
 .tb-tabs{
   display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
@@ -75,7 +72,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   transition:all .12s;white-space:nowrap;
 }
 .tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03);}
-.tb-tab.active{color:var(--bridge);border-bottom-color:var(--bridge);}
+.tb-tab.active{color:var(--network);border-bottom-color:var(--network);}
 
 .tb-chips-group{
   display:flex;align-items:center;gap:4px;padding:0 10px;
@@ -89,7 +86,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;text-transform:uppercase;
   padding:2px 7px;border-radius:10px;border:1px solid;cursor:default;transition:all .2s;
 }
-.tb-chip.lit{color:#ffffff;border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.07);}
+.tb-chip.lit{color:#ffffff;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.07);}
 .tb-chip.dim{color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.07);background:transparent;}
 .tb-chip.loom-lit{color:var(--venturan);border-color:rgba(177,208,240,.4);background:rgba(177,208,240,.07);}
 
@@ -101,9 +98,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
 }
 .tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff;}
 .tb-btn.sync{
-  border-color:rgba(77,200,160,.5);background:rgba(77,200,160,.1);color:var(--bridge);
+  border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);color:var(--network);
 }
-.tb-btn.sync:hover{background:rgba(77,200,160,.2);box-shadow:0 0 14px rgba(77,200,160,.3);}
+.tb-btn.sync:hover{background:rgba(255,255,255,.16);box-shadow:0 0 14px rgba(255,255,255,.2);}
 .tb-btn.clear{
   border-color:rgba(212,91,91,.35);background:rgba(212,91,91,.06);color:var(--blood);
 }
@@ -113,139 +110,253 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
 /* ── BODY ── */
 #body{flex:1;display:flex;overflow:hidden;}
 
-/* ── LEFT PANEL ── */
+/* ── LEFT PANEL (Component Matrix) ── */
 #left-panel{
-  width:260px;flex-shrink:0;background:var(--surface);
+  width:240px;flex-shrink:0;background:var(--surface);
   border-right:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;
 }
-.lp-section{border-bottom:1px solid var(--edge);}
-.lp-section-header{
-  padding:7px 10px;display:flex;align-items:center;gap:6px;
-  cursor:pointer;user-select:none;transition:background .1s;
+.lp-header{
+  padding:8px 10px;border-bottom:1px solid var(--edge);flex-shrink:0;
+  display:flex;align-items:center;gap:6px;
 }
-.lp-section-header:hover{background:rgba(255,255,255,.02);}
-.lp-sec-num{font-family:var(--fm);font-size:.35rem;color:var(--bridge);letter-spacing:.08em;opacity:.7;}
-.lp-sec-name{font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);flex:1;}
-.lp-sec-chevron{font-size:.5rem;color:rgba(255,255,255,.22);transition:transform .18s;}
-.lp-section.collapsed .lp-sec-chevron{transform:rotate(-90deg);}
-.lp-section-body{overflow:hidden;}
-.lp-section.collapsed .lp-section-body{display:none;}
-
-.lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.lp-header-title{
+  font-family:var(--fm);font-size:.38rem;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);flex:1;
+}
+.lp-header-count{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.25);
+}
+.lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 8px;}
 .lp-scroll::-webkit-scrollbar{width:3px;}
 .lp-scroll::-webkit-scrollbar-track{background:transparent;}
-.lp-scroll::-webkit-scrollbar-thumb{background:var(--bridge);border-radius:2px;}
+.lp-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px;}
 
-/* Atlas source rows */
-.source-row{
-  display:flex;align-items:center;gap:7px;padding:7px 10px;
-  border-bottom:1px solid var(--edge);transition:background .1s;
+/* Layer group */
+.layer-group{margin-bottom:10px;}
+.layer-label{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.25);padding:0 2px;margin-bottom:5px;
+  display:flex;align-items:center;gap:5px;
 }
-.source-row:hover{background:rgba(255,255,255,.02);}
-.source-glyph{
-  width:22px;height:22px;border-radius:3px;display:flex;align-items:center;justify-content:center;
-  font-size:.7rem;flex-shrink:0;border:1px solid;
-}
-.source-info{flex:1;min-width:0;}
-.source-name{font-family:var(--fc);font-size:.32rem;letter-spacing:.06em;color:rgba(255,255,255,.7);}
-.source-meta{font-family:var(--fc);font-size:.27rem;color:rgba(255,255,255,.3);margin-top:1px;}
-.source-badge{
-  font-family:var(--fc);font-size:.26rem;padding:1px 5px;border-radius:8px;
-  border:1px solid;flex-shrink:0;
-}
-.badge-linked{color:#ffffff;border-color:rgba(77,200,160,.35);background:rgba(77,200,160,.07);}
-.badge-empty{color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.08);background:transparent;}
-.source-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.dot-linked{background:#ffffff;box-shadow:0 0 6px rgba(77,200,160,.6);}
-.dot-empty{background:rgba(255,255,255,.12);}
+.layer-label::before{content:'';display:block;width:18px;height:1px;background:rgba(255,255,255,.15);}
+.layer-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
 
-/* Export queue */
-.queue-row{
-  display:flex;align-items:center;gap:7px;padding:6px 10px;
-  border-bottom:1px solid var(--edge);cursor:pointer;transition:background .1s;
+/* Component card */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.comp-card{
+  background:var(--surface2);border:1px solid var(--edge);border-radius:4px;
+  padding:6px 7px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;
 }
-.queue-row:hover{background:rgba(255,255,255,.025);}
-.queue-cb{
-  width:13px;height:13px;border:1px solid rgba(77,200,160,.4);border-radius:2px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  background:rgba(77,200,160,.06);
+.comp-card:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.03);}
+.comp-card.active{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.05);}
+.comp-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+  opacity:0;transition:opacity .15s;
 }
-.queue-cb.checked::after{
-  content:'✓';font-size:.5rem;color:var(--bridge);
+.comp-card.active::before{opacity:1;}
+.comp-abbr{
+  font-family:var(--fm);font-size:.38rem;letter-spacing:.12em;
+  color:var(--network);margin-bottom:2px;
 }
-.queue-label{font-family:var(--fc);font-size:.31rem;letter-spacing:.06em;color:rgba(255,255,255,.65);flex:1;}
-.queue-arrow{font-family:var(--fc);font-size:.27rem;color:rgba(255,255,255,.25);}
-
-.lp-sync-btn{
-  margin:8px 10px;font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;
-  text-transform:uppercase;padding:7px;border-radius:3px;cursor:pointer;
-  border:1px solid rgba(77,200,160,.4);background:rgba(77,200,160,.08);
-  color:var(--bridge);transition:all .12s;text-align:center;
+.comp-name{
+  font-family:var(--fc);font-size:.27rem;color:rgba(255,255,255,.55);line-height:1.35;
 }
-.lp-sync-btn:hover{background:rgba(77,200,160,.18);box-shadow:0 0 12px rgba(77,200,160,.25);}
+.comp-type{
+  font-family:var(--fc);font-size:.24rem;letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(255,255,255,.22);margin-top:3px;
+}
+.comp-dot{
+  position:absolute;top:6px;right:6px;
+  width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.1);
+  transition:all .2s;
+}
+.comp-card.active .comp-dot{
+  background:var(--network);box-shadow:0 0 5px rgba(255,255,255,.4);
+}
 
 /* ── CANVAS ── */
 #canvas-wrap{
   flex:1;position:relative;background:var(--bg);overflow:hidden;
   display:flex;align-items:center;justify-content:center;
 }
-#flow-canvas{display:block;}
+#topo-canvas{display:block;}
+
+/* Canvas overlay labels */
+.canvas-label{
+  position:absolute;font-family:var(--fc);font-size:.28rem;
+  letter-spacing:.06em;color:rgba(255,255,255,.35);pointer-events:none;
+}
 
 /* ── RIGHT PANEL ── */
 #right-panel{
-  width:300px;flex-shrink:0;background:var(--surface);
+  width:280px;flex-shrink:0;background:var(--surface);
   border-left:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;
 }
-.rp-section{border-bottom:1px solid var(--edge);display:flex;flex-direction:column;}
+.rp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-track{background:transparent;}
+.rp-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px;}
+
+.rp-section{border-bottom:1px solid var(--edge);}
 .rp-section-header{
   padding:7px 10px;display:flex;align-items:center;gap:6px;flex-shrink:0;
+  cursor:pointer;user-select:none;
 }
-.rp-sec-num{font-family:var(--fm);font-size:.35rem;color:var(--bridge);letter-spacing:.08em;opacity:.7;}
-.rp-sec-name{font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);flex:1;}
+.rp-section-header:hover{background:rgba(255,255,255,.02);}
+.rp-sec-num{font-family:var(--fm);font-size:.3rem;color:var(--network);letter-spacing:.1em;opacity:.6;}
+.rp-sec-name{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(255,255,255,.5);flex:1;
+}
+.rp-sec-chevron{font-size:.45rem;color:rgba(255,255,255,.2);transition:transform .18s;}
+.rp-section.collapsed .rp-sec-chevron{transform:rotate(-90deg);}
+.rp-section.collapsed .rp-section-body{display:none;}
+.rp-section-body{padding:8px 10px;}
 
-/* Translation log */
-#log-section{flex:1;min-height:0;display:flex;flex-direction:column;}
-#log-scroll{
-  flex:1;overflow-y:auto;padding:4px 0;
+/* World state assembler */
+.wsa-progress{margin-bottom:8px;}
+.wsa-row{
+  display:flex;align-items:center;gap:6px;margin-bottom:3px;
 }
-#log-scroll::-webkit-scrollbar{width:3px;}
-#log-scroll::-webkit-scrollbar-track{background:transparent;}
-#log-scroll::-webkit-scrollbar-thumb{background:var(--bridge);border-radius:2px;}
-.log-entry{
-  display:flex;align-items:baseline;gap:5px;padding:2px 10px;
-  font-family:var(--fc);font-size:.28rem;line-height:1.6;
+.wsa-key{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.05em;
+  color:rgba(255,255,255,.4);min-width:72px;flex-shrink:0;
 }
-.log-ts{color:rgba(255,255,255,.22);flex-shrink:0;min-width:52px;}
-.log-tag{font-weight:700;flex-shrink:0;min-width:38px;letter-spacing:.06em;}
-.log-msg{color:rgba(255,255,255,.5);}
-.log-tag.zones{color:var(--totem);}
-.log-tag.chars{color:var(--venturan);}
-.log-tag.scenes{color:var(--amber);}
-.log-tag.props{color:var(--solari);}
-.log-tag.seq{color:var(--bridge);}
-.log-tag.info{color:rgba(255,255,255,.35);}
-.log-tag.err{color:var(--blood);}
+.wsa-bar-wrap{flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;}
+.wsa-bar{height:100%;background:var(--network);border-radius:2px;width:0%;transition:width .3s;}
+.wsa-bar.filled{background:rgba(255,255,255,.6);}
+.wsa-status{
+  font-family:var(--fc);font-size:.25rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.2);min-width:32px;text-align:right;flex-shrink:0;
+}
 
-/* Loom state */
-.loom-state-row{
-  display:flex;align-items:center;gap:6px;padding:5px 10px;
-  border-bottom:1px solid var(--edge);
+/* Assemble button */
+.assemble-btn{
+  width:100%;font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:8px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.07);
+  color:var(--network);transition:all .12s;margin-bottom:0;
 }
-.ls-key{font-family:var(--fc);font-size:.3rem;letter-spacing:.08em;text-transform:uppercase;
-  color:rgba(255,255,255,.35);min-width:48px;}
-.ls-val{font-family:var(--fm);font-size:.38rem;color:var(--bridge);flex:1;}
-.ls-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.ls-dot.present{background:var(--bridge);box-shadow:0 0 5px rgba(77,200,160,.5);}
-.ls-dot.absent{background:rgba(255,255,255,.1);}
+.assemble-btn:hover{background:rgba(255,255,255,.14);box-shadow:0 0 14px rgba(255,255,255,.2);}
+.assemble-btn:active{transform:scale(.98);}
 
-/* Signal bus */
+/* Broadcast targets */
+.target-row{
+  display:flex;align-items:center;gap:7px;padding:4px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.target-row:last-child{border-bottom:none;}
+.target-swatch{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+}
+.target-name{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.65);flex:1;
+}
+.target-status{
+  font-family:var(--fc);font-size:.24rem;letter-spacing:.07em;text-transform:uppercase;
+  flex-shrink:0;
+}
+.tst-sim{color:rgba(255,255,255,.3);}
+.tst-conn{color:var(--emerald);}
+.tst-disc{color:var(--blood);}
+
+/* Toggle switch */
+.tog-wrap{
+  display:flex;align-items:center;flex-shrink:0;
+}
+.tog-input{display:none;}
+.tog-track{
+  width:26px;height:13px;background:rgba(255,255,255,.1);border-radius:7px;
+  cursor:pointer;position:relative;transition:background .18s;border:1px solid rgba(255,255,255,.12);
+}
+.tog-input:checked + .tog-track{background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.3);}
+.tog-track::after{
+  content:'';position:absolute;top:1px;left:1px;
+  width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.35);
+  transition:transform .18s,background .18s;
+}
+.tog-input:checked + .tog-track::after{
+  transform:translateX(13px);background:#ffffff;
+}
+
+/* Broadcast button */
 .broadcast-btn{
-  margin:8px 10px;font-family:var(--fm);font-size:.33rem;letter-spacing:.12em;
-  text-transform:uppercase;padding:7px;border-radius:3px;cursor:pointer;
-  border:1px solid rgba(232,184,75,.4);background:rgba(232,184,75,.07);
-  color:var(--amber);transition:all .12s;text-align:center;
+  width:100%;font-family:var(--fm);font-size:.34rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:8px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.07);
+  color:var(--network);transition:all .12s;
 }
-.broadcast-btn:hover{background:rgba(232,184,75,.16);box-shadow:0 0 12px rgba(232,184,75,.2);}
+.broadcast-btn:hover{background:rgba(255,255,255,.15);box-shadow:0 0 16px rgba(255,255,255,.25);}
+.broadcast-btn:active{transform:scale(.98);}
+.broadcast-btn.active-broadcast{
+  border-color:rgba(255,255,255,.6);
+  animation:pulse-broadcast .6s ease-out;
+}
+@keyframes pulse-broadcast{
+  0%{box-shadow:0 0 0 0 rgba(255,255,255,.4);}
+  100%{box-shadow:0 0 0 14px rgba(255,255,255,0);}
+}
+
+/* Transmission log */
+#tx-log-section{flex:1;min-height:80px;display:flex;flex-direction:column;}
+#tx-log-body{
+  flex:1;overflow-y:auto;padding:2px 0;min-height:60px;max-height:160px;
+}
+#tx-log-body::-webkit-scrollbar{width:3px;}
+#tx-log-body::-webkit-scrollbar-track{background:transparent;}
+#tx-log-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
+.tx-entry{
+  display:flex;align-items:baseline;gap:5px;padding:2px 10px;
+  font-family:var(--fc);font-size:.27rem;line-height:1.65;
+}
+.tx-ts{color:rgba(255,255,255,.2);flex-shrink:0;min-width:50px;}
+.tx-target{flex-shrink:0;min-width:64px;letter-spacing:.06em;font-weight:700;}
+.tx-msg{color:rgba(255,255,255,.4);}
+.tx-target.unreal{color:#0070f3;}
+.tx-target.unity{color:#a0a0a0;}
+.tx-target.godot{color:#4a90e2;}
+.tx-target.blender{color:#ea7600;}
+.tx-target.shadertoy{color:#ff6060;}
+.tx-target.theater-light{color:#ffe066;}
+.tx-target.theater-sound{color:#80d080;}
+.tx-target.generic{color:var(--venturan);}
+.tx-target.network{color:var(--network);}
+.tx-target.sys{color:rgba(255,255,255,.3);}
+
+/* World state preview */
+#ws-preview{
+  font-family:var(--fc);font-size:.27rem;line-height:1.6;
+  color:rgba(255,255,255,.45);background:rgba(0,0,0,.3);
+  border:1px solid var(--edge);border-radius:3px;padding:6px 8px;
+  max-height:160px;overflow-y:auto;white-space:pre;
+  margin-bottom:0;
+}
+#ws-preview::-webkit-scrollbar{width:3px;}
+#ws-preview::-webkit-scrollbar-track{background:transparent;}
+#ws-preview::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
+
+.preview-toggle{
+  display:flex;align-items:center;gap:5px;cursor:pointer;
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);
+  margin-bottom:5px;user-select:none;
+}
+.preview-toggle:hover{color:rgba(255,255,255,.5);}
+.preview-chevron{font-size:.4rem;transition:transform .15s;}
+.preview-chevron.open{transform:rotate(90deg);}
+
+/* Packet stats */
+.packet-stats{
+  display:flex;gap:0;margin-bottom:8px;
+}
+.pstat{
+  flex:1;padding:5px 7px;background:rgba(255,255,255,.03);
+  border:1px solid var(--edge);text-align:center;
+}
+.pstat:not(:last-child){border-right:none;}
+.pstat-val{font-family:var(--fm);font-size:.5rem;color:var(--network);}
+.pstat-key{font-family:var(--fc);font-size:.24rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-top:2px;}
 
 /* ── STATUS BAR ── */
 #status-bar{
@@ -259,71 +370,16 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
   padding:0 10px;border-right:1px solid var(--edge);white-space:nowrap;
 }
 .sb-seg:first-child{padding-left:0;}
-.sb-seg.accent{color:var(--bridge);}
+.sb-seg.accent{color:var(--network);}
 .sb-seg span.val{color:rgba(255,255,255,.6);}
 .sb-right{margin-left:auto;font-family:var(--fc);font-size:.28rem;
   letter-spacing:.1em;color:rgba(255,255,255,.25);text-transform:uppercase;}
-.sb-status-dot{
+.sb-hb-dot{
   display:inline-block;width:6px;height:6px;border-radius:50%;
-  background:var(--bridge);box-shadow:0 0 5px rgba(77,200,160,.5);
-  margin-right:5px;vertical-align:middle;
+  background:rgba(255,255,255,.1);margin-right:5px;vertical-align:middle;
+  transition:background .2s,box-shadow .2s;
 }
-
-/* ── PIPELINE OVERLAY ── */
-#pipeline-overlay{
-  position:fixed;inset:0;z-index:100;
-  background:rgba(4,5,10,.88);backdrop-filter:blur(4px);
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .25s;
-}
-#pipeline-overlay.visible{opacity:1;pointer-events:all;}
-#pipeline-box{
-  background:var(--surface2);border:1px solid var(--edge-hi);border-radius:6px;
-  padding:24px 28px;min-width:420px;max-width:500px;
-}
-.pip-title{
-  font-family:var(--fm);font-size:.7rem;letter-spacing:.2em;color:var(--bridge);
-  text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:8px;
-}
-.pip-glyph{font-size:1.1rem;animation:breathe-bridge 2s ease-in-out infinite;}
-.pip-step{
-  display:flex;align-items:center;gap:10px;padding:6px 0;
-  border-bottom:1px solid var(--edge);
-}
-.pip-step:last-child{border-bottom:none;}
-.pip-code{
-  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;color:rgba(255,255,255,.3);
-  min-width:58px;
-}
-.pip-desc{font-family:var(--fc);font-size:.31rem;color:rgba(255,255,255,.55);flex:1;}
-.pip-indicator{
-  width:14px;height:14px;border-radius:50%;flex-shrink:0;
-  border:1.5px solid rgba(255,255,255,.12);background:transparent;
-  transition:all .2s;
-}
-.pip-indicator.running{
-  border-color:var(--bridge);background:rgba(77,200,160,.15);
-  box-shadow:0 0 8px rgba(77,200,160,.4);
-  animation:spin-ring .8s linear infinite;
-}
-.pip-indicator.done{
-  border-color:var(--bridge);background:var(--bridge);
-  box-shadow:0 0 6px rgba(77,200,160,.5);
-}
-.pip-indicator.error{
-  border-color:var(--blood);background:rgba(212,91,91,.3);
-}
-@keyframes spin-ring{
-  0%{box-shadow:0 0 8px rgba(77,200,160,.4),2px 0 0 rgba(77,200,160,.8);}
-  50%{box-shadow:0 0 8px rgba(77,200,160,.4),0 2px 0 rgba(77,200,160,.8);}
-  100%{box-shadow:0 0 8px rgba(77,200,160,.4),2px 0 0 rgba(77,200,160,.8);}
-}
-.pip-bar-wrap{margin-top:16px;}
-.pip-bar-bg{height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;}
-.pip-bar-fill{height:100%;background:linear-gradient(90deg,rgba(77,200,160,.4),var(--bridge));
-  border-radius:2px;width:0%;transition:width .3s ease;}
-.pip-bar-label{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);
-  margin-top:5px;text-align:right;letter-spacing:.06em;}
+.sb-hb-dot.alive{background:var(--network);box-shadow:0 0 5px rgba(255,255,255,.45);}
 
 /* ── Themed scrollbars ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -336,1459 +392,1498 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-famil
 <body>
 <div id="shell">
 
-  <!-- TOP BAR -->
+  <!-- ── TOP BAR ── -->
   <div id="top-bar">
     <div class="tb-module-chip">
       <div class="tb-glyph">⇋</div>
-      <div>
+      <div class="tb-module-label">
         <div class="tb-module-id">16 · NETWORK</div>
-        <div class="tb-subcrest">NEXUS</div>
+        <div class="tb-subcrest">NEXUS · PIPELINESYSTEMS</div>
       </div>
     </div>
 
     <div class="tb-tabs">
-      <div class="tb-tab active" data-tab="0">I-COLLECT</div>
-      <div class="tb-tab" data-tab="1">II-TRANSLATE</div>
-      <div class="tb-tab" data-tab="2">III-EMIT</div>
-      <div class="tb-tab" data-tab="3">IV-SYNC</div>
+      <div class="tb-tab active" data-tab="topology">Topology</div>
+      <div class="tb-tab" data-tab="matrix">Matrix</div>
+      <div class="tb-tab" data-tab="packet">Packet</div>
     </div>
 
     <div class="tb-chips-group">
-      <span class="tb-chip-label">ATLAS</span>
-      <span class="tb-chip dim" id="chip-terrain">TERRAIN</span>
-      <span class="tb-chip dim" id="chip-environ">ENVIRON</span>
-      <span class="tb-chip dim" id="chip-arch">ARCH</span>
-      <span class="tb-chip dim" id="chip-lumis">LUMIS</span>
-      <span class="tb-chip dim" id="chip-civex">CIVEX</span>
+      <span class="tb-chip-label">Layer</span>
+      <span class="tb-chip lit" id="chip-aggr" title="Aggregation">I</span>
+      <span class="tb-chip lit" id="chip-proto" title="Protocol">II</span>
+      <span class="tb-chip lit" id="chip-target" title="Target">III</span>
+      <span class="tb-chip lit" id="chip-monitor" title="Monitor">IV</span>
     </div>
 
     <div class="tb-chips-group">
-      <span class="tb-chip-label">LOOM</span>
-      <span class="tb-chip dim" id="chip-zones">ZONES</span>
-      <span class="tb-chip dim" id="chip-chars">CHARS</span>
-      <span class="tb-chip dim" id="chip-scenes">SCENES</span>
-      <span class="tb-chip dim" id="chip-props">PROPS</span>
-      <span class="tb-chip dim" id="chip-seq">SEQ</span>
+      <span class="tb-chip-label">Mode</span>
+      <span class="tb-chip lit" id="chip-mode">BROADCAST</span>
+      <span class="tb-chip dim" id="chip-idle">IDLE</span>
     </div>
 
     <div class="tb-spacer"></div>
 
     <div class="tb-actions">
-      <button class="tb-btn sync" id="tb-sync-btn">⇋ SYNC ALL</button>
-      <button class="tb-btn clear" id="tb-clear-btn">✕ CLEAR LOOM</button>
+      <button class="tb-btn" id="btn-heartbeat">Heartbeat</button>
+      <button class="tb-btn sync" id="btn-assemble-top">Assemble</button>
+      <button class="tb-btn clear" id="btn-clear-log">Clear Log</button>
     </div>
   </div>
 
-  <!-- BODY -->
+  <!-- ── BODY ── -->
   <div id="body">
 
-    <!-- LEFT PANEL -->
+    <!-- ── LEFT PANEL — Component Matrix ── -->
     <div id="left-panel">
-      <div class="lp-scroll">
-
-        <!-- Atlas Sources -->
-        <div class="lp-section" id="sec-sources">
-          <div class="lp-section-header" onclick="toggleSection('sec-sources')">
-            <span class="lp-sec-num">I</span>
-            <span class="lp-sec-name">Atlas Sources</span>
-            <span class="lp-sec-chevron">›</span>
-          </div>
-          <div class="lp-section-body">
-            <div class="source-row" id="src-terrain">
-              <div class="source-glyph" style="color:var(--terrain);border-color:rgba(30,140,255,.35);background:rgba(30,140,255,.06);">⬡</div>
-              <div class="source-info">
-                <div class="source-name">Terrain</div>
-                <div class="source-meta" id="src-terrain-meta">—</div>
-              </div>
-              <div class="source-dot dot-empty" id="src-terrain-dot"></div>
+      <div class="lp-header">
+        <div class="lp-header-title">Component Matrix</div>
+        <div class="lp-header-count" id="active-comp-count">0 / 16 active</div>
+      </div>
+      <div class="lp-scroll" id="comp-matrix">
+        <!-- Layer I — Aggregation -->
+        <div class="layer-group">
+          <div class="layer-label">I — Aggregation</div>
+          <div class="comp-grid">
+            <div class="comp-card" data-comp="SNC">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">SNC</div>
+              <div class="comp-name">Snapshot Collector</div>
+              <div class="comp-type">DAT</div>
             </div>
-            <div class="source-row" id="src-environ">
-              <div class="source-glyph" style="color:var(--environ);border-color:rgba(78,205,196,.35);background:rgba(78,205,196,.06);">◉</div>
-              <div class="source-info">
-                <div class="source-name">Environment</div>
-                <div class="source-meta" id="src-environ-meta">—</div>
-              </div>
-              <div class="source-dot dot-empty" id="src-environ-dot"></div>
+            <div class="comp-card" data-comp="WSA">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">WSA</div>
+              <div class="comp-name">World State Assembler</div>
+              <div class="comp-type">DAT</div>
             </div>
-            <div class="source-row" id="src-architect">
-              <div class="source-glyph" style="color:var(--architect);border-color:rgba(255,209,102,.35);background:rgba(255,209,102,.06);">⊓</div>
-              <div class="source-info">
-                <div class="source-name">Architect</div>
-                <div class="source-meta" id="src-architect-meta">—</div>
-              </div>
-              <div class="source-dot dot-empty" id="src-architect-dot"></div>
+            <div class="comp-card" data-comp="DDE">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">DDE</div>
+              <div class="comp-name">Delta Diff Engine</div>
+              <div class="comp-type">DAT</div>
             </div>
-            <div class="source-row" id="src-lighting">
-              <div class="source-glyph" style="color:var(--lighting);border-color:rgba(255,159,67,.35);background:rgba(255,159,67,.06);">◐</div>
-              <div class="source-info">
-                <div class="source-name">Lighting</div>
-                <div class="source-meta" id="src-lighting-meta">—</div>
-              </div>
-              <div class="source-dot dot-empty" id="src-lighting-dot"></div>
-            </div>
-            <div class="source-row" id="src-civilization">
-              <div class="source-glyph" style="color:var(--civilization);border-color:rgba(199,125,255,.35);background:rgba(199,125,255,.06);">⚑</div>
-              <div class="source-info">
-                <div class="source-name">Civilization</div>
-                <div class="source-meta" id="src-civilization-meta">—</div>
-              </div>
-              <div class="source-dot dot-empty" id="src-civilization-dot"></div>
+            <div class="comp-card" data-comp="SVS">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">SVS</div>
+              <div class="comp-name">State Version Stamper</div>
+              <div class="comp-type">TMP</div>
             </div>
           </div>
         </div>
 
-        <!-- Export Queue -->
-        <div class="lp-section" id="sec-queue">
-          <div class="lp-section-header" onclick="toggleSection('sec-queue')">
-            <span class="lp-sec-num">II</span>
-            <span class="lp-sec-name">Export Queue</span>
-            <span class="lp-sec-chevron">›</span>
-          </div>
-          <div class="lp-section-body">
-            <div class="queue-row" onclick="toggleQueue('q-zones')">
-              <div class="queue-cb checked" id="q-zones"></div>
-              <span class="queue-label">Zones</span>
-              <span class="queue-arrow">biome regions → ql-zones</span>
+        <!-- Layer II — Protocol -->
+        <div class="layer-group">
+          <div class="layer-label">II — Protocol</div>
+          <div class="comp-grid">
+            <div class="comp-card" data-comp="WSB">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">WSB</div>
+              <div class="comp-name">WebSocket Broadcaster</div>
+              <div class="comp-type">DAT</div>
             </div>
-            <div class="queue-row" onclick="toggleQueue('q-chars')">
-              <div class="queue-cb checked" id="q-chars"></div>
-              <span class="queue-label">Characters</span>
-              <span class="queue-arrow">settlements + factions → ql-workspace</span>
+            <div class="comp-card" data-comp="OMF">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">OMF</div>
+              <div class="comp-name">OSC Message Formatter</div>
+              <div class="comp-type">DAT</div>
             </div>
-            <div class="queue-row" onclick="toggleQueue('q-scenes')">
-              <div class="queue-cb checked" id="q-scenes"></div>
-              <span class="queue-label">Scenes</span>
-              <span class="queue-arrow">chronicle events → ql-scenes</span>
+            <div class="comp-card" data-comp="REH">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">REH</div>
+              <div class="comp-name">REST Endpoint Handler</div>
+              <div class="comp-type">DAT</div>
             </div>
-            <div class="queue-row" onclick="toggleQueue('q-props')">
-              <div class="queue-cb checked" id="q-props"></div>
-              <span class="queue-label">Propagations</span>
-              <span class="queue-arrow">weather / civ spread → ql-propagations</span>
+            <div class="comp-card" data-comp="UPE">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">UPE</div>
+              <div class="comp-name">URL Param Encoder</div>
+              <div class="comp-type">DAT</div>
             </div>
-            <div class="queue-row" onclick="toggleQueue('q-seq')">
-              <div class="queue-cb checked" id="q-seq"></div>
-              <span class="queue-label">Sequencer</span>
-              <span class="queue-arrow">eras → bars → ql-sequencer</span>
-            </div>
-            <button class="lp-sync-btn" id="lp-sync-btn">⇋ SYNC ALL</button>
           </div>
         </div>
 
+        <!-- Layer III — Target -->
+        <div class="layer-group">
+          <div class="layer-label">III — Target</div>
+          <div class="comp-grid">
+            <div class="comp-card" data-comp="UBB">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">UBB</div>
+              <div class="comp-name">Unreal Blueprint Bridge</div>
+              <div class="comp-type">AGT</div>
+            </div>
+            <div class="comp-card" data-comp="UMP">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">UMP</div>
+              <div class="comp-name">Unity Manifest Pusher</div>
+              <div class="comp-type">AGT</div>
+            </div>
+            <div class="comp-card" data-comp="GSE">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">GSE</div>
+              <div class="comp-name">Godot Scene Emitter</div>
+              <div class="comp-type">AGT</div>
+            </div>
+            <div class="comp-card" data-comp="DCM">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">DCM</div>
+              <div class="comp-name">DMX Channel Mapper</div>
+              <div class="comp-type">DAT</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer IV — Monitor -->
+        <div class="layer-group">
+          <div class="layer-label">IV — Monitor</div>
+          <div class="comp-grid">
+            <div class="comp-card" data-comp="CST">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">CST</div>
+              <div class="comp-name">Connection Status Tracker</div>
+              <div class="comp-type">DAT</div>
+            </div>
+            <div class="comp-card" data-comp="PTL">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">PTL</div>
+              <div class="comp-name">Packet Throughput Logger</div>
+              <div class="comp-type">DAT</div>
+            </div>
+            <div class="comp-card" data-comp="ERH">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">ERH</div>
+              <div class="comp-name">Error Recovery Handler</div>
+              <div class="comp-type">LGC</div>
+            </div>
+            <div class="comp-card" data-comp="NHP">
+              <div class="comp-dot"></div>
+              <div class="comp-abbr">NHP</div>
+              <div class="comp-name">Network Heartbeat Pulse</div>
+              <div class="comp-type">TMP</div>
+            </div>
+          </div>
+        </div>
       </div><!-- /lp-scroll -->
     </div><!-- /left-panel -->
 
-    <!-- CANVAS -->
+    <!-- ── CANVAS — Network Topology ── -->
     <div id="canvas-wrap">
-      <canvas id="flow-canvas"></canvas>
+      <canvas id="topo-canvas"></canvas>
     </div>
 
-    <!-- RIGHT PANEL -->
+    <!-- ── RIGHT PANEL ── -->
     <div id="right-panel">
+      <div class="rp-scroll" id="rp-scroll-inner">
 
-      <!-- Translation Log -->
-      <div class="rp-section" id="log-section" style="flex:1;min-height:0;">
-        <div class="rp-section-header">
-          <span class="rp-sec-num">I</span>
-          <span class="rp-sec-name">Translation Log</span>
+        <!-- World State Packet Section -->
+        <div class="rp-section" id="sec-wsp">
+          <div class="rp-section-header" data-sec="sec-wsp">
+            <span class="rp-sec-num">WSP</span>
+            <span class="rp-sec-name">World State Packet</span>
+            <span class="rp-sec-chevron">▾</span>
+          </div>
+          <div class="rp-section-body">
+            <div class="packet-stats">
+              <div class="pstat">
+                <div class="pstat-val" id="stat-modules">0</div>
+                <div class="pstat-key">Modules</div>
+              </div>
+              <div class="pstat">
+                <div class="pstat-val" id="stat-populated">0</div>
+                <div class="pstat-key">Populated</div>
+              </div>
+              <div class="pstat">
+                <div class="pstat-val" id="stat-kb">0.0</div>
+                <div class="pstat-key">KB</div>
+              </div>
+            </div>
+            <div class="wsa-progress" id="wsa-progress">
+              <!-- Filled by JS -->
+            </div>
+            <button class="assemble-btn" id="btn-assemble">⇋ Assemble Packet</button>
+          </div>
         </div>
-        <div id="log-scroll"></div>
-      </div>
 
-      <!-- Loom State -->
-      <div class="rp-section">
-        <div class="rp-section-header">
-          <span class="rp-sec-num">II</span>
-          <span class="rp-sec-name">Loom State</span>
+        <!-- Broadcast Targets Section -->
+        <div class="rp-section" id="sec-targets">
+          <div class="rp-section-header" data-sec="sec-targets">
+            <span class="rp-sec-num">TGT</span>
+            <span class="rp-sec-name">Broadcast Targets</span>
+            <span class="rp-sec-chevron">▾</span>
+          </div>
+          <div class="rp-section-body">
+            <div id="target-list">
+              <!-- Filled by JS -->
+            </div>
+          </div>
         </div>
-        <div class="loom-state-row">
-          <span class="ls-key">ZONES</span>
-          <span class="ls-val" id="ls-zones">0 zones</span>
-          <span class="ls-dot absent" id="ls-zones-dot"></span>
-        </div>
-        <div class="loom-state-row">
-          <span class="ls-key">CHARS</span>
-          <span class="ls-val" id="ls-chars">0 characters</span>
-          <span class="ls-dot absent" id="ls-chars-dot"></span>
-        </div>
-        <div class="loom-state-row">
-          <span class="ls-key">SCENES</span>
-          <span class="ls-val" id="ls-scenes">0 scenes</span>
-          <span class="ls-dot absent" id="ls-scenes-dot"></span>
-        </div>
-        <div class="loom-state-row">
-          <span class="ls-key">PROPS</span>
-          <span class="ls-val" id="ls-props">0 arcs</span>
-          <span class="ls-dot absent" id="ls-props-dot"></span>
-        </div>
-        <div class="loom-state-row">
-          <span class="ls-key">SEQ</span>
-          <span class="ls-val" id="ls-seq">0 tracks</span>
-          <span class="ls-dot absent" id="ls-seq-dot"></span>
-        </div>
-      </div>
 
-      <!-- Signal Bus -->
-      <div class="rp-section">
-        <div class="rp-section-header">
-          <span class="rp-sec-num">III</span>
-          <span class="rp-sec-name">Signal Bus</span>
+        <!-- Broadcast Action Section -->
+        <div class="rp-section" id="sec-broadcast">
+          <div class="rp-section-header" data-sec="sec-broadcast">
+            <span class="rp-sec-num">BCT</span>
+            <span class="rp-sec-name">Broadcast</span>
+            <span class="rp-sec-chevron">▾</span>
+          </div>
+          <div class="rp-section-body">
+            <button class="broadcast-btn" id="btn-broadcast">⇋ Broadcast to Targets</button>
+          </div>
         </div>
-        <button class="broadcast-btn" id="broadcast-btn">⚡ BROADCAST NOW</button>
-      </div>
 
+        <!-- Transmission Log -->
+        <div class="rp-section" id="tx-log-section">
+          <div class="rp-section-header" data-sec="tx-log-section">
+            <span class="rp-sec-num">LOG</span>
+            <span class="rp-sec-name">Transmission Log</span>
+            <span class="rp-sec-chevron">▾</span>
+          </div>
+          <div class="rp-section-body" style="padding:0;">
+            <div id="tx-log-body">
+              <!-- Filled by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- World State Preview -->
+        <div class="rp-section" id="sec-preview">
+          <div class="rp-section-header" data-sec="sec-preview">
+            <span class="rp-sec-num">PRV</span>
+            <span class="rp-sec-name">World State Preview</span>
+            <span class="rp-sec-chevron">▾</span>
+          </div>
+          <div class="rp-section-body">
+            <div class="preview-toggle" id="preview-toggle">
+              <span class="preview-chevron" id="preview-chevron">▶</span>
+              <span id="preview-toggle-label">Show JSON</span>
+            </div>
+            <pre id="ws-preview" style="display:none;">— not assembled —</pre>
+          </div>
+        </div>
+
+      </div><!-- /rp-scroll -->
     </div><!-- /right-panel -->
+
   </div><!-- /body -->
 
-  <!-- STATUS BAR -->
+  <!-- ── STATUS BAR ── -->
   <div id="status-bar">
-    <div class="sb-seg accent">MOD 16 · NETWORK</div>
-    <div class="sb-seg">ATLAS IN: <span class="val" id="sb-atlas-in">0</span>/5</div>
-    <div class="sb-seg">LOOM OUT: <span class="val" id="sb-loom-out">0</span>/5</div>
-    <div class="sb-seg">LAST SYNC: <span class="val" id="sb-last-sync">—</span></div>
-    <div class="sb-right"><span class="sb-status-dot"></span><span id="sb-status-text">IDLE</span></div>
+    <div class="sb-seg accent">16 · NETWORK</div>
+    <div class="sb-seg">Upstream: <span class="val" id="sb-upstream">15</span></div>
+    <div class="sb-seg">Populated: <span class="val" id="sb-populated">0</span></div>
+    <div class="sb-seg">Broadcasts: <span class="val" id="sb-bcount">0</span></div>
+    <div class="sb-seg">Active Targets: <span class="val" id="sb-atargets">0</span></div>
+    <div class="sb-seg">Packet: <span class="val" id="sb-pktkb">0.0</span> KB</div>
+    <div class="sb-right">
+      <span class="sb-hb-dot" id="sb-hb-dot"></span>
+      <span id="sb-hb-label">Heartbeat: 2000ms</span>
+    </div>
   </div>
 
 </div><!-- /shell -->
 
-<!-- PIPELINE OVERLAY -->
-<div id="pipeline-overlay">
-  <div id="pipeline-box">
-    <div class="pip-title"><span class="pip-glyph">⇋</span> NEXUS SYNC PIPELINE</div>
-    <div class="pip-step" id="pip-0">
-      <span class="pip-code">I-ATL</span>
-      <span class="pip-desc">Collection — read &amp; validate all Atlas snapshots</span>
-      <div class="pip-indicator" id="pip-ind-0"></div>
-    </div>
-    <div class="pip-step" id="pip-1">
-      <span class="pip-code">II-ZNX</span>
-      <span class="pip-desc">Zone export — biome regions → ql-zones</span>
-      <div class="pip-indicator" id="pip-ind-1"></div>
-    </div>
-    <div class="pip-step" id="pip-2">
-      <span class="pip-code">III-CRX</span>
-      <span class="pip-desc">Character export — settlements + factions → ql-workspace</span>
-      <div class="pip-indicator" id="pip-ind-2"></div>
-    </div>
-    <div class="pip-step" id="pip-3">
-      <span class="pip-code">IV-SCX</span>
-      <span class="pip-desc">Scene export — chronicle events → ql-scenes</span>
-      <div class="pip-indicator" id="pip-ind-3"></div>
-    </div>
-    <div class="pip-step" id="pip-4">
-      <span class="pip-code">V-PRX</span>
-      <span class="pip-desc">Propagation export — weather + spread → ql-propagations</span>
-      <div class="pip-indicator" id="pip-ind-4"></div>
-    </div>
-    <div class="pip-step" id="pip-5">
-      <span class="pip-code">VI-SQX</span>
-      <span class="pip-desc">Sequencer map — eras → bars → ql-sequencer</span>
-      <div class="pip-indicator" id="pip-ind-5"></div>
-    </div>
-    <div class="pip-step" id="pip-6">
-      <span class="pip-code">VII-SGX</span>
-      <span class="pip-desc">Signal broadcast → ql-signal-bus</span>
-      <div class="pip-indicator" id="pip-ind-6"></div>
-    </div>
-    <div class="pip-step" id="pip-7">
-      <span class="pip-code">VIII-NXE</span>
-      <span class="pip-desc">NEXUS capsule export → qa-bridge-snapshot</span>
-      <div class="pip-indicator" id="pip-ind-7"></div>
-    </div>
-    <div class="pip-bar-wrap">
-      <div class="pip-bar-bg"><div class="pip-bar-fill" id="pip-bar"></div></div>
-      <div class="pip-bar-label" id="pip-bar-label">0 / 8 steps</div>
-    </div>
-  </div>
-</div>
-
 <script>
 'use strict';
 
-// ═══════════════════════════════════════════════════════
-//  CONSTANTS & STATE
-// ═══════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════
+   CONSTANTS & CONFIG
+════════════════════════════════════════════════════ */
 
-const ATLAS_KEYS = {
-  terrain:      'qa-terrain-snapshot',
-  environ:      'qa-environ-snapshot',
-  architect:    'qa-architect-snapshot',
-  lighting:     'qa-lighting-snapshot',
-  civilization: 'qa-civilization-snapshot',
-};
-const LOOM_KEYS = {
-  zones:       'ql-zones',
-  workspace:   'ql-workspace',
-  scenes:      'ql-scenes',
-  propagations:'ql-propagations',
-  sequencer:   'ql-sequencer',
-};
-
-const COLORS = {
-  terrain:      '#1e8cff',
-  environ:      '#4ecdc4',
-  architect:    '#ffd166',
-  lighting:     '#ff9f43',
-  civilization: '#c77dff',
-  bridge:       '#ffffff',
-  zones:        '#7fd4c8',
-  chars:        '#b1d0f0',
-  scenes:       '#e8b84b',
-  props:        '#f98f3b',
-  seq:          '#ffffff',
+const MODULE_KEYS = {
+  terrain:       'qa-terrain-snapshot',
+  environment:   'qa-environment-snapshot',
+  architect:     'qa-architect-snapshot',
+  lighting:      'qa-lighting-snapshot',
+  modeling:      'qa-modeling-snapshot',
+  choreography:  'qa-choreography-snapshot',
+  behavior:      'qa-behavior-snapshot',
+  society:       'qa-society-snapshot',
+  sequencer:     'qa-sequencer-snapshot',
+  story:         'qa-story-snapshot',
+  memory:        'qa-memory-snapshot',
+  sound:         'qa-sound-snapshot',
+  logic:         'qa-logic-snapshot',
+  simulation:    'qa-simulation-snapshot',
+  forge:         'qa-forge-snapshot',
 };
 
-const BIOME_COLORS = {
-  ocean:      '#1e5fa0', deep_ocean:   '#0d3d73', sea:         '#1e6fa8',
-  river:      '#3a8fbf', lake:         '#2d7fa8',
-  desert:     '#c8973a', arid:         '#c8973a', savanna:     '#c8a83a',
-  grassland:  '#4a9a5c', plains:       '#6ab24a', shrubland:   '#7a9a4a',
-  forest:     '#2d7a3d', dense_forest: '#1f5a2d', jungle:      '#1a6a2a',
-  taiga:      '#3a7a5a', boreal:       '#2a6a4a',
-  tundra:     '#8ab0c0', arctic:       '#b0d0e0', ice:         '#c8e0f0',
-  mountain:   '#8a8a9a', highlands:    '#7a8a8a', hills:       '#7a9a7a',
-  wetlands:   '#4a8a6a', swamp:        '#3a6a4a', marsh:       '#4a7a5a',
-  volcanic:   '#8a3a2a', badlands:     '#9a6a3a',
-};
-
-let state = {
-  atlasData: { terrain: null, environ: null, architect: null, lighting: null, civilization: null },
-  syncing: false,
-  lastSync: null,
-  syncPackets: [],
-  animFrame: null,
-  t: 0,
-};
-
-// ═══════════════════════════════════════════════════════
-//  CANVAS SETUP
-// ═══════════════════════════════════════════════════════
-
-const canvasWrap = document.getElementById('canvas-wrap');
-const canvas     = document.getElementById('flow-canvas');
-const ctx        = canvas.getContext('2d');
-
-let canvasW = 0, canvasH = 0;
-let nodePositions = {};
-
-function resizeCanvas() {
-  canvasW = canvasWrap.clientWidth;
-  canvasH = canvasWrap.clientHeight;
-  canvas.width  = canvasW;
-  canvas.height = canvasH;
-  buildNodePositions();
-}
-
-function buildNodePositions() {
-  const cx = canvasW / 2;
-  const cy = canvasH / 2;
-  const lx = cx - Math.min(canvasW * 0.28, 180);
-  const rx = cx + Math.min(canvasW * 0.28, 180);
-  const spread = Math.min(canvasH * 0.18, 90);
-
-  const srcY = [cy - spread*2, cy - spread, cy, cy + spread, cy + spread*2];
-  const tgtY = [cy - spread*2, cy - spread, cy, cy + spread, cy + spread*2];
-
-  nodePositions = {
-    // source nodes (left column)
-    terrain:      { x: lx, y: srcY[0], r: 18, color: COLORS.terrain,      label: '⬡ Terrain',   col: 'source' },
-    environ:      { x: lx, y: srcY[1], r: 18, color: COLORS.environ,      label: '◉ Environ',   col: 'source' },
-    architect:    { x: lx, y: srcY[2], r: 18, color: COLORS.architect,    label: '⊓ Architect', col: 'source' },
-    lighting:     { x: lx, y: srcY[3], r: 18, color: COLORS.lighting,     label: '◐ Lighting',  col: 'source' },
-    civilization: { x: lx, y: srcY[4], r: 18, color: COLORS.civilization, label: '⚑ Civiliz.',  col: 'source' },
-    // nexus hub (center)
-    nexus: { x: cx, y: cy, r: 28, color: COLORS.bridge, label: '⇋ NEXUS', col: 'nexus' },
-    // target nodes (right column)
-    zones:  { x: rx, y: tgtY[0], r: 18, color: COLORS.zones,  label: '◫ Zones',  col: 'target' },
-    chars:  { x: rx, y: tgtY[1], r: 18, color: COLORS.chars,  label: '◈ Chars',  col: 'target' },
-    scenes: { x: rx, y: tgtY[2], r: 18, color: COLORS.scenes, label: '⌚ Scenes', col: 'target' },
-    props:  { x: rx, y: tgtY[3], r: 18, color: COLORS.props,  label: '∿ Props',  col: 'target' },
-    seq:    { x: rx, y: tgtY[4], r: 18, color: COLORS.seq,    label: '⧖ Seq',    col: 'target' },
-  };
-}
-
-// Edge definitions: source → nexus → target
-// Each entry: [srcKey, tgtKey] (nexus is always the middle hop)
-const EDGES = [
-  { src: 'terrain',      tgt: 'zones',  srcColor: COLORS.terrain },
-  { src: 'terrain',      tgt: 'chars',  srcColor: COLORS.terrain },
-  { src: 'environ',      tgt: 'props',  srcColor: COLORS.environ },
-  { src: 'environ',      tgt: 'seq',    srcColor: COLORS.environ },
-  { src: 'architect',    tgt: 'chars',  srcColor: COLORS.architect },
-  { src: 'architect',    tgt: 'zones',  srcColor: COLORS.architect },
-  { src: 'architect',    tgt: 'scenes', srcColor: COLORS.architect },
-  { src: 'lighting',     tgt: 'scenes', srcColor: COLORS.lighting },
-  { src: 'civilization', tgt: 'chars',  srcColor: COLORS.civilization },
-  { src: 'civilization', tgt: 'scenes', srcColor: COLORS.civilization },
-  { src: 'civilization', tgt: 'props',  srcColor: COLORS.civilization },
-  { src: 'civilization', tgt: 'seq',    srcColor: COLORS.civilization },
+/* Upstream module accent colours (module order 1–15) */
+const UPSTREAM_COLORS = [
+  '#1e8cff', // 01 terrain
+  '#4ecdc4', // 02 environment
+  '#ffd166', // 03 architect
+  '#ff9f43', // 04 lighting
+  '#b1d0f0', // 05 modeling
+  '#7fd4c8', // 06 choreography
+  '#4dc8a0', // 07 behavior
+  '#c77dff', // 08 society
+  '#e8b84b', // 09 sequencer
+  '#f98f3b', // 10 story
+  '#9b7fd4', // 11 memory
+  '#d45b5b', // 12 sound
+  '#80d0e0', // 13 logic
+  '#66bb6a', // 14 simulation
+  '#ffa0c0', // 15 forge
 ];
 
-// ═══════════════════════════════════════════════════════
-//  DRAW HELPERS
-// ═══════════════════════════════════════════════════════
+const UPSTREAM_NAMES = [
+  '01·Terrain','02·Env','03·Arch','04·Light','05·Model',
+  '06·Choreo','07·Behav','08·Society','09·Seq','10·Story',
+  '11·Memory','12·Sound','13·Logic','14·Sim','15·Forge'
+];
 
-function hexToRgb(hex) {
-  const r = parseInt(hex.slice(1,3),16);
-  const g = parseInt(hex.slice(3,5),16);
-  const b = parseInt(hex.slice(5,7),16);
-  return `${r},${g},${b}`;
+const OUTPUT_TARGETS = [
+  { id:'unreal',        label:'Unreal Engine',   color:'#0070f3', protocol:'WS/JSON' },
+  { id:'unity',         label:'Unity',           color:'#a0a0a0', protocol:'Bundle' },
+  { id:'godot',         label:'Godot',           color:'#4a90e2', protocol:'Scene' },
+  { id:'blender',       label:'Blender',         color:'#ea7600', protocol:'Script' },
+  { id:'shadertoy',     label:'ShaderToy',       color:'#ff6060', protocol:'URL Hash' },
+  { id:'theater-light', label:'Theater Light',   color:'#ffe066', protocol:'OSC/DMX' },
+  { id:'theater-sound', label:'Theater Sound',   color:'#80d080', protocol:'OSC/QLab' },
+  { id:'generic',       label:'Generic JSON',    color:'#b1d0f0', protocol:'REST/WS' },
+];
+
+const HEARTBEAT_INTERVAL_MS = 2000;
+
+/* ════════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════════ */
+
+const state = {
+  worldPacket: null,
+  broadcastCount: 0,
+  lastBroadcast: null,
+  activeComps: new Set(),
+  targetEnabled: {},  // id → bool
+  animT: 0,
+  pulses: [],        // [{t, targetIdx, active}]
+  inputPulses: [],   // [{t, srcIdx}]
+  heartbeatRings: [], // [{t, maxR, r}]
+  broadcasting: false,
+  populatedSnaps: 0,
+  packetKb: 0,
+};
+
+/* Initialise target enabled state */
+OUTPUT_TARGETS.forEach(t => { state.targetEnabled[t.id] = true; });
+
+/* ════════════════════════════════════════════════════
+   CANVAS TOPOLOGY
+════════════════════════════════════════════════════ */
+
+const canvas = document.getElementById('topo-canvas');
+const ctx = canvas.getContext('2d');
+let cW = 0, cH = 0;
+
+function resizeCanvas() {
+  const wrap = document.getElementById('canvas-wrap');
+  cW = wrap.clientWidth;
+  cH = wrap.clientHeight;
+  canvas.width  = cW;
+  canvas.height = cH;
 }
 
-function drawNodeGlow(n, alpha) {
-  const grad = ctx.createRadialGradient(n.x, n.y, n.r * 0.5, n.x, n.y, n.r * 2.5);
-  grad.addColorStop(0, `rgba(${hexToRgb(n.color)},${alpha * 0.5})`);
-  grad.addColorStop(1, `rgba(${hexToRgb(n.color)},0)`);
-  ctx.beginPath();
-  ctx.arc(n.x, n.y, n.r * 2.5, 0, Math.PI * 2);
-  ctx.fillStyle = grad;
-  ctx.fill();
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+/* Geometry helpers */
+function nexusPos() {
+  return { x: cW / 2, y: cH / 2 };
 }
 
-function drawNode(n, breatheT) {
-  const pulse = 0.7 + 0.3 * Math.sin(breatheT * 1.2 + n.x * 0.01);
-  drawNodeGlow(n, pulse * 0.35);
+function inputNodePos(i, n) {
+  const r = Math.min(cW, cH) * 0.22;
+  const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+  const cx = cW / 2, cy = cH / 2;
+  return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+}
 
-  // outer ring
-  ctx.beginPath();
-  ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-  ctx.strokeStyle = `rgba(${hexToRgb(n.color)},${0.3 + 0.3 * pulse})`;
-  ctx.lineWidth = n.col === 'nexus' ? 2 : 1.5;
-  ctx.stroke();
+function outputNodePos(i, n) {
+  const r = Math.min(cW, cH) * 0.41;
+  const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+  const cx = cW / 2, cy = cH / 2;
+  return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+}
 
-  // fill
+function lerpPt(a, b, t) {
+  return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+}
+
+/* Draw a moving dot along a line segment */
+function drawPulseDot(x, y, color, r) {
+  ctx.save();
   ctx.beginPath();
-  ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-  const fg = ctx.createRadialGradient(n.x - n.r*0.3, n.y - n.r*0.3, 1, n.x, n.y, n.r);
-  fg.addColorStop(0, `rgba(${hexToRgb(n.color)},0.22)`);
-  fg.addColorStop(1, `rgba(${hexToRgb(n.color)},0.06)`);
-  ctx.fillStyle = fg;
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = r * 3;
   ctx.fill();
+  ctx.restore();
+}
 
-  // label
-  ctx.font = `${n.col === 'nexus' ? '600 ' : ''}${n.col === 'nexus' ? 10 : 9}px 'Orbitron', monospace`;
-  ctx.textAlign = n.col === 'source' ? 'right' : n.col === 'target' ? 'left' : 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = `rgba(${hexToRgb(n.color)},0.85)`;
-  const lx = n.col === 'source' ? n.x - n.r - 7
-           : n.col === 'target' ? n.x + n.r + 7
-           : n.x;
-  const ly = n.col === 'nexus' ? n.y + n.r + 14 : n.y;
-  ctx.fillText(n.label, lx, ly);
+let nexusRingAngle = 0;
 
-  // nexus extra ring
-  if (n.col === 'nexus') {
+function drawFrame() {
+  if (!cW || !cH) { requestAnimationFrame(drawFrame); return; }
+  ctx.clearRect(0, 0, cW, cH);
+
+  const nx = nexusPos();
+  const N_IN  = UPSTREAM_NAMES.length;  // 15
+  const N_OUT = OUTPUT_TARGETS.length;  // 8
+
+  /* ── Grid lines (subtle) ── */
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,.025)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= cW; i += 40) {
+    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, cH); ctx.stroke();
+  }
+  for (let j = 0; j <= cH; j += 40) {
+    ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(cW, j); ctx.stroke();
+  }
+  ctx.restore();
+
+  /* ── Input connection lines (input → NEXUS) ── */
+  for (let i = 0; i < N_IN; i++) {
+    const p = inputNodePos(i, N_IN);
+    const color = UPSTREAM_COLORS[i];
+    ctx.save();
     ctx.beginPath();
-    ctx.arc(n.x, n.y, n.r + 6 + 3 * Math.sin(breatheT * 1.5), 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(${hexToRgb(n.color)},${0.12 + 0.08 * pulse})`;
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(nx.x, nx.y);
+    ctx.strokeStyle = hexToRgba(color, 0.15);
     ctx.lineWidth = 1;
     ctx.stroke();
+    ctx.restore();
   }
-}
 
-function bezierPoint(p0, p1, p2, t) {
-  const x = (1-t)*(1-t)*p0.x + 2*(1-t)*t*p1.x + t*t*p2.x;
-  const y = (1-t)*(1-t)*p0.y + 2*(1-t)*t*p1.y + t*t*p2.y;
-  return { x, y };
-}
-
-function drawEdge(edge, edgeIdx, t) {
-  const src = nodePositions[edge.src];
-  const tgt = nodePositions[edge.tgt];
-  const nex = nodePositions.nexus;
-  if (!src || !tgt || !nex) return;
-
-  const opacity = 0.15 + 0.12 * Math.sin(t * 1.5 + edgeIdx * 0.7);
-
-  // Source → Nexus half
-  {
-    const cp = { x: (src.x + nex.x) / 2, y: (src.y + nex.y) / 2 - 20 };
-    const grad = ctx.createLinearGradient(src.x, src.y, nex.x, nex.y);
-    grad.addColorStop(0, `rgba(${hexToRgb(edge.srcColor)},${opacity})`);
-    grad.addColorStop(1, `rgba(${hexToRgb(COLORS.bridge)},${opacity})`);
+  /* ── Output connection lines (NEXUS → output) ── */
+  for (let i = 0; i < N_OUT; i++) {
+    const p = outputNodePos(i, N_OUT);
+    const tgt = OUTPUT_TARGETS[i];
+    const enabled = state.targetEnabled[tgt.id];
+    ctx.save();
     ctx.beginPath();
-    ctx.moveTo(src.x, src.y);
-    ctx.quadraticCurveTo(cp.x, cp.y, nex.x, nex.y);
-    ctx.strokeStyle = grad;
-    ctx.lineWidth = 1.2;
+    ctx.moveTo(nx.x, nx.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.strokeStyle = hexToRgba(tgt.color, enabled ? 0.2 : 0.06);
+    ctx.lineWidth = enabled ? 1.5 : 0.8;
+    ctx.setLineDash(enabled ? [] : [4, 4]);
     ctx.stroke();
+    ctx.restore();
   }
 
-  // Nexus → Target half
-  {
-    const tgtColor = nodePositions[edge.tgt] ? nodePositions[edge.tgt].color : COLORS.bridge;
-    const cp = { x: (nex.x + tgt.x) / 2, y: (nex.y + tgt.y) / 2 - 20 };
-    const grad = ctx.createLinearGradient(nex.x, nex.y, tgt.x, tgt.y);
-    grad.addColorStop(0, `rgba(${hexToRgb(COLORS.bridge)},${opacity})`);
-    grad.addColorStop(1, `rgba(${hexToRgb(tgtColor)},${opacity})`);
+  /* ── Heartbeat rings ── */
+  state.heartbeatRings = state.heartbeatRings.filter(ring => ring.alpha > 0.005);
+  state.heartbeatRings.forEach(ring => {
+    ctx.save();
     ctx.beginPath();
-    ctx.moveTo(nex.x, nex.y);
-    ctx.quadraticCurveTo(cp.x, cp.y, tgt.x, tgt.y);
-    ctx.strokeStyle = grad;
-    ctx.lineWidth = 1.2;
+    ctx.arc(nx.x, nx.y, ring.r, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(255,255,255,${ring.alpha.toFixed(3)})`;
+    ctx.lineWidth = 1.5;
     ctx.stroke();
-  }
-}
+    ctx.restore();
+    ring.r    += 1.4;
+    ring.alpha *= 0.96;
+  });
 
-function drawPackets(nowMs) {
-  state.syncPackets = state.syncPackets.filter(p => p.startMs + p.durationMs > nowMs);
-  for (const p of state.syncPackets) {
-    const elapsed = nowMs - p.startMs;
-    let frac = elapsed / p.durationMs;
-    if (frac < 0 || frac > 1) continue;
+  /* ── Input pulse dots (from input nodes to NEXUS) ── */
+  state.inputPulses = state.inputPulses.filter(p => p.t <= 1.0);
+  state.inputPulses.forEach(p => {
+    const src = inputNodePos(p.srcIdx, N_IN);
+    const pt  = lerpPt(src, nx, p.t);
+    const color = UPSTREAM_COLORS[p.srcIdx];
+    drawPulseDot(pt.x, pt.y, color, 3);
+    p.t += 0.02;
+  });
 
-    const src  = nodePositions[p.srcKey];
-    const tgt  = nodePositions[p.tgtKey];
-    const nex  = nodePositions.nexus;
-    if (!src || !tgt || !nex) continue;
+  /* ── Output broadcast pulse dots (NEXUS → output nodes) ── */
+  state.pulses = state.pulses.filter(p => p.t <= 1.0);
+  state.pulses.forEach(p => {
+    const dst = outputNodePos(p.targetIdx, N_OUT);
+    const pt  = lerpPt(nx, dst, p.t);
+    const color = OUTPUT_TARGETS[p.targetIdx].color;
+    drawPulseDot(pt.x, pt.y, color, 4);
+    p.t += 0.018;
+  });
 
-    let pos;
-    if (frac < 0.5) {
-      const t2 = frac * 2;
-      const cp = { x: (src.x + nex.x) / 2, y: (src.y + nex.y) / 2 - 20 };
-      pos = bezierPoint(src, cp, nex, t2);
-    } else {
-      const t2 = (frac - 0.5) * 2;
-      const cp = { x: (nex.x + tgt.x) / 2, y: (nex.y + tgt.y) / 2 - 20 };
-      pos = bezierPoint(nex, cp, tgt, t2);
-    }
+  /* ── Input nodes (inner ring) ── */
+  for (let i = 0; i < N_IN; i++) {
+    const p = inputNodePos(i, N_IN);
+    const color = UPSTREAM_COLORS[i];
+    const populated = isModulePopulated(i);
 
-    const grd = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 5);
-    grd.addColorStop(0, `rgba(${hexToRgb(p.color)},0.9)`);
-    grd.addColorStop(1, `rgba(${hexToRgb(p.color)},0)`);
+    ctx.save();
     ctx.beginPath();
-    ctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2);
-    ctx.fillStyle = grd;
+    ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
+    ctx.fillStyle = populated ? hexToRgba(color, 0.25) : 'rgba(255,255,255,.04)';
     ctx.fill();
-  }
-}
+    ctx.strokeStyle = populated ? hexToRgba(color, 0.7) : 'rgba(255,255,255,.1)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.restore();
 
-function drawFlash(nowMs) {
-  if (!state.flashUntil) return;
-  const remaining = state.flashUntil - nowMs;
-  if (remaining <= 0) { state.flashUntil = null; return; }
-  const alpha = Math.min(1, remaining / 300) * 0.4;
-  const targets = ['zones','chars','scenes','props','seq'];
-  for (const key of targets) {
-    const n = nodePositions[key];
-    if (!n) continue;
+    if (populated) {
+      ctx.save();
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    /* Label */
+    const label = UPSTREAM_NAMES[i];
+    ctx.save();
+    ctx.font = '500 8px "JetBrains Mono", monospace';
+    ctx.fillStyle = populated ? hexToRgba(color, 0.75) : 'rgba(255,255,255,.18)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lx = p.x + (p.x - nx.x) * 0.28;
+    const ly = p.y + (p.y - nx.y) * 0.28;
+    ctx.fillText(label, lx, ly);
+    ctx.restore();
+  }
+
+  /* ── Output nodes (outer ring) ── */
+  for (let i = 0; i < N_OUT; i++) {
+    const p   = outputNodePos(i, N_OUT);
+    const tgt = OUTPUT_TARGETS[i];
+    const enabled = state.targetEnabled[tgt.id];
+    const color = tgt.color;
+
+    ctx.save();
     ctx.beginPath();
-    ctx.arc(n.x, n.y, n.r + 4, 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(${hexToRgb(COLORS.bridge)},${alpha})`;
-    ctx.lineWidth = 3;
+    ctx.arc(p.x, p.y, 11, 0, Math.PI * 2);
+    ctx.fillStyle = enabled ? hexToRgba(color, 0.2) : 'rgba(255,255,255,.03)';
+    ctx.fill();
+    ctx.strokeStyle = enabled ? hexToRgba(color, 0.8) : 'rgba(255,255,255,.1)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+
+    if (enabled) {
+      ctx.save();
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    /* Label */
+    ctx.save();
+    ctx.font = '500 8px "JetBrains Mono", monospace';
+    ctx.fillStyle = enabled ? hexToRgba(color, 0.8) : 'rgba(255,255,255,.15)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lx = p.x + (p.x - nx.x) * 0.22;
+    const ly = p.y + (p.y - nx.y) * 0.22;
+    ctx.fillText(tgt.label, lx, ly);
+    ctx.restore();
+  }
+
+  /* ── NEXUS central node ── */
+  const nexusR = 28;
+
+  /* Rotating ring */
+  nexusRingAngle += 0.008;
+  ctx.save();
+  ctx.translate(nx.x, nx.y);
+  ctx.rotate(nexusRingAngle);
+  const ringR = nexusR + 10;
+  const segments = 24;
+  for (let s = 0; s < segments; s++) {
+    const a0 = (s / segments) * Math.PI * 2;
+    const a1 = a0 + (Math.PI * 2 / segments) * 0.55;
+    ctx.beginPath();
+    ctx.arc(0, 0, ringR, a0, a1);
+    ctx.strokeStyle = `rgba(255,255,255,${(0.06 + 0.12 * Math.sin(s + state.animT * 2)).toFixed(3)})`;
+    ctx.lineWidth = 1.5;
     ctx.stroke();
   }
-}
+  ctx.restore();
 
-function drawFrame(nowMs) {
-  ctx.clearRect(0, 0, canvasW, canvasH);
-  state.t = nowMs / 1000;
+  /* Outer glow */
+  ctx.save();
+  const grd = ctx.createRadialGradient(nx.x, nx.y, nexusR * 0.4, nx.x, nx.y, nexusR * 2.5);
+  grd.addColorStop(0, 'rgba(255,255,255,.07)');
+  grd.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = grd;
+  ctx.beginPath();
+  ctx.arc(nx.x, nx.y, nexusR * 2.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
 
-  // draw edges first (behind nodes)
-  EDGES.forEach((edge, i) => drawEdge(edge, i, state.t));
+  /* Core circle */
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(nx.x, nx.y, nexusR, 0, Math.PI * 2);
+  const coreGrd = ctx.createRadialGradient(nx.x, nx.y - 6, 4, nx.x, nx.y, nexusR);
+  coreGrd.addColorStop(0, 'rgba(255,255,255,.25)');
+  coreGrd.addColorStop(1, 'rgba(255,255,255,.06)');
+  ctx.fillStyle = coreGrd;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.6)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.restore();
 
-  // draw packets
-  drawPackets(nowMs);
+  /* NEXUS label */
+  ctx.save();
+  ctx.font = '700 11px "Orbitron", monospace';
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = '#ffffff';
+  ctx.shadowBlur = 12;
+  ctx.fillText('NEXUS', nx.x, nx.y);
+  ctx.restore();
 
-  // draw flash
-  drawFlash(nowMs);
+  /* Glyph below label */
+  ctx.save();
+  ctx.font = '400 14px "Orbitron", monospace';
+  ctx.fillStyle = 'rgba(255,255,255,.4)';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('⇋', nx.x, nx.y + 17);
+  ctx.restore();
 
-  // draw all nodes
-  const nodeOrder = ['terrain','environ','architect','lighting','civilization',
-                     'nexus',
-                     'zones','chars','scenes','props','seq'];
-  for (const key of nodeOrder) {
-    const n = nodePositions[key];
-    if (n) drawNode(n, state.t);
-  }
-
-  state.animFrame = requestAnimationFrame(drawFrame);
-}
-
-// ═══════════════════════════════════════════════════════
-//  DATA READING
-// ═══════════════════════════════════════════════════════
-
-function readAtlas() {
-  const d = state.atlasData;
-  for (const [key, lsKey] of Object.entries(ATLAS_KEYS)) {
-    try {
-      const raw = localStorage.getItem(lsKey);
-      d[key] = raw ? JSON.parse(raw) : null;
-    } catch(e) {
-      d[key] = null;
-    }
-  }
-}
-
-function atlasCount(key) {
-  const d = state.atlasData[key];
-  if (!d) return null;
-  if (key === 'terrain') {
-    const hexes = d.hexes || d;
-    return Array.isArray(hexes) ? hexes.length : null;
-  }
-  if (key === 'environ') return 'weather';
-  if (key === 'architect') {
-    const setts = d.settlements || d;
-    return Array.isArray(setts) ? setts.length : null;
-  }
-  if (key === 'lighting') return 'lighting';
-  if (key === 'civilization') {
-    const factions = d.factions || [];
-    const events   = d.chronicle || d.events || [];
-    return `${factions.length} factions`;
-  }
-  return null;
-}
-
-function atlasMetaLabel(key) {
-  const d = state.atlasData[key];
-  if (!d) return '—';
-  if (key === 'terrain') {
-    const hexes = d.hexes || d;
-    const count = Array.isArray(hexes) ? hexes.length : '?';
-    const ts = d.timestamp || '';
-    return `${count} hexes${ts ? ' · ' + fmtTimestamp(ts) : ''}`;
-  }
-  if (key === 'environ') {
-    const season = d.season || '?';
-    const hour   = d.hour !== undefined ? `h${d.hour}` : '';
-    const weather = d.weather || '';
-    return `${season} ${hour} · ${weather}`.trim();
-  }
-  if (key === 'architect') {
-    const s = d.settlements || [];
-    return `${s.length} settlements`;
-  }
-  if (key === 'lighting') {
-    const srcs = (d.light_sources || []).length;
-    return `${srcs} light sources`;
-  }
-  if (key === 'civilization') {
-    const f = (d.factions || []).length;
-    const ev = (d.chronicle || d.events || []).length;
-    return `${f} factions · ${ev} events`;
-  }
-  return '—';
-}
-
-function fmtTimestamp(ts) {
-  try {
-    const d = new Date(ts);
-    return isNaN(d) ? ts : d.toLocaleTimeString();
-  } catch(e) { return ts; }
-}
-
-// ═══════════════════════════════════════════════════════
-//  UI UPDATE
-// ═══════════════════════════════════════════════════════
-
-function updateSourceUI() {
-  const keys = ['terrain','environ','architect','lighting','civilization'];
-  let linked = 0;
-  for (const k of keys) {
-    const dot = document.getElementById(`src-${k}-dot`);
-    const meta = document.getElementById(`src-${k}-meta`);
-    if (state.atlasData[k]) {
-      dot.className = 'source-dot dot-linked';
-      meta.textContent = atlasMetaLabel(k);
-      linked++;
-    } else {
-      dot.className = 'source-dot dot-empty';
-      meta.textContent = 'No snapshot';
-    }
-  }
-  document.getElementById('sb-atlas-in').textContent = linked;
-  return linked;
-}
-
-function updateAtlasChips() {
-  const map = {
-    terrain:      'chip-terrain',
-    environ:      'chip-environ',
-    architect:    'chip-arch',
-    lighting:     'chip-lumis',
-    civilization: 'chip-civex',
-  };
-  for (const [k, chipId] of Object.entries(map)) {
-    const chip = document.getElementById(chipId);
-    chip.className = 'tb-chip ' + (state.atlasData[k] ? 'lit' : 'dim');
-  }
-}
-
-function updateLoomUI() {
-  const loomMap = [
-    { key: 'zones',       lsKey: LOOM_KEYS.zones,       elVal: 'ls-zones',  elDot: 'ls-zones-dot',  chip: 'chip-zones',  unit: 'zones',    chipClass: 'loom-lit' },
-    { key: 'workspace',   lsKey: LOOM_KEYS.workspace,   elVal: 'ls-chars',  elDot: 'ls-chars-dot',  chip: 'chip-chars',  unit: 'characters', chipClass: 'loom-lit' },
-    { key: 'scenes',      lsKey: LOOM_KEYS.scenes,      elVal: 'ls-scenes', elDot: 'ls-scenes-dot', chip: 'chip-scenes', unit: 'scenes',   chipClass: 'loom-lit' },
-    { key: 'propagations',lsKey: LOOM_KEYS.propagations,elVal: 'ls-props',  elDot: 'ls-props-dot',  chip: 'chip-props',  unit: 'arcs',     chipClass: 'loom-lit' },
-    { key: 'sequencer',   lsKey: LOOM_KEYS.sequencer,   elVal: 'ls-seq',    elDot: 'ls-seq-dot',    chip: 'chip-seq',    unit: 'tracks',   chipClass: 'loom-lit' },
-  ];
-  let out = 0;
-  for (const m of loomMap) {
-    try {
-      const raw = localStorage.getItem(m.lsKey);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        let count = 0;
-        if (Array.isArray(parsed)) count = parsed.length;
-        else if (parsed && parsed.tracks) count = parsed.tracks.length;
-        else if (parsed) count = 1;
-        document.getElementById(m.elVal).textContent = `${count} ${m.unit}`;
-        document.getElementById(m.elDot).className = 'ls-dot present';
-        const chip = document.getElementById(m.chip);
-        if (chip) chip.className = 'tb-chip ' + m.chipClass;
-        out++;
-      } else {
-        document.getElementById(m.elVal).textContent = `0 ${m.unit}`;
-        document.getElementById(m.elDot).className = 'ls-dot absent';
-        const chip = document.getElementById(m.chip);
-        if (chip) chip.className = 'tb-chip dim';
-      }
-    } catch(e) {
-      document.getElementById(m.elVal).textContent = `0 ${m.unit}`;
-      document.getElementById(m.elDot).className = 'ls-dot absent';
-    }
-  }
-  document.getElementById('sb-loom-out').textContent = out;
-}
-
-function refreshAll() {
-  readAtlas();
-  updateSourceUI();
-  updateAtlasChips();
-  updateLoomUI();
-}
-
-// ═══════════════════════════════════════════════════════
-//  LOG
-// ═══════════════════════════════════════════════════════
-
-function addLog(tag, msg, tagClass) {
-  const scroll = document.getElementById('log-scroll');
-  const entry  = document.createElement('div');
-  entry.className = 'log-entry';
-  const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
-  entry.innerHTML =
-    `<span class="log-ts">[${ts}]</span>` +
-    `<span class="log-tag ${tagClass}">${tag.padEnd(10)}</span>` +
-    `<span class="log-msg">${msg}</span>`;
-  scroll.appendChild(entry);
-  scroll.scrollTop = scroll.scrollHeight;
-}
-
-// ═══════════════════════════════════════════════════════
-//  TRANSLATION LOGIC
-// ═══════════════════════════════════════════════════════
-
-function mostCommonBiome(hexes) {
-  const counts = {};
-  for (const h of hexes) {
-    const b = h.biome || 'unknown';
-    counts[b] = (counts[b] || 0) + 1;
-  }
-  return Object.entries(counts).sort((a,b) => b[1]-a[1])[0]?.[0] || 'unknown';
-}
-
-function avgElevation(hexes) {
-  if (!hexes.length) return 0;
-  return Math.round(hexes.reduce((s,h) => s + (h.elevation || 0), 0) / hexes.length);
-}
-
-function uniqueResources(hexes) {
-  const set = new Set();
-  for (const h of hexes) {
-    if (h.resources) {
-      if (Array.isArray(h.resources)) h.resources.forEach(r => set.add(r));
-      else if (typeof h.resources === 'string') set.add(h.resources);
-    }
-  }
-  return [...set].slice(0, 4);
-}
-
-function exportZones() {
-  const terrain = state.atlasData.terrain;
-  const architect = state.atlasData.architect;
-  if (!terrain) { addLog('ZONES', '✗ No terrain snapshot', 'err'); return []; }
-
-  const hexArray = Array.isArray(terrain) ? terrain : (terrain.hexes || []);
-
-  // Group by region name
-  const regionMap = {};
-  for (const hex of hexArray) {
-    const rname = hex.region || hex.region_name || 'Unknown Region';
-    if (!regionMap[rname]) regionMap[rname] = { hexes: [], faction: hex.faction || '' };
-    regionMap[rname].hexes.push(hex);
-    if (hex.faction && !regionMap[rname].faction) regionMap[rname].faction = hex.faction;
-  }
-
-  const zones = Object.entries(regionMap).map(([rname, rd]) => {
-    const biome = mostCommonBiome(rd.hexes);
-    const color = BIOME_COLORS[biome] || '#4a4a5a';
-    const resources = uniqueResources(rd.hexes);
-    const avgElev   = avgElevation(rd.hexes);
-    return {
-      id: `zone-${rname.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')}`,
-      name: rname,
-      biome,
-      hex_count: rd.hexes.length,
-      color,
-      faction: rd.faction,
-      notes: `Elevation avg: ${avgElev}m · Resources: ${resources.join(', ') || 'none'}`,
-    };
-  });
-
-  // Also add settlement zones from architect
-  if (architect) {
-    const settlements = architect.settlements || [];
-    for (const s of settlements) {
-      const existing = zones.find(z => z.name === (s.region || s.name));
-      if (!existing) {
-        zones.push({
-          id: `zone-settle-${s.name.toLowerCase().replace(/\s+/g,'-')}`,
-          name: s.name,
-          biome: 'settlement',
-          hex_count: 1,
-          color: '#c8a060',
-          faction: s.faction || '',
-          notes: `Settlement · Pop: ${s.population || 0}`,
-        });
-      }
+  /* ── Heartbeat trigger ── */
+  if (state.animT % 2 < 0.05) {
+    if (!state._lastHbFrame || state.animT - state._lastHbFrame > 0.9) {
+      state._lastHbFrame = state.animT;
+      state.heartbeatRings.push({ r: nexusR + 2, alpha: 0.55 });
+      flashHeartbeatDot();
+      /* randomly fire an input pulse */
+      const srcIdx = Math.floor(Math.random() * UPSTREAM_NAMES.length);
+      state.inputPulses.push({ t: 0, srcIdx });
     }
   }
 
-  localStorage.setItem(LOOM_KEYS.zones, JSON.stringify(zones));
-  addLog('ZONES', `← ${zones.length} biome regions extracted from ${hexArray.length} hexes`, 'zones');
-  return zones;
-}
-
-function exportCharacters() {
-  const architect = state.atlasData.architect;
-  const civilization = state.atlasData.civilization;
-  if (!architect && !civilization) {
-    addLog('CHARS', '✗ No architect or civilization snapshot', 'err');
-    return [];
-  }
-
-  const chars = [];
-  const settlements = architect ? (architect.settlements || []) : [];
-  const factions    = civilization ? (civilization.factions || []) : [];
-  const diplomacy   = civilization ? (civilization.diplomacy || {}) : {};
-
-  // Determine war status for factions
-  const atWarSet = new Set();
-  for (const [pair, status] of Object.entries(diplomacy)) {
-    if (status === 'WAR' || status === 'war') {
-      pair.split('-').forEach(f => atWarSet.add(f.trim()));
-      pair.split('_').forEach(f => atWarSet.add(f.trim()));
-    }
-  }
-
-  const maxPop = Math.max(...settlements.map(s => s.population || 1), 1);
-
-  for (const s of settlements) {
-    const warStatus = atWarSet.has(s.faction);
-    chars.push({
-      id: `char-settle-${s.name.toLowerCase().replace(/\s+/g,'-')}`,
-      name: s.name,
-      type: 'location',
-      faction: s.faction || '',
-      traits: ['Settlement', s.faction || 'Unknown', `Pop: ${s.population || 0}`],
-      origin_q: s.q || 0,
-      origin_r: s.r || 0,
-      emotional_vector: {
-        tension: warStatus ? 0.8 : 0.2,
-        prosperity: Math.min(1, (s.population || 0) / 5000),
-      },
-    });
-  }
-
-  for (const f of factions) {
-    const atWar = atWarSet.has(f.name);
-    chars.push({
-      id: `char-faction-${f.name.toLowerCase().replace(/\s+/g,'-')}`,
-      name: f.leader || `${f.name} Leader`,
-      type: 'character',
-      faction: f.name,
-      traits: ['Leader', f.name, `Tech: ${f.tech_level || 1}`],
-      emotional_vector: {
-        authority: 0.9,
-        tension: atWar ? 0.7 : 0.1,
-      },
-    });
-  }
-
-  localStorage.setItem(LOOM_KEYS.workspace, JSON.stringify(chars));
-  addLog('CHARS', `← ${settlements.length} settlements + ${factions.length} faction leaders created`, 'chars');
-  return chars;
-}
-
-function exportScenes() {
-  const civilization = state.atlasData.civilization;
-  const lighting     = state.atlasData.lighting;
-  if (!civilization) { addLog('SCENES', '✗ No civilization snapshot', 'err'); return []; }
-
-  const events  = civilization.chronicle || civilization.events || [];
-  const scenes  = events.map((ev, i) => {
-    const type = ev.type || 'event';
-    let mood = 'neutral';
-    if (type === 'battle' || type === 'war')     mood = 'conflict';
-    else if (type === 'founding' || type === 'birth') mood = 'hope';
-    else if (type === 'collapse' || type === 'disaster') mood = 'despair';
-
-    // Inject lighting mood if available
-    let lightingNote = '';
-    if (lighting) {
-      const sky = lighting.sky_tint || lighting.skyColor || '';
-      const dark = lighting.darkness || 0;
-      if (dark > 0.6) lightingNote = ' [night]';
-      else if (sky) lightingNote = ` [sky:${sky}]`;
-    }
-
-    return {
-      id: `scene-${ev.id || i}`,
-      name: (ev.description || ev.name || `Event ${i+1}`).slice(0, 40) + lightingNote,
-      era: ev.era || 1,
-      type,
-      icon: ev.icon || '⚡',
-      factions: ev.factions || [],
-      mood,
-      chapter: (ev.era || 1) * 5,
-    };
-  });
-
-  localStorage.setItem(LOOM_KEYS.scenes, JSON.stringify(scenes));
-  addLog('SCENES', `← ${scenes.length} chronicle events → scene stubs`, 'scenes');
-  return scenes;
-}
-
-function exportPropagations() {
-  const environ     = state.atlasData.environ;
-  const civilization = state.atlasData.civilization;
-  if (!environ && !civilization) {
-    addLog('PROPS', '✗ No environ or civilization snapshot', 'err');
-    return [];
-  }
-
-  const props = [];
-
-  // Weather arcs from pressure cells
-  if (environ) {
-    const cells = environ.pressure_cells || [];
-    for (const cell of cells) {
-      props.push({
-        id: `prop-weather-${(cell.name || 'cell').toLowerCase().replace(/\s+/g,'-')}`,
-        name: `${cell.name || 'Pressure Cell'} Weather Front`,
-        type: 'environmental',
-        origin: { x: cell.x || 0, y: cell.y || 0 },
-        spread_rate: 0.3,
-        decay: 0.05,
-        duration_days: 7,
-        effect: cell.type === 'L' ? 'precipitation' : 'drought',
-      });
-    }
-    // Fallback: one weather arc from current weather
-    if (!cells.length && environ.weather) {
-      props.push({
-        id: 'prop-weather-current',
-        name: `${environ.weather} Weather Front`,
-        type: 'environmental',
-        origin: { x: 0, y: 0 },
-        spread_rate: 0.3,
-        decay: 0.05,
-        duration_days: 7,
-        effect: 'weather-drift',
-      });
-    }
-  }
-
-  // Civilization spread arcs
-  if (civilization) {
-    const factions = civilization.factions || [];
-    const diplomacy = civilization.diplomacy || {};
-    const atWarSet  = new Set();
-    for (const [pair, status] of Object.entries(diplomacy)) {
-      if (status === 'WAR' || status === 'war') {
-        pair.split('-').forEach(f => atWarSet.add(f.trim()));
-        pair.split('_').forEach(f => atWarSet.add(f.trim()));
-      }
-    }
-    const maxFacPop = Math.max(...factions.map(f => f.population || 1), 1);
-
-    for (const f of factions) {
-      if (atWarSet.has(f.name) || (f.population || 0) > maxFacPop * 0.4) {
-        props.push({
-          id: `prop-civspread-${f.name.toLowerCase().replace(/\s+/g,'-')}`,
-          name: `${f.name} Expansion`,
-          type: 'civilization',
-          origin_hex: f.capital_hex || null,
-          spread_rate: (f.population || 1000) / 10000,
-          decay: 0.02,
-          duration_eras: 3,
-          effect: 'territory-expansion',
-        });
-      }
-    }
-  }
-
-  const weatherCount = props.filter(p => p.type === 'environmental').length;
-  const civCount     = props.filter(p => p.type === 'civilization').length;
-
-  localStorage.setItem(LOOM_KEYS.propagations, JSON.stringify(props));
-  addLog('PROPS', `← ${weatherCount} weather arcs + ${civCount} spread arcs generated`, 'props');
-  return props;
-}
-
-function exportSequencer() {
-  const civilization = state.atlasData.civilization;
-  const environ      = state.atlasData.environ;
-  if (!civilization) { addLog('SEQ', '✗ No civilization snapshot', 'err'); return {}; }
-
-  const factions = civilization.factions || [];
-  const eras     = civilization.eras || [...new Set(
-    (civilization.chronicle || civilization.events || []).map(e => e.era || 1)
-  )].sort();
-  if (!eras.length) eras.push(1);
-
-  // Use environ for timeline anchor
-  const currentHour = environ ? (environ.hour || 0) : 0;
-  const currentDay  = environ ? (environ.day  || 1) : 1;
-
-  const maxPop = Math.max(...factions.map(f => f.population || 1), 1);
-
-  const tracks = factions.map(f => ({
-    id: `track-${f.name.toLowerCase().replace(/\s+/g,'-')}`,
-    name: f.name,
-    color: f.color || COLORS.civilization,
-    blocks: eras.map((era, i) => ({
-      bar_start: i * 5 + 1,
-      bar_end:   i * 5 + 5,
-      label:     `Era ${era} · Pop: ${f.population_at_era?.[era] || f.population || 0}`,
-      intensity: (f.population || 1000) / maxPop,
-    })),
-  }));
-
-  const sequencer = {
-    tracks,
-    timeline_anchor: { hour: currentHour, day: currentDay },
-    era_count: eras.length,
-    bars_total: eras.length * 5,
-  };
-
-  localStorage.setItem(LOOM_KEYS.sequencer, JSON.stringify(sequencer));
-  addLog('SEQ', `← ${eras.length} eras mapped to bars 1–${eras.length * 5}`, 'seq');
-  return sequencer;
-}
-
-function broadcastSignalBus() {
-  const civ    = state.atlasData.civilization;
-  const env    = state.atlasData.environ;
-
-  const factions = civ ? (civ.factions || []) : [];
-  const diplomacy = civ ? (civ.diplomacy || {}) : {};
-  const atWar = [];
-  for (const [pair, status] of Object.entries(diplomacy)) {
-    if (status === 'WAR' || status === 'war') {
-      pair.split('-').forEach(f => atWar.push(f.trim()));
-    }
-  }
-
-  const eras = civ ? (civ.eras || []) : [];
-  const currentEra = eras.length ? eras[eras.length - 1] : 1;
-
-  const payload = {
-    event: 'atlas-sync',
-    timestamp: new Date().toISOString(),
-    hour: env ? (env.hour || 0) : 0,
-    season: env ? (env.season || 'Unknown') : 'Unknown',
-    era: currentEra,
-    active_weather: env ? (env.weather || 'Clear') : 'Clear',
-    faction_count: factions.length,
-    at_war: [...new Set(atWar)],
-  };
-
-  localStorage.setItem('ql-signal-bus', JSON.stringify(payload));
-  window.parent.postMessage({type:'hub:storage:write',key:'ql-signal-bus',value:JSON.stringify(payload)},'*');
-  addLog('SIGNAL', `→ Broadcast emitted · era:${currentEra} season:${payload.season}`, 'info');
-  return payload;
-}
-
-function exportNexusCapsule(zonesResult, charsResult, scenesResult, propsResult, seqResult) {
-  const capsule = {
-    module: '06-bridge',
-    generated: new Date().toISOString(),
-    summary: {
-      zones:       Array.isArray(zonesResult)  ? zonesResult.length  : 0,
-      characters:  Array.isArray(charsResult)  ? charsResult.length  : 0,
-      scenes:      Array.isArray(scenesResult) ? scenesResult.length : 0,
-      propagations: Array.isArray(propsResult) ? propsResult.length  : 0,
-      seq_tracks:  seqResult.tracks ? seqResult.tracks.length : 0,
-    },
-    atlas_linked: Object.entries(state.atlasData)
-      .filter(([,v]) => v !== null).map(([k]) => k),
-  };
-  localStorage.setItem('qa-bridge-snapshot', JSON.stringify(capsule));
-  window.parent.postMessage({type:'hub:storage:write',key:'qa-bridge-snapshot',value:JSON.stringify(capsule)},'*');
-  addLog('NEXUS', `→ Bridge capsule exported`, 'info');
-}
-
-// ═══════════════════════════════════════════════════════
-//  PIPELINE OVERLAY
-// ═══════════════════════════════════════════════════════
-
-function setPipStep(idx, status) {
-  const ind = document.getElementById(`pip-ind-${idx}`);
-  if (ind) ind.className = `pip-indicator ${status}`;
-  const pct = Math.round(((idx + (status === 'done' ? 1 : 0)) / 8) * 100);
-  document.getElementById('pip-bar').style.width = pct + '%';
-  document.getElementById('pip-bar-label').textContent =
-    `${status === 'done' ? idx + 1 : idx} / 8 steps`;
-}
-
-async function delay(ms) {
-  return new Promise(r => setTimeout(r, ms));
-}
-
-async function runPipeline() {
-  if (state.syncing) return;
-
-  // Warn before overwriting existing Loom data
-  const hasLoomData = Object.values(LOOM_KEYS).some(k => localStorage.getItem(k));
-  if (hasLoomData) {
-    const ok = confirm('This will overwrite existing Loom data (Workspace, Zones, Scenes, Sequencer) with Atlas-generated content.\n\nContinue?');
-    if (!ok) return;
-  }
-
-  state.syncing = true;
-
-  document.getElementById('sb-status-text').textContent = 'SYNCING';
-
-  // Reset indicators
-  for (let i = 0; i < 8; i++) setPipStep(i, '');
-
-  const overlay = document.getElementById('pipeline-overlay');
-  overlay.classList.add('visible');
-
-  document.getElementById('pip-bar').style.width = '0%';
-  document.getElementById('pip-bar-label').textContent = '0 / 8 steps';
-
-  addLog('BRIDGE', '─── SYNC ALL started ───', 'info');
-
-  // Step 0: collect
-  setPipStep(0, 'running');
-  await delay(300);
-  readAtlas();
-  updateSourceUI();
-  updateAtlasChips();
-  const linkedCount = Object.values(state.atlasData).filter(v => v !== null).length;
-  addLog('ATLAS', `← ${linkedCount}/5 snapshots loaded`, 'info');
-  setPipStep(0, linkedCount > 0 ? 'done' : 'error');
-  await delay(200);
-
-  // Step 1: zones
-  let zonesResult = [];
-  if (isChecked('q-zones')) {
-    setPipStep(1, 'running');
-    await delay(280);
-    zonesResult = exportZones();
-    setPipStep(1, 'done');
-    spawnPackets('terrain', 'zones', COLORS.terrain, 1200);
-    spawnPackets('architect', 'zones', COLORS.architect, 1200);
-    await delay(220);
-  } else { setPipStep(1, 'done'); }
-
-  // Step 2: characters
-  let charsResult = [];
-  if (isChecked('q-chars')) {
-    setPipStep(2, 'running');
-    await delay(280);
-    charsResult = exportCharacters();
-    setPipStep(2, 'done');
-    spawnPackets('architect', 'chars', COLORS.architect, 1200);
-    spawnPackets('civilization', 'chars', COLORS.civilization, 1300);
-    await delay(220);
-  } else { setPipStep(2, 'done'); }
-
-  // Step 3: scenes
-  let scenesResult = [];
-  if (isChecked('q-scenes')) {
-    setPipStep(3, 'running');
-    await delay(280);
-    scenesResult = exportScenes();
-    setPipStep(3, 'done');
-    spawnPackets('civilization', 'scenes', COLORS.civilization, 1200);
-    spawnPackets('lighting', 'scenes', COLORS.lighting, 1300);
-    spawnPackets('architect', 'scenes', COLORS.architect, 1400);
-    await delay(220);
-  } else { setPipStep(3, 'done'); }
-
-  // Step 4: propagations
-  let propsResult = [];
-  if (isChecked('q-props')) {
-    setPipStep(4, 'running');
-    await delay(280);
-    propsResult = exportPropagations();
-    setPipStep(4, 'done');
-    spawnPackets('environ', 'props', COLORS.environ, 1200);
-    spawnPackets('civilization', 'props', COLORS.civilization, 1300);
-    await delay(220);
-  } else { setPipStep(4, 'done'); }
-
-  // Step 5: sequencer
-  let seqResult = {};
-  if (isChecked('q-seq')) {
-    setPipStep(5, 'running');
-    await delay(280);
-    seqResult = exportSequencer();
-    setPipStep(5, 'done');
-    spawnPackets('civilization', 'seq', COLORS.civilization, 1200);
-    spawnPackets('environ', 'seq', COLORS.environ, 1300);
-    await delay(220);
-  } else { setPipStep(5, 'done'); }
-
-  // Step 6: signal bus
-  setPipStep(6, 'running');
-  await delay(250);
-  broadcastSignalBus();
-  setPipStep(6, 'done');
-  await delay(200);
-
-  // Step 7: nexus capsule
-  setPipStep(7, 'running');
-  await delay(250);
-  exportNexusCapsule(zonesResult, charsResult, scenesResult, propsResult, seqResult);
-  setPipStep(7, 'done');
-
-  // Update state
-  state.lastSync = new Date();
-  document.getElementById('sb-last-sync').textContent =
-    state.lastSync.toLocaleTimeString('en-US', { hour12: false });
-  document.getElementById('pip-bar').style.width = '100%';
-  document.getElementById('pip-bar-label').textContent = '8 / 8 steps — complete';
-
-  // Flash target nodes
-  state.flashUntil = performance.now() + 1000;
-
-  updateLoomUI();
-
-  addLog('BRIDGE', '─── SYNC ALL complete ───', 'info');
-
-  await delay(1200);
-  overlay.classList.remove('visible');
-  state.syncing = false;
-  document.getElementById('sb-status-text').textContent = 'READY';
-}
-
-// ═══════════════════════════════════════════════════════
-//  PACKET SPAWNING
-// ═══════════════════════════════════════════════════════
-
-let packetIdCounter = 0;
-
-function spawnPackets(srcKey, tgtKey, color, durationMs) {
-  const now = performance.now();
-  // Stagger 3 packets
-  for (let i = 0; i < 3; i++) {
-    state.syncPackets.push({
-      id: packetIdCounter++,
-      srcKey,
-      tgtKey,
-      color,
-      startMs: now + i * 120,
-      durationMs,
-    });
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-//  UI HELPERS
-// ═══════════════════════════════════════════════════════
-
-function toggleSection(id) {
-  const sec = document.getElementById(id);
-  if (sec) sec.classList.toggle('collapsed');
-}
-
-function toggleQueue(id) {
-  const cb = document.getElementById(id);
-  if (cb) cb.classList.toggle('checked');
-}
-
-function isChecked(id) {
-  const cb = document.getElementById(id);
-  return cb ? cb.classList.contains('checked') : false;
-}
-
-// ═══════════════════════════════════════════════════════
-//  MOCK DATA (for demo when no Atlas snapshots present)
-// ═══════════════════════════════════════════════════════
-
-function injectMockData() {
-  // Only inject if no data present at all
-  const hasAny = Object.values(ATLAS_KEYS).some(k => localStorage.getItem(k));
-  if (hasAny) return;
-
-  const terrain = {
-    hexes: Array.from({length: 63}, (_, i) => ({
-      q: (i % 9) - 4, r: Math.floor(i / 9) - 3,
-      biome: ['grassland','forest','mountain','desert','ocean','plains','tundra','wetlands','hills'][i % 9],
-      elevation: Math.floor(Math.random() * 800),
-      moisture: Math.random(),
-      resources: [['iron','timber','stone','grain','fish','coal','gems','salt','clay'][i % 9]],
-      region: ['Verdant Vale','Iron Peaks','Ashwood','Dune Sea','Azure Bay','Heartland','Frozen North','Bogmere','Highland Rim'][i % 9],
-      faction: ['Aldorheim','Venthar','Solaran','Dune Pact','Aldorheim','Venthar','Iceguard','Bogkin','Highlander'][i % 9],
-    }))
-  };
-
-  const environ = {
-    hour: 14, day: 47, season: 'Summer', moonPhase: 'Waxing',
-    weather: 'Storm Front', skyColor: '#3a5a8a',
-    pressure_cells: [
-      { name: 'Northern High', type: 'H', x: 2, y: -3 },
-      { name: 'Southern Low',  type: 'L', x: -1, y: 2 },
-      { name: 'Coastal Front', type: 'L', x: 3, y: 0  },
-    ],
-  };
-
-  const architect = {
-    settlements: [
-      { name: 'Aldorheim Keep', q:0, r:0, faction:'Aldorheim', population:4200, streets: 8, buildings: 42 },
-      { name: 'Venthar Port',   q:3, r:-2, faction:'Venthar', population:3100, streets: 5, buildings: 31 },
-      { name: 'Solaran Spire',  q:-2, r:3, faction:'Solaran', population:2800, streets: 6, buildings: 28 },
-      { name: 'Dune Outpost',   q:4, r:1, faction:'Dune Pact', population:900, streets: 2, buildings: 9 },
-      { name: 'Iceguard Tor',   q:-3, r:-2, faction:'Iceguard', population:700, streets: 2, buildings: 8 },
-      { name: 'Bogkin Hollow',  q:1, r:4, faction:'Bogkin', population:500, streets: 1, buildings: 5 },
-    ],
-  };
-
-  const lighting = {
-    light_sources: [
-      { type: 'sun', intensity: 0.8, azimuth: 220, elevation: 55 },
-      { type: 'ambient', intensity: 0.3 },
-    ],
-    darkness: 0.1,
-    sky_tint: '#3a5a8a',
-  };
-
-  const civilization = {
-    factions: [
-      { name: 'Aldorheim',  leader: 'King Vauren',   population: 18000, tech_level: 3, color: '#4a90d9' },
-      { name: 'Venthar',    leader: 'Admiral Selk',  population: 14000, tech_level: 3, color: '#4ecdc4' },
-      { name: 'Solaran',    leader: 'Archmage Lyra', population: 12000, tech_level: 4, color: '#f98f3b' },
-      { name: 'Dune Pact',  leader: 'Sheikh Amara',  population: 7000,  tech_level: 2, color: '#ffd166' },
-      { name: 'Iceguard',   leader: 'Jarl Kossmir',  population: 4500,  tech_level: 2, color: '#b1d0f0' },
-      { name: 'Bogkin',     leader: 'Elder Murvash', population: 2800,  tech_level: 1, color: '#ffffff' },
-    ],
-    diplomacy: {
-      'Aldorheim-Venthar': 'WAR', 'Solaran-Dune Pact': 'ALLIANCE',
-      'Iceguard-Bogkin': 'NEUTRAL', 'Aldorheim-Solaran': 'PEACE',
-    },
-    eras: [1, 2, 3, 4, 5],
-    chronicle: [
-      { id:'e1', era:1, type:'founding',  icon:'🏰', description:'Aldorheim Keep founded by Vauren I', factions:['Aldorheim'] },
-      { id:'e2', era:1, type:'founding',  icon:'⚓', description:'Venthar Port established by sea traders', factions:['Venthar'] },
-      { id:'e3', era:2, type:'battle',    icon:'⚔', description:'Battle of the Iron Gate — Aldorheim vs Venthar', factions:['Aldorheim','Venthar'] },
-      { id:'e4', era:2, type:'alliance',  icon:'🤝', description:'Solaran-Dune Pact Treaty of the Sands', factions:['Solaran','Dune Pact'] },
-      { id:'e5', era:3, type:'disaster',  icon:'🌊', description:'Great Flood devastates coastal settlements', factions:['Venthar','Bogkin'] },
-      { id:'e6', era:3, type:'founding',  icon:'❄',  description:'Iceguard Tor raised in the frozen north', factions:['Iceguard'] },
-      { id:'e7', era:4, type:'battle',    icon:'🔥', description:'Siege of Aldorheim Keep — Venthar offensive', factions:['Aldorheim','Venthar'] },
-      { id:'e8', era:4, type:'discovery', icon:'✨', description:'Solaran Archmages unlock resonance crystals', factions:['Solaran'] },
-      { id:'e9', era:5, type:'event',     icon:'🌟', description:'Era of the Nexus — all factions witness the Rift', factions:['Aldorheim','Venthar','Solaran','Dune Pact','Iceguard','Bogkin'] },
-    ],
-  };
-
-  // Load demo data into memory only — never overwrite real Atlas localStorage keys
-  state.atlasData.terrain      = terrain;
-  state.atlasData.environ      = environ;
-  state.atlasData.architect    = architect;
-  state.atlasData.lighting     = lighting;
-  state.atlasData.civilization = civilization;
-
-  addLog('DEMO', 'Mock Atlas data loaded in-memory (no real snapshots found — visit Atlas modules to generate real data)', 'info');
-}
-
-// ═══════════════════════════════════════════════════════
-//  CLEAR LOOM
-// ═══════════════════════════════════════════════════════
-
-function clearLoom() {
-  const keys = [...Object.values(LOOM_KEYS), 'ql-signal-bus', 'qa-bridge-snapshot'];
-  let removed = 0;
-  for (const k of keys) {
-    if (localStorage.getItem(k) !== null) {
-      localStorage.removeItem(k);
-      removed++;
-    }
-  }
-  updateLoomUI();
-  addLog('CLEAR', `✓ Removed ${removed} Loom keys`, 'info');
-}
-
-// ═══════════════════════════════════════════════════════
-//  EVENT WIRING
-// ═══════════════════════════════════════════════════════
-
-function wireEvents() {
-  document.getElementById('tb-sync-btn').addEventListener('click', () => runPipeline());
-  document.getElementById('lp-sync-btn').addEventListener('click', () => runPipeline());
-  document.getElementById('tb-clear-btn').addEventListener('click', () => clearLoom());
-  document.getElementById('broadcast-btn').addEventListener('click', () => {
-    readAtlas();
-    broadcastSignalBus();
-    updateLoomUI();
-  });
-
-  // Pillar tabs
-  document.querySelectorAll('.tb-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-    });
-  });
-
-  // Close overlay on background click (safety)
-  document.getElementById('pipeline-overlay').addEventListener('click', e => {
-    if (e.target === document.getElementById('pipeline-overlay') && !state.syncing) {
-      document.getElementById('pipeline-overlay').classList.remove('visible');
-    }
-  });
-
-  // Resize
-  const ro = new ResizeObserver(() => resizeCanvas());
-  ro.observe(canvasWrap);
-}
-
-// ═══════════════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════════════
-
-function init() {
-  resizeCanvas();
-  wireEvents();
-  injectMockData();
-  refreshAll();
+  state.animT += 1 / 60;
   requestAnimationFrame(drawFrame);
-  addLog('NEXUS', 'Module 06 · Bridge initialised', 'info');
 }
 
-window.addEventListener('DOMContentLoaded', init);
-window.addEventListener('storage', () => { readAtlas(); updateSourceUI(); updateAtlasChips(); updateLoomUI(); });
+drawFrame();
 
-// ── Theme sync (receives ql:theme from hub) ─────────────────────────────────
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+/* ════════════════════════════════════════════════════
+   SNAPSHOT HELPERS
+════════════════════════════════════════════════════ */
+
+const MODULE_ORDER = Object.keys(MODULE_KEYS);
+
+function loadSnap(key) {
+  try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch { return null; }
+}
+
+function isModulePopulated(idx) {
+  const key = MODULE_KEYS[MODULE_ORDER[idx]];
+  return loadSnap(key) !== null;
+}
+
+/* ════════════════════════════════════════════════════
+   WSA PROGRESS ROWS
+════════════════════════════════════════════════════ */
+
+function buildWsaProgress() {
+  const container = document.getElementById('wsa-progress');
+  container.innerHTML = '';
+  MODULE_ORDER.forEach(mod => {
+    const key  = MODULE_KEYS[mod];
+    const snap = loadSnap(key);
+    const row  = document.createElement('div');
+    row.className = 'wsa-row';
+    row.dataset.modKey = key;
+
+    const keyEl  = document.createElement('div');
+    keyEl.className = 'wsa-key';
+    keyEl.textContent = mod;
+
+    const barWrap = document.createElement('div');
+    barWrap.className = 'wsa-bar-wrap';
+    const bar = document.createElement('div');
+    bar.className = 'wsa-bar' + (snap ? ' filled' : '');
+    bar.style.width = snap ? '100%' : '0%';
+    barWrap.appendChild(bar);
+
+    const status = document.createElement('div');
+    status.className = 'wsa-status';
+    status.textContent = snap ? 'OK' : '—';
+
+    row.appendChild(keyEl);
+    row.appendChild(barWrap);
+    row.appendChild(status);
+    container.appendChild(row);
+  });
+}
+
+buildWsaProgress();
+
+/* ════════════════════════════════════════════════════
+   BROADCAST TARGET LIST
+════════════════════════════════════════════════════ */
+
+function buildTargetList() {
+  const container = document.getElementById('target-list');
+  container.innerHTML = '';
+  OUTPUT_TARGETS.forEach(tgt => {
+    const row  = document.createElement('div');
+    row.className = 'target-row';
+    row.id = 'trow-' + tgt.id;
+
+    const swatch = document.createElement('div');
+    swatch.className = 'target-swatch';
+    swatch.style.background = tgt.color;
+    swatch.style.boxShadow   = `0 0 6px ${tgt.color}66`;
+
+    const name = document.createElement('div');
+    name.className = 'target-name';
+    name.textContent = tgt.label;
+
+    const statusEl = document.createElement('div');
+    statusEl.className = 'target-status tst-sim';
+    statusEl.textContent = 'SIMULATED';
+    statusEl.id = 'tstatus-' + tgt.id;
+
+    const togWrap  = document.createElement('div');
+    togWrap.className = 'tog-wrap';
+    const togInput = document.createElement('input');
+    togInput.type    = 'checkbox';
+    togInput.className = 'tog-input';
+    togInput.id       = 'tog-' + tgt.id;
+    togInput.checked  = state.targetEnabled[tgt.id];
+    const togTrack = document.createElement('label');
+    togTrack.className = 'tog-track';
+    togTrack.htmlFor   = 'tog-' + tgt.id;
+    togInput.addEventListener('change', () => {
+      state.targetEnabled[tgt.id] = togInput.checked;
+      updateStatusBar();
+    });
+    togWrap.appendChild(togInput);
+    togWrap.appendChild(togTrack);
+
+    row.appendChild(swatch);
+    row.appendChild(name);
+    row.appendChild(statusEl);
+    row.appendChild(togWrap);
+    container.appendChild(row);
+  });
+}
+
+buildTargetList();
+
+/* ════════════════════════════════════════════════════
+   ASSEMBLE PACKET
+════════════════════════════════════════════════════ */
+
+function assemblePacket() {
+  /* Animate progress bars */
+  const rows = document.querySelectorAll('.wsa-row');
+  rows.forEach((row, i) => {
+    const key  = row.dataset.modKey;
+    const snap = loadSnap(key);
+    const bar  = row.querySelector('.wsa-bar');
+    const st   = row.querySelector('.wsa-status');
+    setTimeout(() => {
+      if (snap) {
+        bar.style.width = '100%';
+        bar.classList.add('filled');
+        st.textContent = 'OK';
+        st.style.color = 'rgba(255,255,255,.5)';
+      } else {
+        bar.style.width = '15%';
+        bar.classList.remove('filled');
+        st.textContent = 'EMPTY';
+        st.style.color = 'rgba(212,91,91,.5)';
+      }
+    }, i * 40);
+  });
+
+  const modules = {};
+  let populated = 0;
+  MODULE_ORDER.forEach(mod => {
+    const key  = MODULE_KEYS[mod];
+    const snap = loadSnap(key);
+    modules[mod] = snap || null;
+    if (snap) populated++;
+  });
+
+  const enabledTargets = OUTPUT_TARGETS
+    .filter(t => state.targetEnabled[t.id])
+    .map(t => t.label);
+
+  const packet = {
+    quantum_atlas: '1.0',
+    timestamp: new Date().toISOString(),
+    version: (state.worldPacket?.version || 0) + 1,
+    modules,
+    broadcast_targets: enabledTargets,
+    packet_size_kb: 0,
+  };
+
+  const jsonStr = JSON.stringify(packet, null, 2);
+  packet.packet_size_kb = parseFloat((new Blob([jsonStr]).size / 1024).toFixed(2));
+  state.worldPacket  = packet;
+  state.populatedSnaps = populated;
+  state.packetKb = packet.packet_size_kb;
+
+  /* Update stats */
+  document.getElementById('stat-modules').textContent = MODULE_ORDER.length;
+  document.getElementById('stat-populated').textContent = populated;
+  document.getElementById('stat-kb').textContent = packet.packet_size_kb.toFixed(1);
+
+  /* Update preview */
+  const pre = document.getElementById('ws-preview');
+  pre.textContent = JSON.stringify(packet, null, 2);
+
+  /* Activate components in layers I & II */
+  ['SNC','WSA','DDE','SVS'].forEach(c => activateComp(c));
+  setTimeout(() => ['WSB','OMF','REH','UPE'].forEach(c => activateComp(c)), 300);
+
+  addTxLog('NETWORK', 'network', `Packet assembled — ${populated}/15 modules, ${packet.packet_size_kb} KB`);
+
+  /* Run delta diff and stamp */
+  setTimeout(() => {
+    runDeltaDiff(packet);
+    stampVersion(packet);
+  }, 200);
+
+  updateStatusBar();
+  saveSnapshot();
+}
+
+/* ════════════════════════════════════════════════════
+   BROADCAST
+════════════════════════════════════════════════════ */
+
+function doBroadcast() {
+  if (!state.worldPacket) {
+    addTxLog('ERR', 'sys', 'No packet assembled — run Assemble first');
+    return;
+  }
+
+  const enabledTargets = OUTPUT_TARGETS.filter(t => state.targetEnabled[t.id]);
+  if (enabledTargets.length === 0) {
+    addTxLog('WARN', 'sys', 'No broadcast targets enabled');
+    return;
+  }
+
+  state.broadcastCount++;
+  state.lastBroadcast = new Date().toISOString();
+
+  /* Flash broadcast button */
+  const btn = document.getElementById('btn-broadcast');
+  btn.classList.add('active-broadcast');
+  setTimeout(() => btn.classList.remove('active-broadcast'), 700);
+
+  /* Fire canvas pulses to each enabled output node */
+  enabledTargets.forEach((tgt, delay) => {
+    const idx = OUTPUT_TARGETS.findIndex(t => t.id === tgt.id);
+    setTimeout(() => {
+      state.pulses.push({ t: 0, targetIdx: idx });
+    }, delay * 80);
+  });
+
+  /* Fire input pulses (all inputs light up) */
+  for (let i = 0; i < UPSTREAM_NAMES.length; i++) {
+    setTimeout(() => {
+      state.inputPulses.push({ t: 0, srcIdx: i });
+    }, i * 30);
+  }
+
+  /* Activate target + monitor components */
+  setTimeout(() => ['UBB','UMP','GSE','DCM'].forEach(c => activateComp(c)), 200);
+  setTimeout(() => ['CST','PTL','ERH','NHP'].forEach(c => activateComp(c)), 500);
+
+  /* Run enhanced broadcast pipeline */
+  if (state.worldPacket) enhancedBroadcast(state.worldPacket);
+
+  /* Mode chip */
+  document.getElementById('chip-mode').className = 'tb-chip lit';
+  document.getElementById('chip-idle').className = 'tb-chip dim';
+
+  updateStatusBar();
+  setTimeout(saveSnapshot, 800);
+}
+
+/* ════════════════════════════════════════════════════
+   HEARTBEAT
+════════════════════════════════════════════════════ */
+
+function triggerHeartbeat() {
+  state.heartbeatRings.push({ r: 30, alpha: 0.6 });
+  flashHeartbeatDot();
+  activateComp('NHP');
+  addTxLog('NHP', 'network', `Heartbeat — ${new Date().toLocaleTimeString()}`);
+}
+
+let _hbFlashTimeout = null;
+function flashHeartbeatDot() {
+  const dot = document.getElementById('sb-hb-dot');
+  dot.classList.add('alive');
+  clearTimeout(_hbFlashTimeout);
+  _hbFlashTimeout = setTimeout(() => dot.classList.remove('alive'), 300);
+}
+
+/* Auto heartbeat */
+setInterval(triggerHeartbeat, HEARTBEAT_INTERVAL_MS);
+
+/* ════════════════════════════════════════════════════
+   TRANSMISSION LOG
+════════════════════════════════════════════════════ */
+
+const MAX_LOG = 120;
+
+function addTxLog(target, cssClass, msg) {
+  const body = document.getElementById('tx-log-body');
+  const entry = document.createElement('div');
+  entry.className = 'tx-entry';
+
+  const now = new Date();
+  const ts = now.toLocaleTimeString('en-US', { hour12: false,
+    hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  const tsEl  = document.createElement('span');
+  tsEl.className = 'tx-ts';
+  tsEl.textContent = ts;
+
+  const tgtEl = document.createElement('span');
+  tgtEl.className = `tx-target ${cssClass}`;
+  tgtEl.textContent = target.length > 12 ? target.slice(0, 12) : target;
+
+  const msgEl = document.createElement('span');
+  msgEl.className = 'tx-msg';
+  msgEl.textContent = msg;
+
+  entry.appendChild(tsEl);
+  entry.appendChild(tgtEl);
+  entry.appendChild(msgEl);
+  body.appendChild(entry);
+
+  /* Prune old entries */
+  while (body.childElementCount > MAX_LOG) {
+    body.removeChild(body.firstChild);
+  }
+  body.scrollTop = body.scrollHeight;
+}
+
+/* ════════════════════════════════════════════════════
+   COMPONENT ACTIVATION
+════════════════════════════════════════════════════ */
+
+let _compTimeouts = {};
+
+function activateComp(abbr) {
+  const card = document.querySelector(`.comp-card[data-comp="${abbr}"]`);
+  if (!card) return;
+  card.classList.add('active');
+  state.activeComps.add(abbr);
+  clearTimeout(_compTimeouts[abbr]);
+  _compTimeouts[abbr] = setTimeout(() => {
+    card.classList.remove('active');
+    state.activeComps.delete(abbr);
+    updateCompCount();
+  }, 3000);
+  updateCompCount();
+}
+
+function updateCompCount() {
+  document.getElementById('active-comp-count').textContent =
+    `${state.activeComps.size} / 16 active`;
+}
+
+/* Comp card click toggles */
+document.querySelectorAll('.comp-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const abbr = card.dataset.comp;
+    if (card.classList.contains('active')) {
+      card.classList.remove('active');
+      state.activeComps.delete(abbr);
+      clearTimeout(_compTimeouts[abbr]);
+    } else {
+      activateComp(abbr);
+    }
+    updateCompCount();
+  });
+});
+
+/* ════════════════════════════════════════════════════
+   SNAPSHOT SAVE
+════════════════════════════════════════════════════ */
+
+function saveSnapshot() {
+  const activeTargets = OUTPUT_TARGETS.filter(t => state.targetEnabled[t.id]).length;
+  const snap = {
+    system:               'Quantum Atlas',
+    module:               '16 · Network',
+    generated:            new Date().toISOString(),
+    upstream_modules:     15,
+    populated_snapshots:  state.populatedSnaps,
+    last_broadcast:       state.lastBroadcast,
+    broadcast_count:      state.broadcastCount,
+    active_targets:       activeTargets,
+    packet_size_kb:       state.packetKb,
+    heartbeat_interval_ms: HEARTBEAT_INTERVAL_MS,
+    connected:            state.broadcastCount > 0,
+  };
+  localStorage.setItem('qa-network-snapshot', JSON.stringify(snap));
+  window.parent.postMessage({type:'hub:storage:write',key:'qa-network-snapshot',value:JSON.stringify(snap)},'*');
+}
+
+/* ════════════════════════════════════════════════════
+   STATUS BAR UPDATE
+════════════════════════════════════════════════════ */
+
+function updateStatusBar() {
+  document.getElementById('sb-upstream').textContent  = '15';
+  document.getElementById('sb-populated').textContent = state.populatedSnaps;
+  document.getElementById('sb-bcount').textContent    = state.broadcastCount;
+  document.getElementById('sb-atargets').textContent  =
+    OUTPUT_TARGETS.filter(t => state.targetEnabled[t.id]).length;
+  document.getElementById('sb-pktkb').textContent     = state.packetKb.toFixed(1);
+}
+
+/* ════════════════════════════════════════════════════
+   COLLAPSIBLE SECTIONS
+════════════════════════════════════════════════════ */
+
+document.querySelectorAll('.rp-section-header').forEach(hdr => {
+  hdr.addEventListener('click', () => {
+    const sec = hdr.closest('.rp-section');
+    sec.classList.toggle('collapsed');
+    const chev = hdr.querySelector('.rp-sec-chevron');
+    if (chev) chev.textContent = sec.classList.contains('collapsed') ? '▸' : '▾';
+  });
+});
+
+/* ════════════════════════════════════════════════════
+   PREVIEW TOGGLE
+════════════════════════════════════════════════════ */
+
+let previewOpen = false;
+document.getElementById('preview-toggle').addEventListener('click', () => {
+  previewOpen = !previewOpen;
+  const pre   = document.getElementById('ws-preview');
+  const chev  = document.getElementById('preview-chevron');
+  const label = document.getElementById('preview-toggle-label');
+  pre.style.display   = previewOpen ? 'block' : 'none';
+  chev.classList.toggle('open', previewOpen);
+  label.textContent   = previewOpen ? 'Hide JSON' : 'Show JSON';
+});
+
+/* ════════════════════════════════════════════════════
+   BUTTON WIRING
+════════════════════════════════════════════════════ */
+
+document.getElementById('btn-assemble').addEventListener('click', assemblePacket);
+document.getElementById('btn-assemble-top').addEventListener('click', assemblePacket);
+document.getElementById('btn-broadcast').addEventListener('click', doBroadcast);
+document.getElementById('btn-heartbeat').addEventListener('click', triggerHeartbeat);
+
+document.getElementById('btn-clear-log').addEventListener('click', () => {
+  document.getElementById('tx-log-body').innerHTML = '';
+  addTxLog('NETWORK', 'network', 'Log cleared');
+});
+
+/* ════════════════════════════════════════════════════
+   DELTA DIFF ENGINE
+   Compares last two assembled packets and logs changes
+════════════════════════════════════════════════════ */
+
+let _prevPacket = null;
+
+function runDeltaDiff(newPacket) {
+  if (!_prevPacket) {
+    _prevPacket = newPacket;
+    addTxLog('DDE', 'network', 'Baseline snapshot established (v1)');
+    return;
+  }
+  activateComp('DDE');
+  const prev = _prevPacket.modules;
+  const curr = newPacket.modules;
+  let changes = 0;
+  const changed = [];
+  const added   = [];
+  const removed = [];
+
+  MODULE_ORDER.forEach(mod => {
+    const hadData = prev[mod] !== null && prev[mod] !== undefined;
+    const hasData = curr[mod] !== null && curr[mod] !== undefined;
+    if (!hadData && hasData) { added.push(mod); changes++; }
+    else if (hadData && !hasData) { removed.push(mod); changes++; }
+    else if (hadData && hasData) {
+      const ps = JSON.stringify(prev[mod]);
+      const cs = JSON.stringify(curr[mod]);
+      if (ps !== cs) { changed.push(mod); changes++; }
+    }
+  });
+
+  if (changes === 0) {
+    addTxLog('DDE', 'network', `v${_prevPacket.version}→v${newPacket.version}: No changes detected`);
+  } else {
+    if (added.length)   addTxLog('DDE', 'network', `+Added: ${added.join(', ')}`);
+    if (removed.length) addTxLog('DDE', 'network', `-Removed: ${removed.join(', ')}`);
+    if (changed.length) addTxLog('DDE', 'network', `~Changed: ${changed.join(', ')}`);
+    addTxLog('DDE', 'network', `${changes} delta(s) detected v${_prevPacket.version}→v${newPacket.version}`);
+  }
+
+  _prevPacket = newPacket;
+}
+
+/* ════════════════════════════════════════════════════
+   STATE VERSION STAMPER
+════════════════════════════════════════════════════ */
+
+function stampVersion(packet) {
+  activateComp('SVS');
+  const stamp = {
+    v:   packet.version,
+    ts:  packet.timestamp,
+    hash: simpleHash(JSON.stringify(packet.modules)),
+  };
+  addTxLog('SVS', 'network', `v${stamp.v} stamped — hash:${stamp.hash}`);
+  return stamp;
+}
+
+function simpleHash(str) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = (h * 0x01000193) >>> 0;
+  }
+  return h.toString(16).slice(0, 8).toUpperCase();
+}
+
+/* ════════════════════════════════════════════════════
+   URL PARAM ENCODER — ShaderToy target helper
+════════════════════════════════════════════════════ */
+
+function encodeShaderToyParams(modules) {
+  activateComp('UPE');
+  const flat = {};
+  MODULE_ORDER.forEach(mod => {
+    const snap = modules[mod];
+    if (!snap) return;
+    /* Extract a few numeric/string top-level keys */
+    Object.entries(snap).forEach(([k, v]) => {
+      if (typeof v === 'number' || typeof v === 'string') {
+        flat[`qa_${mod}_${k}`] = v;
+      }
+    });
+  });
+  const params = new URLSearchParams();
+  Object.entries(flat).slice(0, 32).forEach(([k, v]) => params.set(k, String(v)));
+  return params.toString();
+}
+
+/* ════════════════════════════════════════════════════
+   OSC MESSAGE FORMATTER — Theater target helper
+════════════════════════════════════════════════════ */
+
+function formatOscMessages(modules) {
+  activateComp('OMF');
+  const msgs = [];
+  /* Theater Light — emit DMX-style values */
+  const lighting = modules.lighting;
+  if (lighting) {
+    msgs.push({ address: '/qa/lighting/intensity', args: [lighting.intensity || 1.0] });
+    msgs.push({ address: '/qa/lighting/color',     args: [lighting.color_temp || 6500] });
+  }
+  /* Theater Sound — QLab cue triggers */
+  const sound = modules.sound;
+  if (sound) {
+    msgs.push({ address: '/qa/sound/volume', args: [sound.master_volume || 1.0] });
+    msgs.push({ address: '/qa/sound/cue',    args: [sound.active_cue   || 'Q1'] });
+  }
+  /* Story — scene trigger */
+  const story = modules.story;
+  if (story) {
+    msgs.push({ address: '/qa/story/scene', args: [story.current_scene || 'INIT'] });
+  }
+  return msgs;
+}
+
+/* ════════════════════════════════════════════════════
+   DMX CHANNEL MAPPER
+════════════════════════════════════════════════════ */
+
+const DMX_MAP = {
+  intensity: 1,
+  red:       2,
+  green:     3,
+  blue:      4,
+  pan:       5,
+  tilt:      6,
+  strobe:    7,
+  zoom:      8,
+};
+
+function buildDmxFrame(modules) {
+  activateComp('DCM');
+  const frame = new Array(512).fill(0);
+  const lighting = modules.lighting;
+  if (lighting) {
+    frame[DMX_MAP.intensity - 1] = Math.round((lighting.intensity || 1.0) * 255);
+    frame[DMX_MAP.strobe   - 1] = lighting.strobe_rate ? Math.round(lighting.strobe_rate * 255) : 0;
+  }
+  return frame.slice(0, 16); /* return first 16 channels for display */
+}
+
+/* ════════════════════════════════════════════════════
+   CONNECTION STATUS TRACKER
+════════════════════════════════════════════════════ */
+
+const connStatus = {};
+OUTPUT_TARGETS.forEach(t => { connStatus[t.id] = 'SIMULATED'; });
+
+function updateConnStatus(targetId, status) {
+  connStatus[targetId] = status;
+  const el = document.getElementById('tstatus-' + targetId);
+  if (!el) return;
+  el.textContent = status;
+  el.className   = 'target-status ' +
+    (status === 'CONNECTED' ? 'tst-conn' :
+     status === 'SIMULATED' ? 'tst-sim'  : 'tst-disc');
+  activateComp('CST');
+}
+
+/* ════════════════════════════════════════════════════
+   PACKET THROUGHPUT LOGGER
+════════════════════════════════════════════════════ */
+
+const throughputLog = [];
+const THROUGHPUT_WINDOW = 10; /* keep last 10 broadcasts */
+
+function recordThroughput(kb, targets) {
+  activateComp('PTL');
+  throughputLog.push({ ts: Date.now(), kb, targets });
+  if (throughputLog.length > THROUGHPUT_WINDOW) throughputLog.shift();
+  const avgKb  = throughputLog.reduce((a, e) => a + e.kb, 0) / throughputLog.length;
+  const rate   = throughputLog.length > 1
+    ? (throughputLog[throughputLog.length - 1].ts - throughputLog[0].ts) / (throughputLog.length - 1)
+    : 0;
+  addTxLog('PTL', 'network',
+    `Throughput: avg ${avgKb.toFixed(1)} KB, interval ${rate > 0 ? Math.round(rate) + 'ms' : '—'}`);
+}
+
+/* ════════════════════════════════════════════════════
+   ERROR RECOVERY HANDLER
+════════════════════════════════════════════════════ */
+
+let _errorCount = 0;
+const MAX_RETRY = 3;
+
+function handleBroadcastError(targetId, reason) {
+  _errorCount++;
+  activateComp('ERH');
+  updateConnStatus(targetId, 'DISCONNECTED');
+  addTxLog('ERH', 'network', `Error on ${targetId}: ${reason} (attempt ${_errorCount}/${MAX_RETRY})`);
+  if (_errorCount >= MAX_RETRY) {
+    addTxLog('ERH', 'sys', `Max retries reached — target ${targetId} marked disconnected`);
+    _errorCount = 0;
+  } else {
+    /* Simulated retry */
+    setTimeout(() => {
+      addTxLog('ERH', 'network', `Retry ${_errorCount} → ${targetId}`);
+      updateConnStatus(targetId, 'SIMULATED');
+    }, 1200 * _errorCount);
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   WEBSOCKET BROADCASTER (simulated)
+════════════════════════════════════════════════════ */
+
+function simulateWsBroadcast(packet, targetId) {
+  activateComp('WSB');
+  const msg = {
+    type:    'qa:world-state',
+    version: packet.version,
+    ts:      packet.timestamp,
+    payload: packet.modules,
+  };
+  const size = new Blob([JSON.stringify(msg)]).size;
+  addTxLog('WSB', 'network', `WS frame: ${(size / 1024).toFixed(2)} KB → ${targetId}`);
+  return size;
+}
+
+/* ════════════════════════════════════════════════════
+   REST ENDPOINT HANDLER (simulated)
+════════════════════════════════════════════════════ */
+
+function simulateRestPost(packet, targetId) {
+  activateComp('REH');
+  const endpoint = `/api/qa/${targetId}/state`;
+  addTxLog('REH', 'network', `POST ${endpoint} — ${packet.packet_size_kb} KB`);
+}
+
+/* ════════════════════════════════════════════════════
+   UNREAL BLUEPRINT BRIDGE
+════════════════════════════════════════════════════ */
+
+function pushToUnreal(packet) {
+  activateComp('UBB');
+  simulateWsBroadcast(packet, 'unreal');
+  const bpParams = {
+    TerrainScale:    packet.modules.terrain?.scale      || 1.0,
+    LightIntensity:  packet.modules.lighting?.intensity || 1.0,
+    FogDensity:      packet.modules.environment?.fog_density || 0.05,
+    NPC_Count:       packet.modules.society?.npc_count  || 0,
+  };
+  addTxLog('UBB', 'unreal', `BP params: ${Object.keys(bpParams).length} keys delivered`);
+}
+
+/* ════════════════════════════════════════════════════
+   UNITY MANIFEST PUSHER
+════════════════════════════════════════════════════ */
+
+function pushToUnity(packet) {
+  activateComp('UMP');
+  const manifest = {
+    version:   packet.version,
+    timestamp: packet.timestamp,
+    bundles:   MODULE_ORDER.filter(m => packet.modules[m]).map(m => ({
+      name:   `qa_${m}`,
+      hash:   simpleHash(JSON.stringify(packet.modules[m])),
+      size:   new Blob([JSON.stringify(packet.modules[m])]).size,
+    })),
+  };
+  addTxLog('UMP', 'unity', `Manifest: ${manifest.bundles.length} bundles, v${manifest.version}`);
+  simulateRestPost(packet, 'unity');
+}
+
+/* ════════════════════════════════════════════════════
+   GODOT SCENE EMITTER
+════════════════════════════════════════════════════ */
+
+function pushToGodot(packet) {
+  activateComp('GSE');
+  const scene = {
+    meta: { qa_version: packet.version },
+    nodes: MODULE_ORDER.filter(m => packet.modules[m]).map(m => ({
+      type: 'QANode',
+      name: m,
+      params: packet.modules[m],
+    })),
+  };
+  addTxLog('GSE', 'godot', `Scene emitted: ${scene.nodes.length} nodes via WebSocket`);
+  simulateWsBroadcast(packet, 'godot');
+}
+
+/* ════════════════════════════════════════════════════
+   ENHANCED BROADCAST — calls all sub-systems
+════════════════════════════════════════════════════ */
+
+function enhancedBroadcast(packet) {
+  const enabled = OUTPUT_TARGETS.filter(t => state.targetEnabled[t.id]);
+
+  /* Run delta diff */
+  runDeltaDiff(packet);
+  stampVersion(packet);
+  recordThroughput(packet.packet_size_kb, enabled.length);
+
+  enabled.forEach((tgt, i) => {
+    setTimeout(() => {
+      switch (tgt.id) {
+        case 'unreal':
+          pushToUnreal(packet);
+          break;
+        case 'unity':
+          pushToUnity(packet);
+          break;
+        case 'godot':
+          pushToGodot(packet);
+          break;
+        case 'blender':
+          activateComp('REH');
+          simulateRestPost(packet, 'blender');
+          addTxLog('BLENDER', 'blender', `Script params injected (${packet.packet_size_kb} KB)`);
+          break;
+        case 'shadertoy': {
+          const urlParams = encodeShaderToyParams(packet.modules);
+          addTxLog('SHADERTOY', 'shadertoy', `URL hash: ${urlParams.length} chars`);
+          break;
+        }
+        case 'theater-light': {
+          const oscMsgs = formatOscMessages(packet.modules);
+          const dmxFrame = buildDmxFrame(packet.modules);
+          addTxLog('THEATER-L', 'theater-light', `OSC: ${oscMsgs.length} msgs, DMX: ${dmxFrame.filter(v=>v>0).length} ch active`);
+          break;
+        }
+        case 'theater-sound': {
+          const oscMsgs = formatOscMessages(packet.modules);
+          addTxLog('THEATER-S', 'theater-sound', `OSC cues: ${oscMsgs.filter(m=>m.address.startsWith('/qa/sound')).length} msgs → QLab`);
+          break;
+        }
+        case 'generic':
+          simulateRestPost(packet, 'generic');
+          addTxLog('GENERIC', 'generic', `JSON payload: ${packet.packet_size_kb} KB delivered`);
+          break;
+      }
+      updateConnStatus(tgt.id, 'CONNECTED');
+    }, i * 120);
+  });
+}
+
+/* ════════════════════════════════════════════════════
+   TAB SWITCHING
+════════════════════════════════════════════════════ */
+
+document.querySelectorAll('.tb-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    /* Could switch canvas view modes in future */
+  });
+});
+
+/* ════════════════════════════════════════════════════
+   INITIAL BOOT LOG
+════════════════════════════════════════════════════ */
+
+(function bootLog() {
+  addTxLog('NETWORK', 'network', 'Module 16 · Network initialised');
+  addTxLog('NHP',     'network', `Heartbeat interval: ${HEARTBEAT_INTERVAL_MS}ms`);
+  setTimeout(() => addTxLog('SNC', 'network', 'Snapshot Collector ready — 15 upstream keys registered'), 200);
+  setTimeout(() => addTxLog('WSA', 'network', 'World State Assembler standby'), 400);
+  setTimeout(() => addTxLog('CST', 'network', 'Connection Status Tracker online'), 600);
+  setTimeout(() => {
+    /* Scan existing snapshots on load */
+    buildWsaProgress();
+    let found = 0;
+    MODULE_ORDER.forEach(mod => { if (loadSnap(MODULE_KEYS[mod])) found++; });
+    state.populatedSnaps = found;
+    updateStatusBar();
+    if (found > 0) {
+      addTxLog('SNC', 'network', `Auto-scan: ${found} upstream snapshots found`);
+    } else {
+      addTxLog('SNC', 'sys', 'No upstream snapshots found — assemble after other modules run');
+    }
+  }, 800);
+})();
+
+</script>
+
+<!-- ════════ Theme Sync IIFE ════════ -->
+<script>
 (function() {
   const MAP = {
-    'c-bg':      '--bg',
-    'c-surf':    '--surface',
-    'c-surf2':   '--surface2',
-    'c-edge':    '--edge',
-    'c-edge-hi': '--edge-hi',
-    'c-accent1': '--venturan',
-    'c-accent2': '--amber',
-    'c-accent3': '--emerald',
-    'c-accent4': '--fusion',
-    'c-danger':  '--blood',
-    'c-warm':    '--solari',
-    'c-text':    '--text',
+    'c-bg':'--bg','c-surf':'--surface','c-surf2':'--surface2',
+    'c-edge':'--edge','c-edge-hi':'--edge-hi','c-accent1':'--venturan',
+    'c-accent2':'--amber','c-accent3':'--emerald','c-accent4':'--fusion',
+    'c-danger':'--blood','c-warm':'--solari','c-text':'--text',
   };
   function applyTokens(tokens) {
     const root = document.documentElement;

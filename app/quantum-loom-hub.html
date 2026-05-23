@@ -6,7 +6,6 @@
 <title>Quantum Loom — Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
-<script src="loom-snapshot.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -37,25 +36,29 @@
   --c-subgraph:  #d45b5b;
   --c-ionodes:   #b1d0f0;
   --c-output:    #c8973a;
-  --c-atlas:     #1e8cff;
-  --c-environ:   #8050e0;
-  --c-architect: #64b4ff;
-  --c-lighting:  #e0d8ff;
-  --c-society:   #c8a860;
-  --c-bridge:    #4dc8a0;
-  --c-ecology:   #7fd4c8;
-  --c-behavior:      #9030d0;
+  /* Atlas module accent colors (01–16) */
+  --c-atlas:         #1e8cff;
+  --c-environ:       #8050e0;
+  --c-architect:     #64b4ff;
+  --c-lighting:      #e0d8ff;
   --c-modeling:      #f4c025;
   --c-choreography:  #dc3c78;
-  --c-atlas-sequencer: #b08030;
-  --c-civilization:  #e89640;
-  --c-network:       #4dc8a0;
+  --c-behavior:      #9030d0;
+  --c-society:       #c8a860;
+  --c-atlas-seq:     #b08030;
+  --c-story:         #8c50ff;
+  --c-memory:        #00c060;
+  --c-sound:         #dc8c1e;
+  --c-logic:         #20c8d0;
+  --c-simulation:    #30e060;
+  --c-forge:         #ff6400;
+  --c-network:       #ffffff;
 }
 
 html,body{
   height:100%;overflow:hidden;
   background:var(--bg);color:#fff;
-  font-family:var(--fd);font-size:14px;
+  font-family:var(--fd);font-size:15px;
 }
 
 /* ── Outer shell ─────────────────────────────────────── */
@@ -65,7 +68,7 @@ html,body{
 
 /* ── Top header bar ──────────────────────────────────── */
 #hub-header{
-  height:42px;flex-shrink:0;
+  height:52px;flex-shrink:0;
   display:flex;align-items:center;gap:0;
   background:var(--surface);border-bottom:1px solid var(--edge);
   position:relative;z-index:20;
@@ -103,6 +106,26 @@ html,body{
 
 .hh-spacer{flex:1}
 
+/* ── Header centered nav tabs ────────────────────────── */
+#hub-main-nav{
+  position:absolute;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:3px;
+  pointer-events:all;
+}
+.hn-tab{
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:0 10px;height:32px;border-radius:16px;cursor:pointer;transition:all .15s;
+  border:1px solid transparent;background:var(--surface2);color:rgba(255,255,255,.4);
+  display:flex;align-items:center;gap:5px;white-space:nowrap;min-width:80px;
+  justify-content:center;border-bottom:2px solid transparent;
+}
+.hn-tab:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.75)}
+.hn-tab.active{
+  background:rgba(255,255,255,.07);color:var(--venturan);
+  border-bottom-color:var(--venturan);
+}
+.hn-tab .hn-icon{font-size:.85rem;flex-shrink:0}
+
 /* Status chips */
 #status-bar{
   display:flex;align-items:center;gap:4px;padding:0 10px;
@@ -136,6 +159,153 @@ html,body{
   border-color:rgba(77,200,160,.35);background:rgba(77,200,160,.06);color:var(--emerald);
 }
 .hh-btn.hot:hover{background:rgba(77,200,160,.14);box-shadow:0 0 10px rgba(77,200,160,.15)}
+
+/* ── Right Properties Panel ──────────────────────────── */
+#hub-right-panel{
+  width:280px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;
+  transition:width .24s cubic-bezier(.2,.8,.2,1), opacity .2s;
+  position:relative;z-index:8;
+}
+#hub-right-panel::-webkit-scrollbar{width:5px}
+#hub-right-panel::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
+#hub-right-panel::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.6)}
+#hub-right-panel.collapsed{
+  width:0;opacity:0;pointer-events:none;overflow:hidden;
+}
+/* Toggle button sits on the right edge of #hub-content (the iframe area) */
+#rp-toggle{
+  position:absolute;right:0;top:50%;transform:translateY(-50%);
+  width:14px;height:44px;background:var(--surface);border:1px solid var(--edge);
+  border-right:none;border-radius:5px 0 0 5px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:.7rem;color:rgba(255,255,255,.35);
+  transition:color .12s, background .12s;
+  z-index:20;pointer-events:all;
+}
+#rp-toggle:hover{color:#fff;background:rgba(255,255,255,.06)}
+.rp-head{
+  padding:10px 14px 8px;border-bottom:1px solid var(--edge);flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+}
+.rp-title{
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);flex:1;
+}
+.rp-section{
+  border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.rp-sec-hd{
+  padding:7px 14px;display:flex;align-items:center;gap:6px;cursor:pointer;
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);transition:color .12s;user-select:none;
+}
+.rp-sec-hd:hover{color:rgba(255,255,255,.6)}
+.rp-sec-arrow{font-size:.5rem;transition:transform .15s;flex-shrink:0}
+.rp-sec-hd.open .rp-sec-arrow{transform:rotate(90deg)}
+.rp-sec-body{
+  padding:6px 14px 10px;display:none;
+}
+.rp-sec-body.open{display:block}
+.rp-layer-chip{
+  display:flex;align-items:center;gap:8px;padding:6px 8px;
+  border-radius:5px;background:rgba(255,255,255,.03);border:1px solid var(--edge);
+}
+.rp-color-chip{
+  width:10px;height:10px;border-radius:50%;flex-shrink:0;
+}
+.rp-layer-label{
+  font-family:var(--fm);font-size:.38rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.65);flex:1;
+}
+.rp-layer-file{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.25);margin-top:3px;
+}
+.rp-snapshot-pre{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.45);
+  background:rgba(0,0,0,.3);border-radius:4px;padding:6px 8px;
+  max-height:200px;overflow-y:auto;overflow-x:auto;
+  line-height:1.6;margin:0;white-space:pre-wrap;word-break:break-all;
+}
+.rp-snapshot-pre::-webkit-scrollbar{width:3px;height:3px}
+.rp-snapshot-pre::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
+.rp-snapshot-empty{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);
+  font-style:italic;padding:2px 0;
+}
+.rp-actions-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:5px;
+}
+.rp-act-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 6px;border-radius:4px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.4);
+  text-align:center;
+}
+.rp-act-btn:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8)}
+.rp-act-btn.danger{border-color:rgba(212,91,91,.3);color:rgba(212,91,91,.5)}
+.rp-act-btn.danger:hover{background:rgba(212,91,91,.08);color:#d45b5b}
+
+/* ── Atlas Footer Bar ────────────────────────────────── */
+#atlas-footer{
+  height:72px;flex-shrink:0;
+  display:flex;align-items:center;
+  background:var(--surface);border-top:1px solid var(--edge);
+  position:relative;z-index:15;
+  overflow:hidden;
+}
+.af-label{
+  padding:0 14px;flex-shrink:0;border-right:1px solid var(--edge);
+  display:flex;flex-direction:column;justify-content:center;gap:3px;height:100%;
+}
+.af-title{
+  font-family:var(--fm);font-size:.45rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--venturan);
+}
+.af-module-name{
+  font-family:var(--fm);font-size:.38rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--amber);opacity:.8;
+}
+.af-strip-wrap{
+  flex:1;overflow-x:auto;overflow-y:hidden;
+  display:flex;align-items:center;padding:0 6px;
+  scrollbar-width:none;
+}
+.af-strip-wrap::-webkit-scrollbar{display:none}
+.af-strip{
+  display:flex;align-items:center;gap:3px;
+  padding:4px 2px;
+}
+.af-module-btn{
+  width:48px;height:52px;border-radius:5px;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;gap:3px;
+  border:1px solid transparent;background:transparent;
+  border-top:2px solid transparent;
+  position:relative;
+}
+.af-module-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge)}
+.af-module-btn.active{
+  background:rgba(255,255,255,.07);
+  border-color:var(--mc, var(--venturan));
+  border-top-color:var(--mc, var(--venturan));
+}
+.af-glyph{font-size:1.15rem;flex-shrink:0;color:var(--mc,rgba(255,255,255,.45));transition:color .12s}
+.af-module-btn.active .af-glyph{color:var(--mc,var(--venturan))}
+.af-abbr{
+  font-family:var(--fm);font-size:.28rem;letter-spacing:.06em;text-transform:uppercase;
+  color:rgba(255,255,255,.28);transition:color .12s;
+}
+.af-module-btn.active .af-abbr{color:var(--mc,var(--venturan));opacity:.9}
+.af-expand-btn{
+  flex-shrink:0;padding:0 14px;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  border-left:1px solid var(--edge);cursor:pointer;
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);gap:4px;transition:all .13s;
+}
+.af-expand-btn:hover{color:rgba(255,255,255,.7);background:rgba(255,255,255,.04)}
 
 /* ── Body: nav + content ─────────────────────────────── */
 #hub-body{
@@ -212,6 +382,11 @@ html,body{
 #hub-nav.expanded .nav-badge{
   position:static;margin-left:auto;
   background:rgba(255,255,255,.07);
+}
+
+/* ── Content wrapper (contains content + right panel) ── */
+#hub-content-wrap{
+  flex:1;display:flex;overflow:hidden;position:relative;
 }
 
 /* ── Iframe content area ─────────────────────────────── */
@@ -351,6 +526,19 @@ html,body{
 }
 @keyframes fadein{from{opacity:0}to{opacity:1}}
 
+/* ── Tooltip system ────────────────────────────── */
+#ql-tooltip {
+  position:fixed; z-index:9999; pointer-events:none;
+  background:rgba(4,5,10,.97); border:1px solid rgba(177,208,240,.18);
+  color:#b1d0f0; font-family:'Space Grotesk',sans-serif; font-size:.78rem;
+  padding:5px 10px; border-radius:4px; white-space:nowrap;
+  opacity:0; transition:opacity .15s; max-width:280px; white-space:normal;
+  line-height:1.4; box-shadow:0 4px 16px rgba(0,0,0,.5);
+}
+#ql-tooltip.visible { opacity:1; }
+#ql-tooltip .tt-title { font-family:'Orbitron',monospace; font-size:.62rem; letter-spacing:.1em; color:#fff; display:block; margin-bottom:2px; }
+#ql-tooltip .tt-sub { color:rgba(177,208,240,.6); font-size:.72rem; }
+
 /* ── Output panel ─────────────────────────────────────── */
 #output-panel{
   display:none;position:fixed;inset:0;z-index:200;
@@ -374,7 +562,6 @@ html,body{
 .op-body{flex:1;overflow-y:auto;padding:16px 18px}
 .op-body::-webkit-scrollbar{width:5px}
 .op-body::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
-.op-body::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.6)}
 .op-stats{
   display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;
 }
@@ -469,9 +656,8 @@ html,body{
 .fb-tab.active{ color:#c8973a;border-bottom-color:#c8973a }
 .fb-tab:hover:not(.active){ color:rgba(255,255,255,.55) }
 .fb-body{ padding:20px;overflow-y:auto;flex:1 }
-.fb-body::-webkit-scrollbar{width:5px}
-.fb-body::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
-.fb-body::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.6)}
+.fb-body::-webkit-scrollbar{ width:5px }
+.fb-body::-webkit-scrollbar-thumb{ background:rgba(200,151,58,.35) }
 .fb-row{ margin-bottom:14px }
 .fb-label{
   font-family:var(--fm);font-size:.36rem;letter-spacing:.18em;text-transform:uppercase;
@@ -542,9 +728,8 @@ html,body{
   color:rgba(255,255,255,.35);max-height:120px;overflow-y:auto;
   background:rgba(0,0,0,.2);border-radius:4px;padding:8px 10px;margin-top:10px;
 }
-.fb-log::-webkit-scrollbar{width:4px}
-.fb-log::-webkit-scrollbar-thumb{background:rgba(200,151,58,.3)}
-.fb-log::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.55)}
+.fb-log::-webkit-scrollbar{ width:4px }
+.fb-log::-webkit-scrollbar-thumb{ background:rgba(200,151,58,.35) }
 .fb-log-entry{ color:rgba(255,255,255,.3) }
 .fb-log-entry.ok{ color:rgba(77,200,160,.7) }
 .fb-log-entry.warn{ color:rgba(232,184,75,.6) }
@@ -581,7 +766,6 @@ html,body{
 }
 .tm-body::-webkit-scrollbar{width:5px}
 .tm-body::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
-.tm-body::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.6)}
 .theme-card{
   border:1px solid rgba(255,255,255,.07);border-radius:8px;
   padding:14px;cursor:pointer;transition:all .18s;
@@ -622,6 +806,109 @@ html,body{
 }
 #theme-lbl:hover{color:rgba(255,255,255,.5)}
 
+/* ── Genesis Container Modal ─────────────────────────────────── */
+#genesis-modal{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.78);backdrop-filter:blur(10px);
+  align-items:center;justify-content:center;
+}
+#genesis-modal.open{display:flex}
+.gm-box{
+  background:var(--surface2);border:1px solid var(--edge-hi);border-radius:10px;
+  width:480px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.85);
+}
+.gm-head{
+  padding:16px 20px;border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;gap:10px;
+}
+.gm-glyph{font-size:1.1rem;color:var(--venturan)}
+.gm-title{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--venturan);flex:1;
+}
+.gm-close{
+  background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;
+  font-size:.85rem;padding:2px 6px;border-radius:3px;transition:color .12s;
+}
+.gm-close:hover{color:rgba(255,255,255,.7)}
+.gm-dropzone{
+  margin:18px 20px 10px;border:2px dashed var(--edge-hi);border-radius:8px;
+  padding:22px;text-align:center;cursor:pointer;transition:all .15s;
+  background:rgba(255,255,255,.02);
+}
+.gm-dropzone:hover,.gm-dropzone.drag-over{
+  border-color:var(--venturan);background:rgba(177,208,240,.05);
+}
+.gm-drop-lbl{
+  font-family:var(--fm);font-size:.4rem;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);
+}
+.gm-file-row{
+  display:flex;align-items:center;gap:10px;
+  margin:10px 20px;padding:8px 12px;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge);border-radius:6px;
+}
+.gm-file-icon{font-size:.85rem}
+.gm-file-name{
+  font-family:var(--fc);font-size:.42rem;color:rgba(255,255,255,.65);flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.gm-valid-badge{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 7px;border-radius:3px;flex-shrink:0;
+}
+.gm-valid-badge.ok{
+  background:rgba(77,200,160,.12);border:1px solid rgba(77,200,160,.3);color:var(--emerald);
+}
+.gm-valid-badge.err{
+  background:rgba(212,91,91,.1);border:1px solid rgba(212,91,91,.3);color:var(--blood);
+}
+.gm-meta{
+  margin:4px 20px 10px;padding:10px 12px;
+  background:rgba(255,255,255,.03);border:1px solid var(--edge);border-radius:6px;
+  display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;
+}
+.gm-meta-row{
+  display:flex;align-items:baseline;gap:5px;
+}
+.gm-meta-dot{
+  font-size:.55rem;color:var(--venturan);flex-shrink:0;
+}
+.gm-meta-lbl{
+  font-family:var(--fc);font-size:.38rem;color:rgba(255,255,255,.5);
+}
+.gm-opts{
+  margin:6px 20px 14px;display:flex;flex-direction:column;gap:7px;
+}
+.gm-opt-row{
+  display:flex;align-items:center;gap:9px;cursor:pointer;
+}
+.gm-checkbox{
+  width:14px;height:14px;border-radius:3px;border:1px solid var(--edge-hi);
+  background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:.55rem;color:var(--emerald);transition:all .12s;
+}
+.gm-opt-row.checked .gm-checkbox{
+  background:rgba(77,200,160,.15);border-color:rgba(77,200,160,.4);
+}
+.gm-opt-lbl{
+  font-family:var(--fd);font-size:.6rem;color:rgba(255,255,255,.6);
+}
+.gm-actions{
+  display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--edge);
+}
+.gm-btn{
+  flex:1;font-family:var(--fm);font-size:.4rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:8px;border-radius:5px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.5);
+}
+.gm-btn:hover{background:rgba(255,255,255,.06);color:#fff}
+.gm-btn.primary{
+  border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.08);color:var(--emerald);
+}
+.gm-btn.primary:hover{background:rgba(77,200,160,.18);box-shadow:0 0 12px rgba(77,200,160,.15)}
+.gm-btn:disabled{opacity:.3;cursor:not-allowed}
+
 /* ── LLM Panel ───────────────────────────────────────────────── */
 #llm-panel{
   position:fixed;right:0;top:0;bottom:0;width:380px;z-index:190;
@@ -655,7 +942,6 @@ html,body{
 .lp-body{padding:16px;overflow-y:auto;flex:1}
 .lp-body::-webkit-scrollbar{width:5px}
 .lp-body::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
-.lp-body::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.6)}
 .lp-row{margin-bottom:12px}
 .lp-label{
   font-family:var(--fm);font-size:.34rem;letter-spacing:.16em;text-transform:uppercase;
@@ -707,7 +993,6 @@ html,body{
 .lp-chat-msgs{flex:1;overflow-y:auto;padding:14px 14px 0;display:flex;flex-direction:column;gap:10px}
 .lp-chat-msgs::-webkit-scrollbar{width:5px}
 .lp-chat-msgs::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
-.lp-chat-msgs::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.6)}
 .chat-msg{
   max-width:92%;padding:8px 11px;border-radius:8px;
   font-family:var(--fd);font-size:.62rem;line-height:1.6;
@@ -774,6 +1059,34 @@ html,body{
     <span id="proj-name" onclick="openProjModal()" title="Click to rename project">Untitled Project</span>
     <input id="proj-name-input" type="text" placeholder="Project name…" onblur="saveProjName()" onkeydown="if(event.key==='Enter')saveProjName()">
 
+    <!-- CENTERED MAIN NAV TABS -->
+    <div id="hub-main-nav">
+      <div class="hn-tab active" id="hnt-workspace" onclick="switchLayer('workspace')" title="Character Workspace" data-tip="Node canvas — build signal flow graphs and connect modules" data-tip-title="WORKSPACE">
+        <span class="hn-icon">◈</span>Workspace
+      </div>
+      <div class="hn-tab" id="hnt-library" onclick="switchLayer('library')" title="Capsule Library" data-tip="Browse and import assets, presets, and genesis containers" data-tip-title="LIBRARY">
+        <span class="hn-icon">⊞</span>Library
+      </div>
+      <div class="hn-tab" id="hnt-zones" onclick="switchLayer('zones')" title="Zone Canvas" data-tip="Define biome regions, territories, and spatial zones" data-tip-title="ZONES">
+        <span class="hn-icon">⊙</span>Zones
+      </div>
+      <div class="hn-tab" id="hnt-scenes" onclick="switchLayer('scenes')" title="Scene Manager" data-tip="Compose and sequence world scenes and chapters" data-tip-title="SCENES">
+        <span class="hn-icon">◎</span>Scenes
+      </div>
+      <div class="hn-tab" id="hnt-sequencer" onclick="switchLayer('sequencer')" title="Track Sequencer" data-tip="DAW-style timeline — arrange events, beats, and scene triggers" data-tip-title="SEQUENCER">
+        <span class="hn-icon">⧖</span>Sequencer
+      </div>
+      <div class="hn-tab" id="hnt-rack" onclick="switchLayer('rack')" title="Instrument Rack" data-tip="Modular instrument and signal processing rack with patch cables" data-tip-title="RACK">
+        <span class="hn-icon">◫</span>Rack
+      </div>
+      <div class="hn-tab" id="hnt-subgraph" onclick="switchLayer('subgraph')" title="Node Graph" data-tip="Configure external input/output connections (MIDI, OSC, WebSocket)" data-tip-title="IO NODES">
+        <span class="hn-icon">⬡</span>IO Nodes
+      </div>
+      <div class="hn-tab" id="hnt-output" onclick="switchLayer('output')" title="Output Renderer" data-tip="Render and export final world output to target renderers" data-tip-title="OUTPUT">
+        <span class="hn-icon">⥘</span>Output
+      </div>
+    </div>
+
     <div class="hh-spacer"></div>
       <span id="theme-lbl" onclick="openThemeModal()" title="Change theme">🌌 Void-Tech</span>
 
@@ -799,33 +1112,37 @@ html,body{
 
     <div class="hh-actions">
       <button class="hh-btn" onclick="openProjModal()">⊞ Project</button>
-      <button class="hh-btn" id="llm-btn" onclick="openLLMPanel()" title="AI Assistant">🤖</button>
-      <button class="hh-btn" id="theme-btn" onclick="openThemeModal()" title="Change theme" id="theme-header-btn">🎨</button>
+      <button class="hh-btn" id="btn-import-genesis" onclick="document.getElementById('genesis-file-input').click()" title="Import .qgenesis container" data-tip="Import a .qgenesis world container file" data-tip-title="IMPORT">↑ Import</button>
+      <button class="hh-btn" id="btn-export-genesis" onclick="genesisExport()" title="Export .qgenesis container" data-tip="Export the current world state as a .qgenesis file" data-tip-title="EXPORT">↓ Export</button>
+      <button class="hh-btn" id="llm-btn" onclick="openLLMPanel()" title="AI Assistant" data-tip="Open AI assistant panel" data-tip-title="AI">🤖</button>
+      <button class="hh-btn" id="theme-btn" onclick="openThemeModal()" title="Change theme" data-tip="Open theme settings and colour palette" data-tip-title="THEME">🎨</button>
       <button class="hh-btn" id="fb-btn" onclick="openFBModal()">🔥 Cloud</button>
-      <button class="hh-btn" onclick="switchLayer('output')">⎘ Output</button>
       <button class="hh-btn hot" onclick="saveProject()">↓ Save</button>
     </div>
   </div>
 
+  <!-- Hidden file input for Genesis Container import -->
+  <input type="file" id="genesis-file-input" accept=".qgenesis,.json" style="display:none"
+         onchange="if(this.files[0]){genesisImportFile(this.files[0]);this.value=''}">
+
   <!-- BODY -->
   <div id="hub-body">
 
-    <!-- LEFT NAV -->
+    <!-- LEFT NAV — Loom tools only -->
     <div id="hub-nav">
-      <!-- Layers -->
       <div class="nav-item active" id="nav-workspace" data-layer="workspace"
-           style="--lc:var(--c-workspace)" onclick="switchLayer('workspace')" title="Character Workspace">
+           style="--lc:var(--c-workspace)" onclick="switchLayer('workspace')" title="Character Workspace" data-tip="Node canvas workspace">
         <span class="ni-icon">◈</span>
         <span class="ni-label">Workspace</span>
       </div>
       <div class="nav-item" id="nav-library" data-layer="library"
-           style="--lc:var(--c-library)" onclick="switchLayer('library')" title="Capsule Library">
+           style="--lc:var(--c-library)" onclick="switchLayer('library')" title="Capsule Library" data-tip="Asset library">
         <span class="ni-icon">⊞</span>
         <span class="ni-label">Library</span>
         <span class="nav-badge" id="nb-library">0</span>
       </div>
       <div class="nav-item" id="nav-zones" data-layer="zones"
-           style="--lc:var(--c-zones)" onclick="switchLayer('zones')" title="Zone Canvas">
+           style="--lc:var(--c-zones)" onclick="switchLayer('zones')" title="Zone Canvas" data-tip="Zone editor">
         <span class="ni-icon">◫</span>
         <span class="ni-label">Zones</span>
         <span class="nav-badge" id="nb-zones">0</span>
@@ -834,18 +1151,18 @@ html,body{
       <div class="nav-div"></div>
 
       <div class="nav-item" id="nav-scenes" data-layer="scenes"
-           style="--lc:var(--c-scenes)" onclick="switchLayer('scenes')" title="Scene Manager">
+           style="--lc:var(--c-scenes)" onclick="switchLayer('scenes')" title="Scene Manager" data-tip="Scene composer">
         <span class="ni-icon">⌚</span>
         <span class="ni-label">Scenes</span>
         <span class="nav-badge" id="nb-scenes">0</span>
       </div>
       <div class="nav-item" id="nav-rack" data-layer="rack"
-           style="--lc:var(--c-rack)" onclick="switchLayer('rack')" title="Instrument Rack">
+           style="--lc:var(--c-rack)" onclick="switchLayer('rack')" title="Instrument Rack" data-tip="Instrument rack">
         <span class="ni-icon">⚙</span>
         <span class="ni-label">Rack</span>
       </div>
       <div class="nav-item" id="nav-sequencer" data-layer="sequencer"
-           style="--lc:var(--c-sequencer)" onclick="switchLayer('sequencer')" title="Track Sequencer">
+           style="--lc:var(--c-sequencer)" onclick="switchLayer('sequencer')" title="Track Sequencer" data-tip="Track sequencer">
         <span class="ni-icon">⧖</span>
         <span class="ni-label">Sequencer</span>
         <span class="nav-badge" id="nb-tracks">0</span>
@@ -854,96 +1171,39 @@ html,body{
       <div class="nav-div"></div>
 
       <div class="nav-item" id="nav-subgraph" data-layer="subgraph"
-           style="--lc:var(--c-subgraph)" onclick="switchLayer('subgraph')" title="Sub-Graph Canvas">
+           style="--lc:var(--c-subgraph)" onclick="switchLayer('subgraph')" title="Sub-Graph Canvas" data-tip="Sub-graph editor">
         <span class="ni-icon">⬡</span>
         <span class="ni-label">Graph</span>
         <span class="nav-badge" id="nb-compiled">0</span>
       </div>
       <div class="nav-item" id="nav-ionodes" data-layer="ionodes"
-           style="--lc:var(--c-ionodes)" onclick="switchLayer('ionodes')" title="Signal Bus & I/O Nodes">
+           style="--lc:var(--c-ionodes)" onclick="switchLayer('ionodes')" title="Signal Bus & I/O Nodes" data-tip="IO node configuration">
         <span class="ni-icon">⇌</span>
         <span class="ni-label">I/O Bus</span>
       </div>
-
       <div class="nav-item" id="nav-output" data-layer="output"
-           style="--lc:var(--c-output)" onclick="switchLayer('output')" title="Output Renderer">
+           style="--lc:var(--c-output)" onclick="switchLayer('output')" title="Output Renderer" data-tip="Output renderer">
         <span class="ni-icon">⥘</span>
         <span class="ni-label">Output</span>
       </div>
 
       <div class="nav-div"></div>
 
-      <div class="nav-item" id="nav-atlas" data-layer="atlas"
-           style="--lc:var(--c-atlas)" onclick="switchLayer('atlas')" title="Quantum Atlas · 01 Terrain">
-        <span class="ni-icon">⬡</span>
-        <span class="ni-label">Atlas</span>
-      </div>
-      <div class="nav-item" id="nav-environ" data-layer="environ"
-           style="--lc:var(--c-environ)" onclick="switchLayer('environ')" title="02 · Environment | Mythos">
-        <span class="ni-icon">◉</span>
-        <span class="ni-label">Environ</span>
-      </div>
-      <div class="nav-item" id="nav-architect" data-layer="architect"
-           style="--lc:var(--c-architect)" onclick="switchLayer('architect')" title="03 · Architect | Architect">
-        <span class="ni-icon">⊓</span>
-        <span class="ni-label">Architect</span>
-      </div>
-      <div class="nav-item" id="nav-lighting" data-layer="lighting"
-           style="--lc:var(--c-lighting)" onclick="switchLayer('lighting')" title="04 · Lighting | Prism">
-        <span class="ni-icon">◐</span>
-        <span class="ni-label">Lighting</span>
-      </div>
-      <div class="nav-item" id="nav-modeling" data-layer="modeling"
-           style="--lc:var(--c-modeling)" onclick="switchLayer('modeling')" title="05 · Modeling | Animus">
-        <span class="ni-icon">✦</span>
-        <span class="ni-label">Modeling</span>
-      </div>
-      <div class="nav-item" id="nav-choreography" data-layer="choreography"
-           style="--lc:var(--c-choreography)" onclick="switchLayer('choreography')" title="06 · Choreography | Loom">
-        <span class="ni-icon">⟳</span>
-        <span class="ni-label">Choreo</span>
-      </div>
-      <div class="nav-item" id="nav-society" data-layer="society"
-           style="--lc:var(--c-society)" onclick="switchLayer('society')" title="08 · Society | Order">
-        <span class="ni-icon">⚑</span>
-        <span class="ni-label">Society</span>
-      </div>
-      <div class="nav-item" id="nav-bridge" data-layer="bridge"
-           style="--lc:var(--c-bridge)" onclick="switchLayer('bridge')" title="Atlas · Signal Bridge — Loom">
-        <span class="ni-icon">⇋</span>
-        <span class="ni-label">Bridge</span>
-      </div>
-      <div class="nav-item" id="nav-ecology" data-layer="ecology"
-           style="--lc:var(--c-ecology)" onclick="switchLayer('ecology')" title="Quantum Atlas · 07 Ecology">
-        <span class="ni-icon">⚘</span>
-        <span class="ni-label">Ecology</span>
-      </div>
-      <div class="nav-item" id="nav-atlas-sequencer" data-layer="atlas-sequencer"
-           style="--lc:var(--c-atlas-sequencer)" onclick="switchLayer('atlas-sequencer')" title="09 · Sequencer | Chronicle">
-        <span class="ni-icon">▶</span>
-        <span class="ni-label">Chronicle</span>
-      </div>
-      <div class="nav-item" id="nav-behavior" data-layer="behavior"
-           style="--lc:var(--c-behavior)" onclick="switchLayer('behavior')" title="07 · Behavior | Instinct">
-        <span class="ni-icon">⊙</span>
-        <span class="ni-label">Behavior</span>
-      </div>
-      <div class="nav-item" id="nav-civilization" data-layer="civilization"
-           style="--lc:var(--c-civilization)" onclick="switchLayer('civilization')" title="Atlas · Civilization | Society">
-        <span class="ni-icon">⚐</span>
-        <span class="ni-label">Civiliz.</span>
-      </div>
-      <div class="nav-item" id="nav-network" data-layer="network"
-           style="--lc:var(--c-network)" onclick="switchLayer('network')" title="16 · Network | Nexus">
-        <span class="ni-icon">⬡</span>
-        <span class="ni-label">Network</span>
+      <div class="nav-item" id="nav-manual" data-layer="manual"
+           style="--lc:var(--venturan)" onclick="switchLayer('manual')" title="User Manual" data-tip="Open the Quantum Loom User Manual" data-tip-title="MANUAL (F1)">
+        <span class="ni-icon">📖</span>
+        <span class="ni-label">Manual</span>
       </div>
 
       <div id="nav-expand" onclick="toggleNav()" title="Expand navigation">▶</div>
     </div>
 
+    <!-- CONTENT WRAPPER (content + right panel) -->
+    <div id="hub-content-wrap" class="panel-collapsed">
+
     <!-- CONTENT AREA -->
     <div id="hub-content">
+    <div id="rp-toggle" onclick="toggleRightPanel()" title="Toggle properties panel">‹</div>
 
       <!-- Workspace -->
       <div class="frame-loader" id="loader-workspace">
@@ -1105,35 +1365,85 @@ html,body{
         src="quantum-atlas-society.html"
         onload="frameLoaded('society')"></iframe>
 
-      <!-- Atlas · Signal Bridge -->
-      <div class="frame-loader" id="loader-bridge">
-        <div class="loader-glyph" style="color:var(--c-bridge)">⇋</div>
-        <div class="loader-lbl">Loading Atlas · Signal Bridge</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:var(--c-bridge)"></div></div>
+      <!-- 16 · Network | Nexus -->
+      <div class="frame-loader" id="loader-network">
+        <div class="loader-glyph" style="color:#ffffff">⇋</div>
+        <div class="loader-lbl">Loading 16 · Network | Nexus</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#ffffff"></div></div>
       </div>
-      <iframe class="layer-frame" id="frame-bridge"
-        src="quantum-atlas-bridge.html"
-        onload="frameLoaded('bridge')"></iframe>
+      <iframe class="layer-frame" id="frame-network"
+        src="quantum-atlas-network.html"
+        onload="frameLoaded('network')"></iframe>
 
-      <!-- Atlas · 07 Ecology -->
-      <div class="frame-loader" id="loader-ecology">
-        <div class="loader-glyph" style="color:#7fd4c8">⚘</div>
-        <div class="loader-lbl">Loading Quantum Atlas · Ecology</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:#7fd4c8"></div></div>
+      <!-- Atlas · 15 Forge | Forge -->
+      <div class="frame-loader" id="loader-forge">
+        <div class="loader-glyph" style="color:#ff6400">⚒</div>
+        <div class="loader-lbl">Loading 15 · Forge | Forge</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#ff6400"></div></div>
       </div>
-      <iframe class="layer-frame" id="frame-ecology"
-        src="quantum-atlas-ecology.html"
-        onload="frameLoaded('ecology')"></iframe>
+      <iframe class="layer-frame" id="frame-forge"
+        src="quantum-atlas-forge.html"
+        onload="frameLoaded('forge')"></iframe>
+
+      <!-- Atlas · 14 Simulation | Continuum -->
+      <div class="frame-loader" id="loader-simulation">
+        <div class="loader-glyph" style="color:#30e060">∿</div>
+        <div class="loader-lbl">Loading 14 · Simulation | Continuum</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#30e060"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-simulation"
+        src="quantum-atlas-simulation.html"
+        onload="frameLoaded('simulation')"></iframe>
+
+      <!-- Atlas · 13 Logic | Axiom -->
+      <div class="frame-loader" id="loader-logic">
+        <div class="loader-glyph" style="color:#20c8d0">⊢</div>
+        <div class="loader-lbl">Loading 13 · Logic | Axiom</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#20c8d0"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-logic"
+        src="quantum-atlas-logic.html"
+        onload="frameLoaded('logic')"></iframe>
+
+      <!-- Atlas · 12 Sound | Composer -->
+      <div class="frame-loader" id="loader-sound">
+        <div class="loader-glyph" style="color:#dc8c1e">♪</div>
+        <div class="loader-lbl">Loading 12 · Sound | Composer</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#dc8c1e"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-sound"
+        src="quantum-atlas-sound.html"
+        onload="frameLoaded('sound')"></iframe>
+
+      <!-- Atlas · 11 Memory | Codex -->
+      <div class="frame-loader" id="loader-memory">
+        <div class="loader-glyph" style="color:#00c060">◎</div>
+        <div class="loader-lbl">Loading 11 · Memory | Codex</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#00c060"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-memory"
+        src="quantum-atlas-memory.html"
+        onload="frameLoaded('memory')"></iframe>
+
+      <!-- Atlas · 10 Story | Quill -->
+      <div class="frame-loader" id="loader-story">
+        <div class="loader-glyph" style="color:#8c50ff">✎</div>
+        <div class="loader-lbl">Loading 10 · Story | Quill</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#8c50ff"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-story"
+        src="quantum-atlas-story.html"
+        onload="frameLoaded('story')"></iframe>
 
       <!-- Atlas · 09 Sequencer | Chronicle -->
-      <div class="frame-loader" id="loader-atlas-sequencer">
-        <div class="loader-glyph" style="color:var(--c-atlas-sequencer)">▶</div>
+      <div class="frame-loader" id="loader-atlas-seq">
+        <div class="loader-glyph" style="color:#b08030">▶</div>
         <div class="loader-lbl">Loading 09 · Sequencer | Chronicle</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:var(--c-atlas-sequencer)"></div></div>
+        <div class="loader-bar"><div class="loader-fill" style="background:#b08030"></div></div>
       </div>
-      <iframe class="layer-frame" id="frame-atlas-sequencer"
+      <iframe class="layer-frame" id="frame-atlas-seq"
         src="quantum-atlas-sequencer.html"
-        onload="frameLoaded('atlas-sequencer')"></iframe>
+        onload="frameLoaded('atlas-seq')"></iframe>
 
       <!-- Atlas · 08 Behavior -->
       <div class="frame-loader" id="loader-behavior">
@@ -1145,19 +1455,9 @@ html,body{
         src="quantum-atlas-behavior.html"
         onload="frameLoaded('behavior')"></iframe>
 
-      <!-- Atlas · Civilization -->
-      <div class="frame-loader" id="loader-civilization">
-        <div class="loader-glyph" style="color:var(--c-civilization)">⚐</div>
-        <div class="loader-lbl">Loading Atlas · Civilization</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:var(--c-civilization)"></div></div>
-      </div>
-      <iframe class="layer-frame" id="frame-civilization"
-        src="quantum-atlas-civilization.html"
-        onload="frameLoaded('civilization')"></iframe>
-
       <!-- 16 · Network | Nexus -->
       <div class="frame-loader" id="loader-network">
-        <div class="loader-glyph" style="color:var(--c-network)">⬡</div>
+        <div class="loader-glyph" style="color:var(--c-network)">⇋</div>
         <div class="loader-lbl">Loading 16 · Network | Nexus</div>
         <div class="loader-bar"><div class="loader-fill" style="background:var(--c-network)"></div></div>
       </div>
@@ -1165,13 +1465,170 @@ html,body{
         src="quantum-atlas-network.html"
         onload="frameLoaded('network')"></iframe>
 
+      <!-- Manual -->
+      <div class="frame-loader" id="loader-manual">
+        <div class="loader-glyph" style="color:var(--venturan)">📖</div>
+        <div class="loader-lbl">Loading User Manual</div>
+        <div class="loader-bar"><div class="loader-fill" style="background:var(--venturan)"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-manual"
+        src="quantum-loom-manual.html"
+        onload="frameLoaded('manual')"></iframe>
+
     </div>
+
+    <!-- RIGHT PROPERTIES PANEL -->
+    <div id="hub-right-panel" class="collapsed">
+
+      <div class="rp-head">
+        <span class="rp-title">Properties</span>
+      </div>
+
+      <!-- ACTIVE LAYER section -->
+      <div class="rp-section">
+        <div class="rp-sec-hd open" id="rp-hd-layer" onclick="rpToggleSection('layer')">
+          <span class="rp-sec-arrow">›</span>
+          Active Layer
+        </div>
+        <div class="rp-sec-body open" id="rp-body-layer">
+          <div class="rp-layer-chip">
+            <div class="rp-color-chip" id="rp-color-chip"></div>
+            <div>
+              <div class="rp-layer-label" id="rp-layer-label">Workspace</div>
+              <div class="rp-layer-file" id="rp-layer-file">quantum-loom-workspace.html</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SNAPSHOT DATA section -->
+      <div class="rp-section">
+        <div class="rp-sec-hd" id="rp-hd-snap" onclick="rpToggleSection('snap')">
+          <span class="rp-sec-arrow">›</span>
+          Snapshot Data
+        </div>
+        <div class="rp-sec-body" id="rp-body-snap">
+          <pre class="rp-snapshot-pre" id="rp-snapshot-pre"><span class="rp-snapshot-empty">No snapshot for this layer</span></pre>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS section -->
+      <div class="rp-section">
+        <div class="rp-sec-hd" id="rp-hd-actions" onclick="rpToggleSection('actions')">
+          <span class="rp-sec-arrow">›</span>
+          Quick Actions
+        </div>
+        <div class="rp-sec-body" id="rp-body-actions">
+          <div class="rp-actions-grid">
+            <button class="rp-act-btn" onclick="rpReloadFrame()" title="Reload the active layer iframe" data-tip="Reload the active module iframe to pick up new snapshot data">↻ Reload</button>
+            <button class="rp-act-btn danger" onclick="rpClearSnapshot()" title="Clear snapshot data for this layer" data-tip="Delete this module's localStorage snapshot">✕ Clear</button>
+            <button class="rp-act-btn" onclick="rpCopyJSON()" title="Copy snapshot JSON to clipboard" data-tip="Copy the snapshot JSON to clipboard">⎘ Copy</button>
+            <button class="rp-act-btn" onclick="openOutputPanel()" title="Open export panel" data-tip="Download snapshot as JSON file">↓ Export</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- end hub-content-wrap -->
+  </div><!-- end hub-body -->
+
+  <!-- ATLAS FOOTER BAR -->
+  <div id="atlas-footer">
+    <div class="af-label">
+      <div class="af-title">Quantum Atlas</div>
+      <div class="af-module-name" id="af-module-name">Terrain</div>
+    </div>
+    <div class="af-strip-wrap">
+      <div class="af-strip">
+        <div class="af-module-btn" id="afb-atlas" data-layer="atlas"
+             style="--mc:var(--c-atlas)" onclick="switchLayer('atlas')" title="01 · Terrain | Atlas"
+             data-tip="Hex grid terrain generation — elevation, biomes, erosion, rivers" data-tip-title="01 · TERRAIN | ATLAS">
+          <span class="af-glyph">⬡</span><span class="af-abbr">TRN</span>
+        </div>
+        <div class="af-module-btn" id="afb-environ" data-layer="environ"
+             style="--mc:var(--c-environ)" onclick="switchLayer('environ')" title="02 · Environment | Mythos"
+             data-tip="World environment systems — weather, atmosphere, day/night cycles" data-tip-title="02 · ENVIRONMENT | MYTHOS">
+          <span class="af-glyph">◉</span><span class="af-abbr">ENV</span>
+        </div>
+        <div class="af-module-btn" id="afb-architect" data-layer="architect"
+             style="--mc:var(--c-architect)" onclick="switchLayer('architect')" title="03 · Architect"
+             data-tip="Structural design — buildings, settlements, ruins, and spatial layouts" data-tip-title="03 · ARCHITECT | ARCHITECT">
+          <span class="af-glyph">⊓</span><span class="af-abbr">ARC</span>
+        </div>
+        <div class="af-module-btn" id="afb-lighting" data-layer="lighting"
+             style="--mc:var(--c-lighting)" onclick="switchLayer('lighting')" title="04 · Lighting | Prism"
+             data-tip="Scene lighting — sun, moon, artificial lights, shadow and ambience" data-tip-title="04 · LIGHTING | PRISM">
+          <span class="af-glyph">◐</span><span class="af-abbr">LGT</span>
+        </div>
+        <div class="af-module-btn" id="afb-modeling" data-layer="modeling"
+             style="--mc:var(--c-modeling)" onclick="switchLayer('modeling')" title="05 · Modeling | Animus"
+             data-tip="3D entity modeling — characters, props, creatures, and assets" data-tip-title="05 · MODELING | ANIMUS">
+          <span class="af-glyph">✦</span><span class="af-abbr">MDL</span>
+        </div>
+        <div class="af-module-btn" id="afb-choreography" data-layer="choreography"
+             style="--mc:var(--c-choreography)" onclick="switchLayer('choreography')" title="06 · Choreography"
+             data-tip="Animation and motion — pose, sequence, and choreograph entity movement" data-tip-title="06 · CHOREOGRAPHY | LOOM">
+          <span class="af-glyph">⟳</span><span class="af-abbr">CHR</span>
+        </div>
+        <div class="af-module-btn" id="afb-behavior" data-layer="behavior"
+             style="--mc:var(--c-behavior)" onclick="switchLayer('behavior')" title="07 · Behavior | Instinct"
+             data-tip="AI behavior trees — drives, instincts, decision-making, and reactions" data-tip-title="07 · BEHAVIOR | INSTINCT">
+          <span class="af-glyph">⊙</span><span class="af-abbr">BHV</span>
+        </div>
+        <div class="af-module-btn" id="afb-society" data-layer="society"
+             style="--mc:var(--c-society)" onclick="switchLayer('society')" title="08 · Society | Order"
+             data-tip="Civilisation systems — factions, politics, economy, and social order" data-tip-title="08 · SOCIETY | ORDER">
+          <span class="af-glyph">⚑</span><span class="af-abbr">SOC</span>
+        </div>
+        <div class="af-module-btn" id="afb-atlas-seq" data-layer="atlas-seq"
+             style="--mc:var(--c-atlas-seq)" onclick="switchLayer('atlas-seq')" title="09 · Sequencer | Chronicle"
+             data-tip="Atlas event sequencer — timeline of world events and historical chronicle" data-tip-title="09 · SEQUENCER | CHRONICLE">
+          <span class="af-glyph">▶</span><span class="af-abbr">STR</span>
+        </div>
+        <div class="af-module-btn" id="afb-story" data-layer="story"
+             style="--mc:var(--c-story)" onclick="switchLayer('story')" title="10 · Story | Quill"
+             data-tip="Narrative authoring — plot arcs, dialogue trees, and story branches" data-tip-title="10 · STORY | QUILL">
+          <span class="af-glyph">✎</span><span class="af-abbr">QLL</span>
+        </div>
+        <div class="af-module-btn" id="afb-memory" data-layer="memory"
+             style="--mc:var(--c-memory)" onclick="switchLayer('memory')" title="11 · Memory | Codex"
+             data-tip="World knowledge base — lore codex, entity memories, and historical records" data-tip-title="11 · MEMORY | CODEX">
+          <span class="af-glyph">◎</span><span class="af-abbr">MEM</span>
+        </div>
+        <div class="af-module-btn" id="afb-sound" data-layer="sound"
+             style="--mc:var(--c-sound)" onclick="switchLayer('sound')" title="12 · Sound | Composer"
+             data-tip="Spatial audio — ambient soundscapes, music, SFX, and acoustic zones" data-tip-title="12 · SOUND | COMPOSER">
+          <span class="af-glyph">♪</span><span class="af-abbr">SND</span>
+        </div>
+        <div class="af-module-btn" id="afb-logic" data-layer="logic"
+             style="--mc:var(--c-logic)" onclick="switchLayer('logic')" title="13 · Logic | Axiom"
+             data-tip="Rules engine — world laws, conditional logic, triggers, and constraints" data-tip-title="13 · LOGIC | AXIOM">
+          <span class="af-glyph">⊢</span><span class="af-abbr">LGC</span>
+        </div>
+        <div class="af-module-btn" id="afb-simulation" data-layer="simulation"
+             style="--mc:var(--c-simulation)" onclick="switchLayer('simulation')" title="14 · Simulation"
+             data-tip="Physics and simulation — fluid dynamics, particle systems, and continuum" data-tip-title="14 · SIMULATION | CONTINUUM">
+          <span class="af-glyph">∿</span><span class="af-abbr">SIM</span>
+        </div>
+        <div class="af-module-btn" id="afb-forge" data-layer="forge"
+             style="--mc:var(--c-forge)" onclick="switchLayer('forge')" title="15 · Forge"
+             data-tip="Asset forge — craft, combine, and temper world objects and equipment" data-tip-title="15 · FORGE | FORGE">
+          <span class="af-glyph">⚒</span><span class="af-abbr">FRG</span>
+        </div>
+        <div class="af-module-btn" id="afb-network" data-layer="network"
+             style="--mc:var(--c-network)" onclick="switchLayer('network')" title="16 · Network | Nexus"
+             data-tip="Connectivity layer — inter-world links, portals, and signal routing" data-tip-title="16 · NETWORK | NEXUS">
+          <span class="af-glyph">⇋</span><span class="af-abbr">NET</span>
+        </div>
+      </div>
+    </div>
+    <div class="af-expand-btn" title="Atlas panel (future)">ATLAS ▸</div>
   </div>
 
   <!-- FOOTER -->
   <div id="hub-footer">
     <div class="hf-item"><div class="sc-dot" style="background:var(--emerald);opacity:.6"></div><b id="hf-save-time">Not saved</b></div>
-    <div class="hf-item">keys: <b id="hf-keys">0</b></div>
+    <div class="hf-item" data-tip="Number of data keys currently saved in localStorage">keys: <b id="hf-keys">0</b></div>
     <div class="hf-item">version <b>1.0.0</b></div>
     <div id="hf-layer-name">Workspace</div>
   </div>
@@ -1360,6 +1817,66 @@ html,body{
   </div>
 </div>
 
+<!-- GENESIS CONTAINER IMPORT MODAL -->
+<div id="genesis-modal">
+  <div class="gm-box">
+    <div class="gm-head">
+      <span class="gm-glyph">⬡</span>
+      <span class="gm-title">Import Genesis Container</span>
+      <button class="gm-close" onclick="closeGenesisModal()">✕</button>
+    </div>
+
+    <!-- Drop zone -->
+    <div class="gm-dropzone" id="gm-dropzone"
+         onclick="document.getElementById('genesis-file-input').click()"
+         ondragover="event.preventDefault();this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')"
+         ondrop="event.preventDefault();this.classList.remove('drag-over');if(event.dataTransfer.files[0])genesisImportFile(event.dataTransfer.files[0])">
+      <div class="gm-drop-lbl">Drop .qgenesis file here or click to browse</div>
+    </div>
+
+    <!-- File info row (hidden until file loaded) -->
+    <div class="gm-file-row" id="gm-file-row" style="display:none">
+      <span class="gm-file-icon">📄</span>
+      <span class="gm-file-name" id="gm-file-name">—</span>
+      <span class="gm-valid-badge ok" id="gm-valid-badge">✓ valid</span>
+    </div>
+
+    <!-- Parsed metadata (hidden until file loaded) -->
+    <div class="gm-meta" id="gm-meta" style="display:none">
+      <div class="gm-meta-row"><span class="gm-meta-dot">●</span><span class="gm-meta-lbl" id="gm-world-name">World: —</span></div>
+      <div class="gm-meta-row"><span class="gm-meta-dot">●</span><span class="gm-meta-lbl" id="gm-version">Version: —</span></div>
+      <div class="gm-meta-row"><span class="gm-meta-dot">●</span><span class="gm-meta-lbl" id="gm-atlas-count">Atlas modules: —</span></div>
+      <div class="gm-meta-row"><span class="gm-meta-dot">●</span><span class="gm-meta-lbl" id="gm-loom-nodes">Loom nodes: —</span></div>
+    </div>
+
+    <!-- Import options -->
+    <div class="gm-opts" id="gm-opts" style="display:none">
+      <div class="gm-opt-row checked" id="gm-opt-atlas" onclick="gmToggleOpt(this)">
+        <div class="gm-checkbox">✓</div>
+        <span class="gm-opt-lbl">Import Atlas snapshots</span>
+      </div>
+      <div class="gm-opt-row checked" id="gm-opt-loom" onclick="gmToggleOpt(this)">
+        <div class="gm-checkbox">✓</div>
+        <span class="gm-opt-lbl">Import Loom data (nodes / wires)</span>
+      </div>
+      <div class="gm-opt-row checked" id="gm-opt-theme" onclick="gmToggleOpt(this)">
+        <div class="gm-checkbox">✓</div>
+        <span class="gm-opt-lbl">Import theme</span>
+      </div>
+      <div class="gm-opt-row checked" id="gm-opt-bus" onclick="gmToggleOpt(this)">
+        <div class="gm-checkbox">✓</div>
+        <span class="gm-opt-lbl">Import signal bus</span>
+      </div>
+    </div>
+
+    <div class="gm-actions">
+      <button class="gm-btn" onclick="closeGenesisModal()">Cancel</button>
+      <button class="gm-btn primary" id="gm-import-btn" onclick="gmDoImport()" disabled>Import Now</button>
+    </div>
+  </div>
+</div>
+
 <div id="theme-modal">
   <div class="tm-box">
     <div class="tm-head">
@@ -1525,6 +2042,33 @@ html,body{
    ║  Wraps all 8 layers, relays storage events, manages project      ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 
+// ── Tooltip Engine ──────────────────────────────
+(function() {
+  const tip = document.createElement('div');
+  tip.id = 'ql-tooltip';
+  document.body.appendChild(tip);
+  let _t;
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest('[data-tip]');
+    if (!el) { clearTimeout(_t); tip.classList.remove('visible'); return; }
+    const text = el.getAttribute('data-tip');
+    const title = el.getAttribute('data-tip-title') || '';
+    clearTimeout(_t);
+    _t = setTimeout(() => {
+      tip.innerHTML = (title ? `<span class="tt-title">${title}</span>` : '') + text;
+      tip.classList.add('visible');
+    }, 600);
+  });
+  document.addEventListener('mousemove', e => {
+    tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 300) + 'px';
+    tip.style.top  = (e.clientY - 8) + 'px';
+  });
+  document.addEventListener('mouseout', e => {
+    if (!e.target.closest('[data-tip]')) { clearTimeout(_t); tip.classList.remove('visible'); }
+  });
+  document.addEventListener('click', () => { clearTimeout(_t); tip.classList.remove('visible'); });
+})();
+
 /* ── Layer registry ───────────────────────────────────────────────── */
 const LAYERS = {
   workspace: { label:'Character Workspace', icon:'◈',  color:'var(--c-workspace)', file:'quantum-loom-workspace.html' },
@@ -1540,19 +2084,23 @@ const LAYERS = {
   environ:  { label:'02 · Environment | Mythos', icon:'◉', color:'var(--c-environ)',  file:'quantum-atlas-environment.html'  },
   architect:{ label:'03 · Architect | Architect',icon:'⊓', color:'var(--c-architect)',file:'quantum-atlas-architect.html'    },
   lighting: { label:'04 · Lighting  | Prism',   icon:'◐', color:'var(--c-lighting)', file:'quantum-atlas-lighting.html'     },
-  modeling:        { label:'05 · Modeling      | Animus',   icon:'✦', color:'var(--c-modeling)',        file:'quantum-atlas-modeling.html'      },
-  choreography:    { label:'06 · Choreography  | Loom',    icon:'⟳', color:'var(--c-choreography)',    file:'quantum-atlas-choreography.html'  },
-  behavior:        { label:'07 · Behavior      | Instinct', icon:'⊙', color:'var(--c-behavior)',        file:'quantum-atlas-behavior.html'      },
-  ecology:         { label:'07 · Ecology       | Biome',   icon:'⚘', color:'var(--c-ecology)',         file:'quantum-atlas-ecology.html'       },
-  'atlas-sequencer':{ label:'09 · Sequencer   | Chronicle',icon:'▶', color:'var(--c-atlas-sequencer)', file:'quantum-atlas-sequencer.html'    },
-  society:         { label:'08 · Society       | Order',   icon:'⚑', color:'var(--c-society)',         file:'quantum-atlas-society.html'      },
-  bridge:          { label:'Atlas · Signal Bridge',        icon:'⇋', color:'var(--c-bridge)',          file:'quantum-atlas-bridge.html'       },
-  civilization:    { label:'Atlas · Civilization',         icon:'⚐', color:'var(--c-civilization)',    file:'quantum-atlas-civilization.html' },
-  network:         { label:'16 · Network       | Nexus',   icon:'⬡', color:'var(--c-network)',         file:'quantum-atlas-network.html'      },
+  modeling:      { label:'05 · Modeling      | Animus',  icon:'✦', color:'var(--c-modeling)',      file:'quantum-atlas-modeling.html'      },
+  choreography:  { label:'06 · Choreography | Loom',    icon:'⟳', color:'var(--c-choreography)',  file:'quantum-atlas-choreography.html'  },
+  behavior:      { label:'07 · Behavior     | Instinct', icon:'⊙', color:'var(--c-behavior)',      file:'quantum-atlas-behavior.html'      },
+  'atlas-seq':   { label:'09 · Sequencer    | Chronicle',icon:'▶', color:'var(--c-atlas-seq)',    file:'quantum-atlas-sequencer.html'     },
+  story:         { label:'10 · Story        | Quill',    icon:'✎', color:'var(--c-story)',          file:'quantum-atlas-story.html'         },
+  memory:        { label:'11 · Memory       | Codex',    icon:'◎', color:'var(--c-memory)',         file:'quantum-atlas-memory.html'        },
+  sound:         { label:'12 · Sound        | Composer', icon:'♪', color:'var(--c-sound)',           file:'quantum-atlas-sound.html'         },
+  logic:         { label:'13 · Logic        | Axiom',    icon:'⊢', color:'var(--c-logic)',           file:'quantum-atlas-logic.html'         },
+  simulation:    { label:'14 · Simulation   | Continuum',icon:'∿', color:'var(--c-simulation)',      file:'quantum-atlas-simulation.html'    },
+  forge:         { label:'15 · Forge        | Forge',    icon:'⚒', color:'var(--c-forge)',           file:'quantum-atlas-forge.html'         },
+  society:  { label:'08 · Society   | Order',   icon:'⚑', color:'var(--c-society)',  file:'quantum-atlas-society.html'      },
+  network:  { label:'16 · Network    | Nexus',   icon:'⇋', color:'var(--c-network)', file:'quantum-atlas-network.html'      },
+  manual:   { label:'User Manual',               icon:'📖', color:'var(--venturan)',  file:'quantum-loom-manual.html'        },
 };
 
 /* ── Storage keys to monitor ──────────────────────────────────────── */
-const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-choreography-snapshot','qa-behavior-snapshot','qa-sequencer-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot','qa-civilization-snapshot','qa-bridge-snapshot'];
+const WATCHED_KEYS = ['ql-library','ql-zones','ql-scenes','ql-propagations','ql-sequencer','ql-compiled','ql-rack','ql-graphs','ql-workspace','ql-signal-bus','qa-terrain-snapshot','qa-environ-snapshot','qa-architect-snapshot','qa-lighting-snapshot','qa-modeling-snapshot','qa-choreography-snapshot','qa-behavior-snapshot','qa-sequencer-snapshot','qa-story-snapshot','qa-memory-snapshot','qa-sound-snapshot','qa-logic-snapshot','qa-simulation-snapshot','qa-forge-snapshot','qa-society-snapshot','qa-network-snapshot','qa-ecology-snapshot','qa-manual-snapshot'];
 
 /* ── State ────────────────────────────────────────────────────────── */
 let activeLayer  = 'workspace';
@@ -1925,6 +2473,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateStatusBar();
   updateNavBadges();
+  updateLayerUI('workspace');
 
   // Click outside project modal to close
   document.getElementById('proj-modal').addEventListener('click', e => {
@@ -2652,12 +3201,6 @@ function lpSelectProv(id) {
   // Default base URL
   const defaults = { ollama:'http://localhost:11434', anythingllm:'http://localhost:3001' };
   if (defaults[id]) document.getElementById('lp-base').value = defaults[id];
-  // Persist provider choice immediately so it survives panel close/reopen
-  try {
-    const cfg = JSON.parse(localStorage.getItem('ql-llm-config') || '{}');
-    cfg.provider = id;
-    localStorage.setItem('ql-llm-config', JSON.stringify(cfg));
-  } catch(e) {}
 }
 
 function lpLoadConfig() {
@@ -2956,6 +3499,171 @@ function broadcastChapter(chapter) {
   LoomBroadcast.tick(chapter);
 }
 
+/* ══════════════════════════════════════════════════════════════
+   RIGHT PANEL — toggle, sections, data display
+══════════════════════════════════════════════════════════════ */
+
+let rightPanelOpen = false;
+
+function toggleRightPanel() {
+  rightPanelOpen = !rightPanelOpen;
+  const panel = document.getElementById('hub-right-panel');
+  const btn   = document.getElementById('rp-toggle');
+  panel.classList.toggle('collapsed', !rightPanelOpen);
+  if (btn) btn.textContent = rightPanelOpen ? '›' : '‹';
+  localStorage.setItem('ql-right-panel-open', rightPanelOpen ? '1' : '0');
+  if (rightPanelOpen) rpRefresh();
+}
+
+function rpToggleSection(name) {
+  const hd   = document.getElementById('rp-hd-' + name);
+  const body = document.getElementById('rp-body-' + name);
+  if (!hd || !body) return;
+  const isOpen = body.classList.contains('open');
+  hd.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+const ATLAS_SNAPSHOT_KEYS = {
+  atlas:'qa-terrain-snapshot', environ:'qa-environ-snapshot',
+  architect:'qa-architect-snapshot', lighting:'qa-lighting-snapshot',
+  modeling:'qa-modeling-snapshot', choreography:'qa-choreography-snapshot',
+  behavior:'qa-behavior-snapshot', 'atlas-seq':'qa-sequencer-snapshot',
+  story:'qa-story-snapshot', memory:'qa-memory-snapshot',
+  sound:'qa-sound-snapshot', logic:'qa-logic-snapshot',
+  simulation:'qa-simulation-snapshot', forge:'qa-forge-snapshot',
+  society:'qa-society-snapshot', network:'qa-network-snapshot',
+};
+const LOOM_SNAPSHOT_KEYS = {
+  workspace:'ql-workspace', library:'ql-library', zones:'ql-zones',
+  scenes:'ql-scenes', rack:'ql-rack', sequencer:'ql-sequencer',
+  subgraph:'ql-graphs', ionodes:'ql-signal-bus', output:null,
+};
+
+function rpRefresh() {
+  if (!rightPanelOpen) return;
+  const layer = LAYERS[activeLayer];
+  if (!layer) return;
+
+  // Update layer chip
+  const colorEl = document.getElementById('rp-color-chip');
+  const labelEl = document.getElementById('rp-layer-label');
+  const fileEl  = document.getElementById('rp-layer-file');
+  if (colorEl) colorEl.style.background = layer.color.replace('var(','').replace(')','').trim()
+    ? getComputedStyle(document.documentElement).getPropertyValue(
+        layer.color.replace('var(','').replace(')','')
+      ).trim() || layer.color
+    : layer.color;
+  if (labelEl) labelEl.textContent = layer.label;
+  if (fileEl)  fileEl.textContent  = layer.file;
+
+  // Snapshot data
+  const snapKey = ATLAS_SNAPSHOT_KEYS[activeLayer] || LOOM_SNAPSHOT_KEYS[activeLayer];
+  const preEl   = document.getElementById('rp-snapshot-pre');
+  if (preEl) {
+    if (snapKey) {
+      const raw = localStorage.getItem(snapKey);
+      if (raw) {
+        try {
+          preEl.textContent = JSON.stringify(JSON.parse(raw), null, 2);
+        } catch(e) {
+          preEl.textContent = raw;
+        }
+      } else {
+        preEl.innerHTML = '<span class="rp-snapshot-empty">No snapshot for this layer</span>';
+      }
+    } else {
+      preEl.innerHTML = '<span class="rp-snapshot-empty">No snapshot key for this layer</span>';
+    }
+  }
+}
+
+function rpReloadFrame() {
+  const frame = document.getElementById('frame-' + activeLayer);
+  if (frame) {
+    loadedFrames.delete(activeLayer);
+    frame.src = frame.src;
+    toast('↻ Reloading ' + (LAYERS[activeLayer]?.label || activeLayer));
+  }
+}
+
+function rpClearSnapshot() {
+  const snapKey = ATLAS_SNAPSHOT_KEYS[activeLayer] || LOOM_SNAPSHOT_KEYS[activeLayer];
+  if (!snapKey) { toast('No snapshot key for this layer'); return; }
+  if (!confirm('Clear snapshot for ' + (LAYERS[activeLayer]?.label || activeLayer) + '?')) return;
+  localStorage.removeItem(snapKey);
+  toast('✕ Snapshot cleared');
+  rpRefresh();
+}
+
+function rpCopyJSON() {
+  const snapKey = ATLAS_SNAPSHOT_KEYS[activeLayer] || LOOM_SNAPSHOT_KEYS[activeLayer];
+  if (!snapKey) { toast('No snapshot key'); return; }
+  const raw = localStorage.getItem(snapKey);
+  if (!raw) { toast('No data to copy'); return; }
+  try {
+    navigator.clipboard.writeText(JSON.stringify(JSON.parse(raw), null, 2));
+    toast('⎘ JSON copied to clipboard');
+  } catch(e) { toast('⚠ Clipboard not available'); }
+}
+
+// Init right panel state from localStorage
+(function initRightPanel() {
+  const saved = localStorage.getItem('ql-right-panel-open');
+  if (saved === '1') {
+    // starts collapsed by default; only open if explicitly saved as open
+    rightPanelOpen = false; // keep collapsed on load per spec
+  }
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   HEADER NAV TABS + ATLAS FOOTER — sync active state
+══════════════════════════════════════════════════════════════ */
+
+// Atlas layers set — for determining which UI section to highlight
+const ATLAS_LAYERS = new Set(['atlas','environ','architect','lighting','modeling',
+  'choreography','behavior','society','atlas-seq','story','memory','sound',
+  'logic','simulation','forge','network']);
+
+// Loom layer tab IDs (maps layer key → header tab id)
+const LOOM_TAB_MAP = {
+  workspace:'hnt-workspace', library:'hnt-library', zones:'hnt-zones',
+  scenes:'hnt-scenes', sequencer:'hnt-sequencer', rack:'hnt-rack',
+  subgraph:'hnt-subgraph', ionodes:'hnt-subgraph', output:'hnt-output',
+};
+
+function updateLayerUI(layerId) {
+  // Header nav tabs
+  document.querySelectorAll('.hn-tab').forEach(t => t.classList.remove('active'));
+  const tabId = LOOM_TAB_MAP[layerId];
+  if (tabId) document.getElementById(tabId)?.classList.add('active');
+
+  // Left nav items
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (!ATLAS_LAYERS.has(layerId)) {
+    document.getElementById('nav-' + layerId)?.classList.add('active');
+  }
+
+  // Atlas footer buttons
+  document.querySelectorAll('.af-module-btn').forEach(b => b.classList.remove('active'));
+  if (ATLAS_LAYERS.has(layerId)) {
+    document.getElementById('afb-' + layerId)?.classList.add('active');
+    const moduleLabel = LAYERS[layerId]?.label?.replace(/^\d+\s·\s/,'').split('|')[0].trim() || layerId;
+    const nameEl = document.getElementById('af-module-name');
+    if (nameEl) nameEl.textContent = moduleLabel;
+  }
+
+  // Right panel refresh
+  rpRefresh();
+}
+
+/* Patch switchLayer to call updateLayerUI */
+const _baseSwitchLayer = switchLayer;
+switchLayer = function(layerId) {
+  _baseSwitchLayer(layerId);
+  updateLayerUI(layerId);
+};
+
 /* Hook into hub message relay — sequencer posts these */
 const _origMsgHandler = window.onmessage;
 window.addEventListener('message', async (e) => {
@@ -2976,6 +3684,242 @@ window.addEventListener('message', async (e) => {
 
 /* Auto-init on load */
 broadcastInit();
+
+
+/* ══════════════════════════════════════════════════════════════
+   GENESIS CONTAINER — Import / Export (.qgenesis)
+══════════════════════════════════════════════════════════════ */
+
+// ── Helpers ──────────────────────────────────────────────────
+function tryParseLS(key) {
+  try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
+}
+
+// ── Export ───────────────────────────────────────────────────
+function genesisExport() {
+  const container = {
+    qgenesis: '1.0',
+    meta: {
+      name: document.getElementById('proj-name')?.textContent || 'Untitled World',
+      description: '',
+      author: '',
+      created: new Date().toISOString(),
+      modified: new Date().toISOString(),
+      version: 1,
+      tags: []
+    },
+    loom: {
+      nodes:    tryParseLS('ql-workspace'),
+      wires:    null,
+      groups:   null,
+      zones:    tryParseLS('ql-zones'),
+      scenes:   tryParseLS('ql-scenes'),
+      sequencer: tryParseLS('ql-sequencer'),
+      rack:     tryParseLS('ql-rack'),
+      workspace_view: { x: 0, y: 0, zoom: 1 }
+    },
+    atlas: {
+      terrain:      tryParseLS('qa-terrain-snapshot'),
+      environment:  tryParseLS('qa-environ-snapshot'),
+      architect:    tryParseLS('qa-architect-snapshot'),
+      lighting:     tryParseLS('qa-lighting-snapshot'),
+      modeling:     tryParseLS('qa-modeling-snapshot'),
+      choreography: tryParseLS('qa-choreography-snapshot'),
+      behavior:     tryParseLS('qa-behavior-snapshot'),
+      society:      tryParseLS('qa-society-snapshot'),
+      sequencer:    tryParseLS('qa-sequencer-snapshot'),
+      story:        tryParseLS('qa-story-snapshot'),
+      memory:       tryParseLS('qa-memory-snapshot'),
+      sound:        tryParseLS('qa-sound-snapshot'),
+      logic:        tryParseLS('qa-logic-snapshot'),
+      simulation:   tryParseLS('qa-simulation-snapshot'),
+      forge:        tryParseLS('qa-forge-snapshot'),
+      network:      tryParseLS('qa-network-snapshot'),
+    },
+    signal_bus: tryParseLS('ql-signal-bus'),
+    theme:      tryParseLS('ql-theme')
+  };
+  const json = JSON.stringify(container, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const name = (container.meta.name || 'world').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${name}.qgenesis`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('↓ Exported: ' + name + '.qgenesis');
+}
+
+// ── Import file reader ────────────────────────────────────────
+function genesisImportFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const container = JSON.parse(e.target.result);
+      showGenesisModal(container, file.name);
+    } catch(err) {
+      alert('Invalid .qgenesis file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ── Show modal with parsed info ───────────────────────────────
+let _genesisContainer = null;
+
+function showGenesisModal(container, filename) {
+  _genesisContainer = container;
+
+  // Populate file row
+  document.getElementById('gm-file-name').textContent = filename || '—';
+  const isValid = container && container.qgenesis;
+  const badge = document.getElementById('gm-valid-badge');
+  badge.textContent = isValid ? '✓ valid' : '⚠ unknown';
+  badge.className   = 'gm-valid-badge ' + (isValid ? 'ok' : 'err');
+  document.getElementById('gm-file-row').style.display = '';
+
+  // Populate meta
+  const meta   = container.meta   || {};
+  const loom   = container.loom   || {};
+  const atlas  = container.atlas  || {};
+
+  document.getElementById('gm-world-name').textContent =
+    'World: "' + (meta.name || 'Unnamed') + '"';
+  document.getElementById('gm-version').textContent =
+    'Version: ' + (meta.version || '—');
+
+  const atlasPopulated = Object.values(atlas).filter(v => v != null).length;
+  const atlasTotal     = Object.keys(atlas).length;
+  document.getElementById('gm-atlas-count').textContent =
+    'Atlas modules: ' + atlasPopulated + '/' + atlasTotal + ' populated';
+
+  const nodeCount = Array.isArray(loom.nodes) ? loom.nodes.length : 0;
+  document.getElementById('gm-loom-nodes').textContent =
+    'Loom nodes: ' + nodeCount;
+
+  document.getElementById('gm-meta').style.display = '';
+  document.getElementById('gm-opts').style.display  = '';
+
+  // Reset checkboxes to checked
+  ['gm-opt-atlas','gm-opt-loom','gm-opt-theme','gm-opt-bus'].forEach(id => {
+    document.getElementById(id)?.classList.add('checked');
+    const cb = document.querySelector('#' + id + ' .gm-checkbox');
+    if (cb) cb.textContent = '✓';
+  });
+
+  document.getElementById('gm-import-btn').disabled = false;
+  document.getElementById('genesis-modal').classList.add('open');
+}
+
+function closeGenesisModal() {
+  document.getElementById('genesis-modal').classList.remove('open');
+  _genesisContainer = null;
+}
+
+// ── Checkbox toggle ───────────────────────────────────────────
+function gmToggleOpt(row) {
+  const isChecked = row.classList.contains('checked');
+  row.classList.toggle('checked', !isChecked);
+  const cb = row.querySelector('.gm-checkbox');
+  if (cb) cb.textContent = !isChecked ? '✓' : '';
+}
+
+// ── Execute import ────────────────────────────────────────────
+function gmDoImport() {
+  if (!_genesisContainer) return;
+  const opts = {
+    atlas: document.getElementById('gm-opt-atlas')?.classList.contains('checked'),
+    loom:  document.getElementById('gm-opt-loom')?.classList.contains('checked'),
+    theme: document.getElementById('gm-opt-theme')?.classList.contains('checked'),
+    bus:   document.getElementById('gm-opt-bus')?.classList.contains('checked'),
+  };
+  genesisApply(_genesisContainer, opts);
+}
+
+function genesisApply(container, opts) {
+  // opts: { atlas: bool, loom: bool, theme: bool, bus: bool }
+  if (opts.atlas && container.atlas) {
+    const MAP = {
+      terrain:      'qa-terrain-snapshot',
+      environment:  'qa-environ-snapshot',
+      architect:    'qa-architect-snapshot',
+      lighting:     'qa-lighting-snapshot',
+      modeling:     'qa-modeling-snapshot',
+      choreography: 'qa-choreography-snapshot',
+      behavior:     'qa-behavior-snapshot',
+      society:      'qa-society-snapshot',
+      sequencer:    'qa-sequencer-snapshot',
+      story:        'qa-story-snapshot',
+      memory:       'qa-memory-snapshot',
+      sound:        'qa-sound-snapshot',
+      logic:        'qa-logic-snapshot',
+      simulation:   'qa-simulation-snapshot',
+      forge:        'qa-forge-snapshot',
+      network:      'qa-network-snapshot',
+    };
+    Object.entries(MAP).forEach(([mod, key]) => {
+      if (container.atlas[mod] != null)
+        localStorage.setItem(key, JSON.stringify(container.atlas[mod]));
+    });
+  }
+  if (opts.loom && container.loom) {
+    if (container.loom.zones)     localStorage.setItem('ql-zones',     JSON.stringify(container.loom.zones));
+    if (container.loom.scenes)    localStorage.setItem('ql-scenes',    JSON.stringify(container.loom.scenes));
+    if (container.loom.sequencer) localStorage.setItem('ql-sequencer', JSON.stringify(container.loom.sequencer));
+    if (container.loom.rack)      localStorage.setItem('ql-rack',      JSON.stringify(container.loom.rack));
+    if (container.loom.nodes)     localStorage.setItem('ql-workspace', JSON.stringify(container.loom.nodes));
+  }
+  if (opts.theme && container.theme) {
+    localStorage.setItem('ql-theme', JSON.stringify(container.theme));
+  }
+  if (opts.bus && container.signal_bus) {
+    localStorage.setItem('ql-signal-bus', JSON.stringify(container.signal_bus));
+  }
+  // Update project name if available
+  if (container.meta?.name) {
+    const el = document.getElementById('proj-name');
+    if (el) el.textContent = container.meta.name;
+    if (projectMeta) projectMeta.name = container.meta.name;
+  }
+  closeGenesisModal();
+  // Reload active frame so it picks up new snapshot data
+  const frame = document.getElementById(`frame-${activeLayer}`);
+  if (frame) {
+    loadedFrames.delete(activeLayer);
+    frame.src = frame.src;
+  }
+  updateStatusBar();
+  toast('↑ Genesis Container imported: ' + (container.meta?.name || 'World'));
+}
+
+// ── Hub-content drag-and-drop ─────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const hubContent = document.getElementById('hub-content');
+  if (hubContent) {
+    hubContent.addEventListener('dragover', e => {
+      if (e.dataTransfer.types.includes('Files')) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+      }
+    });
+    hubContent.addEventListener('drop', e => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file && (file.name.endsWith('.qgenesis') || file.name.endsWith('.json'))) {
+        genesisImportFile(file);
+      }
+    });
+  }
+  // Close genesis modal on backdrop click
+  document.getElementById('genesis-modal')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('genesis-modal')) closeGenesisModal();
+  });
+
+  // F1 → User Manual
+  document.addEventListener('keydown', e => {
+    if (e.key === 'F1') { e.preventDefault(); switchLayer('manual'); }
+  });
+});
 
 </script>
 </body>

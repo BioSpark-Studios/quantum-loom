@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Loom — User Manual</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1c1c28;
+  --edge: #2a2a3a;
+  --edge-hi: #3a3a50;
+  --venturan: #1e8cff;
+  --amber: #f4c025;
+  --emerald: #00c060;
+  --fusion: #20c8d0;
+  --blood: #e03050;
+  --solari: #ff6400;
+  --text: #e8e8f0;
+  --text-muted: #8888a0;
+  --fd: 'Segoe UI', system-ui, sans-serif;
+
+  --c-terrain: #1e8cff;
+  --c-environment: #8050e0;
+  --c-architect: #64b4ff;
+  --c-lighting: #e0d8ff;
+  --c-modeling: #f4c025;
+  --c-choreography: #dc3c78;
+  --c-behavior: #9030d0;
+  --c-society: #c8a860;
+  --c-sequencer: #b08030;
+  --c-story: #8c50ff;
+  --c-memory: #00c060;
+  --c-sound: #dc8c1e;
+  --c-logic: #20c8d0;
+  --c-simulation: #30e060;
+  --c-forge: #ff6400;
+  --c-network: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--fd);
+  font-size: 15px;
+  height: 100%;
+}
+
+/* Layout */
+#manual-wrap {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* TOC Sidebar */
+#toc-sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--surface);
+  border-right: 1px solid var(--edge);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#toc-header {
+  padding: 18px 16px 12px;
+  border-bottom: 1px solid var(--edge);
+  flex-shrink: 0;
+}
+
+#toc-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--venturan);
+  margin-bottom: 10px;
+}
+
+#toc-search {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--fd);
+  outline: none;
+  transition: border-color 0.15s;
+}
+#toc-search:focus { border-color: var(--venturan); }
+#toc-search::placeholder { color: var(--text-muted); }
+
+#toc-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0 24px;
+  scroll-behavior: smooth;
+}
+#toc-nav::-webkit-scrollbar { width: 4px; }
+#toc-nav::-webkit-scrollbar-track { background: transparent; }
+#toc-nav::-webkit-scrollbar-thumb { background: var(--edge-hi); border-radius: 2px; }
+
+.toc-chapter {
+  margin-top: 4px;
+}
+
+.toc-chapter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+  transition: background 0.12s, color 0.12s;
+}
+.toc-chapter-btn:hover { background: var(--surface2); color: var(--venturan); }
+.toc-chapter-btn.active { color: var(--venturan); }
+
+.toc-chapter-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: var(--edge);
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.toc-section-list {
+  list-style: none;
+  display: block;
+}
+
+.toc-section-list li a {
+  display: block;
+  padding: 5px 16px 5px 44px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all 0.12s;
+  line-height: 1.4;
+}
+.toc-section-list li a:hover {
+  color: var(--text);
+  background: var(--surface2);
+  border-left-color: var(--edge-hi);
+}
+.toc-section-list li a.active {
+  color: var(--venturan);
+  border-left-color: var(--venturan);
+  background: rgba(30,140,255,0.07);
+}
+.toc-section-list li.hidden { display: none; }
+
+/* Main Content */
+#manual-content {
+  flex: 1;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+#manual-content::-webkit-scrollbar { width: 6px; }
+#manual-content::-webkit-scrollbar-track { background: transparent; }
+#manual-content::-webkit-scrollbar-thumb { background: var(--edge-hi); border-radius: 3px; }
+
+#manual-body {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 48px 80px;
+}
+
+/* Hero */
+.manual-hero {
+  text-align: center;
+  padding: 40px 0 56px;
+  border-bottom: 1px solid var(--edge);
+  margin-bottom: 56px;
+}
+.manual-hero-glyph {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+.manual-hero h1 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.manual-hero .subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+.manual-hero .version-badge {
+  display: inline-block;
+  background: var(--surface2);
+  border: 1px solid var(--edge);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 12px;
+  color: var(--venturan);
+  letter-spacing: 0.06em;
+}
+
+/* Chapters and Sections */
+.manual-chapter {
+  margin-bottom: 64px;
+  scroll-margin-top: 24px;
+}
+
+.chapter-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--edge);
+}
+
+.chapter-num-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--venturan);
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.chapter-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.manual-section {
+  margin-bottom: 40px;
+  scroll-margin-top: 24px;
+}
+
+.manual-section h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  padding-left: 12px;
+  border-left: 3px solid var(--venturan);
+}
+
+.manual-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--amber);
+  margin: 16px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.manual-section p {
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin-bottom: 12px;
+}
+
+.manual-section ul, .manual-section ol {
+  color: var(--text-muted);
+  line-height: 1.75;
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.manual-section li {
+  margin-bottom: 4px;
+}
+
+.manual-section li strong {
+  color: var(--text);
+}
+
+/* Info boxes */
+.info-box {
+  background: var(--surface2);
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 16px 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+.info-box.tip { border-left: 3px solid var(--emerald); }
+.info-box.note { border-left: 3px solid var(--venturan); }
+.info-box.warn { border-left: 3px solid var(--amber); }
+.info-box.danger { border-left: 3px solid var(--blood); }
+
+.info-box-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.tip .info-box-label { color: var(--emerald); }
+.note .info-box-label { color: var(--venturan); }
+.warn .info-box-label { color: var(--amber); }
+.danger .info-box-label { color: var(--blood); }
+
+/* Tables */
+.manual-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 13px;
+}
+.manual-table th {
+  background: var(--surface2);
+  color: var(--text);
+  font-weight: 700;
+  padding: 9px 12px;
+  text-align: left;
+  border-bottom: 2px solid var(--edge-hi);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.manual-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--edge);
+  color: var(--text-muted);
+  vertical-align: top;
+  line-height: 1.5;
+}
+.manual-table tr:hover td { background: var(--surface2); }
+.manual-table td:first-child { color: var(--text); font-weight: 500; }
+
+/* Code */
+code {
+  background: var(--surface2);
+  border: 1px solid var(--edge);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: 12px;
+  color: var(--venturan);
+}
+
+pre {
+  background: var(--surface2);
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 12px 0;
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Module cards */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.module-card {
+  background: var(--surface2);
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  padding: 12px 10px;
+  text-align: center;
+  transition: border-color 0.15s;
+}
+.module-card:hover { border-color: var(--edge-hi); }
+
+.module-card-glyph {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.module-card-num {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.module-card-name {
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.module-card-crest {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Wire type chips */
+.wire-chip {
+  display: inline-block;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border: 1px solid currentColor;
+  margin: 2px;
+}
+
+/* Keyboard shortcut */
+kbd {
+  display: inline-block;
+  background: var(--surface2);
+  border: 1px solid var(--edge-hi);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-family: 'Cascadia Code', monospace;
+  color: var(--text);
+  box-shadow: 0 1px 0 var(--edge-hi);
+}
+
+/* Capacity diagram */
+.capacity-diagram {
+  background: var(--surface2);
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 16px 0;
+  font-size: 13px;
+  text-align: center;
+  color: var(--text-muted);
+}
+.capacity-level {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+.capacity-box {
+  background: var(--edge);
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 12px;
+}
+.capacity-arrow { color: var(--text-muted); font-size: 18px; }
+</style>
+</head>
+<body>
+
+<div id="manual-wrap">
+
+  <!-- TOC Sidebar -->
+  <nav id="toc-sidebar">
+    <div id="toc-header">
+      <div id="toc-title">⬡ User Manual</div>
+      <input id="toc-search" type="text" placeholder="Search sections..." autocomplete="off">
+    </div>
+    <div id="toc-nav">
+      <!-- Generated by JS -->
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="manual-content">
+    <div id="manual-body">
+
+      <!-- Hero -->
+      <div class="manual-hero">
+        <div class="manual-hero-glyph">⬡</div>
+        <h1>Quantum Loom</h1>
+        <div class="subtitle">Procedural World Simulation — User Manual</div>
+        <div class="version-badge">QUANTUM ATLAS v1.0 · 16-MODULE EDITION</div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════
+           CHAPTER 1 — INTRODUCTION
+           ═══════════════════════════════════════════════════════ -->
+      <section class="manual-chapter" id="ch1">
+        <div class="chapter-header">
+          <div class="chapter-num-badge">1</div>
+          <h2>Introduction to Quantum Loom</h2>
+        </div>
+
+        <div class="manual-section" id="s1-1">
+          <h3>What Is Quantum Loom?</h3>
+          <p>Quantum Loom is a procedural world simulation platform built for world-builders, narrative designers, game developers, and creative technologists. It provides a complete pipeline from raw terrain generation all the way through to networked multi-agent simulation — the entire lifecycle of a synthetic world managed in one application.</p>
+          <p>The core philosophy is that every element of a world — geography, climate, architecture, society, story, sound, logic — exists in deterministic relationship to every other element. Quantum Loom makes those relationships explicit through its 16-module Atlas pipeline and its container-based save format.</p>
+        </div>
+
+        <div class="manual-section" id="s1-2">
+          <h3>The Quantum Atlas Pipeline</h3>
+          <p>The Quantum Atlas is the 16-module procedural engine at the heart of Quantum Loom. Modules are organized into four departments, each handling a distinct layer of world simulation:</p>
+          <ul>
+            <li><strong>WorldConstruction (01–04):</strong> Physical world — terrain, environment, architecture, lighting</li>
+            <li><strong>EntitySystems (05–08):</strong> Inhabitants — character models, movement choreography, behavior, society</li>
+            <li><strong>NarrativeSystems (09–12):</strong> Story layer — event sequencing, story arcs, memory/history, sound design</li>
+            <li><strong>PipelineSystems (13–16):</strong> Engine layer — logic rules, simulation engine, asset forge, network/agents</li>
+          </ul>
+          <p>Data flows downstream through the pipeline: Terrain feeds Environment, Environment feeds Architect, and so on, forming a dependency chain that produces coherent worlds from parameterized seeds.</p>
+        </div>
+
+        <div class="manual-section" id="s1-3">
+          <h3>Key Concepts at a Glance</h3>
+          <ul>
+            <li><strong>Genesis Container (.qgenesis):</strong> A world definition file — analogous to an audio soundbank. Contains all 16 module states for a complete world.</li>
+            <li><strong>Project File (.qgcp):</strong> A save format for engineering sessions. Contains directory structures, media assets, p5.js sketches, and an encrypted manifest.</li>
+            <li><strong>B-DNA:</strong> A deterministic identity hash (16-character hex) assigned to every entity in a world, derived from its lineage and spawn parameters.</li>
+            <li><strong>Wire Types:</strong> 16 typed data channels connecting modules and agents. Each wire carries a specific data class (terrain data, audio, narrative events, etc.).</li>
+            <li><strong>Capsule:</strong> The atomic unit of content inside a Genesis Container. Capsules hold one piece of world data — a character, an event, a soundscape, a mesh.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s1-4">
+          <h3>System Requirements</h3>
+          <ul>
+            <li><strong>OS:</strong> Windows 10/11 (64-bit), macOS 12+, Ubuntu 20.04+</li>
+            <li><strong>RAM:</strong> 8 GB minimum, 16 GB recommended for large worlds</li>
+            <li><strong>GPU:</strong> WebGL 2.0 capable (for hex-grid and 3D previews)</li>
+            <li><strong>Storage:</strong> 500 MB for application; 1–20 GB per Genesis project depending on media assets</li>
+            <li><strong>Node.js / Electron:</strong> Bundled with the application — no separate install required</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s1-5">
+          <h3>Installation and First Launch</h3>
+          <p>Download the Quantum Loom installer for your platform from the releases page. Run the installer and follow on-screen prompts. On first launch:</p>
+          <ol>
+            <li>The application creates a local database at <code>~/.quantum/quantum-agent.db</code> for mount registry tracking.</li>
+            <li>A default theme (Dark/Venturan) is applied. Themes can be changed from <strong>Settings → Appearance</strong>.</li>
+            <li>An empty workspace is shown. Create your first Genesis Container via <strong>File → New Genesis</strong> or <kbd>Ctrl+N</kbd>.</li>
+          </ol>
+          <div class="info-box tip">
+            <div class="info-box-label">Tip</div>
+            Import a <code>.qgenesis</code> demo file to explore a fully populated world before building your own. Demo files are available in the <code>examples/</code> folder of the installation directory.
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════
+           CHAPTER 2 — THE QUANTUM LOOM INTERFACE
+           ═══════════════════════════════════════════════════════ -->
+      <section class="manual-chapter" id="ch2">
+        <div class="chapter-header">
+          <div class="chapter-num-badge" style="background:var(--fusion)">2</div>
+          <h2>The Quantum Loom Interface</h2>
+        </div>
+
+        <div class="manual-section" id="s2-1">
+          <h3>Hub Layout Overview</h3>
+          <p>The main window is divided into four zones:</p>
+          <ul>
+            <li><strong>Header Navigation Bar (52px):</strong> Centered pill-tab navigation for Workspace, Library, Zones, Scenes, Sequencer, Rack, IO Nodes, and Output views.</li>
+            <li><strong>Left Sidebar (48px icon strip):</strong> Loom engine tools — Settings, Themes, Assets, Agents, Search, Notifications, Help.</li>
+            <li><strong>Right Properties Panel (280px, collapsible):</strong> Contextual panel showing the Active Layer, Snapshot Data preview, and Quick Actions for the currently selected module.</li>
+            <li><strong>Atlas Footer Bar (72px):</strong> The 16 Atlas module buttons arranged in a horizontal strip at the bottom. Click any module glyph to open that module in the main content area.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s2-2">
+          <h3>Header Navigation — Main Views</h3>
+          <table class="manual-table">
+            <thead><tr><th>Tab</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>Workspace</td><td>The primary world-building canvas. Shows the currently active Atlas module or the hub overview.</td></tr>
+              <tr><td>Library</td><td>Browse and manage Genesis Containers, imported assets, soundbanks, and template worlds.</td></tr>
+              <tr><td>Zones</td><td>Geographic zone editor. Define named regions on the hex grid with custom biome, climate, and faction rules.</td></tr>
+              <tr><td>Scenes</td><td>Scene compositor. Assemble multi-layer scenes from modules and schedule them in the Sequencer.</td></tr>
+              <tr><td>Sequencer</td><td>The Loom Track Sequencer — timeline-based playback of world events, animations, and narrative beats.</td></tr>
+              <tr><td>Rack</td><td>The Instrument Rack — audio synthesis and sound design workspace linked to the Sound module.</td></tr>
+              <tr><td>IO Nodes</td><td>Node graph for wiring module outputs to inputs using the 16 wire types.</td></tr>
+              <tr><td>Output</td><td>Preview and export the world simulation as video, data files, or interactive web exports.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="manual-section" id="s2-3">
+          <h3>Left Sidebar — Loom Tools</h3>
+          <table class="manual-table">
+            <thead><tr><th>Icon</th><th>Tool</th><th>Shortcut</th></tr></thead>
+            <tbody>
+              <tr><td>⚙</td><td>Settings</td><td><kbd>Ctrl+,</kbd></td></tr>
+              <tr><td>◑</td><td>Theme / Appearance</td><td>—</td></tr>
+              <tr><td>◫</td><td>Asset Browser</td><td><kbd>Ctrl+B</kbd></td></tr>
+              <tr><td>⬡</td><td>Agent Manager</td><td><kbd>Ctrl+G</kbd></td></tr>
+              <tr><td>⌕</td><td>Global Search</td><td><kbd>Ctrl+F</kbd></td></tr>
+              <tr><td>🔔</td><td>Notifications</td><td>—</td></tr>
+              <tr><td>?</td><td>Help / Manual</td><td><kbd>F1</kbd></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="manual-section" id="s2-4">
+          <h3>Right Properties Panel</h3>
+          <p>The collapsible right panel (toggle with the <code>›</code> button or <kbd>Ctrl+]</kbd>) contains three sections:</p>
+          <ul>
+            <li><strong>Active Layer:</strong> Shows the currently active Atlas module — its name, crest, department, and status.</li>
+            <li><strong>Snapshot Data:</strong> A live preview of the module's stored snapshot, including key parameter values and last-modified timestamp.</li>
+            <li><strong>Quick Actions:</strong> Context-sensitive action buttons — Save Snapshot, Import Genesis, Export Genesis, and Reset to Defaults.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s2-5">
+          <h3>Atlas Footer Bar</h3>
+          <p>The 72px footer strip shows all 16 Atlas modules as icon buttons. Each button displays the module's glyph in its canonical color. Clicking a button activates that module in the main content area and highlights it in the Active Layer panel.</p>
+          <div class="info-box note">
+            <div class="info-box-label">Note</div>
+            Right-click any footer module button to get a context menu with: Open Module, View Snapshot, Reset Module, and Wire To... options.
+          </div>
+        </div>
+
+        <div class="manual-section" id="s2-6">
+          <h3>Tooltips</h3>
+          <p>Quantum Loom uses a unified tooltip system. Hover over any node, glyph, icon, or interactive control for 600ms to see its tooltip. Tooltips show a title and description. Some tooltips on complex nodes also show parameter ranges, wire compatibility, and keyboard shortcuts.</p>
+        </div>
+
+        <div class="manual-section" id="s2-7">
+          <h3>Themes and Appearance</h3>
+          <p>Open <strong>Settings → Appearance</strong> or click the theme icon in the left sidebar. Available theme tokens:</p>
+          <ul>
+            <li><strong>Background (--bg):</strong> Primary canvas color</li>
+            <li><strong>Surface / Surface2:</strong> Panel and card backgrounds</li>
+            <li><strong>Edge / Edge-Hi:</strong> Border and divider colors</li>
+            <li><strong>Accent colors:</strong> Venturan (blue), Amber (gold), Emerald (green), Fusion (cyan)</li>
+          </ul>
+          <p>Custom themes can be exported as JSON token sets and shared via <code>.qltheme</code> files.</p>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════
+           CHAPTER 3 — GENESIS CONTAINERS
+           ═══════════════════════════════════════════════════════ -->
+      <section class="manual-chapter" id="ch3">
+        <div class="chapter-header">
+          <div class="chapter-num-badge" style="background:var(--emerald)">3</div>
+          <h2>Genesis Containers &amp; File Formats</h2>
+        </div>
+
+        <div class="manual-section" id="s3-1">
+          <h3>The Genesis Container Hierarchy</h3>
+          <p>A Genesis Container is the top-level world definition unit. Its internal hierarchy follows a strict capacity law designed to keep world complexity manageable and deterministic:</p>
+          <div class="capacity-diagram">
+            <div class="capacity-level">
+              <div class="capacity-box">1 Genesis</div>
+            </div>
+            <div class="capacity-arrow">↓ contains up to 16</div>
+            <div class="capacity-level">
+              <div class="capacity-box">Mythos Containers</div>
+            </div>
+            <div class="capacity-arrow">↓ each contains up to 16</div>
+            <div class="capacity-level">
+              <div class="capacity-box">Containers</div>
+            </div>
+            <div class="capacity-arrow">↓ each contains up to 16</div>
+            <div class="capacity-level">
+              <div class="capacity-box">Capsules</div>
+            </div>
+            <div class="capacity-arrow">= Maximum 4,096 Capsules per Genesis</div>
+          </div>
+          <p>A <strong>Capsule</strong> is the atomic unit of world content — a character, location, event, soundscape, or any discrete world element. Capsules carry a B-DNA identifier, metadata tags, and typed wire connections.</p>
+        </div>
+
+        <div class="manual-section" id="s3-2">
+          <h3>The .qgenesis Format</h3>
+          <p>A <code>.qgenesis</code> file is a world definition — analogous to an audio soundbank. It contains the complete parameterized state of all 16 Atlas modules, the container hierarchy, B-DNA registries, and world metadata. It does <em>not</em> contain media assets or user project files.</p>
+          <h4>Structure</h4>
+          <pre>{
+  "genesis": {
+    "id": "GEN-xxxxxxxxxxxxxxxx",
+    "name": "My World",
+    "created": "ISO-8601 timestamp",
+    "version": "1.0",
+    "atlas": { /* 16 module snapshots, keyed by module id */ },
+    "mythos": [ /* up to 16 MythosContainer objects */ ],
+    "metadata": { "author": "...", "tags": [], "description": "..." }
+  }
+}</pre>
+          <h4>Importing a Genesis Container</h4>
+          <ol>
+            <li>Click <strong>Import Genesis</strong> in the Quick Actions panel, or drag a <code>.qgenesis</code> file onto the hub canvas.</li>
+            <li>The Genesis Import modal opens, showing container metadata and checkboxes to select which module sections to apply.</li>
+            <li>Select the modules you want to import. Deselected modules keep their current state.</li>
+            <li>Click <strong>Apply</strong>. Each selected module loads its snapshot data and refreshes its UI.</li>
+          </ol>
+          <h4>Exporting a Genesis Container</h4>
+          <ol>
+            <li>Click <strong>Export Genesis</strong> in the Quick Actions panel or via <kbd>Ctrl+E</kbd>.</li>
+            <li>Enter a world name. All 16 module snapshots are collected and bundled.</li>
+            <li>The file downloads as <code>&lt;worldname&gt;.qgenesis</code>.</li>
+          </ol>
+        </div>
+
+        <div class="manual-section" id="s3-3">
+          <h3>The .qgcp Format</h3>
+          <p>A <code>.qgcp</code> (Quantum Creative Project) file is what you save when working on a creative session. Think of it as the audio engineer's session file — it references a Genesis Container but also holds your working assets, custom scripts, and media.</p>
+          <h4>What .qgcp Contains</h4>
+          <ul>
+            <li><strong>Encrypted manifest:</strong> AES-256-GCM encryption with argon2id key derivation. Contains project identity, bound Genesis reference, and lifecycle state.</li>
+            <li><strong>Directory structure:</strong> Organized folders for media assets, p5.js sketches, audio files, textures, and narrative documents.</li>
+            <li><strong>Lifecycle state:</strong> Each project exists in one of five states: <code>seeding</code>, <code>active</code>, <code>sealed</code>, <code>archived</code>, <code>deprecated</code>.</li>
+            <li><strong>Mount registry:</strong> Tracked in the local SQLite database at <code>~/.quantum/quantum-agent.db</code>.</li>
+          </ul>
+          <h4>Lifecycle States</h4>
+          <table class="manual-table">
+            <thead><tr><th>State</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>seeding</td><td>Project is being initialized. Genesis Container not yet bound.</td></tr>
+              <tr><td>active</td><td>Normal working state. All edits and imports are permitted.</td></tr>
+              <tr><td>sealed</td><td>Project locked for distribution or archival. Read-only.</td></tr>
+              <tr><td>archived</td><td>Compressed and stored. Can be unshelved back to active.</td></tr>
+              <tr><td>deprecated</td><td>Superseded by a newer version. Preserved but not editable.</td></tr>
+            </tbody>
+          </table>
+          <h4>Encryption</h4>
+          <p>The manifest is encrypted using <strong>argon2id</strong> key derivation from a user-provided seal file passphrase, with <strong>AES-256-GCM</strong> for the manifest payload. Keep your seal file secure — a lost seal file cannot be recovered.</p>
+        </div>
+
+        <div class="manual-section" id="s3-4">
+          <h3>B-DNA — Entity Identity</h3>
+          <p>Every entity in a Genesis Container has a <strong>B-DNA</strong> — a deterministic 16-character hex identifier prefixed with <code>0x</code>. B-DNA is derived via a Linear Congruential Generator seeded by the entity's lineage path and spawn parameters. This means the same world seed will always produce the same B-DNA for the same entity, enabling reproducible simulation runs and diff-able container versions.</p>
+          <pre>// B-DNA format: 0x + 16 hex chars
+// Example: 0x3a7f1c92b04e68d5</pre>
+        </div>
+
+        <div class="manual-section" id="s3-5">
+          <h3>The Mount Registry</h3>
+          <p>The local SQLite database at <code>~/.quantum/quantum-agent.db</code> tracks all mounted Genesis Containers and QGCP projects on your machine. This allows the Agent Manager and Network module to discover and connect to worlds running on the same system. The registry is managed automatically — you do not need to edit it directly.</p>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════
+           CHAPTER 4 — WIRE TYPES
+           ═══════════════════════════════════════════════════════ -->
+      <section class="manual-chapter" id="ch4">
+        <div class="chapter-header">
+          <div class="chapter-num-badge" style="background:var(--amber);color:#000">4</div>
+          <h2>Wire Types — The 16 Data Channels</h2>
+        </div>
+
+        <div class="manual-section" id="s4-1">
+          <h3>What Are Wires?</h3>
+          <p>Wires are typed data channels that connect modules, capsules, and agents in the IO Nodes graph. Every connection has a declared wire type, which enforces data compatibility and controls how downstream modules interpret the incoming data. Attempting to connect incompatible wire types shows a validation error.</p>
+          <p>Wire connections are drawn in the IO Nodes view. Drag from an output port to an input port — the system highlights compatible ports as you drag.</p>
+        </div>
+
+        <div class="manual-section" id="s4-2">
+          <h3>Wire Type Reference</h3>
+          <table class="manual-table">
+            <thead><tr><th>Code</th><th>Name</th><th>Carries</th><th>Primary Modules</th></tr></thead>
+            <tbody>
+              <tr><td><span class="wire-chip" style="color:#1e8cff">DAT</span></td><td>Data</td><td>Generic structured data, parameters, snapshots</td><td>All modules (default)</td></tr>
+              <tr><td><span class="wire-chip" style="color:#f4c025">CTL</span></td><td>Control</td><td>Signals, triggers, enable/disable commands</td><td>Logic, Simulation, Sequencer</td></tr>
+              <tr><td><span class="wire-chip" style="color:#dc8c1e">AUD</span></td><td>Audio</td><td>Sound events, waveform references, mix data</td><td>Sound, Rack, Sequencer</td></tr>
+              <tr><td><span class="wire-chip" style="color:#8c50ff">NAR</span></td><td>Narrative</td><td>Story beats, dialogue trees, arc triggers</td><td>Story, Memory, Sequencer</td></tr>
+              <tr><td><span class="wire-chip" style="color:#b08030">TMP</span></td><td>Temporal</td><td>Time-indexed event streams, timeline markers</td><td>Sequencer, Simulation, Memory</td></tr>
+              <tr><td><span class="wire-chip" style="color:#00c060">AGT</span></td><td>Agent</td><td>Agent spawn commands, behavior payloads</td><td>Network, Behavior, Society</td></tr>
+              <tr><td><span class="wire-chip" style="color:#e0d8ff">VIS</span></td><td>Visual</td><td>Mesh data, texture references, lighting params</td><td>Modeling, Architect, Lighting</td></tr>
+              <tr><td><span class="wire-chip" style="color:#1e8cff">SPA</span></td><td>Spatial</td><td>Hex coordinates, zone boundaries, terrain heightmap</td><td>Terrain, Environment, Architect</td></tr>
+              <tr><td><span class="wire-chip" style="color:#9030d0">BHV</span></td><td>Behavior</td><td>Behavior trees, state machines, instinct weights</td><td>Behavior, Choreography, Society</td></tr>
+              <tr><td><span class="wire-chip" style="color:#c8a860">SOC</span></td><td>Social</td><td>Faction data, relationship graphs, social events</td><td>Society, Story, Memory</td></tr>
+              <tr><td><span class="wire-chip" style="color:#30e060">ENR</span></td><td>Energy</td><td>Resource flows, entropy values, simulation energy</td><td>Simulation, Terrain, Environment</td></tr>
+              <tr><td><span class="wire-chip" style="color:#20c8d0">IDN</span></td><td>Identity</td><td>B-DNA hashes, entity metadata, lineage chains</td><td>All modules (entity tracking)</td></tr>
+              <tr><td><span class="wire-chip" style="color:#dc3c78">EVT</span></td><td>Event</td><td>Discrete world events, triggers, callbacks</td><td>Sequencer, Story, Logic</td></tr>
+              <tr><td><span class="wire-chip" style="color:#ff6400">AST</span></td><td>Asset</td><td>Media file references, p5.js sketch paths, mesh URIs</td><td>Forge, Architect, Modeling</td></tr>
+              <tr><td><span class="wire-chip" style="color:#64b4ff">MET</span></td><td>Meta</td><td>Schema definitions, type declarations, module configs</td><td>Logic, Network, Genesis system</td></tr>
+              <tr><td><span class="wire-chip" style="color:#ffffff">LGC</span></td><td>Logic</td><td>Predicate expressions, rule sets, condition trees</td><td>Logic, Behavior, Simulation</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="manual-section" id="s4-3">
+          <h3>Wiring Best Practices</h3>
+          <ul>
+            <li>Use <strong>DAT</strong> for general data passing when no more specific type applies.</li>
+            <li>Use <strong>IDN</strong> wires whenever you need to track an entity's identity across module boundaries.</li>
+            <li>Use <strong>EVT</strong> for one-shot triggers (e.g., "character dies") and <strong>CTL</strong> for persistent enable/disable states.</li>
+            <li>Audio wires (<strong>AUD</strong>) carry references, not raw audio data — keep large audio files in the project's <code>/media/audio/</code> folder and reference them by path.</li>
+            <li>Avoid circular wires unless the Logic module's cycle-detection is explicitly enabled for that subgraph.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════
+           CHAPTER 5 — THE 16 ATLAS MODULES
+           ═══════════════════════════════════════════════════════ -->
+      <section class="manual-chapter" id="ch5">
+        <div class="chapter-header">
+          <div class="chapter-num-badge" style="background:var(--solari)">5</div>
+          <h2>The 16 Atlas Modules</h2>
+        </div>
+
+        <!-- Module Overview Grid -->
+        <div class="manual-section" id="s5-0">
+          <h3>Module Quick Reference</h3>
+          <div class="module-grid">
+            <div class="module-card"><div class="module-card-glyph" style="color:#1e8cff">⬡</div><div class="module-card-num">01</div><div class="module-card-name" style="color:#1e8cff">Terrain</div><div class="module-card-crest">Atlas · WorldConstruction</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#8050e0">◉</div><div class="module-card-num">02</div><div class="module-card-name" style="color:#8050e0">Environment</div><div class="module-card-crest">Mythos · WorldConstruction</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#64b4ff">⊓</div><div class="module-card-num">03</div><div class="module-card-name" style="color:#64b4ff">Architect</div><div class="module-card-crest">Architect · WorldConstruction</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#e0d8ff">◐</div><div class="module-card-num">04</div><div class="module-card-name" style="color:#e0d8ff">Lighting</div><div class="module-card-crest">Prism · WorldConstruction</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#f4c025">✦</div><div class="module-card-num">05</div><div class="module-card-name" style="color:#f4c025">Modeling</div><div class="module-card-crest">Animus · EntitySystems</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#dc3c78">⟳</div><div class="module-card-num">06</div><div class="module-card-name" style="color:#dc3c78">Choreography</div><div class="module-card-crest">Loom · EntitySystems</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#9030d0">⊙</div><div class="module-card-num">07</div><div class="module-card-name" style="color:#9030d0">Behavior</div><div class="module-card-crest">Instinct · EntitySystems</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#c8a860">⚑</div><div class="module-card-num">08</div><div class="module-card-name" style="color:#c8a860">Society</div><div class="module-card-crest">Order · EntitySystems</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#b08030">▶</div><div class="module-card-num">09</div><div class="module-card-name" style="color:#b08030">Sequencer</div><div class="module-card-crest">Chronicle · NarrativeSystems</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#8c50ff">✎</div><div class="module-card-num">10</div><div class="module-card-name" style="color:#8c50ff">Story</div><div class="module-card-crest">Quill · NarrativeSystems</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#00c060">◎</div><div class="module-card-num">11</div><div class="module-card-name" style="color:#00c060">Memory</div><div class="module-card-crest">Codex · NarrativeSystems</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#dc8c1e">♪</div><div class="module-card-num">12</div><div class="module-card-name" style="color:#dc8c1e">Sound</div><div class="module-card-crest">Composer · NarrativeSystems</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#20c8d0">⊢</div><div class="module-card-num">13</div><div class="module-card-name" style="color:#20c8d0">Logic</div><div class="module-card-crest">Axiom · PipelineSystems</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#30e060">∿</div><div class="module-card-num">14</div><div class="module-card-name" style="color:#30e060">Simulation</div><div class="module-card-crest">Continuum · PipelineSystems</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#ff6400">⚒</div><div class="module-card-num">15</div><div class="module-card-name" style="color:#ff6400">Forge</div><div class="module-card-crest">Forge · PipelineSystems</div></div>
+            <div class="module-card"><div class="module-card-glyph" style="color:#ffffff">⇋</div><div class="module-card-num">16</div><div class="module-card-name" style="color:#ffffff">Network</div><div class="module-card-crest">Nexus · PipelineSystems</div></div>
+          </div>
+        </div>
+
+        <!-- WorldConstruction -->
+        <div class="manual-section" id="s5-1">
+          <h3>01 — Terrain (Atlas · WorldConstruction)</h3>
+          <p>The Terrain module is the foundation of every world. It generates and manages the hex grid — a pointy-top axial coordinate system with radius 14 (631 hexes) that defines the world's surface geometry, elevation, and biome base layer.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>World Seed:</strong> Integer seed for deterministic terrain generation. Same seed = same terrain, always.</li>
+            <li><strong>Elevation Scale:</strong> Multiplier for height variance. Low values produce flat worlds; high values produce mountainous terrain.</li>
+            <li><strong>Erosion Passes:</strong> Number of hydraulic erosion simulation passes applied to the heightmap.</li>
+            <li><strong>Biome Distribution:</strong> Controls the Voronoi cell sizes used to assign biome types to hex regions.</li>
+            <li><strong>Hex Grid:</strong> The interactive hex grid canvas. Click a hex to select it and view its elevation, biome, and moisture values.</li>
+          </ul>
+          <h4>Outputs (SPA wire)</h4>
+          <p>The Terrain module outputs a SPA (Spatial) wire carrying the full heightmap, biome map, and hex coordinate registry. This feeds directly into the Environment module (02).</p>
+        </div>
+
+        <div class="manual-section" id="s5-2">
+          <h3>02 — Environment (Mythos · WorldConstruction)</h3>
+          <p>Environment receives the terrain SPA wire and layers climate systems on top of the physical world. Wind, precipitation, temperature gradients, and seasonal cycles are all defined here.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Climate Zone:</strong> Global climate preset (Tropical, Temperate, Arid, Polar, Exotic).</li>
+            <li><strong>Wind Systems:</strong> Direction and intensity of prevailing wind patterns. Wind affects precipitation distribution and erosion in real-time.</li>
+            <li><strong>Precipitation Map:</strong> Rainfall distribution across biomes. High rainfall hexes develop vegetation and water features.</li>
+            <li><strong>Seasonal Cycle:</strong> Enable/disable seasons and configure cycle length in simulation ticks.</li>
+            <li><strong>Atmospheric Density:</strong> Affects sky color, fog, and the effective range of the Lighting module's sun/moon.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s5-3">
+          <h3>03 — Architect (Architect · WorldConstruction)</h3>
+          <p>The Architect module places and manages structural elements — buildings, roads, bridges, fortifications, and infrastructure — on the terrain. It reads spatial data from Terrain and environmental constraints from Environment.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Settlement Templates:</strong> Pre-built architectural templates for villages, cities, outposts, and ruins.</li>
+            <li><strong>Road Network:</strong> Pathfinding-based road generator. Define origin/destination hex pairs and the system finds optimal paths respecting terrain slope.</li>
+            <li><strong>Building Density:</strong> Controls how many structures spawn per settled hex.</li>
+            <li><strong>Era Selector:</strong> Architectural style preset by historical era (Ancient, Medieval, Industrial, Future, Alien).</li>
+            <li><strong>Ruination Factor:</strong> 0–1 slider adding decay, rubble, and overgrowth to structures.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s5-4">
+          <h3>04 — Lighting (Prism · WorldConstruction)</h3>
+          <p>Lighting controls all light sources in the world — the sun, moon, ambient sky, and artificial light points. It reads the atmospheric density from Environment to calculate scatter and fog correctly.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Sun Position:</strong> Azimuth and elevation of the primary star. Drives day/night cycle when linked to the Sequencer.</li>
+            <li><strong>Color Temperature:</strong> Kelvin value for the sun's color. Low values (warm/sunset), high values (cool/noon).</li>
+            <li><strong>Moon Phase:</strong> Controls secondary light intensity and night atmosphere.</li>
+            <li><strong>Ambient Fill:</strong> Base light level for areas not in direct sunlight.</li>
+            <li><strong>Light Points:</strong> Place individual light sources on the hex grid (fires, torches, windows, streetlamps).</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s5-5">
+          <h3>05 — Modeling (Animus · EntitySystems)</h3>
+          <p>The Modeling module is where entities are designed. It provides a parametric character and creature builder based on the B-DNA system — define an entity's physical attributes and the system generates a deterministic visual representation.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Entity Archetypes:</strong> Base templates (Humanoid, Creature, Construct, Spirit, Hybrid).</li>
+            <li><strong>Morphology Sliders:</strong> Height, mass, limb ratios, facial structure — all feed into B-DNA generation.</li>
+            <li><strong>Trait Tags:</strong> Keyword tags (e.g., <code>armored</code>, <code>luminescent</code>, <code>aquatic</code>) that activate specific geometry modules.</li>
+            <li><strong>Variant Generation:</strong> Spin up N variants of an entity with genetic drift — useful for populating a species.</li>
+            <li><strong>Export to Forge:</strong> Send the entity mesh to the Forge module (15) for asset packaging.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s5-6">
+          <h3>06 — Choreography (Loom · EntitySystems)</h3>
+          <p>Choreography manages how entities move through the world — locomotion systems, animation state machines, formation logic, and path following. The module crest "Loom" reflects its role weaving movement into the world fabric.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Locomotion Type:</strong> Biped, Quadruped, Flight, Aquatic, Crawler — changes the base movement graph.</li>
+            <li><strong>Animation States:</strong> Define states (Idle, Walk, Run, Combat, Sleep) and the conditions that transition between them.</li>
+            <li><strong>Formation Editor:</strong> Group movement patterns for squads and flocks.</li>
+            <li><strong>Path Constraints:</strong> Restrict movement to roads, avoid terrain types, or prefer cover.</li>
+            <li><strong>Motion Capture Import:</strong> Import BVH or JSON motion data from external tools.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s5-7">
+          <h3>07 — Behavior (Instinct · EntitySystems)</h3>
+          <p>Behavior defines the decision-making logic of entities using behavior trees and instinct weights. The "Instinct" crest reflects the module's role giving entities drives that feel organic rather than scripted.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Behavior Tree Editor:</strong> Visual node-based tree editor. Sequence, Selector, Parallel, and Decorator nodes available.</li>
+            <li><strong>Instinct Weights:</strong> Sliders for primary drives: Survival, Curiosity, Aggression, Sociality, Loyalty. These weights influence tree branch selection.</li>
+            <li><strong>Perception Range:</strong> How far an entity can "see" other entities and events on the hex grid.</li>
+            <li><strong>Memory Horizon:</strong> How many simulation ticks the entity remembers past events (feeds Memory module 11).</li>
+            <li><strong>Goal Stack:</strong> Priority-ordered goal list that the behavior tree works to satisfy.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s5-8">
+          <h3>08 — Society (Order · EntitySystems)</h3>
+          <p>Society manages the macro-level organization of entities into factions, settlements, trade networks, and political structures. The "Order" crest represents the module's role imposing structure on individual behavior.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Faction Editor:</strong> Create named factions with flags, doctrines, and territory hexes.</li>
+            <li><strong>Relationship Matrix:</strong> Define alliance/hostility relationships between factions.</li>
+            <li><strong>Economic Model:</strong> Simple resource-flow model: production, trade routes, taxation.</li>
+            <li><strong>Government Type:</strong> Monarchy, Oligarchy, Democracy, Theocracy, Anarchy — affects decision-making rules in the Logic module.</li>
+            <li><strong>Population Dynamics:</strong> Birth rate, death rate, migration patterns driven by Environment and Simulation outputs.</li>
+          </ul>
+        </div>
+
+        <!-- NarrativeSystems -->
+        <div class="manual-section" id="s5-9">
+          <h3>09 — Sequencer (Chronicle · NarrativeSystems)</h3>
+          <p>The Atlas Sequencer (distinct from the Loom Track Sequencer in the header nav) is a timeline-based event scheduler for world history. Chronicle records the past while scheduling the future.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>World Timeline:</strong> A horizontal timeline measured in world-ticks. Drag events onto the timeline to schedule them.</li>
+            <li><strong>Event Library:</strong> Categorized events (Natural Disasters, Wars, Discoveries, Migrations, etc.) that can be dropped onto the timeline.</li>
+            <li><strong>Causality Chains:</strong> Link events so that Event A triggering causes Event B to become more/less likely.</li>
+            <li><strong>History Playback:</strong> Step through world history tick by tick, watching modules update in response.</li>
+            <li><strong>Chronicle Export:</strong> Export the world's event history as a structured JSON narrative document.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s5-10">
+          <h3>10 — Story (Quill · NarrativeSystems)</h3>
+          <p>Story is the narrative authoring module. It provides a dialogue tree editor, story arc builder, and branching narrative composer powered by the world's entity and faction data from modules 05–08.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Story Arc Canvas:</strong> Visual canvas for designing branching story arcs with node-based chapters.</li>
+            <li><strong>Dialogue Editor:</strong> Write conversations with entity-specific voice parameters. Supports condition branches based on B-DNA tags and instinct weights.</li>
+            <li><strong>Quest Designer:</strong> Define objectives, prerequisites, and rewards linked to world-state conditions.</li>
+            <li><strong>Arc Variables:</strong> Named variables tracked across an arc's progress (flags, counters, inventory).</li>
+            <li><strong>Narrative Export:</strong> Export arcs as Ink/Twine-compatible JSON or as raw NAR wire data.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s5-11">
+          <h3>11 — Memory (Codex · NarrativeSystems)</h3>
+          <p>Memory is the world's persistent history store. Every event that passes through the Sequencer and Story modules is recorded here, indexed by entity B-DNA, location, time, and type. The Codex holds the world's accumulated knowledge.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Event Log:</strong> Scrollable, filterable log of all recorded world events.</li>
+            <li><strong>Entity Memory View:</strong> Select an entity by B-DNA and see all events it has witnessed or participated in.</li>
+            <li><strong>Codex Search:</strong> Full-text search across all recorded events and narrative documents.</li>
+            <li><strong>Memory Decay:</strong> Optional forgetting curve — older events fade in influence over time if not reinforced.</li>
+            <li><strong>Codex Export:</strong> Export as structured Markdown, HTML, or JSON for use in external wikis or game databases.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s5-12">
+          <h3>12 — Sound (Composer · NarrativeSystems)</h3>
+          <p>The Sound module — crest Composer — is the world's sonic layer. It maps soundscapes to terrain zones, attaches audio events to narrative triggers, and feeds the Instrument Rack for real-time synthesis.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Soundscape Map:</strong> Assign ambient sound profiles to biome types and architectural zones on the hex grid.</li>
+            <li><strong>Event Audio:</strong> Link audio cues to Sequencer events (battle sounds, weather audio, ambient transitions).</li>
+            <li><strong>Dynamic Mix:</strong> Real-time mix parameters that blend soundscapes as the simulation runs.</li>
+            <li><strong>Rack Send:</strong> Route synthesized sound to the Instrument Rack for live performance and recording.</li>
+            <li><strong>Audio Asset Browser:</strong> Browse <code>/media/audio/</code> project folder for WAV, MP3, OGG files to assign.</li>
+          </ul>
+        </div>
+
+        <!-- PipelineSystems -->
+        <div class="manual-section" id="s5-13">
+          <h3>13 — Logic (Axiom · PipelineSystems)</h3>
+          <p>The Logic module is the rule engine of the world. It evaluates LGC-wire predicates and conditions, drives conditional events, and enforces world-law constraints. Axiom is where you define what is possible in your world.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Rule Editor:</strong> Define IF/THEN rules using a simple predicate language. Rules evaluate against world-state each simulation tick.</li>
+            <li><strong>Constraint Library:</strong> Pre-built world-law constraints (physics limits, magic rules, technology restrictions).</li>
+            <li><strong>Cycle Detection:</strong> Toggle to enable/disable circular dependency detection in logic graphs.</li>
+            <li><strong>Debug Log:</strong> Real-time log of which rules are firing and their evaluated results.</li>
+            <li><strong>Schema Editor:</strong> Define custom data schemas for MET-wire metadata exchanged between modules.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s5-14">
+          <h3>14 — Simulation (Continuum · PipelineSystems)</h3>
+          <p>Simulation runs the world forward in time. It orchestrates all module systems, steps the simulation clock, evaluates entity behavior trees, processes economic flows, and fires scheduled events from the Sequencer.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Tick Rate:</strong> Simulation clock speed in ticks/second. Higher rates = faster world evolution, more CPU usage.</li>
+            <li><strong>Simulation Depth:</strong> Which modules participate in each tick cycle. Deselect modules to freeze their state while the rest of the world advances.</li>
+            <li><strong>Run / Pause / Step:</strong> Standard playback controls for the simulation clock.</li>
+            <li><strong>Entropy Meter:</strong> Displays current world entropy — high entropy indicates chaotic, unpredictable emergent states.</li>
+            <li><strong>Snapshot at Tick:</strong> Automatically save a Genesis snapshot at specified tick intervals.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s5-15">
+          <h3>15 — Forge (Forge · PipelineSystems)</h3>
+          <p>The Forge is the asset production pipeline. It takes entity models from Modeling (05), architectural structures from Architect (03), and world data from all modules and packages them into exportable asset formats.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Asset Queue:</strong> Items queued for processing — models, textures, audio, narrative documents.</li>
+            <li><strong>Export Formats:</strong> GLB/GLTF (3D), PNG/EXR (textures), WAV/OGG (audio), JSON (data), HTML (narrative pages).</li>
+            <li><strong>Batch Processor:</strong> Process the entire asset queue in one operation.</li>
+            <li><strong>p5.js Sketch Compiler:</strong> Compile p5.js sketches from the project's <code>/media/sketches/</code> folder into standalone HTML canvases.</li>
+            <li><strong>Capsule Packager:</strong> Wrap a processed asset set into a Capsule with B-DNA metadata for insertion into a Genesis Container.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s5-16">
+          <h3>16 — Network (Nexus · PipelineSystems)</h3>
+          <p>The Network module manages multi-agent communication, external connections, and real-time data exchange between running world instances. Nexus is where your world connects to other worlds and to external systems.</p>
+          <h4>Key Controls</h4>
+          <ul>
+            <li><strong>Agent Registry:</strong> Shows all agents mounted in the local <code>quantum-agent.db</code> registry.</li>
+            <li><strong>Connection Graph:</strong> Visual graph of inter-world wire connections and their current data flow.</li>
+            <li><strong>Protocol Selector:</strong> WebSocket, WebRTC, or SharedMemory for local/remote agent communication.</li>
+            <li><strong>Broadcast Rules:</strong> Define which wire types are broadcast to connected worlds vs. kept local.</li>
+            <li><strong>Sync Monitor:</strong> Live monitor of incoming/outgoing data packets across all active connections.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════
+           CHAPTER 6 — THE INSTRUMENT RACK
+           ═══════════════════════════════════════════════════════ -->
+      <section class="manual-chapter" id="ch6">
+        <div class="chapter-header">
+          <div class="chapter-num-badge" style="background:var(--c-sound)">6</div>
+          <h2>The Instrument Rack</h2>
+        </div>
+
+        <div class="manual-section" id="s6-1">
+          <h3>Overview</h3>
+          <p>The Instrument Rack is a modular audio synthesis workspace accessible via the <strong>Rack</strong> tab in the header navigation. It is tightly coupled with the Sound module (12) but can also operate standalone as a synthesis environment.</p>
+          <p>The Rack uses a channel-strip metaphor: each instrument occupies a vertical strip with source, effects chain, and mixer controls. Up to 16 instruments can be loaded simultaneously.</p>
+        </div>
+
+        <div class="manual-section" id="s6-2">
+          <h3>Loading Instruments</h3>
+          <ul>
+            <li>Click the <strong>+</strong> button in the rack header to add a new instrument slot.</li>
+            <li>Choose an instrument type: Synthesizer, Sampler, Drum Machine, Soundscape Generator, or Ambient Pad.</li>
+            <li>Drag audio assets from the Asset Browser into an instrument slot to load samples.</li>
+            <li>World-generated soundscapes from the Sound module appear in the <strong>World Sources</strong> panel on the left side of the Rack.</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s6-3">
+          <h3>The Effects Chain</h3>
+          <p>Each channel strip has a 6-slot effects chain. Available effect types:</p>
+          <ul>
+            <li><strong>Reverb / Convolution:</strong> Room, Hall, Cathedral, Custom IR</li>
+            <li><strong>Delay:</strong> Tempo-synced or free-running, with feedback control</li>
+            <li><strong>Filter:</strong> Low-pass, High-pass, Band-pass, Notch with resonance</li>
+            <li><strong>Compressor:</strong> Threshold, ratio, attack, release</li>
+            <li><strong>EQ:</strong> 8-band parametric</li>
+            <li><strong>Distortion / Saturation:</strong> Soft clip, hard clip, bit crush</li>
+          </ul>
+        </div>
+
+        <div class="manual-section" id="s6-4">
+          <h3>The Master Bus</h3>
+          <p>The rightmost channel strip is the Master Bus. It controls the final output level and hosts the master effects chain. The Master Bus also shows the current world state indicators: simulation tick, active biome, and faction count — allowing you to compose music that responds to world events.</p>
+        </div>
+
+        <div class="manual-section" id="s6-5">
+          <h3>Rack &amp; Sound Module Integration</h3>
+          <p>When the Rack is open alongside an active simulation, the Sound module (12) sends real-time audio events via AUD wires to the Rack. The Rack's <strong>World Trigger</strong> system maps these events to MIDI-like note triggers on loaded instruments. Configure the mapping in the Sound module's <strong>Rack Send</strong> panel.</p>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════
+           CHAPTER 7 — WORKFLOWS & WORKFLOWS
+           ═══════════════════════════════════════════════════════ -->
+      <section class="manual-chapter" id="ch7">
+        <div class="chapter-header">
+          <div class="chapter-num-badge" style="background:var(--c-behavior)">7</div>
+          <h2>Workflows &amp; Common Tasks</h2>
+        </div>
+
+        <div class="manual-section" id="s7-1">
+          <h3>Creating a World from Scratch</h3>
+          <ol>
+            <li><strong>New Genesis:</strong> <kbd>Ctrl+N</kbd> → Name your world and set a seed. The seed can be any integer.</li>
+            <li><strong>Terrain (01):</strong> Set elevation scale, erosion passes, and biome distribution. Hit <strong>Generate</strong>. Inspect the hex grid and adjust until satisfied.</li>
+            <li><strong>Environment (02):</strong> Choose a climate zone and configure wind and precipitation. Watch the terrain update with vegetation and water.</li>
+            <li><strong>Architect (03):</strong> Place settlements. Use the road generator to connect them.</li>
+            <li><strong>Lighting (04):</strong> Set sun position and color temperature for your world's sun. Adjust seasons if enabled.</li>
+            <li><strong>Modeling (05):</strong> Design the primary entity archetype for your world's dominant species.</li>
+            <li><strong>Continue downstream:</strong> Work through Choreography → Behavior → Society → Sequencer → Story → Memory → Sound → Logic → Simulation → Forge → Network as your world complexity grows.</li>
+            <li><strong>Export:</strong> <kbd>Ctrl+E</kbd> to export a <code>.qgenesis</code> file at any stage.</li>
+          </ol>
+        </div>
+
+        <div class="manual-section" id="s7-2">
+          <h3>Importing and Continuing an Existing World</h3>
+          <ol>
+            <li>Drag a <code>.qgenesis</code> file onto the hub canvas, or click <strong>Import Genesis</strong> in the Quick Actions panel.</li>
+            <li>In the import modal, review the container metadata. Select all modules (or only specific ones) and click <strong>Apply</strong>.</li>
+            <li>Each module's UI will populate with the imported data. Open modules from the Atlas Footer to inspect and edit.</li>
+            <li>Resume simulation or editing normally. Export a new <code>.qgenesis</code> when done.</li>
+          </ol>
+        </div>
+
+        <div class="manual-section" id="s7-3">
+          <h3>Running a Simulation</h3>
+          <ol>
+            <li>Ensure all upstream modules (01–13) are configured and have valid snapshots.</li>
+            <li>Open <strong>Simulation (14)</strong> from the Atlas Footer.</li>
+            <li>Set the tick rate and simulation depth (which modules participate).</li>
+            <li>Click <strong>Run</strong>. Watch entity behavior, faction dynamics, and events evolve in real-time.</li>
+            <li>Use the <strong>Step</strong> button to advance one tick at a time for careful inspection.</li>
+            <li>Pause and export a genesis snapshot at any point to save the simulation state.</li>
+          </ol>
+        </div>
+
+        <div class="manual-section" id="s7-4">
+          <h3>Building a Narrative Arc</h3>
+          <ol>
+            <li>Populate Behavior (07) and Society (08) first — arcs reference entity instincts and faction relationships.</li>
+            <li>Open <strong>Sequencer (09)</strong> and lay out the historical events that precede your story.</li>
+            <li>Open <strong>Story (10)</strong> and design your arc canvas. Connect story beats to Sequencer events using EVT wires.</li>
+            <li>Write dialogue in the Dialogue Editor, referencing entity B-DNA for speaker identity.</li>
+            <li>Connect arc triggers to Behavior changes — story choices can shift entity instinct weights.</li>
+            <li>Export the arc via <strong>Narrative Export</strong> in the Story module.</li>
+          </ol>
+        </div>
+
+        <div class="manual-section" id="s7-5">
+          <h3>Using p5.js Sketches in a Project</h3>
+          <ol>
+            <li>Place <code>.js</code> sketch files in your project's <code>/media/sketches/</code> folder.</li>
+            <li>In the Forge module (15), open the <strong>p5.js Sketch Compiler</strong>.</li>
+            <li>Select the sketch files to compile. Configure canvas dimensions and background color.</li>
+            <li>Click <strong>Compile</strong>. The Forge outputs standalone HTML canvas pages.</li>
+            <li>These pages can be embedded in narrative documents (Story module) or packaged into Capsules.</li>
+          </ol>
+          <div class="info-box note">
+            <div class="info-box-label">Note</div>
+            p5.js sketch files are stored in your <code>.qgcp</code> project directory, not in the <code>.qgenesis</code> container. The genesis contains only compiled references; the source files live in your project.
+          </div>
+        </div>
+
+        <div class="manual-section" id="s7-6">
+          <h3>Connecting Worlds via the Network Module</h3>
+          <ol>
+            <li>Open both worlds in separate Quantum Loom instances on the same machine (or networked machines).</li>
+            <li>In each world, open <strong>Network (16)</strong> and verify the Agent Registry shows both world instances.</li>
+            <li>In the Connection Graph, drag a wire from one world's output port to the other world's input port.</li>
+            <li>Select the wire type (AGT, DAT, EVT, etc.) for the connection.</li>
+            <li>Configure Broadcast Rules to control what data flows across the connection.</li>
+            <li>Start both simulations. Real-time data will flow between the worlds.</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════
+           CHAPTER 8 — KEYBOARD SHORTCUTS, GLOSSARY & REFERENCE
+           ═══════════════════════════════════════════════════════ -->
+      <section class="manual-chapter" id="ch8">
+        <div class="chapter-header">
+          <div class="chapter-num-badge" style="background:var(--c-logic)">8</div>
+          <h2>Shortcuts, Glossary &amp; Reference</h2>
+        </div>
+
+        <div class="manual-section" id="s8-1">
+          <h3>Keyboard Shortcuts</h3>
+          <table class="manual-table">
+            <thead><tr><th>Shortcut</th><th>Action</th><th>Context</th></tr></thead>
+            <tbody>
+              <tr><td><kbd>Ctrl+N</kbd></td><td>New Genesis</td><td>Global</td></tr>
+              <tr><td><kbd>Ctrl+O</kbd></td><td>Open .qgenesis / .qgcp</td><td>Global</td></tr>
+              <tr><td><kbd>Ctrl+S</kbd></td><td>Save Snapshot</td><td>Active Module</td></tr>
+              <tr><td><kbd>Ctrl+E</kbd></td><td>Export Genesis</td><td>Global</td></tr>
+              <tr><td><kbd>Ctrl+I</kbd></td><td>Import Genesis</td><td>Global</td></tr>
+              <tr><td><kbd>Ctrl+Z</kbd></td><td>Undo</td><td>Module Editors</td></tr>
+              <tr><td><kbd>Ctrl+Y</kbd></td><td>Redo</td><td>Module Editors</td></tr>
+              <tr><td><kbd>Ctrl+B</kbd></td><td>Toggle Asset Browser</td><td>Global</td></tr>
+              <tr><td><kbd>Ctrl+F</kbd></td><td>Global Search</td><td>Global</td></tr>
+              <tr><td><kbd>Ctrl+G</kbd></td><td>Agent Manager</td><td>Global</td></tr>
+              <tr><td><kbd>Ctrl+]</kbd></td><td>Toggle Right Panel</td><td>Global</td></tr>
+              <tr><td><kbd>Ctrl+,</kbd></td><td>Settings</td><td>Global</td></tr>
+              <tr><td><kbd>F1</kbd></td><td>Open Manual</td><td>Global</td></tr>
+              <tr><td><kbd>F5</kbd></td><td>Run Simulation</td><td>Simulation Module</td></tr>
+              <tr><td><kbd>F6</kbd></td><td>Pause Simulation</td><td>Simulation Module</td></tr>
+              <tr><td><kbd>F7</kbd></td><td>Step One Tick</td><td>Simulation Module</td></tr>
+              <tr><td><kbd>Space</kbd></td><td>Play / Pause (Rack)</td><td>Instrument Rack</td></tr>
+              <tr><td><kbd>1–9</kbd></td><td>Switch to Atlas Module 1–9</td><td>Atlas Footer focused</td></tr>
+              <tr><td><kbd>Escape</kbd></td><td>Close Modal / Deselect</td><td>Global</td></tr>
+              <tr><td><kbd>Tab</kbd></td><td>Cycle through module panels</td><td>Module Editors</td></tr>
+              <tr><td><kbd>Ctrl+D</kbd></td><td>Duplicate selected node/entity</td><td>IO Nodes, Editors</td></tr>
+              <tr><td><kbd>Delete</kbd></td><td>Delete selected node/entity</td><td>Editors</td></tr>
+              <tr><td><kbd>Ctrl+A</kbd></td><td>Select all</td><td>Editors</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="manual-section" id="s8-2">
+          <h3>Atlas Module Quick Reference</h3>
+          <table class="manual-table">
+            <thead><tr><th>#</th><th>Module</th><th>Crest</th><th>Glyph</th><th>Color</th><th>Department</th><th>Primary Output Wire</th></tr></thead>
+            <tbody>
+              <tr><td>01</td><td>Terrain</td><td>Atlas</td><td>⬡</td><td style="color:#1e8cff">#1e8cff</td><td>WorldConstruction</td><td>SPA</td></tr>
+              <tr><td>02</td><td>Environment</td><td>Mythos</td><td>◉</td><td style="color:#8050e0">#8050e0</td><td>WorldConstruction</td><td>SPA, ENR</td></tr>
+              <tr><td>03</td><td>Architect</td><td>Architect</td><td>⊓</td><td style="color:#64b4ff">#64b4ff</td><td>WorldConstruction</td><td>VIS, AST</td></tr>
+              <tr><td>04</td><td>Lighting</td><td>Prism</td><td>◐</td><td style="color:#e0d8ff">#e0d8ff</td><td>WorldConstruction</td><td>VIS</td></tr>
+              <tr><td>05</td><td>Modeling</td><td>Animus</td><td>✦</td><td style="color:#f4c025">#f4c025</td><td>EntitySystems</td><td>VIS, IDN</td></tr>
+              <tr><td>06</td><td>Choreography</td><td>Loom</td><td>⟳</td><td style="color:#dc3c78">#dc3c78</td><td>EntitySystems</td><td>BHV</td></tr>
+              <tr><td>07</td><td>Behavior</td><td>Instinct</td><td>⊙</td><td style="color:#9030d0">#9030d0</td><td>EntitySystems</td><td>BHV, LGC</td></tr>
+              <tr><td>08</td><td>Society</td><td>Order</td><td>⚑</td><td style="color:#c8a860">#c8a860</td><td>EntitySystems</td><td>SOC, DAT</td></tr>
+              <tr><td>09</td><td>Sequencer</td><td>Chronicle</td><td>▶</td><td style="color:#b08030">#b08030</td><td>NarrativeSystems</td><td>TMP, EVT</td></tr>
+              <tr><td>10</td><td>Story</td><td>Quill</td><td>✎</td><td style="color:#8c50ff">#8c50ff</td><td>NarrativeSystems</td><td>NAR, EVT</td></tr>
+              <tr><td>11</td><td>Memory</td><td>Codex</td><td>◎</td><td style="color:#00c060">#00c060</td><td>NarrativeSystems</td><td>DAT, NAR</td></tr>
+              <tr><td>12</td><td>Sound</td><td>Composer</td><td>♪</td><td style="color:#dc8c1e">#dc8c1e</td><td>NarrativeSystems</td><td>AUD</td></tr>
+              <tr><td>13</td><td>Logic</td><td>Axiom</td><td>⊢</td><td style="color:#20c8d0">#20c8d0</td><td>PipelineSystems</td><td>LGC, CTL</td></tr>
+              <tr><td>14</td><td>Simulation</td><td>Continuum</td><td>∿</td><td style="color:#30e060">#30e060</td><td>PipelineSystems</td><td>ENR, CTL</td></tr>
+              <tr><td>15</td><td>Forge</td><td>Forge</td><td>⚒</td><td style="color:#ff6400">#ff6400</td><td>PipelineSystems</td><td>AST, MET</td></tr>
+              <tr><td>16</td><td>Network</td><td>Nexus</td><td>⇋</td><td style="color:#ffffff">#ffffff</td><td>PipelineSystems</td><td>AGT, DAT</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="manual-section" id="s8-3">
+          <h3>Glossary</h3>
+          <table class="manual-table">
+            <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+            <tbody>
+              <tr><td>Agent</td><td>An autonomous world entity or external process registered in the mount registry and capable of sending/receiving wire data.</td></tr>
+              <tr><td>AES-256-GCM</td><td>Symmetric encryption algorithm used to protect the QGCP manifest. Requires the seal file for decryption.</td></tr>
+              <tr><td>argon2id</td><td>Memory-hard key derivation function used to derive the AES key from the seal file passphrase.</td></tr>
+              <tr><td>Atlas</td><td>The 16-module procedural world simulation engine at the core of Quantum Loom.</td></tr>
+              <tr><td>Atlas Footer</td><td>The 72px strip at the bottom of the hub containing buttons for all 16 Atlas modules.</td></tr>
+              <tr><td>B-DNA</td><td>Deterministic entity identity hash — 0x + 16 hex characters derived via LCG from entity lineage and spawn params.</td></tr>
+              <tr><td>Behavior Tree</td><td>Hierarchical decision structure used by the Behavior module (07) to drive entity AI.</td></tr>
+              <tr><td>Biome</td><td>A geographic climate region on the hex grid (Forest, Desert, Arctic, Ocean, etc.) assigned by the Terrain and Environment modules.</td></tr>
+              <tr><td>Capsule</td><td>The atomic content unit in the Genesis hierarchy. Holds one world element with B-DNA, metadata, and wire connections.</td></tr>
+              <tr><td>Chronicle</td><td>The crest name of the Sequencer module (09). Also refers to the world's recorded event history.</td></tr>
+              <tr><td>Codex</td><td>The crest name of the Memory module (11). Also refers to the world's knowledge store.</td></tr>
+              <tr><td>Container</td><td>The third level of the Genesis hierarchy. Contains up to 16 Capsules.</td></tr>
+              <tr><td>Crest</td><td>The proper name of each module's identity system (e.g., "Atlas" for Terrain, "Mythos" for Environment).</td></tr>
+              <tr><td>Genesis Container</td><td>The top-level world definition unit. Contains all Atlas module states and up to 4,096 Capsules.</td></tr>
+              <tr><td>Hex Grid</td><td>The world surface geometry — pointy-top axial coordinates, radius 14, 631 hexes total.</td></tr>
+              <tr><td>Hub</td><td>The main Quantum Loom application window, hosting all modules in an iframe architecture.</td></tr>
+              <tr><td>IDN wire</td><td>Identity wire type. Carries B-DNA hashes and entity metadata between modules.</td></tr>
+              <tr><td>Instinct Weight</td><td>A 0–1 value in the Behavior module representing the strength of a primal drive (Survival, Curiosity, etc.).</td></tr>
+              <tr><td>IO Nodes</td><td>The node-graph view for visually wiring module outputs to inputs.</td></tr>
+              <tr><td>LCG</td><td>Linear Congruential Generator — the algorithm used to derive B-DNA deterministically.</td></tr>
+              <tr><td>Loom Track Sequencer</td><td>The timeline-based playback tool in the header nav Sequencer tab. Distinct from Atlas module 09 (Chronicle).</td></tr>
+              <tr><td>Manifest</td><td>The encrypted metadata record inside a <code>.qgcp</code> file containing project identity, genesis binding, and lifecycle state.</td></tr>
+              <tr><td>Mount Registry</td><td>SQLite database at <code>~/.quantum/quantum-agent.db</code> tracking all active Genesis and QGCP instances.</td></tr>
+              <tr><td>Mythos Container</td><td>The second level of the Genesis hierarchy. Contains up to 16 Containers.</td></tr>
+              <tr><td>p5.js Sketch</td><td>A creative coding script (p5.js library) stored in the project's <code>/media/sketches/</code> folder and compiled by the Forge module.</td></tr>
+              <tr><td>Pipeline</td><td>The ordered chain of 16 Atlas modules through which world data flows from Terrain (01) to Network (16).</td></tr>
+              <tr><td>QGCP</td><td>Quantum Creative Project — the <code>.qgcp</code> save format for creative sessions. Contains assets, media, and an encrypted manifest.</td></tr>
+              <tr><td>QGenesis</td><td>The <code>.qgenesis</code> world definition format — analogous to an audio soundbank.</td></tr>
+              <tr><td>Rack</td><td>The Instrument Rack — the audio synthesis workspace. Accessible via the Rack tab in the header nav.</td></tr>
+              <tr><td>Seal File</td><td>A user-held keyfile whose passphrase is used to derive the AES-256-GCM key for QGCP manifest encryption.</td></tr>
+              <tr><td>Simulation Tick</td><td>One discrete time step in the world simulation. All entity behaviors, economic flows, and scheduled events are evaluated per tick.</td></tr>
+              <tr><td>Snapshot</td><td>The serialized state of one Atlas module stored in localStorage. Snapshots feed downstream modules and are bundled into <code>.qgenesis</code> exports.</td></tr>
+              <tr><td>SPA wire</td><td>Spatial wire type. Carries hex coordinates, zone boundaries, and terrain heightmaps.</td></tr>
+              <tr><td>Theme Tokens</td><td>CSS custom property values (color, font) synchronized across all modules via the theme sync IIFE and postMessage events.</td></tr>
+              <tr><td>Wire</td><td>A typed data channel connecting module outputs to module inputs in the IO Nodes graph.</td></tr>
+              <tr><td>World Seed</td><td>An integer value that deterministically initializes the Terrain module's procedural generation.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="manual-section" id="s8-4">
+          <h3>Troubleshooting</h3>
+          <ul>
+            <li><strong>Module shows empty / no data:</strong> Open the module and check if a snapshot exists in the Quick Actions → Snapshot Data panel. If empty, configure the module and hit Save Snapshot.</li>
+            <li><strong>Genesis import does nothing:</strong> Ensure the <code>.qgenesis</code> file is valid JSON with a <code>genesis.atlas</code> key. Open browser dev tools and check the console for parse errors.</li>
+            <li><strong>Themes not applying to a module:</strong> The module may be missing the theme sync IIFE. Open the module page and verify the <code>ql-theme</code> localStorage key is present.</li>
+            <li><strong>Simulation runs but entities don't move:</strong> Check that Choreography (06) and Behavior (07) modules have valid snapshots and are included in the Simulation Depth selection.</li>
+            <li><strong>QGCP manifest decryption fails:</strong> Ensure you are using the correct seal file for this project. The manifest cannot be decrypted with a different seal file.</li>
+            <li><strong>p5.js sketch not compiling:</strong> Verify the sketch uses p5.js instance mode (<code>new p5(sketch)</code>) — global mode sketches may conflict with the Forge compiler.</li>
+            <li><strong>Wire connection rejected:</strong> Check wire type compatibility. DAT wires are accepted by all modules. Specialized wire types require the receiving module to declare that input type.</li>
+          </ul>
+          <div class="info-box tip">
+            <div class="info-box-label">Tip</div>
+            Open the browser developer tools (<kbd>F12</kbd>) in any module for a live view of localStorage snapshot data and postMessage events.
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /manual-body -->
+  </main>
+</div><!-- /manual-wrap -->
+
+<script>
+(function() {
+  const MAP = {
+    'c-bg':'--bg','c-surf':'--surface','c-surf2':'--surface2',
+    'c-edge':'--edge','c-edge-hi':'--edge-hi','c-accent1':'--venturan',
+    'c-accent2':'--amber','c-accent3':'--emerald','c-accent4':'--fusion',
+    'c-danger':'--blood','c-warm':'--solari','c-text':'--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+
+// TOC data
+const TOC = [
+  { num: 1, title: 'Introduction', id: 'ch1', sections: [
+    { id: 's1-1', title: 'What Is Quantum Loom?' },
+    { id: 's1-2', title: 'The Quantum Atlas Pipeline' },
+    { id: 's1-3', title: 'Key Concepts at a Glance' },
+    { id: 's1-4', title: 'System Requirements' },
+    { id: 's1-5', title: 'Installation and First Launch' },
+  ]},
+  { num: 2, title: 'The Interface', id: 'ch2', sections: [
+    { id: 's2-1', title: 'Hub Layout Overview' },
+    { id: 's2-2', title: 'Header Navigation' },
+    { id: 's2-3', title: 'Left Sidebar Tools' },
+    { id: 's2-4', title: 'Right Properties Panel' },
+    { id: 's2-5', title: 'Atlas Footer Bar' },
+    { id: 's2-6', title: 'Tooltips' },
+    { id: 's2-7', title: 'Themes and Appearance' },
+  ]},
+  { num: 3, title: 'Genesis Containers', id: 'ch3', sections: [
+    { id: 's3-1', title: 'The Genesis Hierarchy' },
+    { id: 's3-2', title: 'The .qgenesis Format' },
+    { id: 's3-3', title: 'The .qgcp Format' },
+    { id: 's3-4', title: 'B-DNA — Entity Identity' },
+    { id: 's3-5', title: 'The Mount Registry' },
+  ]},
+  { num: 4, title: 'Wire Types', id: 'ch4', sections: [
+    { id: 's4-1', title: 'What Are Wires?' },
+    { id: 's4-2', title: 'Wire Type Reference' },
+    { id: 's4-3', title: 'Wiring Best Practices' },
+  ]},
+  { num: 5, title: '16 Atlas Modules', id: 'ch5', sections: [
+    { id: 's5-0', title: 'Module Quick Reference' },
+    { id: 's5-1', title: '01 — Terrain (Atlas)' },
+    { id: 's5-2', title: '02 — Environment (Mythos)' },
+    { id: 's5-3', title: '03 — Architect' },
+    { id: 's5-4', title: '04 — Lighting (Prism)' },
+    { id: 's5-5', title: '05 — Modeling (Animus)' },
+    { id: 's5-6', title: '06 — Choreography (Loom)' },
+    { id: 's5-7', title: '07 — Behavior (Instinct)' },
+    { id: 's5-8', title: '08 — Society (Order)' },
+    { id: 's5-9', title: '09 — Sequencer (Chronicle)' },
+    { id: 's5-10', title: '10 — Story (Quill)' },
+    { id: 's5-11', title: '11 — Memory (Codex)' },
+    { id: 's5-12', title: '12 — Sound (Composer)' },
+    { id: 's5-13', title: '13 — Logic (Axiom)' },
+    { id: 's5-14', title: '14 — Simulation (Continuum)' },
+    { id: 's5-15', title: '15 — Forge' },
+    { id: 's5-16', title: '16 — Network (Nexus)' },
+  ]},
+  { num: 6, title: 'Instrument Rack', id: 'ch6', sections: [
+    { id: 's6-1', title: 'Overview' },
+    { id: 's6-2', title: 'Loading Instruments' },
+    { id: 's6-3', title: 'The Effects Chain' },
+    { id: 's6-4', title: 'The Master Bus' },
+    { id: 's6-5', title: 'Rack & Sound Integration' },
+  ]},
+  { num: 7, title: 'Workflows', id: 'ch7', sections: [
+    { id: 's7-1', title: 'Creating a World from Scratch' },
+    { id: 's7-2', title: 'Importing an Existing World' },
+    { id: 's7-3', title: 'Running a Simulation' },
+    { id: 's7-4', title: 'Building a Narrative Arc' },
+    { id: 's7-5', title: 'Using p5.js Sketches' },
+    { id: 's7-6', title: 'Connecting Worlds via Network' },
+  ]},
+  { num: 8, title: 'Reference', id: 'ch8', sections: [
+    { id: 's8-1', title: 'Keyboard Shortcuts' },
+    { id: 's8-2', title: 'Atlas Module Quick Reference' },
+    { id: 's8-3', title: 'Glossary' },
+    { id: 's8-4', title: 'Troubleshooting' },
+  ]},
+];
+
+const chColors = [
+  'var(--venturan)','var(--fusion)','var(--emerald)',
+  'var(--amber)','var(--solari)','var(--c-sound)',
+  'var(--c-behavior)','var(--c-logic)'
+];
+
+// Build TOC
+const tocNav = document.getElementById('toc-nav');
+TOC.forEach((ch, ci) => {
+  const div = document.createElement('div');
+  div.className = 'toc-chapter';
+  div.dataset.chId = ch.id;
+
+  const btn = document.createElement('button');
+  btn.className = 'toc-chapter-btn';
+  btn.innerHTML = `<span class="toc-chapter-num" style="background:${chColors[ci]}">${ch.num}</span>${ch.title}`;
+  btn.addEventListener('click', () => scrollToId(ch.id));
+  div.appendChild(btn);
+
+  const ul = document.createElement('ul');
+  ul.className = 'toc-section-list';
+  ch.sections.forEach(sec => {
+    const li = document.createElement('li');
+    li.dataset.secId = sec.id;
+    const a = document.createElement('a');
+    a.href = '#' + sec.id;
+    a.textContent = sec.title;
+    a.addEventListener('click', e => { e.preventDefault(); scrollToId(sec.id); });
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  div.appendChild(ul);
+  tocNav.appendChild(div);
+});
+
+function scrollToId(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// TOC Search
+const searchInput = document.getElementById('toc-search');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase().trim();
+  document.querySelectorAll('.toc-section-list li').forEach(li => {
+    const text = li.querySelector('a').textContent.toLowerCase();
+    li.classList.toggle('hidden', q.length > 0 && !text.includes(q));
+  });
+  document.querySelectorAll('.toc-chapter-btn').forEach(btn => {
+    const chDiv = btn.closest('.toc-chapter');
+    const anyVisible = [...chDiv.querySelectorAll('.toc-section-list li')]
+      .some(li => !li.classList.contains('hidden'));
+    chDiv.style.display = q.length > 0 && !anyVisible ? 'none' : '';
+  });
+});
+
+// Scroll spy
+const allSectionIds = TOC.flatMap(ch => [ch.id, ...ch.sections.map(s => s.id)]);
+const content = document.getElementById('manual-content');
+
+let ticking = false;
+content.addEventListener('scroll', () => {
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => {
+    const scrollTop = content.scrollTop;
+    let active = null;
+    allSectionIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.offsetTop - 40 <= scrollTop) active = id;
+    });
+    // Clear all
+    document.querySelectorAll('.toc-section-list li a, .toc-chapter-btn').forEach(el => el.classList.remove('active'));
+    if (active) {
+      const link = document.querySelector(`.toc-section-list li[data-sec-id="${active}"] a`);
+      if (link) link.classList.add('active');
+      // Find chapter
+      TOC.forEach(ch => {
+        if (ch.id === active || ch.sections.some(s => s.id === active)) {
+          const chBtn = document.querySelector(`.toc-chapter[data-ch-id="${ch.id}"] .toc-chapter-btn`);
+          if (chBtn) chBtn.classList.add('active');
+        }
+      });
+    }
+    ticking = false;
+  });
+});
+
+// Hub integration
+window.addEventListener('message', e => {
+  if (e.data?.type === 'hub:init') {
+    window.parent.postMessage({ type: 'hub:storage:write', key: 'qa-manual-snapshot', value: JSON.stringify({ loaded: true, ts: Date.now() }) }, '*');
+  }
+  if (e.data?.type === 'hub:layer:activate' && e.data.layer === 'manual') {
+    document.getElementById('ch1')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+});
+</script>
+</body>
+</html>
