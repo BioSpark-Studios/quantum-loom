@@ -58,7 +58,7 @@
 html,body{
   height:100%;overflow:hidden;
   background:var(--bg);color:#fff;
-  font-family:var(--fd);font-size:14px;
+  font-family:var(--fd);font-size:15px;
 }
 
 /* ── Outer shell ─────────────────────────────────────── */
@@ -68,7 +68,7 @@ html,body{
 
 /* ── Top header bar ──────────────────────────────────── */
 #hub-header{
-  height:42px;flex-shrink:0;
+  height:52px;flex-shrink:0;
   display:flex;align-items:center;gap:0;
   background:var(--surface);border-bottom:1px solid var(--edge);
   position:relative;z-index:20;
@@ -105,6 +105,26 @@ html,body{
 }
 
 .hh-spacer{flex:1}
+
+/* ── Header centered nav tabs ────────────────────────── */
+#hub-main-nav{
+  position:absolute;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:3px;
+  pointer-events:all;
+}
+.hn-tab{
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:0 10px;height:32px;border-radius:16px;cursor:pointer;transition:all .15s;
+  border:1px solid transparent;background:var(--surface2);color:rgba(255,255,255,.4);
+  display:flex;align-items:center;gap:5px;white-space:nowrap;min-width:80px;
+  justify-content:center;border-bottom:2px solid transparent;
+}
+.hn-tab:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.75)}
+.hn-tab.active{
+  background:rgba(255,255,255,.07);color:var(--venturan);
+  border-bottom-color:var(--venturan);
+}
+.hn-tab .hn-icon{font-size:.85rem;flex-shrink:0}
 
 /* Status chips */
 #status-bar{
