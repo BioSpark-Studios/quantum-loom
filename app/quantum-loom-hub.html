@@ -792,6 +792,109 @@ html,body{
 }
 #theme-lbl:hover{color:rgba(255,255,255,.5)}
 
+/* ── Genesis Container Modal ─────────────────────────────────── */
+#genesis-modal{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.78);backdrop-filter:blur(10px);
+  align-items:center;justify-content:center;
+}
+#genesis-modal.open{display:flex}
+.gm-box{
+  background:var(--surface2);border:1px solid var(--edge-hi);border-radius:10px;
+  width:480px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.85);
+}
+.gm-head{
+  padding:16px 20px;border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;gap:10px;
+}
+.gm-glyph{font-size:1.1rem;color:var(--venturan)}
+.gm-title{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--venturan);flex:1;
+}
+.gm-close{
+  background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;
+  font-size:.85rem;padding:2px 6px;border-radius:3px;transition:color .12s;
+}
+.gm-close:hover{color:rgba(255,255,255,.7)}
+.gm-dropzone{
+  margin:18px 20px 10px;border:2px dashed var(--edge-hi);border-radius:8px;
+  padding:22px;text-align:center;cursor:pointer;transition:all .15s;
+  background:rgba(255,255,255,.02);
+}
+.gm-dropzone:hover,.gm-dropzone.drag-over{
+  border-color:var(--venturan);background:rgba(177,208,240,.05);
+}
+.gm-drop-lbl{
+  font-family:var(--fm);font-size:.4rem;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);
+}
+.gm-file-row{
+  display:flex;align-items:center;gap:10px;
+  margin:10px 20px;padding:8px 12px;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge);border-radius:6px;
+}
+.gm-file-icon{font-size:.85rem}
+.gm-file-name{
+  font-family:var(--fc);font-size:.42rem;color:rgba(255,255,255,.65);flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.gm-valid-badge{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 7px;border-radius:3px;flex-shrink:0;
+}
+.gm-valid-badge.ok{
+  background:rgba(77,200,160,.12);border:1px solid rgba(77,200,160,.3);color:var(--emerald);
+}
+.gm-valid-badge.err{
+  background:rgba(212,91,91,.1);border:1px solid rgba(212,91,91,.3);color:var(--blood);
+}
+.gm-meta{
+  margin:4px 20px 10px;padding:10px 12px;
+  background:rgba(255,255,255,.03);border:1px solid var(--edge);border-radius:6px;
+  display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;
+}
+.gm-meta-row{
+  display:flex;align-items:baseline;gap:5px;
+}
+.gm-meta-dot{
+  font-size:.55rem;color:var(--venturan);flex-shrink:0;
+}
+.gm-meta-lbl{
+  font-family:var(--fc);font-size:.38rem;color:rgba(255,255,255,.5);
+}
+.gm-opts{
+  margin:6px 20px 14px;display:flex;flex-direction:column;gap:7px;
+}
+.gm-opt-row{
+  display:flex;align-items:center;gap:9px;cursor:pointer;
+}
+.gm-checkbox{
+  width:14px;height:14px;border-radius:3px;border:1px solid var(--edge-hi);
+  background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:.55rem;color:var(--emerald);transition:all .12s;
+}
+.gm-opt-row.checked .gm-checkbox{
+  background:rgba(77,200,160,.15);border-color:rgba(77,200,160,.4);
+}
+.gm-opt-lbl{
+  font-family:var(--fd);font-size:.6rem;color:rgba(255,255,255,.6);
+}
+.gm-actions{
+  display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--edge);
+}
+.gm-btn{
+  flex:1;font-family:var(--fm);font-size:.4rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:8px;border-radius:5px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.5);
+}
+.gm-btn:hover{background:rgba(255,255,255,.06);color:#fff}
+.gm-btn.primary{
+  border-color:rgba(77,200,160,.4);background:rgba(77,200,160,.08);color:var(--emerald);
+}
+.gm-btn.primary:hover{background:rgba(77,200,160,.18);box-shadow:0 0 12px rgba(77,200,160,.15)}
+.gm-btn:disabled{opacity:.3;cursor:not-allowed}
+
 /* ── LLM Panel ───────────────────────────────────────────────── */
 #llm-panel{
   position:fixed;right:0;top:0;bottom:0;width:380px;z-index:190;
@@ -988,12 +1091,18 @@ html,body{
 
     <div class="hh-actions">
       <button class="hh-btn" onclick="openProjModal()">⊞ Project</button>
+      <button class="hh-btn" id="btn-import-genesis" onclick="document.getElementById('genesis-file-input').click()" title="Import .qgenesis container">↑ Import</button>
+      <button class="hh-btn" id="btn-export-genesis" onclick="genesisExport()" title="Export .qgenesis container">↓ Export</button>
       <button class="hh-btn" id="llm-btn" onclick="openLLMPanel()" title="AI Assistant">🤖</button>
       <button class="hh-btn" id="theme-btn" onclick="openThemeModal()" title="Change theme">🎨</button>
       <button class="hh-btn" id="fb-btn" onclick="openFBModal()">🔥 Cloud</button>
       <button class="hh-btn hot" onclick="saveProject()">↓ Save</button>
     </div>
   </div>
+
+  <!-- Hidden file input for Genesis Container import -->
+  <input type="file" id="genesis-file-input" accept=".qgenesis,.json" style="display:none"
+         onchange="if(this.files[0]){genesisImportFile(this.files[0]);this.value=''}">
 
   <!-- BODY -->
   <div id="hub-body">
@@ -1649,6 +1758,66 @@ html,body{
       <button class="fb-act-btn" id="fb-btn-push"    onclick="fbPush()"    disabled>↑ Push</button>
       <button class="fb-act-btn" id="fb-btn-pull"    onclick="fbPull()"    disabled>↓ Pull</button>
       <button class="fb-act-btn danger" id="fb-btn-disconnect" onclick="fbDisconnect()" disabled>⊘ Disconnect</button>
+    </div>
+  </div>
+</div>
+
+<!-- GENESIS CONTAINER IMPORT MODAL -->
+<div id="genesis-modal">
+  <div class="gm-box">
+    <div class="gm-head">
+      <span class="gm-glyph">⬡</span>
+      <span class="gm-title">Import Genesis Container</span>
+      <button class="gm-close" onclick="closeGenesisModal()">✕</button>
+    </div>
+
+    <!-- Drop zone -->
+    <div class="gm-dropzone" id="gm-dropzone"
+         onclick="document.getElementById('genesis-file-input').click()"
+         ondragover="event.preventDefault();this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')"
+         ondrop="event.preventDefault();this.classList.remove('drag-over');if(event.dataTransfer.files[0])genesisImportFile(event.dataTransfer.files[0])">
+      <div class="gm-drop-lbl">Drop .qgenesis file here or click to browse</div>
+    </div>
+
+    <!-- File info row (hidden until file loaded) -->
+    <div class="gm-file-row" id="gm-file-row" style="display:none">
+      <span class="gm-file-icon">📄</span>
+      <span class="gm-file-name" id="gm-file-name">—</span>
+      <span class="gm-valid-badge ok" id="gm-valid-badge">✓ valid</span>
+    </div>
+
+    <!-- Parsed metadata (hidden until file loaded) -->
+    <div class="gm-meta" id="gm-meta" style="display:none">
+      <div class="gm-meta-row"><span class="gm-meta-dot">●</span><span class="gm-meta-lbl" id="gm-world-name">World: —</span></div>
+      <div class="gm-meta-row"><span class="gm-meta-dot">●</span><span class="gm-meta-lbl" id="gm-version">Version: —</span></div>
+      <div class="gm-meta-row"><span class="gm-meta-dot">●</span><span class="gm-meta-lbl" id="gm-atlas-count">Atlas modules: —</span></div>
+      <div class="gm-meta-row"><span class="gm-meta-dot">●</span><span class="gm-meta-lbl" id="gm-loom-nodes">Loom nodes: —</span></div>
+    </div>
+
+    <!-- Import options -->
+    <div class="gm-opts" id="gm-opts" style="display:none">
+      <div class="gm-opt-row checked" id="gm-opt-atlas" onclick="gmToggleOpt(this)">
+        <div class="gm-checkbox">✓</div>
+        <span class="gm-opt-lbl">Import Atlas snapshots</span>
+      </div>
+      <div class="gm-opt-row checked" id="gm-opt-loom" onclick="gmToggleOpt(this)">
+        <div class="gm-checkbox">✓</div>
+        <span class="gm-opt-lbl">Import Loom data (nodes / wires)</span>
+      </div>
+      <div class="gm-opt-row checked" id="gm-opt-theme" onclick="gmToggleOpt(this)">
+        <div class="gm-checkbox">✓</div>
+        <span class="gm-opt-lbl">Import theme</span>
+      </div>
+      <div class="gm-opt-row checked" id="gm-opt-bus" onclick="gmToggleOpt(this)">
+        <div class="gm-checkbox">✓</div>
+        <span class="gm-opt-lbl">Import signal bus</span>
+      </div>
+    </div>
+
+    <div class="gm-actions">
+      <button class="gm-btn" onclick="closeGenesisModal()">Cancel</button>
+      <button class="gm-btn primary" id="gm-import-btn" onclick="gmDoImport()" disabled>Import Now</button>
     </div>
   </div>
 </div>
@@ -3432,6 +3601,237 @@ window.addEventListener('message', async (e) => {
 
 /* Auto-init on load */
 broadcastInit();
+
+
+/* ══════════════════════════════════════════════════════════════
+   GENESIS CONTAINER — Import / Export (.qgenesis)
+══════════════════════════════════════════════════════════════ */
+
+// ── Helpers ──────────────────────────────────────────────────
+function tryParseLS(key) {
+  try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
+}
+
+// ── Export ───────────────────────────────────────────────────
+function genesisExport() {
+  const container = {
+    qgenesis: '1.0',
+    meta: {
+      name: document.getElementById('proj-name')?.textContent || 'Untitled World',
+      description: '',
+      author: '',
+      created: new Date().toISOString(),
+      modified: new Date().toISOString(),
+      version: 1,
+      tags: []
+    },
+    loom: {
+      nodes:    tryParseLS('ql-workspace'),
+      wires:    null,
+      groups:   null,
+      zones:    tryParseLS('ql-zones'),
+      scenes:   tryParseLS('ql-scenes'),
+      sequencer: tryParseLS('ql-sequencer'),
+      rack:     tryParseLS('ql-rack'),
+      workspace_view: { x: 0, y: 0, zoom: 1 }
+    },
+    atlas: {
+      terrain:      tryParseLS('qa-terrain-snapshot'),
+      environment:  tryParseLS('qa-environ-snapshot'),
+      architect:    tryParseLS('qa-architect-snapshot'),
+      lighting:     tryParseLS('qa-lighting-snapshot'),
+      modeling:     tryParseLS('qa-modeling-snapshot'),
+      choreography: tryParseLS('qa-choreography-snapshot'),
+      behavior:     tryParseLS('qa-behavior-snapshot'),
+      society:      tryParseLS('qa-society-snapshot'),
+      sequencer:    tryParseLS('qa-sequencer-snapshot'),
+      story:        tryParseLS('qa-story-snapshot'),
+      memory:       tryParseLS('qa-memory-snapshot'),
+      sound:        tryParseLS('qa-sound-snapshot'),
+      logic:        tryParseLS('qa-logic-snapshot'),
+      simulation:   tryParseLS('qa-simulation-snapshot'),
+      forge:        tryParseLS('qa-forge-snapshot'),
+      network:      tryParseLS('qa-network-snapshot'),
+    },
+    signal_bus: tryParseLS('ql-signal-bus'),
+    theme:      tryParseLS('ql-theme')
+  };
+  const json = JSON.stringify(container, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const name = (container.meta.name || 'world').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${name}.qgenesis`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('↓ Exported: ' + name + '.qgenesis');
+}
+
+// ── Import file reader ────────────────────────────────────────
+function genesisImportFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const container = JSON.parse(e.target.result);
+      showGenesisModal(container, file.name);
+    } catch(err) {
+      alert('Invalid .qgenesis file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ── Show modal with parsed info ───────────────────────────────
+let _genesisContainer = null;
+
+function showGenesisModal(container, filename) {
+  _genesisContainer = container;
+
+  // Populate file row
+  document.getElementById('gm-file-name').textContent = filename || '—';
+  const isValid = container && container.qgenesis;
+  const badge = document.getElementById('gm-valid-badge');
+  badge.textContent = isValid ? '✓ valid' : '⚠ unknown';
+  badge.className   = 'gm-valid-badge ' + (isValid ? 'ok' : 'err');
+  document.getElementById('gm-file-row').style.display = '';
+
+  // Populate meta
+  const meta   = container.meta   || {};
+  const loom   = container.loom   || {};
+  const atlas  = container.atlas  || {};
+
+  document.getElementById('gm-world-name').textContent =
+    'World: "' + (meta.name || 'Unnamed') + '"';
+  document.getElementById('gm-version').textContent =
+    'Version: ' + (meta.version || '—');
+
+  const atlasPopulated = Object.values(atlas).filter(v => v != null).length;
+  const atlasTotal     = Object.keys(atlas).length;
+  document.getElementById('gm-atlas-count').textContent =
+    'Atlas modules: ' + atlasPopulated + '/' + atlasTotal + ' populated';
+
+  const nodeCount = Array.isArray(loom.nodes) ? loom.nodes.length : 0;
+  document.getElementById('gm-loom-nodes').textContent =
+    'Loom nodes: ' + nodeCount;
+
+  document.getElementById('gm-meta').style.display = '';
+  document.getElementById('gm-opts').style.display  = '';
+
+  // Reset checkboxes to checked
+  ['gm-opt-atlas','gm-opt-loom','gm-opt-theme','gm-opt-bus'].forEach(id => {
+    document.getElementById(id)?.classList.add('checked');
+    const cb = document.querySelector('#' + id + ' .gm-checkbox');
+    if (cb) cb.textContent = '✓';
+  });
+
+  document.getElementById('gm-import-btn').disabled = false;
+  document.getElementById('genesis-modal').classList.add('open');
+}
+
+function closeGenesisModal() {
+  document.getElementById('genesis-modal').classList.remove('open');
+  _genesisContainer = null;
+}
+
+// ── Checkbox toggle ───────────────────────────────────────────
+function gmToggleOpt(row) {
+  const isChecked = row.classList.contains('checked');
+  row.classList.toggle('checked', !isChecked);
+  const cb = row.querySelector('.gm-checkbox');
+  if (cb) cb.textContent = !isChecked ? '✓' : '';
+}
+
+// ── Execute import ────────────────────────────────────────────
+function gmDoImport() {
+  if (!_genesisContainer) return;
+  const opts = {
+    atlas: document.getElementById('gm-opt-atlas')?.classList.contains('checked'),
+    loom:  document.getElementById('gm-opt-loom')?.classList.contains('checked'),
+    theme: document.getElementById('gm-opt-theme')?.classList.contains('checked'),
+    bus:   document.getElementById('gm-opt-bus')?.classList.contains('checked'),
+  };
+  genesisApply(_genesisContainer, opts);
+}
+
+function genesisApply(container, opts) {
+  // opts: { atlas: bool, loom: bool, theme: bool, bus: bool }
+  if (opts.atlas && container.atlas) {
+    const MAP = {
+      terrain:      'qa-terrain-snapshot',
+      environment:  'qa-environ-snapshot',
+      architect:    'qa-architect-snapshot',
+      lighting:     'qa-lighting-snapshot',
+      modeling:     'qa-modeling-snapshot',
+      choreography: 'qa-choreography-snapshot',
+      behavior:     'qa-behavior-snapshot',
+      society:      'qa-society-snapshot',
+      sequencer:    'qa-sequencer-snapshot',
+      story:        'qa-story-snapshot',
+      memory:       'qa-memory-snapshot',
+      sound:        'qa-sound-snapshot',
+      logic:        'qa-logic-snapshot',
+      simulation:   'qa-simulation-snapshot',
+      forge:        'qa-forge-snapshot',
+      network:      'qa-network-snapshot',
+    };
+    Object.entries(MAP).forEach(([mod, key]) => {
+      if (container.atlas[mod] != null)
+        localStorage.setItem(key, JSON.stringify(container.atlas[mod]));
+    });
+  }
+  if (opts.loom && container.loom) {
+    if (container.loom.zones)     localStorage.setItem('ql-zones',     JSON.stringify(container.loom.zones));
+    if (container.loom.scenes)    localStorage.setItem('ql-scenes',    JSON.stringify(container.loom.scenes));
+    if (container.loom.sequencer) localStorage.setItem('ql-sequencer', JSON.stringify(container.loom.sequencer));
+    if (container.loom.rack)      localStorage.setItem('ql-rack',      JSON.stringify(container.loom.rack));
+    if (container.loom.nodes)     localStorage.setItem('ql-workspace', JSON.stringify(container.loom.nodes));
+  }
+  if (opts.theme && container.theme) {
+    localStorage.setItem('ql-theme', JSON.stringify(container.theme));
+  }
+  if (opts.bus && container.signal_bus) {
+    localStorage.setItem('ql-signal-bus', JSON.stringify(container.signal_bus));
+  }
+  // Update project name if available
+  if (container.meta?.name) {
+    const el = document.getElementById('proj-name');
+    if (el) el.textContent = container.meta.name;
+    if (projectMeta) projectMeta.name = container.meta.name;
+  }
+  closeGenesisModal();
+  // Reload active frame so it picks up new snapshot data
+  const frame = document.getElementById(`frame-${activeLayer}`);
+  if (frame) {
+    loadedFrames.delete(activeLayer);
+    frame.src = frame.src;
+  }
+  updateStatusBar();
+  toast('↑ Genesis Container imported: ' + (container.meta?.name || 'World'));
+}
+
+// ── Hub-content drag-and-drop ─────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const hubContent = document.getElementById('hub-content');
+  if (hubContent) {
+    hubContent.addEventListener('dragover', e => {
+      if (e.dataTransfer.types.includes('Files')) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+      }
+    });
+    hubContent.addEventListener('drop', e => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file && (file.name.endsWith('.qgenesis') || file.name.endsWith('.json'))) {
+        genesisImportFile(file);
+      }
+    });
+  }
+  // Close genesis modal on backdrop click
+  document.getElementById('genesis-modal')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('genesis-modal')) closeGenesisModal();
+  });
+});
 
 </script>
 </body>
