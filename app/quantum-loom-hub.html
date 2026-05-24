@@ -1031,6 +1031,35 @@ html,body{
   border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.75);
 }
 .chat-msg.ai.streaming{border-color:rgba(200,151,58,.3)}
+/* LLM thinking bar */
+#lp-thinking{
+  display:none;align-items:center;gap:8px;
+  padding:8px 14px;border-top:1px solid var(--edge);flex-shrink:0;
+  background:rgba(200,151,58,.05);
+}
+#lp-thinking.visible{display:flex}
+.lp-think-spinner{
+  width:14px;height:14px;border-radius:50%;flex-shrink:0;
+  border:2px solid rgba(200,151,58,.2);
+  border-top-color:#c8973a;
+  animation:spin-cw .7s linear infinite;
+}
+@keyframes spin-cw{to{transform:rotate(360deg)}}
+.lp-think-dots{
+  font-family:var(--fc);font-size:.48rem;color:rgba(200,151,58,.65);
+  letter-spacing:.08em;
+}
+.lp-think-dots::after{
+  content:'';
+  animation:thinking-dots 1.4s steps(4,end) infinite;
+}
+@keyframes thinking-dots{
+  0%  {content:'';}
+  25% {content:'.';}
+  50% {content:'..';}
+  75% {content:'...';}
+  100%{content:'';}
+}
 .lp-chat-input-row{
   display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--edge);flex-shrink:0;
 }
@@ -1045,10 +1074,14 @@ html,body{
   font-family:var(--fm);font-size:.36rem;letter-spacing:.1em;text-transform:uppercase;
   padding:0 12px;border-radius:5px;cursor:pointer;transition:all .13s;
   border:1px solid rgba(200,151,58,.4);background:rgba(200,151,58,.12);
-  color:#c8973a;align-self:stretch;
+  color:#c8973a;align-self:stretch;min-width:54px;
 }
 .lp-send-btn:hover{background:rgba(200,151,58,.22)}
-.lp-send-btn:disabled{opacity:.3;cursor:not-allowed}
+.lp-send-btn:disabled{opacity:.5;cursor:not-allowed}
+.lp-send-btn.thinking{
+  border-color:rgba(200,151,58,.25);background:rgba(200,151,58,.06);
+  color:rgba(200,151,58,.5);
+}
 
 .lp-actions{display:flex;gap:6px;padding:12px 16px;border-top:1px solid var(--edge);flex-shrink:0;flex-wrap:wrap}
 .lp-act-btn{
@@ -2002,6 +2035,10 @@ html,body{
   <!-- CHAT TAB -->
   <div id="lp-pane-chat" style="display:none;flex:1;flex-direction:column;overflow:hidden">
     <div class="lp-chat-msgs" id="lp-msgs"></div>
+    <div id="lp-thinking">
+      <div class="lp-think-spinner"></div>
+      <span class="lp-think-dots">Thinking</span>
+    </div>
     <div class="lp-chat-input-row">
       <textarea class="lp-chat-input" id="lp-chat-input" placeholder="Ask anything about your story…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();llmSend()}"></textarea>
       <button class="lp-send-btn" id="lp-send-btn" onclick="llmSend()">↑ Send</button>
@@ -3287,6 +3324,17 @@ function lpSetStatus(state, msg) {
 /* ── Chat ────────────────────────────────────────────────────── */
 const chatHistory = [];
 
+function llmSetThinking(on) {
+  const bar = document.getElementById('lp-thinking');
+  const btn = document.getElementById('lp-send-btn');
+  if (bar) bar.classList.toggle('visible', on);
+  if (btn) {
+    btn.disabled = on;
+    btn.classList.toggle('thinking', on);
+    btn.textContent = on ? '⏳' : '↑ Send';
+  }
+}
+
 async function llmSend() {
   const input = document.getElementById('lp-chat-input');
   const msg   = input.value.trim();
@@ -3296,10 +3344,9 @@ async function llmSend() {
   lpAddMsg('user', msg);
   chatHistory.push({ role:'user', content: msg });
 
-  const sendBtn = document.getElementById('lp-send-btn');
-  sendBtn.disabled = true;
-
+  llmSetThinking(true);
   const aiEl = lpAddMsg('ai', '', true);
+  let firstChunk = true;
 
   try {
     await llmEnsureLib();
@@ -3314,19 +3361,22 @@ async function llmSend() {
 
     let full = '';
     await LoomLLM.chatStream(messages, {}, chunk => {
+      if (firstChunk) { llmSetThinking(false); firstChunk = false; }
       full += chunk;
       aiEl.textContent = full;
       document.getElementById('lp-msgs').scrollTop = 9999;
     }, () => {
+      llmSetThinking(false);
       aiEl.classList.remove('streaming');
       chatHistory.push({ role:'assistant', content: full });
     });
   } catch(e) {
+    llmSetThinking(false);
     aiEl.textContent = '⚠ ' + e.message;
     aiEl.classList.remove('streaming');
     aiEl.style.color = '#d45b5b';
   } finally {
-    sendBtn.disabled = false;
+    llmSetThinking(false);
   }
 }
 
@@ -3349,7 +3399,7 @@ async function llmGenerateLibrary() {
   if (!concept) { toast('Enter a concept first'); return; }
 
   const statusEl = document.getElementById('lp-tools-status');
-  statusEl.textContent = 'Generating ' + count + ' capsules…';
+  statusEl.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;border:2px solid rgba(200,151,58,.2);border-top-color:#c8973a;animation:spin-cw .7s linear infinite;display:inline-block"></span> Generating ' + count + ' capsules…</span>';
 
   try {
     await llmEnsureLib();
@@ -3388,7 +3438,7 @@ async function llmParseLore() {
   if (!text) { toast('Paste lore text first'); return; }
 
   const statusEl = document.getElementById('lp-tools-status');
-  statusEl.textContent = 'Parsing document…';
+  statusEl.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;border:2px solid rgba(200,151,58,.2);border-top-color:#c8973a;animation:spin-cw .7s linear infinite;display:inline-block"></span> Parsing document…</span>';
 
   try {
     await llmEnsureLib();
