@@ -1,97 +1,25 @@
 {
-  "name": "quantum-loom",
-  "version": "1.1.0",
-  "description": "A narrative DAW for story, music & world-building",
-  "main": "main.js",
-  "author": "Jeremy Dickinson <jerdickinson@gmail.com>",
-  "license": "BioSpark-Licensing",
-  "homepage": "https://biospark.studio/quantum-loom",
+  "name": "quantum-quill-voice-and-video-studio",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "electron .",
-    "dev": "QL_DEV=1 electron .",
-    "build:win": "electron-builder --win",
-    "build:mac": "electron-builder --mac",
-    "build:linux": "electron-builder --linux",
-    "build:all": "electron-builder --win --mac --linux"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "tsc --noEmit"
   },
-  "build": {
-    "appId": "com.phantori.quantumloom",
-    "productName": "Quantum Loom",
-    "copyright": "Copyright \u00a9 2026 Phantori",
-    "asar": true,
-    "files": [
-      "main.js",
-      "preload.js",
-      "splash-preload.js",
-      "app/**/*",
-      "assets/**/*"
-    ],
-    "directories": {
-      "output": "dist"
-    },
-    "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
-      ],
-      "icon": "assets/icon.ico"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "Quantum Loom"
-    },
-    "mac": {
-      "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
-      ],
-      "icon": "assets/icon.png",
-      "category": "public.app-category.education"
-    },
-    "dmg": {
-      "title": "Quantum Loom",
-      "window": {
-        "width": 540,
-        "height": 380
-      },
-      "contents": [
-        {
-          "x": 140,
-          "y": 190,
-          "type": "file"
-        },
-        {
-          "x": 400,
-          "y": 190,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb"
-      ],
-      "icon": "assets/icon-512.png",
-      "category": "Education"
-    }
+  "dependencies": {
+    "lucide-react": "^0.562.0",
+    "@google/genai": "^1.34.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "jszip": "3.10.1"
   },
   "devDependencies": {
-    "electron": "^33.0.0",
-    "electron-builder": "^25.0.0"
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
   }
 }
