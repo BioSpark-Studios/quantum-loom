@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Project, DEMO_SCRIPT } from './types';
 import ProjectList from './components/ProjectList';
 import Studio from './components/Studio';
-import { Layout, Clapperboard } from 'lucide-react';
+import MusicVideoStudio from './components/MusicVideoStudio';
+import { Clapperboard, Music, Film } from 'lucide-react';
 import { STAR_SHADOW_PROJECT } from './services/starShadowHeresy';
 
+type AppMode = 'projects' | 'screenplay' | 'musicvideo';
+
 const App: React.FC = () => {
+  const [mode, setMode]                   = useState<AppMode>('projects');
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects]           = useState<Project[]>([]);
 
   useEffect(() => {
     try {
@@ -98,37 +102,61 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-200 flex flex-col">
       {/* Header */}
-      <header className="h-16 border-b border-neutral-800 bg-neutral-900/50 backdrop-blur flex items-center px-6 justify-between z-10">
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentProject(null)}>
-          <div className="w-8 h-8 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded flex items-center justify-center">
-             <Clapperboard className="w-5 h-5 text-white" />
+      <header className="h-14 border-b border-neutral-800 bg-neutral-900/50 backdrop-blur flex items-center px-6 justify-between z-10 shrink-0">
+        <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setMode('projects'); setCurrentProject(null); }}>
+          <div className="w-7 h-7 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded flex items-center justify-center">
+            <Clapperboard className="w-4 h-4 text-white" />
           </div>
-          <h1 className="font-display font-bold text-xl tracking-wider text-white">QUANTUM QUILL</h1>
+          <h1 className="font-display font-bold text-lg tracking-wider text-white">QUANTUM QUILL</h1>
         </div>
-        
-        {currentProject && (
-          <div className="flex items-center gap-4 text-sm">
-             <span className="text-neutral-400">Editing:</span>
-             <span className="font-semibold text-indigo-300">{currentProject.name}</span>
-          </div>
+
+        {/* Mode tabs */}
+        <div className="flex items-center gap-1 bg-neutral-900 border border-neutral-800 rounded-lg p-1">
+          <button
+            onClick={() => { setMode('projects'); setCurrentProject(null); }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all"
+            style={mode === 'projects' || mode === 'screenplay'
+              ? { background: 'rgba(99,102,241,0.2)', color: '#818cf8' }
+              : { color: '#666' }}
+          >
+            <Film className="w-3 h-3" /> Screenplay
+          </button>
+          <button
+            onClick={() => setMode('musicvideo')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all"
+            style={mode === 'musicvideo'
+              ? { background: 'rgba(220,60,120,0.2)', color: '#dc3c78' }
+              : { color: '#666' }}
+          >
+            <Music className="w-3 h-3" /> Music Video
+          </button>
+        </div>
+
+        {currentProject && mode === 'screenplay' && (
+          <span className="text-xs text-indigo-300 font-medium">{currentProject.name}</span>
+        )}
+        {mode === 'musicvideo' && (
+          <span className="text-xs font-medium" style={{ color: '#dc3c78' }}>Choreography · Sound · Behavior</span>
         )}
       </header>
 
       {/* Main Content */}
       <main className="flex-1 flex overflow-hidden">
-        {currentProject ? (
-          <Studio 
-            project={currentProject} 
-            onUpdate={updateProject} 
-            onBack={() => setCurrentProject(null)}
+        {mode === 'musicvideo' ? (
+          <MusicVideoStudio />
+        ) : currentProject ? (
+          <Studio
+            project={currentProject}
+            onUpdate={updateProject}
+            onBack={() => { setCurrentProject(null); setMode('projects'); }}
           />
         ) : (
           <ProjectList
             projects={projects}
             onCreate={createProject}
-            onSelect={setCurrentProject}
+            onSelect={(p) => { setCurrentProject(p); setMode('screenplay'); }}
             onDelete={deleteProject}
-            onImportLoom={(p) => { saveProjects([p, ...projects]); setCurrentProject(p); }}
+            onImportLoom={(p) => { saveProjects([p, ...projects]); setCurrentProject(p); setMode('screenplay'); }}
           />
         )}
       </main>
