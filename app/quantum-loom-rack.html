@@ -470,9 +470,82 @@ body{background:var(--rack-bg);font-family:var(--fd);color:#fff;height:100vh;ove
 /* Tooltip below for elements near top edge */
 [data-tip-b]::after{bottom:auto;top:calc(100% + 7px)}
 
-/* ── LABEL-FREE CONTROLS (tooltip-first policy) ── */
-.knob-label,.fader-label,.pads-label,.toggle-label,.xy-label,.meter-label,
+/* ── LABEL-FREE CONTROLS — midi labels shown in learn mode ── */
+.knob-label,.fader-label,.pads-label,.toggle-label,.xy-label,.meter-label{display:none}
 .knob-midi,.fader-midi,.toggle-midi,.xy-midi,.pads-midi{display:none}
+body.midi-labels-on .knob-midi,
+body.midi-labels-on .fader-midi,
+body.midi-labels-on .toggle-midi,
+body.midi-labels-on .xy-midi,
+body.midi-labels-on .pads-midi{display:block}
+
+/* ── MIDI STATUS STRIP ── */
+#midi-strip{
+  height:24px;flex-shrink:0;display:flex;align-items:center;gap:8px;
+  padding:0 12px;background:rgba(0,0,0,.55);border-bottom:1px solid rgba(255,255,255,.04);
+  font-family:var(--fcode);font-size:.47rem;color:rgba(255,255,255,.35);
+  position:relative;z-index:15;overflow:hidden;
+}
+.ms-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15);flex-shrink:0;transition:background .3s}
+.ms-dot.ready{background:var(--led-green)}
+.ms-dot.error{background:var(--led-red,#d45b5b)}
+.ms-lbl{color:rgba(255,255,255,.2);margin-right:2px;white-space:nowrap}
+.ms-val{color:rgba(255,255,255,.55);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-sep{width:1px;height:12px;background:rgba(255,255,255,.08);margin:0 3px;flex-shrink:0}
+.ms-act{width:7px;height:7px;border-radius:50%;background:var(--led-green);opacity:.15;transition:opacity .1s;flex-shrink:0}
+.ms-mode-btn{
+  padding:1px 7px;border-radius:3px;border:1px solid rgba(255,255,255,.08);
+  background:transparent;color:rgba(255,255,255,.3);font-family:var(--fcode);font-size:.44rem;
+  cursor:pointer;transition:all .15s;
+}
+.ms-mode-btn.active{background:rgba(200,151,58,.15);border-color:rgba(200,151,58,.4);color:var(--amber)}
+#midi-learn-lbl{display:none;color:var(--led-amber,#f98f3b);animation:led-pulse .5s ease-in-out infinite;font-size:.47rem}
+
+/* ── MIDI SETTINGS PANEL ── */
+#midi-panel{
+  position:fixed;top:72px;right:16px;width:310px;max-height:calc(100vh - 90px);
+  background:rgba(6,8,14,.98);border:1px solid rgba(255,255,255,.1);border-radius:8px;
+  box-shadow:0 8px 40px rgba(0,0,0,.85);z-index:300;overflow:hidden;
+  display:none;flex-direction:column;
+}
+#midi-panel.open{display:flex}
+.mp-head{
+  padding:9px 13px;border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;gap:8px;flex-shrink:0;background:rgba(0,0,0,.3);
+}
+.mp-title{font-family:var(--fm);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);flex:1}
+.mp-close{background:none;border:none;color:rgba(255,255,255,.35);cursor:pointer;font-size:.9rem;padding:2px 5px;line-height:1}
+.mp-close:hover{color:#fff}
+.mp-body{flex:1;overflow-y:auto;padding:11px 13px;display:flex;flex-direction:column;gap:12px}
+.mp-sec{font-family:var(--fcode);font-size:.44rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:5px}
+.mp-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.mp-sel{
+  flex:1;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.1);border-radius:4px;
+  color:#e0e0e0;font-family:var(--fcode);font-size:.48rem;padding:4px 7px;cursor:pointer;
+}
+.mp-sel:focus{outline:none;border-color:rgba(200,151,58,.5)}
+.mp-btn{
+  padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);color:rgba(255,255,255,.6);font-family:var(--fcode);font-size:.46rem;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.mp-btn:hover{background:rgba(200,151,58,.15);border-color:rgba(200,151,58,.4);color:var(--amber)}
+.cc-table{display:flex;flex-direction:column;gap:2px}
+.cc-row{
+  display:flex;align-items:center;gap:6px;padding:4px 7px;border-radius:4px;
+  background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.04);
+}
+.cc-name{flex:1;font-family:var(--fcode);font-size:.46rem;color:rgba(255,255,255,.55);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cc-assign{font-family:var(--fcode);font-size:.44rem;color:rgba(200,151,58,.8);min-width:72px;text-align:right}
+.cc-btn{
+  padding:1px 6px;border-radius:3px;border:1px solid rgba(255,255,255,.1);
+  background:transparent;color:rgba(255,255,255,.3);font-family:var(--fcode);font-size:.42rem;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.cc-btn:hover{border-color:rgba(200,151,58,.5);color:var(--amber)}
+.cc-btn.learning{border-color:var(--amber);color:var(--amber);animation:led-pulse .5s ease-in-out infinite}
+.cc-btn.clear{color:rgba(212,91,91,.5);}
+.cc-btn.clear:hover{border-color:rgba(212,91,91,.5);color:#d45b5b;background:rgba(212,91,91,.08)}
 
 /* ── COMPACT BACK PANEL ── */
 .jack-row{padding:3px 0;gap:5px}
@@ -530,6 +603,13 @@ body{background:var(--rack-bg);font-family:var(--fd);color:#fff;height:100vh;ove
   border-radius:4px;border:1px solid rgba(255,255,255,.06);display:none;white-space:pre-wrap}
 .ai-output:not(:empty){display:block}
 .ai-output.streaming{border-color:rgba(177,208,240,.18)}
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
 </style>
 </head>
 <body>
@@ -551,8 +631,59 @@ body{background:var(--rack-bg);font-family:var(--fd);color:#fff;height:100vh;ove
   <div class="tb-right">
     <button class="tb-btn" id="backpanel-btn" onclick="toggleBackPanel()">⟲ Back Panel</button>
     <button class="tb-btn" onclick="toast('Promote — right-click any sub-graph node to assign a rack control')">+ Promote</button>
-    <button class="tb-btn" onclick="toast('MIDI Map — Web MIDI API binding ready for v2')">MIDI Map</button>
+    <button class="tb-btn" id="midi-map-btn" onclick="toggleMidiPanel()">⚑ MIDI</button>
     <button class="tb-btn hot" onclick="fireDemoSignals()">⚡ Performance Mode</button>
+  </div>
+</div>
+
+<!-- MIDI STATUS STRIP -->
+<div id="midi-strip">
+  <div class="ms-dot" id="midi-status-dot" title="MIDI status"></div>
+  <div class="ms-sep"></div>
+  <span class="ms-lbl">IN</span>
+  <div class="ms-act" id="midi-act-in" title="Input activity"></div>
+  <span class="ms-val" id="midi-in-name">No Input</span>
+  <div class="ms-sep"></div>
+  <span class="ms-lbl">OUT</span>
+  <div class="ms-act" id="midi-act-out" title="Output activity"></div>
+  <span class="ms-val" id="midi-out-name">No Output</span>
+  <div class="ms-sep"></div>
+  <span class="ms-lbl">MODE</span>
+  <button class="ms-mode-btn active" id="mode-btn-controller" onclick="setRackMode('controller')">CONTROLLER</button>
+  <button class="ms-mode-btn" id="mode-btn-synth" onclick="setRackMode('synth')">SYNTH</button>
+  <button class="ms-mode-btn" id="mode-btn-weaver" onclick="setRackMode('weaver')">NARRATIVE WEAVER</button>
+  <div style="flex:1"></div>
+  <span id="midi-learn-lbl">● LEARN — wiggle CC</span>
+</div>
+
+<!-- MIDI SETTINGS PANEL -->
+<div id="midi-panel">
+  <div class="mp-head">
+    <span class="mp-title">⚑ MIDI Settings</span>
+    <button class="mp-close" onclick="toggleMidiPanel()">✕</button>
+  </div>
+  <div class="mp-body">
+    <div>
+      <div class="mp-sec">Devices</div>
+      <div class="mp-row">
+        <span class="ms-lbl" style="min-width:26px">IN</span>
+        <select class="mp-sel" id="midi-in-sel" onchange="MIDI.selectInput(this.value)"><option value="">— None —</option></select>
+        <div class="ms-act" id="midi-act-in2"></div>
+      </div>
+      <div class="mp-row">
+        <span class="ms-lbl" style="min-width:26px">OUT</span>
+        <select class="mp-sel" id="midi-out-sel" onchange="MIDI.selectOutput(this.value)"><option value="">— None —</option></select>
+      </div>
+      <div class="mp-row" style="margin-top:4px">
+        <button class="mp-btn" onclick="MIDI.refreshPorts()">⟳ Refresh</button>
+        <button class="mp-btn" onclick="toggleMidiLabels()" id="midi-labels-btn">Show CC Labels</button>
+        <button class="mp-btn" onclick="MIDI.cancelLearn()" id="cancel-learn-btn" style="display:none;border-color:rgba(200,151,58,.4);color:var(--amber)">✕ Cancel Learn</button>
+      </div>
+    </div>
+    <div>
+      <div class="mp-sec">CC Assignments <span style="color:rgba(255,255,255,.18);font-size:.4rem;text-transform:none;letter-spacing:0"> — click Learn then wiggle controller</span></div>
+      <div class="cc-table" id="cc-table"></div>
+    </div>
   </div>
 </div>
 
@@ -1770,6 +1901,328 @@ function navTo(layerId) {
 
 
 /* ── Quantum Loom Theme System ──────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   QUANTUM LOOM INSTRUMENT RACK — MIDI ENGINE
+   Web MIDI API · In/Out · CC Learn · 3 Rack Modes
+   ─────────────────────────────────────────────────────────────
+   Rack Modes:
+     controller   – rack sends CC to external gear on every control move
+     synth        – incoming MIDI notes fire narrative events / signal bus
+     weaver       – rack state drives ql-signal-bus; Atlas data modulates rack
+═══════════════════════════════════════════════════════════════ */
+const MIDI = (() => {
+  let midiAccess = null;
+  let inputPort  = null;
+  let outputPort = null;
+  let learnTarget = null;  // {uid, cid, btnEl} waiting for CC
+  let rackMode   = localStorage.getItem('ql-rack-mode') || 'controller';
+  const ccMap    = {};     // key: "uid·cid" → {cc, ch}
+
+  /* ── Parse stored ccMap ── */
+  function loadMap() {
+    try { Object.assign(ccMap, JSON.parse(localStorage.getItem('ql-midi-map') || '{}')); } catch(e) {}
+  }
+  function saveMap() {
+    localStorage.setItem('ql-midi-map', JSON.stringify(ccMap));
+  }
+
+  /* ── Parse default CC from control's midi string e.g. "CC2·Ch1" ── */
+  function parseDefault(str) {
+    if (!str) return null;
+    const m = str.match(/CC(\d+)[^C]*Ch(\d+)/i);
+    return m ? { cc: parseInt(m[1]), ch: parseInt(m[2]) } : null;
+  }
+
+  /* ── Seed ccMap defaults from UNITS (only if no saved value) ── */
+  function seedDefaults() {
+    UNITS.forEach(u => {
+      (u.controls || []).forEach(c => {
+        const k = u.id + '·' + c.id;
+        if (!ccMap[k]) { const d = parseDefault(c.midi); if (d) ccMap[k] = d; }
+      });
+    });
+    saveMap();
+  }
+
+  /* ── Find control by cc+ch ── */
+  function findCtrl(cc, ch) {
+    for (const u of UNITS) {
+      for (const c of u.controls || []) {
+        const a = ccMap[u.id + '·' + c.id];
+        if (a && a.cc === cc && a.ch === ch) return { u, c };
+      }
+    }
+    return null;
+  }
+
+  /* ── Activity flash ── */
+  function flash(dir) {
+    for (const id of ['midi-act-' + dir, 'midi-act-' + dir + '2']) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      el.style.opacity = '1';
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.style.opacity = '.15'; }, 130);
+    }
+  }
+
+  /* ── Handle incoming MIDI message ── */
+  function onMsg(e) {
+    const [s, d1, d2] = e.data;
+    const type = s & 0xF0;
+    const ch   = (s & 0x0F) + 1;
+    flash('in');
+
+    if (type === 0xB0) { // Control Change
+      /* Learn mode — assign CC to waiting control */
+      if (learnTarget) {
+        const k = learnTarget.uid + '·' + learnTarget.cid;
+        ccMap[k] = { cc: d1, ch };
+        saveMap();
+        const ctrl = UNITS.flatMap(u => u.controls||[]).find(c => c.id === learnTarget.cid);
+        toast(`Learned: ${ctrl?.label || learnTarget.cid} → CC${d1} Ch${ch}`);
+        if (learnTarget.btnEl) { learnTarget.btnEl.classList.remove('learning'); learnTarget.btnEl.textContent = 'Learn'; }
+        learnTarget = null;
+        document.getElementById('midi-learn-lbl').style.display = 'none';
+        document.getElementById('cancel-learn-btn').style.display = 'none';
+        buildCCTable();
+        updateMidiLabels();
+        return;
+      }
+
+      if (rackMode === 'controller' || rackMode === 'weaver') {
+        const hit = findCtrl(d1, ch);
+        if (hit) {
+          const { u, c } = hit;
+          if (c.type === 'toggle') {
+            if ((d2 > 63) !== !!SG[u.id][c.id]) toggleCtrlNoSend(u.id, c.id);
+          } else {
+            const raw = c.min + (d2 / 127) * (c.max - c.min);
+            setValueNoSend(u, c, raw);
+          }
+        }
+      }
+
+      if (rackMode === 'synth') {
+        /* Incoming CC drives the signal bus as narrative control */
+        const busEntry = { cc: d1, ch, value: d2, ts: Date.now() };
+        try {
+          const bus = JSON.parse(localStorage.getItem('ql-signal-bus') || '{}');
+          bus['midi_cc_' + d1 + '_' + ch] = busEntry;
+          localStorage.setItem('ql-signal-bus', JSON.stringify(bus));
+        } catch(e) {}
+        logSig('MIDI-IN', `CC${d1} Ch${ch} = ${d2}`, '#b1d0f0');
+      }
+    }
+
+    if (type === 0x90 && d2 > 0 && rackMode === 'synth') { // Note On
+      logSig('NOTE-ON', `Note ${d1} vel ${d2} Ch ${ch}`, '#4ecdc4');
+    }
+  }
+
+  /* ── Send CC out ── */
+  function sendCC(uid, cid, val127) {
+    if (!outputPort || rackMode === 'synth') return;
+    const a = ccMap[uid + '·' + cid];
+    if (!a) return;
+    try {
+      outputPort.send([0xB0 | ((a.ch - 1) & 0x0F), a.cc, Math.max(0, Math.min(127, Math.round(val127)))]);
+      flash('out');
+    } catch(e) {}
+  }
+
+  /* ── Update device dropdowns ── */
+  function refreshPorts() {
+    if (!midiAccess) return;
+    const ins  = [...midiAccess.inputs.values()];
+    const outs = [...midiAccess.outputs.values()];
+    const sel  = (id, opts, cur) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.innerHTML = '<option value="">— None —</option>' +
+        opts.map(p => `<option value="${p.id}"${p.id===cur?' selected':''}>${p.name}</option>`).join('');
+    };
+    sel('midi-in-sel',  ins,  inputPort?.id  || '');
+    sel('midi-out-sel', outs, outputPort?.id || '');
+    updateStrip();
+  }
+
+  function selectInput(id) {
+    if (inputPort) inputPort.onmidimessage = null;
+    inputPort = id && midiAccess ? midiAccess.inputs.get(id) : null;
+    if (inputPort) inputPort.onmidimessage = onMsg;
+    localStorage.setItem('ql-midi-in', id || '');
+    updateStrip();
+  }
+
+  function selectOutput(id) {
+    outputPort = id && midiAccess ? midiAccess.outputs.get(id) : null;
+    localStorage.setItem('ql-midi-out', id || '');
+    updateStrip();
+  }
+
+  function updateStrip() {
+    const dot = document.getElementById('midi-status-dot');
+    const inn = document.getElementById('midi-in-name');
+    const out = document.getElementById('midi-out-name');
+    if (dot) { dot.className = 'ms-dot' + (midiAccess ? ' ready' : ' error'); }
+    if (inn) inn.textContent = inputPort  ? inputPort.name  : 'No Input';
+    if (out) out.textContent = outputPort ? outputPort.name : 'No Output';
+  }
+
+  /* ── CC table in panel ── */
+  function buildCCTable() {
+    const tbl = document.getElementById('cc-table');
+    if (!tbl) return;
+    const rows = [];
+    UNITS.forEach(u => {
+      (u.controls || []).forEach(c => {
+        if (c.type === 'seq') return; // skip sequencers
+        const k   = u.id + '·' + c.id;
+        const a   = ccMap[k];
+        const lbl = a ? `CC${a.cc} · Ch${a.ch}` : '—';
+        rows.push(`<div class="cc-row" id="ccrow-${u.id}-${c.id}">
+          <span class="cc-name" style="color:${u.color}88">${u.label.split('—')[0].trim()}</span>
+          <span class="cc-name">${c.label}</span>
+          <span class="cc-assign" id="cca-${u.id}-${c.id}">${lbl}</span>
+          <button class="cc-btn" id="ccl-${u.id}-${c.id}" onclick="MIDI.startLearn('${u.id}','${c.id}')">Learn</button>
+          <button class="cc-btn clear" onclick="MIDI.clearAssign('${u.id}','${c.id}')" title="Clear">✕</button>
+        </div>`);
+      });
+    });
+    tbl.innerHTML = rows.join('');
+  }
+
+  function updateMidiLabels() {
+    UNITS.forEach(u => {
+      (u.controls || []).forEach(c => {
+        const k = u.id + '·' + c.id;
+        const a = ccMap[k];
+        const lbl = a ? `CC${a.cc}·Ch${a.ch}` : (c.midi || '');
+        const wrap = document.querySelector(`[data-uid="${u.id}"][data-cid="${c.id}"]`);
+        if (!wrap) return;
+        const el = wrap.querySelector('.knob-midi,.fader-midi,.toggle-midi,.xy-midi,.pads-midi');
+        if (el) el.textContent = lbl;
+      });
+    });
+  }
+
+  /* ── Public: start learn for a control ── */
+  function startLearn(uid, cid) {
+    cancelLearn();
+    const btnEl = document.getElementById(`ccl-${uid}-${cid}`);
+    learnTarget = { uid, cid, btnEl };
+    if (btnEl) { btnEl.classList.add('learning'); btnEl.textContent = '…'; }
+    const u = UNITS.find(u => u.id === uid);
+    const c = u?.controls?.find(c => c.id === cid);
+    toast(`MIDI Learn: move any knob/fader on your controller → ${c?.label || cid}`);
+    document.getElementById('midi-learn-lbl').style.display = 'block';
+    document.getElementById('cancel-learn-btn').style.display = '';
+  }
+
+  function cancelLearn() {
+    if (!learnTarget) return;
+    const btn = learnTarget.btnEl;
+    if (btn) { btn.classList.remove('learning'); btn.textContent = 'Learn'; }
+    learnTarget = null;
+    document.getElementById('midi-learn-lbl').style.display = 'none';
+    document.getElementById('cancel-learn-btn').style.display = 'none';
+  }
+
+  function clearAssign(uid, cid) {
+    delete ccMap[uid + '·' + cid];
+    saveMap();
+    buildCCTable();
+    updateMidiLabels();
+  }
+
+  /* ── Init ── */
+  function init() {
+    loadMap();
+    seedDefaults();
+    updateStrip();
+
+    if (!navigator.requestMIDIAccess) {
+      console.warn('[MIDI] Web MIDI API not available');
+      return;
+    }
+    navigator.requestMIDIAccess({ sysex: false }).then(access => {
+      midiAccess = access;
+      const savedIn  = localStorage.getItem('ql-midi-in')  || '';
+      const savedOut = localStorage.getItem('ql-midi-out') || '';
+      refreshPorts();
+      if (savedIn)  selectInput(savedIn);
+      if (savedOut) selectOutput(savedOut);
+      access.onstatechange = refreshPorts;
+      const nIn = [...access.inputs.values()].length;
+      if (nIn) toast(`MIDI ready — ${nIn} device${nIn>1?'s':''} found`);
+      updateStrip();
+    }).catch(err => {
+      console.warn('[MIDI] Access denied:', err);
+      updateStrip();
+    });
+  }
+
+  return { init, sendCC, startLearn, cancelLearn, clearAssign, refreshPorts, selectInput, selectOutput, buildCCTable, updateMidiLabels };
+})();
+
+/* ── Rack mode toggle ── */
+let _rackMode = localStorage.getItem('ql-rack-mode') || 'controller';
+function setRackMode(mode) {
+  _rackMode = mode;
+  localStorage.setItem('ql-rack-mode', mode);
+  ['controller','synth','weaver'].forEach(m => {
+    document.getElementById('mode-btn-' + m)?.classList.toggle('active', m === mode);
+  });
+  const modeLabels = { controller:'Controller Mode — rack sends CC to hardware', synth:'Synth Mode — MIDI In fires narrative events', weaver:'Narrative Weaver — Atlas data modulates rack in real-time' };
+  toast(modeLabels[mode] || mode);
+}
+
+/* ── Toggle MIDI settings panel ── */
+function toggleMidiPanel() {
+  const panel = document.getElementById('midi-panel');
+  if (!panel) return;
+  const opening = !panel.classList.contains('open');
+  panel.classList.toggle('open');
+  if (opening) { MIDI.buildCCTable(); MIDI.refreshPorts(); }
+}
+
+/* ── Toggle CC label visibility ── */
+function toggleMidiLabels() {
+  const on = document.body.classList.toggle('midi-labels-on');
+  const btn = document.getElementById('midi-labels-btn');
+  if (btn) btn.textContent = on ? 'Hide CC Labels' : 'Show CC Labels';
+  if (on) MIDI.updateMidiLabels();
+}
+
+/* ── Wrap setValue to also send MIDI out ── */
+const _origSetValue = setValue;
+setValue = function(u, c, raw) {
+  _origSetValue(u, c, raw);
+  const pct = (SG[u.id][c.id] - c.min) / (c.max - c.min);
+  MIDI.sendCC(u.id, c.id, Math.round(pct * 127));
+};
+
+/* setValueNoSend — called from MIDI input so we don't echo back */
+function setValueNoSend(u, c, raw) { _origSetValue(u, c, raw); }
+
+/* ── Wrap toggleCtrl to also send MIDI out ── */
+const _origToggleCtrl = toggleCtrl;
+toggleCtrl = function(uid, cid) {
+  _origToggleCtrl(uid, cid);
+  MIDI.sendCC(uid, cid, SG[uid][cid] ? 127 : 0);
+};
+function toggleCtrlNoSend(uid, cid) { _origToggleCtrl(uid, cid); }
+
+/* ── Boot MIDI after rack is built ── */
+document.addEventListener('DOMContentLoaded', () => {
+  /* Set initial mode buttons */
+  const m = localStorage.getItem('ql-rack-mode') || 'controller';
+  ['controller','synth','weaver'].forEach(b =>
+    document.getElementById('mode-btn-' + b)?.classList.toggle('active', b === m));
+  MIDI.init();
+});
+
 (function initQLTheme() {
   const MAP = {
     'c-bg'     :'--rack-bg',

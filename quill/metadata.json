@@ -1,0 +1,7 @@
+{
+  "name": "Quantum Quill Voice and Video Studio",
+  "description": "A professional AI-powered screenplay visualization suite. Turn text into video storyboards with generative video and audio sequencing.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
