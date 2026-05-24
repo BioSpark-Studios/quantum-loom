@@ -305,7 +305,8 @@ html,body{
 .af-module-btn.active{
   background:rgba(0,0,0,.25);
   border-color:var(--mc, var(--venturan));
-  box-shadow:0 0 10px rgba(var(--mc-rgb,30,140,255),.25),inset 0 0 6px rgba(var(--mc-rgb,30,140,255),.08);
+  box-shadow:0 0 10px color-mix(in srgb, var(--mc,var(--venturan)) 30%, transparent),
+             inset 0 0 6px color-mix(in srgb, var(--mc,var(--venturan)) 12%, transparent);
 }
 .af-glyph{
   font-size:1.3rem;flex-shrink:0;
@@ -1048,17 +1049,6 @@ html,body{
 .lp-think-dots{
   font-family:var(--fc);font-size:.48rem;color:rgba(200,151,58,.65);
   letter-spacing:.08em;
-}
-.lp-think-dots::after{
-  content:'';
-  animation:thinking-dots 1.4s steps(4,end) infinite;
-}
-@keyframes thinking-dots{
-  0%  {content:'';}
-  25% {content:'.';}
-  50% {content:'..';}
-  75% {content:'...';}
-  100%{content:'';}
 }
 .lp-chat-input-row{
   display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--edge);flex-shrink:0;
@@ -3324,14 +3314,25 @@ function lpSetStatus(state, msg) {
 /* ── Chat ────────────────────────────────────────────────────── */
 const chatHistory = [];
 
+let _thinkTimer = null;
 function llmSetThinking(on) {
-  const bar = document.getElementById('lp-thinking');
-  const btn = document.getElementById('lp-send-btn');
+  const bar  = document.getElementById('lp-thinking');
+  const btn  = document.getElementById('lp-send-btn');
+  const dots = document.querySelector('.lp-think-dots');
   if (bar) bar.classList.toggle('visible', on);
   if (btn) {
     btn.disabled = on;
     btn.classList.toggle('thinking', on);
     btn.textContent = on ? '⏳' : '↑ Send';
+  }
+  clearInterval(_thinkTimer);
+  if (on && dots) {
+    const frames = ['Thinking', 'Thinking.', 'Thinking..', 'Thinking...'];
+    let i = 0;
+    dots.textContent = frames[0];
+    _thinkTimer = setInterval(() => { dots.textContent = frames[++i % frames.length]; }, 400);
+  } else if (dots) {
+    dots.textContent = 'Thinking';
   }
 }
 
