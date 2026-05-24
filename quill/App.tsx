@@ -123,11 +123,12 @@ const App: React.FC = () => {
             onBack={() => setCurrentProject(null)}
           />
         ) : (
-          <ProjectList 
-            projects={projects} 
-            onCreate={createProject} 
+          <ProjectList
+            projects={projects}
+            onCreate={createProject}
             onSelect={setCurrentProject}
             onDelete={deleteProject}
+            onImportLoom={(p) => { saveProjects([p, ...projects]); setCurrentProject(p); }}
           />
         )}
       </main>

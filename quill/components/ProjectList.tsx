@@ -1,15 +1,37 @@
 import React from 'react';
 import { Project } from '../types';
-import { Plus, Trash2, FileText, Clock } from 'lucide-react';
+import { Plus, Trash2, FileText, Clock, Import } from 'lucide-react';
+import { hasLoomData, readLoomWorld, importLoomScenes } from '../services/loomBridge';
 
 interface ProjectListProps {
   projects: Project[];
   onCreate: () => void;
   onSelect: (project: Project) => void;
   onDelete: (id: string) => void;
+  onImportLoom?: (project: Project) => void;
 }
 
-const ProjectList: React.FC<ProjectListProps> = ({ projects, onCreate, onSelect, onDelete }) => {
+const ProjectList: React.FC<ProjectListProps> = ({ projects, onCreate, onSelect, onDelete, onImportLoom }) => {
+  const loomAvailable = hasLoomData();
+
+  const handleImportLoom = () => {
+    if (!onImportLoom) return;
+    const world = readLoomWorld();
+    const scenes = importLoomScenes();
+    const project: Project = {
+      id: 'loom-import-' + Date.now(),
+      name: world.projectName + ' — Quill',
+      lastModified: Date.now(),
+      scriptContent: scenes.map(s => `${s.number}. ${s.heading}\n${s.description}`).join('\n\n'),
+      scenes,
+      timeline: [],
+      characterVoices: Object.fromEntries(world.characters.map(c => [c.name, 'Fenrir'])),
+      chapterMarkers: [],
+      genesis: { id: 'loom-g', name: world.projectName, mythosContainers: [], capsules: [], metadata: {} as any },
+    } as any;
+    onImportLoom(project);
+  };
+
   return (
     <div className="w-full max-w-5xl mx-auto p-12">
       <div className="flex justify-between items-center mb-12">
@@ -17,12 +39,23 @@ const ProjectList: React.FC<ProjectListProps> = ({ projects, onCreate, onSelect,
           <h2 className="text-3xl font-display font-bold text-white mb-2">Projects</h2>
           <p className="text-neutral-400">Manage your screenplays and generated timelines.</p>
         </div>
-        <button 
-          onClick={onCreate}
-          className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-indigo-900/20 font-medium"
-        >
-          <Plus className="w-5 h-5" /> New Project
-        </button>
+        <div className="flex gap-3">
+          {loomAvailable && onImportLoom && (
+            <button
+              onClick={handleImportLoom}
+              className="bg-amber-700/40 hover:bg-amber-600/50 border border-amber-600/30 text-amber-300 px-5 py-3 rounded-lg flex items-center gap-2 transition-all font-medium text-sm"
+              title="Import scenes and characters from Quantum Loom"
+            >
+              <Import className="w-4 h-4" /> From Loom
+            </button>
+          )}
+          <button
+            onClick={onCreate}
+            className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-indigo-900/20 font-medium"
+          >
+            <Plus className="w-5 h-5" /> New Project
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

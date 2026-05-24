@@ -1,5 +1,6 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { Scene, DialogueLine, GenesisContainer, MythosContainer, BaseCapsule, NarrativeScope } from "../types";
+import { readLoomWorld, worldContextPrompt, hasLoomData } from "./loomBridge";
 
 // Helper to ensure we have a key for Veo, which requires paid tier
 export const ensureApiKey = async (): Promise<void> => {
@@ -20,17 +21,18 @@ const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
  */
 export const analyzeScript = async (scriptText: string): Promise<{ scenes: Scene[], genesis: GenesisContainer }> => {
   const ai = getAI();
-  
+
+  const loomCtx = hasLoomData() ? `\n\nQuantum Loom world context (cross-reference entities):\n${worldContextPrompt(readLoomWorld())}` : '';
+
   const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: `Act as the "Lore Taxonomist" for the Quantum Quill Core. Analyze the following screenplay text and extract data into the Genesis Container (v2.6) format.
-    
+    model: 'gemini-2.0-flash',
+    contents: `Act as the "Lore Taxonomist" for the Quantum Quill Core. Analyze the following screenplay text and extract data into the Genesis Container (v2.6) format.${loomCtx}
+
     1. Break the script down into SCENES.
     2. Extract "Core Data Assets" (Capsules) from the script into MYTHOS CONTAINERS.
-       - Look for specific Xyrona Prime entities (Venturans, Hydralis, Luminarites, Sylvanids).
-       - Identify "Prism-Steel", "Aether-Arc", "Chrono-Oaks" as artifacts/tech.
-       - Identify "Verticality Law", "Buoyancy Debt" as Cosmological Rules.
-    
+       - If Loom world context is provided above, align entity names with known characters, factions, and locations.
+       - Otherwise identify characters, factions, locations, artifacts, and rules from the text itself.
+
     Organize Capsules into these Mythos Types:
     - "Social Stratification" (Factions/Races)
     - "Spatial Topography" (Locations/Realms)
