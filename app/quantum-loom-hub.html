@@ -69,13 +69,20 @@ html,body{
 /* ── Top header bar ──────────────────────────────────── */
 #hub-header{
   height:52px;flex-shrink:0;
-  display:flex;align-items:center;gap:0;
+  display:grid;
+  grid-template-columns: auto 1fr auto;
+  align-items:center;
   background:var(--surface);border-bottom:1px solid var(--edge);
   position:relative;z-index:20;
 }
+/* Left cell */
+.hh-left{
+  display:flex;align-items:center;gap:0;height:100%;
+  border-right:1px solid var(--edge);
+}
 .hh-logo{
   display:flex;align-items:center;gap:8px;
-  padding:0 16px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+  padding:0 16px;height:100%;flex-shrink:0;
 }
 .hh-glyph{
   width:22px;height:22px;border:1.5px solid var(--venturan);
@@ -104,13 +111,10 @@ html,body{
   border-radius:3px;padding:2px 8px;outline:none;display:none;
 }
 
-.hh-spacer{flex:1}
-
-/* ── Header centered nav tabs ────────────────────────── */
+/* ── Header centered nav tabs — center grid cell ─────── */
 #hub-main-nav{
-  position:absolute;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:3px;
-  pointer-events:all;
+  display:flex;align-items:center;justify-content:center;gap:3px;
+  padding:0 8px;
 }
 .hn-tab{
   font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;
@@ -144,9 +148,13 @@ html,body{
 .sc.active-layer{border-color:var(--lc,var(--venturan));color:var(--lc,var(--venturan))}
 .sc.active-layer .sc-dot{opacity:1}
 
-/* Header actions */
+/* Header right cell */
+.hh-right{
+  display:flex;align-items:center;gap:0;height:100%;
+  border-left:1px solid var(--edge);
+}
 .hh-actions{
-  display:flex;gap:4px;padding:0 12px;border-left:1px solid var(--edge);height:100%;
+  display:flex;gap:4px;padding:0 12px;height:100%;
   align-items:center;
 }
 .hh-btn{
@@ -248,7 +256,7 @@ html,body{
 
 /* ── Atlas Footer Bar ────────────────────────────────── */
 #atlas-footer{
-  height:72px;flex-shrink:0;
+  height:76px;flex-shrink:0;
   display:flex;align-items:center;
   background:var(--surface);border-top:1px solid var(--edge);
   position:relative;z-index:15;
@@ -257,6 +265,7 @@ html,body{
 .af-label{
   padding:0 14px;flex-shrink:0;border-right:1px solid var(--edge);
   display:flex;flex-direction:column;justify-content:center;gap:3px;height:100%;
+  min-width:88px;
 }
 .af-title{
   font-family:var(--fm);font-size:.45rem;letter-spacing:.18em;text-transform:uppercase;
@@ -268,33 +277,50 @@ html,body{
 }
 .af-strip-wrap{
   flex:1;overflow-x:auto;overflow-y:hidden;
-  display:flex;align-items:center;padding:0 6px;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 8px;
   scrollbar-width:none;
 }
 .af-strip-wrap::-webkit-scrollbar{display:none}
 .af-strip{
-  display:flex;align-items:center;gap:3px;
-  padding:4px 2px;
+  display:flex;align-items:center;gap:5px;
+  padding:6px 4px;
 }
+/* ── Glyph tile buttons ──────────────────────────────── */
 .af-module-btn{
-  width:48px;height:52px;border-radius:5px;flex-shrink:0;
+  width:46px;height:54px;border-radius:8px;flex-shrink:0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;transition:all .15s;gap:3px;
-  border:1px solid transparent;background:transparent;
-  border-top:2px solid transparent;
+  cursor:pointer;transition:all .15s;gap:4px;
+  border:1px solid var(--edge);
+  background:var(--surface2);
   position:relative;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
 }
-.af-module-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge)}
-.af-module-btn.active{
+.af-module-btn:hover{
   background:rgba(255,255,255,.07);
-  border-color:var(--mc, var(--venturan));
-  border-top-color:var(--mc, var(--venturan));
+  border-color:var(--mc,var(--edge-hi));
+  box-shadow:0 0 8px rgba(255,255,255,.06),0 1px 4px rgba(0,0,0,.4);
+  transform:translateY(-1px);
 }
-.af-glyph{font-size:1.15rem;flex-shrink:0;color:var(--mc,rgba(255,255,255,.45));transition:color .12s}
-.af-module-btn.active .af-glyph{color:var(--mc,var(--venturan))}
+.af-module-btn.active{
+  background:rgba(0,0,0,.25);
+  border-color:var(--mc, var(--venturan));
+  box-shadow:0 0 10px rgba(var(--mc-rgb,30,140,255),.25),inset 0 0 6px rgba(var(--mc-rgb,30,140,255),.08);
+}
+.af-glyph{
+  font-size:1.3rem;flex-shrink:0;
+  color:var(--mc,rgba(255,255,255,.35));
+  transition:color .12s,text-shadow .12s;
+  line-height:1;
+}
+.af-module-btn:hover .af-glyph{color:var(--mc,rgba(255,255,255,.7));}
+.af-module-btn.active .af-glyph{
+  color:var(--mc,var(--venturan));
+  text-shadow:0 0 8px var(--mc,var(--venturan));
+}
 .af-abbr{
-  font-family:var(--fm);font-size:.28rem;letter-spacing:.06em;text-transform:uppercase;
-  color:rgba(255,255,255,.28);transition:color .12s;
+  font-family:var(--fm);font-size:.26rem;letter-spacing:.06em;text-transform:uppercase;
+  color:rgba(255,255,255,.22);transition:color .12s;
 }
 .af-module-btn.active .af-abbr{color:var(--mc,var(--venturan));opacity:.9}
 .af-expand-btn{
@@ -1043,15 +1069,18 @@ html,body{
 
   <!-- TOP HEADER -->
   <div id="hub-header">
-    <div class="hh-logo">
-      <div class="hh-glyph">⬡</div>
-      <div class="hh-name">Quantum Loom</div>
+    <!-- LEFT: logo + project name -->
+    <div class="hh-left">
+      <div class="hh-logo">
+        <div class="hh-glyph">⬡</div>
+        <div class="hh-name">Quantum Loom</div>
+      </div>
+      <div class="hh-sep"></div>
+      <span id="proj-name" onclick="openProjModal()" title="Click to rename project">Untitled Project</span>
+      <input id="proj-name-input" type="text" placeholder="Project name…" onblur="saveProjName()" onkeydown="if(event.key==='Enter')saveProjName()">
     </div>
-    <div class="hh-sep"></div>
-    <span id="proj-name" onclick="openProjModal()" title="Click to rename project">Untitled Project</span>
-    <input id="proj-name-input" type="text" placeholder="Project name…" onblur="saveProjName()" onkeydown="if(event.key==='Enter')saveProjName()">
 
-    <!-- CENTERED MAIN NAV TABS -->
+    <!-- CENTER: main nav tabs -->
     <div id="hub-main-nav">
       <div class="hn-tab active" id="hnt-workspace" onclick="switchLayer('workspace')" title="Character Workspace" data-tip="Node canvas — build signal flow graphs and connect modules" data-tip-title="WORKSPACE">
         <span class="hn-icon">◈</span>Workspace
@@ -1079,39 +1108,28 @@ html,body{
       </div>
     </div>
 
-    <div class="hh-spacer"></div>
-      <span id="theme-lbl" onclick="openThemeModal()" title="Change theme">🌌 Void-Tech</span>
-
-    <!-- Live storage status chips -->
-    <div id="status-bar">
-      <div class="sc" id="sc-capsules" style="--lc:var(--c-library)" title="Capsules in library">
-        <div class="sc-dot"></div>
-        <span id="sc-caps-n">0</span> capsules
+    <!-- RIGHT: actions -->
+    <div class="hh-right">
+      <div class="hh-actions">
+        <button class="hh-btn" onclick="openProjModal()" data-tip="Open project settings" data-tip-title="PROJECT">⊞ Project</button>
+        <button class="hh-btn" id="btn-import-genesis" onclick="document.getElementById('genesis-file-input').click()" title="Import .qgenesis container" data-tip="Import a .qgenesis world container file" data-tip-title="IMPORT">↑ Import</button>
+        <button class="hh-btn" id="btn-export-genesis" onclick="genesisExport()" title="Export .qgenesis container" data-tip="Export the current world state as a .qgenesis file" data-tip-title="EXPORT">↓ Export</button>
+        <button class="hh-btn" id="llm-btn" onclick="openLLMPanel()" title="AI Assistant" data-tip="Open AI assistant panel" data-tip-title="AI">🤖</button>
+        <button class="hh-btn" id="theme-btn" onclick="openThemeModal()" title="Change theme" data-tip="Open theme settings and colour palette" data-tip-title="THEME">🎨</button>
+        <button class="hh-btn" id="fb-btn" onclick="openFBModal()" data-tip="Cloud sync" data-tip-title="CLOUD">🔥</button>
+        <button class="hh-btn hot" onclick="saveProject()" data-tip="Save current project state" data-tip-title="SAVE">↓ Save</button>
       </div>
-      <div class="sc" id="sc-scenes" style="--lc:var(--c-scenes)" title="Scenes / Acts">
-        <div class="sc-dot"></div>
-        <span id="sc-scenes-n">0</span> scenes
-      </div>
-      <div class="sc" id="sc-tracks" style="--lc:var(--c-sequencer)" title="Sequencer tracks">
-        <div class="sc-dot"></div>
-        <span id="sc-tracks-n">0</span> tracks
-      </div>
-      <div class="sc" id="sc-compiled" style="--lc:var(--c-subgraph)" title="Compiled graphs">
-        <div class="sc-dot"></div>
-        <span id="sc-comp-n">0</span> compiled
-      </div>
-    </div>
-
-    <div class="hh-actions">
-      <button class="hh-btn" onclick="openProjModal()">⊞ Project</button>
-      <button class="hh-btn" id="btn-import-genesis" onclick="document.getElementById('genesis-file-input').click()" title="Import .qgenesis container" data-tip="Import a .qgenesis world container file" data-tip-title="IMPORT">↑ Import</button>
-      <button class="hh-btn" id="btn-export-genesis" onclick="genesisExport()" title="Export .qgenesis container" data-tip="Export the current world state as a .qgenesis file" data-tip-title="EXPORT">↓ Export</button>
-      <button class="hh-btn" id="llm-btn" onclick="openLLMPanel()" title="AI Assistant" data-tip="Open AI assistant panel" data-tip-title="AI">🤖</button>
-      <button class="hh-btn" id="theme-btn" onclick="openThemeModal()" title="Change theme" data-tip="Open theme settings and colour palette" data-tip-title="THEME">🎨</button>
-      <button class="hh-btn" id="fb-btn" onclick="openFBModal()">🔥 Cloud</button>
-      <button class="hh-btn hot" onclick="saveProject()">↓ Save</button>
     </div>
   </div>
+
+  <!-- Status chips — moved below header, hidden by default, used by JS -->
+  <div id="status-bar" style="display:none">
+    <div class="sc" id="sc-capsules" style="--lc:var(--c-library)"><div class="sc-dot"></div><span id="sc-caps-n">0</span></div>
+    <div class="sc" id="sc-scenes" style="--lc:var(--c-scenes)"><div class="sc-dot"></div><span id="sc-scenes-n">0</span></div>
+    <div class="sc" id="sc-tracks" style="--lc:var(--c-sequencer)"><div class="sc-dot"></div><span id="sc-tracks-n">0</span></div>
+    <div class="sc" id="sc-compiled" style="--lc:var(--c-subgraph)"><div class="sc-dot"></div><span id="sc-comp-n">0</span></div>
+  </div>
+  <span id="theme-lbl" style="display:none">Void-Tech</span>
 
   <!-- Hidden file input for Genesis Container import -->
   <input type="file" id="genesis-file-input" accept=".qgenesis,.json" style="display:none"
@@ -1446,16 +1464,6 @@ html,body{
       <iframe class="layer-frame" id="frame-behavior"
         src="quantum-atlas-behavior.html"
         onload="frameLoaded('behavior')"></iframe>
-
-      <!-- 16 · Network | Nexus -->
-      <div class="frame-loader" id="loader-network">
-        <div class="loader-glyph" style="color:var(--c-network)">⇋</div>
-        <div class="loader-lbl">Loading 16 · Network | Nexus</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:var(--c-network)"></div></div>
-      </div>
-      <iframe class="layer-frame" id="frame-network"
-        src="quantum-atlas-network.html"
-        onload="frameLoaded('network')"></iframe>
 
       <!-- Manual -->
       <div class="frame-loader" id="loader-manual">

@@ -1,16 +1,56 @@
 # quantum-loom
-A browser-based narrative DAW — remix stories like music.
+Procedural world simulation platform — build living, breathing worlds from terrain to narrative.
 
-Quantum Loom is a creative operating system for storytelling. Where traditional writing tools force you to work linearly — page one to page end — Quantum Loom treats narrative the way a producer treats music: characters are instruments, scenes are arrangement blocks, emotional arcs are automation lanes, and the whole story is a project you sequence, remix, and export in whatever format you need.
-Built across nine specialized layers, Loom gives writers, educators, and world-builders a single place to author characters with emotional vectors, design zones and locations, sequence narrative arcs across chapters, and wire everything together through a live signal graph. When you're ready, the Output Renderer compiles your work into professional formats — novel chapters, screenplay, song lyrics, game script, world bible, or session sheet — in one click.
-Designed as a standalone desktop app and a broadcast engine. Quantum Loom can run as a native Windows, Mac, or Linux application, or stream live narrative state — weather, character emotions, scene transitions, propagation arcs — to connected 3D environments, game engines, and autonomous agent simulations via a real-time event bus.
-Built by BioSpark Studios as part of the Quantum Ecosystem — a modular world-building platform where every creative tool speaks the same language.
-Features:
+Quantum Loom is a creative operating system for world-builders. It treats a world the way a producer treats music: terrain is the foundation track, societies are arrangement blocks, story arcs are automation lanes, and the whole simulation is a project you sequence, remix, and run in real time. The 16-module Quantum Atlas engine handles every layer of a synthetic world — from raw geology to multi-agent networks — all wired together through a live signal graph and saved in a portable Genesis Container.
 
-Nine-layer narrative workspace — characters, library, zones, scenes, rack, sequencer, node graph, signal bus, output
-Six output formats — Novel, Screenplay, Song, World Bible, Game Script, Session Sheet
-AI Draft mode — streams prose directly from Ollama, Claude, Gemini, OpenAI, or Azure
-Firebase cloud sync with real-time collaboration
-Eight visual themes
-Electron desktop app with native file dialogs
-Live broadcast to 3D environments via socket.io event schema
+Built by BioSpark Studios as part of the Quantum Ecosystem — a modular platform where every creative tool speaks the same language.
+
+## The Quantum Atlas — 16 Modules
+
+| # | Module | Crest | Department |
+|---|--------|-------|------------|
+| 01 | Terrain | Atlas | WorldConstruction |
+| 02 | Environment | Mythos | WorldConstruction |
+| 03 | Architect | Architect | WorldConstruction |
+| 04 | Lighting | Prism | WorldConstruction |
+| 05 | Modeling | Animus | EntitySystems |
+| 06 | Choreography | Loom | EntitySystems |
+| 07 | Behavior | Instinct | EntitySystems |
+| 08 | Society | Order | EntitySystems |
+| 09 | Sequencer | Chronicle | NarrativeSystems |
+| 10 | Story | Quill | NarrativeSystems |
+| 11 | Memory | Codex | NarrativeSystems |
+| 12 | Sound | Composer | NarrativeSystems |
+| 13 | Logic | Axiom | PipelineSystems |
+| 14 | Simulation | Continuum | PipelineSystems |
+| 15 | Forge | Forge | PipelineSystems |
+| 16 | Network | Nexus | PipelineSystems |
+
+## Features
+
+- **16-module Atlas pipeline** — WorldConstruction → EntitySystems → NarrativeSystems → PipelineSystems
+- **Genesis Container format** (`.qgenesis`) — portable world definition, analogous to an audio soundbank
+- **Project format** (`.qgcp`) — encrypted creative session with media assets, p5.js sketches, and lifecycle states
+- **16 wire types** — typed data channels (DAT, CTL, AUD, NAR, TMP, AGT, VIS, SPA, BHV, SOC, ENR, IDN, EVT, AST, MET, LGC)
+- **B-DNA** — deterministic entity identity hash (LCG-derived 16-char hex)
+- **Hex grid** — pointy-top axial coordinates, radius 14, 631 hexes
+- **Instrument Rack** — modular audio synthesis linked to the Sound module
+- **AI Draft mode** — streams prose from Ollama, Claude, Gemini, OpenAI, or Azure
+- **Firebase cloud sync** with real-time collaboration
+- **Electron desktop app** with native file dialogs
+- **In-app User Manual** — F1 to open, full 8-chapter reference with glossary
+
+## File Formats
+
+- `.qgenesis` — world definition container (all 16 Atlas module states, up to 4,096 capsules)
+- `.qgcp` — creative project file (encrypted manifest via argon2id + AES-256-GCM, media assets, p5.js sketches)
+
+## Getting Started
+
+```bash
+npm install
+npm start
+```
+
+Open Genesis import via the **↑ Import** button in the header, or drag a `.qgenesis` file onto the canvas.
+Press **F1** for the in-app User Manual.
