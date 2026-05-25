@@ -1,6 +1,13 @@
-claude/build-new-feature-eEUNS
+
+
+
+
 # quantum-loom
 Procedural world simulation platform — build living, breathing worlds from terrain to narrative.
+
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/loom-sequencer.jpg" />
+</div>
 
 Quantum Loom is a creative operating system for world-builders. It treats a world the way a producer treats music: terrain is the foundation track, societies are arrangement blocks, story arcs are automation lanes, and the whole simulation is a project you sequence, remix, and run in real time. The 16-module Quantum Atlas engine handles every layer of a synthetic world — from raw geology to multi-agent networks — all wired together through a live signal graph and saved in a portable Genesis Container.
 
@@ -57,7 +64,7 @@ Open Genesis import via the **↑ Import** button in the header, or drag a `.qge
 Press **F1** for the in-app User Manual.
 
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/loom-nodes.jpg" />
 </div>
 
 # Run and deploy your AI Studio app
