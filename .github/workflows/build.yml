@@ -1,0 +1,67 @@
+name: Build Quantum Loom
+
+# Triggers: runs when you push a version tag like v1.0.0
+# Also lets you trigger it manually from the GitHub website
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:   # manual trigger button on GitHub
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false  # <--- Change this from true to false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+            artifact: 'Quantum Loom Setup*.exe'
+          - os: macos-latest
+            platform: mac
+            artifact: '*.dmg'
+          - os: ubuntu-latest
+            platform: linux
+            artifact: '*.AppImage'
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      # 1. Check out your repo
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Build the installer for this platform
+      - name: Build
+        run: npm run build:${{ matrix.platform }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # needed by electron-builder
+
+      # 5. Upload the installer as a downloadable artifact
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ matrix.platform }}
+          path: dist/${{ matrix.artifact }}
+          retention-days: 30   # keeps files for 30 days
+
+      # 6. If this is a tag push, also attach to the GitHub Release
+      - name: Attach to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/${{ matrix.artifact }}
+          draft: true   # creates a draft release so you can review before publishing
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

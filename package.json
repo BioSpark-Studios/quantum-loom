@@ -1,32 +1,44 @@
 {
   "name": "quantum-loom",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A narrative DAW for story, music & world-building",
   "main": "main.js",
-  "author": "Phantori",
-  "license": "MIT",
+  "author": "Jeremy Dickinson <jerdickinson@gmail.com>",
+  "license": "BioSpark-Licensing",
+  "homepage": "https://biospark.studio/quantum-loom",
   "scripts": {
-    "start":       "electron .",
-    "dev":         "QL_DEV=1 electron .",
-    "build:win":   "electron-builder --win",
-    "build:mac":   "electron-builder --mac",
+    "start": "electron .",
+    "dev": "QL_DEV=1 electron .",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux",
-    "build:all":   "electron-builder --win --mac --linux"
+    "build:all": "electron-builder --win --mac --linux"
   },
   "build": {
-    "appId":       "com.phantori.quantumloom",
+    "appId": "com.phantori.quantumloom",
     "productName": "Quantum Loom",
-    "copyright":   "Copyright © 2026 Phantori",
-    "asar":        true,
+    "copyright": "Copyright \u00a9 2026 Phantori",
+    "asar": true,
     "files": [
       "main.js",
       "preload.js",
+      "splash-preload.js",
       "app/**/*",
       "assets/**/*"
     ],
-    "directories": { "output": "dist" },
+    "directories": {
+      "output": "dist"
+    },
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64", "arm64"] }],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
       "icon": "assets/icon.ico"
     },
     "nsis": {
@@ -37,21 +49,44 @@
       "shortcutName": "Quantum Loom"
     },
     "mac": {
-      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }],
-      "icon": "assets/icon.icns",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.png",
       "category": "public.app-category.education"
     },
     "dmg": {
       "title": "Quantum Loom",
-      "window": { "width": 540, "height": 380 },
+      "window": {
+        "width": 540,
+        "height": 380
+      },
       "contents": [
-        { "x": 140, "y": 190, "type": "file" },
-        { "x": 400, "y": 190, "type": "link", "path": "/Applications" }
+        {
+          "x": 140,
+          "y": 190,
+          "type": "file"
+        },
+        {
+          "x": 400,
+          "y": 190,
+          "type": "link",
+          "path": "/Applications"
+        }
       ]
     },
     "linux": {
-      "target": ["AppImage", "deb"],
-      "icon": "assets/icon.png",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "assets/icon-512.png",
       "category": "Education"
     }
   },

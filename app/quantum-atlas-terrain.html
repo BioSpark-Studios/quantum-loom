@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 01 · Terrain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #04050a;
+  --surface:  rgba(8,11,18,.98);
+  --surface2: rgba(12,16,24,.97);
+  --edge:     rgba(255,255,255,.055);
+  --edge-hi:  rgba(255,255,255,.12);
+  --venturan: #b1d0f0;
+  --amber:    #e8b84b;
+  --emerald:  #4dc8a0;
+  --solari:   #f98f3b;
+  --fusion:   #9b7fd4;
+  --blood:    #d45b5b;
+  --totem:    #7fd4c8;
+  --terrain:  #1e8cff;
+  --fm: 'Orbitron', monospace;
+  --fd: 'Space Grotesk', sans-serif;
+  --fc: 'JetBrains Mono', monospace;
+}
+
+html,body{
+  height:100%;overflow:hidden;
+  background:var(--bg);color:#fff;
+  font-family:var(--fd);font-size:14px;
+}
+
+/* ── Outer shell ── */
+#shell{
+  display:flex;flex-direction:column;height:100vh;overflow:hidden;
+}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;
+}
+
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--terrain);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--fm);font-size:.55rem;color:var(--terrain);
+  animation:breathe 4s ease-in-out infinite;flex-shrink:0;
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--terrain);white-space:nowrap;
+}
+
+.tb-title{
+  font-family:var(--fm);font-size:.42rem;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.5);
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;
+  display:flex;align-items:center;white-space:nowrap;flex-shrink:0;
+}
+
+/* Pillar tabs */
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:0 10px;height:100%;
+  display:flex;align-items:center;cursor:pointer;
+  color:rgba(255,255,255,.35);border-bottom:2px solid transparent;
+  transition:all .12s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03)}
+.tb-tab.active{color:var(--terrain);border-bottom-color:var(--terrain);}
+
+.tb-spacer{flex:1;}
+
+/* Seed input */
+.tb-seed-wrap{
+  display:flex;align-items:center;gap:6px;padding:0 10px;
+  border-left:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-seed-label{
+  font-family:var(--fc);font-size:.36rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.35);text-transform:uppercase;
+}
+.tb-seed-input{
+  font-family:var(--fc);font-size:.4rem;letter-spacing:.06em;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  border-radius:3px;color:#fff;padding:3px 8px;width:80px;
+  outline:none;transition:border-color .12s;
+}
+.tb-seed-input:focus{border-color:var(--terrain);background:rgba(30,140,255,.05);}
+
+/* Action buttons */
+.tb-actions{
+  display:flex;gap:4px;padding:0 10px;height:100%;align-items:center;
+  border-left:1px solid var(--edge);flex-shrink:0;
+}
+.tb-btn{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);
+  white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff}
+.tb-btn.hot{
+  border-color:rgba(30,140,255,.45);background:rgba(30,140,255,.08);color:var(--terrain);
+}
+.tb-btn.hot:hover{background:rgba(30,140,255,.16);box-shadow:0 0 12px rgba(30,140,255,.2);}
+
+/* ── BODY ── */
+#body{
+  flex:1;display:flex;overflow:hidden;
+}
+
+/* ── LEFT SIDEBAR ── */
+#left-sidebar{
+  width:240px;flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+
+.ls-header{
+  padding:8px 10px 6px;border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.ls-header-title{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--terrain);opacity:.8;
+}
+
+.ls-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+}
+.ls-scroll::-webkit-scrollbar{width:3px;}
+.ls-scroll::-webkit-scrollbar-track{background:transparent;}
+.ls-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+/* Pillar section */
+.pillar-section{border-bottom:1px solid var(--edge);}
+.pillar-header{
+  display:flex;align-items:center;gap:6px;padding:7px 10px;
+  cursor:pointer;transition:background .1s;user-select:none;
+  position:relative;
+}
+.pillar-header:hover{background:rgba(255,255,255,.025);}
+.pillar-num{
+  font-family:var(--fm);font-size:.38rem;color:var(--terrain);
+  letter-spacing:.06em;flex-shrink:0;opacity:.75;
+}
+.pillar-name{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(255,255,255,.6);flex:1;
+}
+.pillar-count{
+  font-family:var(--fc);font-size:.32rem;
+  color:rgba(255,255,255,.3);padding:1px 5px;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  border-radius:8px;flex-shrink:0;
+}
+.pillar-chevron{
+  font-size:.5rem;color:rgba(255,255,255,.25);
+  transition:transform .18s;flex-shrink:0;
+}
+.pillar-section.collapsed .pillar-chevron{transform:rotate(-90deg);}
+
+.pillar-modules{overflow:hidden;transition:max-height .22s ease;}
+.pillar-section.collapsed .pillar-modules{max-height:0!important;}
+
+/* Module row */
+.module-row{
+  display:flex;align-items:center;gap:6px;padding:5px 10px 5px 14px;
+  cursor:pointer;transition:background .1s;position:relative;
+}
+.module-row:hover{background:rgba(255,255,255,.03);}
+.module-row.active{background:rgba(30,140,255,.07);border-right:2px solid var(--terrain);}
+
+.type-badge{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.05em;
+  padding:1px 4px;border-radius:2px;flex-shrink:0;font-weight:400;
+  border:1px solid currentColor;opacity:.85;
+}
+.type-SPA{color:#1e8cff;}
+.type-CTL{color:#4dc8a0;}
+.type-DAT{color:#9b7fd4;}
+.type-ENR{color:#f98f3b;}
+.type-UIX{color:#e8b84b;}
+
+.module-acronym{
+  font-family:var(--fc);font-size:.36rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.7);flex-shrink:0;min-width:26px;
+}
+.module-name{
+  font-family:var(--fd);font-size:.36rem;font-weight:300;
+  color:rgba(255,255,255,.4);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.module-row.active .module-acronym{color:#fff;}
+.module-row.active .module-name{color:rgba(255,255,255,.7);}
+
+/* Sub-module detail panel */
+.ls-detail{
+  border-top:1px solid var(--edge);flex-shrink:0;
+  background:var(--surface2);
+}
+.ls-detail-header{
+  padding:6px 10px;display:flex;align-items:center;gap:6px;
+  border-bottom:1px solid var(--edge);
+}
+.ls-detail-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.15em;
+  text-transform:uppercase;color:rgba(255,255,255,.35);flex:1;
+}
+.ls-detail-module{
+  font-family:var(--fc);font-size:.32rem;color:var(--terrain);
+  letter-spacing:.06em;
+}
+.submods-list{
+  padding:4px 0;max-height:160px;overflow-y:auto;
+}
+.submods-list::-webkit-scrollbar{width:2px;}
+.submods-list::-webkit-scrollbar-thumb{background:var(--edge);}
+
+.submod-row{
+  display:flex;align-items:center;gap:5px;padding:3px 10px 3px 14px;
+}
+.submod-idx{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);
+  flex-shrink:0;min-width:16px;
+}
+.submod-name{
+  font-family:var(--fd);font-size:.32rem;color:rgba(255,255,255,.35);
+  font-weight:300;
+}
+
+/* ── CANVAS AREA ── */
+#canvas-wrap{
+  flex:1;overflow:hidden;position:relative;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+}
+#terrain-canvas{
+  display:block;cursor:crosshair;
+}
+.canvas-tooltip{
+  position:absolute;pointer-events:none;
+  background:var(--surface2);border:1px solid var(--edge-hi);
+  padding:5px 8px;border-radius:4px;font-family:var(--fc);font-size:.34rem;
+  color:rgba(255,255,255,.7);white-space:nowrap;z-index:10;
+  opacity:0;transition:opacity .1s;
+}
+.canvas-tooltip.visible{opacity:1;}
+
+/* Generation overlay */
+#gen-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;
+  background:rgba(4,5,10,.85);z-index:5;
+  pointer-events:none;opacity:0;transition:opacity .25s;
+}
+#gen-overlay.active{opacity:1;pointer-events:all;}
+.gen-title{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--terrain);
+}
+.gen-step{
+  font-family:var(--fc);font-size:.38rem;color:rgba(255,255,255,.5);
+  letter-spacing:.06em;min-height:16px;
+}
+.gen-bar-wrap{
+  width:260px;height:4px;background:rgba(255,255,255,.06);
+  border-radius:2px;overflow:hidden;
+}
+.gen-bar{
+  height:100%;background:var(--terrain);border-radius:2px;
+  width:0%;transition:width .15s ease;
+}
+.gen-pct{
+  font-family:var(--fc);font-size:.36rem;
+  color:rgba(255,255,255,.4);letter-spacing:.06em;
+}
+
+/* ── RIGHT INSPECTOR ── */
+#right-panel{
+  width:280px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.rp-header{
+  padding:8px 12px 6px;border-bottom:1px solid var(--edge);flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+}
+.rp-header-title{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.4);flex:1;
+}
+.rp-hex-id{
+  font-family:var(--fc);font-size:.36rem;color:var(--terrain);
+  letter-spacing:.06em;
+}
+.rp-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-track{background:transparent;}
+.rp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+/* Inspector sections */
+.insp-section{
+  border-bottom:1px solid var(--edge);padding:8px 12px;
+}
+.insp-section-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.28);
+  margin-bottom:6px;
+}
+.insp-row{
+  display:flex;align-items:center;gap:6px;margin-bottom:4px;
+}
+.insp-key{
+  font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.3);
+  letter-spacing:.04em;flex-shrink:0;min-width:90px;
+}
+.insp-val{
+  font-family:var(--fc);font-size:.34rem;color:rgba(255,255,255,.7);
+  letter-spacing:.03em;
+}
+.insp-val.accent{color:var(--terrain);}
+
+/* Bar visual */
+.insp-bar-wrap{
+  flex:1;height:4px;background:rgba(255,255,255,.06);
+  border-radius:2px;overflow:hidden;
+}
+.insp-bar{
+  height:100%;border-radius:2px;
+  transition:width .2s ease;
+}
+
+/* Biome badge */
+.biome-badge{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.05em;
+  padding:2px 6px;border-radius:3px;border:1px solid currentColor;
+  flex-shrink:0;
+}
+
+/* Resource row */
+.res-row{
+  display:flex;align-items:center;gap:5px;margin-bottom:3px;
+}
+.res-dot{
+  width:6px;height:6px;border-radius:50%;flex-shrink:0;
+}
+.res-name{
+  font-family:var(--fd);font-size:.34rem;color:rgba(255,255,255,.55);flex:1;
+}
+.res-rarity{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.25);
+}
+
+/* Overview (no hex selected) */
+.ov-section{padding:10px 12px;border-bottom:1px solid var(--edge);}
+.ov-stat{
+  display:flex;align-items:baseline;gap:6px;margin-bottom:8px;
+}
+.ov-num{
+  font-family:var(--fm);font-size:.7rem;color:var(--terrain);
+}
+.ov-label{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.3);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.ov-biome-bar{
+  margin-top:6px;
+}
+.ov-biome-row{
+  display:flex;align-items:center;gap:6px;margin-bottom:3px;
+}
+.ov-biome-label{
+  font-family:var(--fd);font-size:.32rem;color:rgba(255,255,255,.4);
+  min-width:110px;
+}
+.ov-biome-fill{
+  height:3px;border-radius:2px;
+}
+.ov-biome-pct{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.25);
+}
+
+/* ── STATUS BAR ── */
+#status-bar{
+  height:26px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface2);border-top:1px solid var(--edge);
+  padding:0;
+}
+.sb-dot{
+  width:6px;height:6px;border-radius:50%;margin:0 8px;flex-shrink:0;
+  animation:led-pulse 2s ease-in-out infinite;
+}
+.sb-dot.ready{background:var(--emerald);}
+.sb-dot.busy{background:var(--amber);animation-duration:0.5s;}
+.sb-dot.done{background:var(--terrain);}
+
+.sb-status{
+  font-family:var(--fc);font-size:.34rem;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(255,255,255,.55);
+  padding:0 10px;border-right:1px solid var(--edge);flex-shrink:0;
+}
+.sb-pipeline{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.25);
+  letter-spacing:.06em;padding:0 10px;border-right:1px solid var(--edge);
+  flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.sb-seed{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.25);
+  letter-spacing:.06em;padding:0 10px;flex-shrink:0;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes breathe{
+  0%,100%{box-shadow:0 0 4px rgba(30,140,255,.3);}
+  50%{box-shadow:0 0 12px rgba(30,140,255,.7),0 0 20px rgba(30,140,255,.3);}
+}
+@keyframes led-pulse{
+  0%,100%{opacity:.6;}
+  50%{opacity:1;}
+}
+@keyframes pipeline-step{
+  0%{opacity:0;transform:translateY(4px);}
+  15%{opacity:1;transform:translateY(0);}
+  85%{opacity:1;}
+  100%{opacity:.5;}
+}
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- TOP BAR -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">T</div>
+      <div class="tb-module-id">01 · TERRAIN</div>
+    </div>
+    <div class="tb-title">Quantum Atlas</div>
+    <div class="tb-tabs">
+      <div class="tb-tab active" data-pillar="0">I-COORD</div>
+      <div class="tb-tab" data-pillar="1">II-CARTO</div>
+      <div class="tb-tab" data-pillar="2">III-NAV</div>
+      <div class="tb-tab" data-pillar="3">IV-INTEL</div>
+    </div>
+    <div class="tb-spacer"></div>
+    <div class="tb-seed-wrap">
+      <span class="tb-seed-label">SEED</span>
+      <input class="tb-seed-input" id="seed-input" type="number" value="42" min="0" max="99999">
+    </div>
+    <div class="tb-actions">
+      <button class="tb-btn hot" id="btn-generate">GENERATE</button>
+      <button class="tb-btn" id="btn-export">EXPORT JSON</button>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div id="body">
+
+    <!-- LEFT SIDEBAR -->
+    <div id="left-sidebar">
+      <div class="ls-header">
+        <div class="ls-header-title">Component Matrix</div>
+      </div>
+      <div class="ls-scroll" id="ls-scroll">
+        <!-- Pillar I -->
+        <div class="pillar-section" id="pillar-0">
+          <div class="pillar-header" onclick="togglePillar(0)">
+            <span class="pillar-num">I</span>
+            <span class="pillar-name">Coordinate</span>
+            <span class="pillar-count">4</span>
+            <span class="pillar-chevron">▾</span>
+          </div>
+          <div class="pillar-modules" id="pillar-modules-0">
+            <div class="module-row active" data-mod="WOA" onclick="selectModule(this,'WOA')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">WOA</span>
+              <span class="module-name">World Origin Anchor</span>
+            </div>
+            <div class="module-row" data-mod="HGM" onclick="selectModule(this,'HGM')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">HGM</span>
+              <span class="module-name">Hex Grid Mapper</span>
+            </div>
+            <div class="module-row" data-mod="SDC" onclick="selectModule(this,'SDC')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">SDC</span>
+              <span class="module-name">Strata Depth Calculator</span>
+            </div>
+            <div class="module-row" data-mod="CTE" onclick="selectModule(this,'CTE')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">CTE</span>
+              <span class="module-name">Coordinate Transform Engine</span>
+            </div>
+          </div>
+        </div>
+        <!-- Pillar II -->
+        <div class="pillar-section" id="pillar-1">
+          <div class="pillar-header" onclick="togglePillar(1)">
+            <span class="pillar-num">II</span>
+            <span class="pillar-name">Cartographic</span>
+            <span class="pillar-count">4</span>
+            <span class="pillar-chevron">▾</span>
+          </div>
+          <div class="pillar-modules" id="pillar-modules-1">
+            <div class="module-row" data-mod="HMG" onclick="selectModule(this,'HMG')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">HMG</span>
+              <span class="module-name">Heightmap Generator</span>
+            </div>
+            <div class="module-row" data-mod="WST" onclick="selectModule(this,'WST')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">WST</span>
+              <span class="module-name">Watershed Tracer</span>
+            </div>
+            <div class="module-row" data-mod="BBP" onclick="selectModule(this,'BBP')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">BBP</span>
+              <span class="module-name">Biome Boundary Painter</span>
+            </div>
+            <div class="module-row" data-mod="GFS" onclick="selectModule(this,'GFS')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">GFS</span>
+              <span class="module-name">Geological Fault Seeder</span>
+            </div>
+          </div>
+        </div>
+        <!-- Pillar III -->
+        <div class="pillar-section" id="pillar-2">
+          <div class="pillar-header" onclick="togglePillar(2)">
+            <span class="pillar-num">III</span>
+            <span class="pillar-name">Navigation</span>
+            <span class="pillar-count">4</span>
+            <span class="pillar-chevron">▾</span>
+          </div>
+          <div class="pillar-modules" id="pillar-modules-2">
+            <div class="module-row" data-mod="PFS" onclick="selectModule(this,'PFS')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">PFS</span>
+              <span class="module-name">Pathfinding Solver</span>
+            </div>
+            <div class="module-row" data-mod="ZTG" onclick="selectModule(this,'ZTG')">
+              <span class="type-badge type-CTL">CTL</span>
+              <span class="module-acronym">ZTG</span>
+              <span class="module-name">Zone Transition Gate</span>
+            </div>
+            <div class="module-row" data-mod="TCC" onclick="selectModule(this,'TCC')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">TCC</span>
+              <span class="module-name">Travel Cost Calculator</span>
+            </div>
+            <div class="module-row" data-mod="ERP" onclick="selectModule(this,'ERP')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">ERP</span>
+              <span class="module-name">Encounter Radius Probe</span>
+            </div>
+          </div>
+        </div>
+        <!-- Pillar IV -->
+        <div class="pillar-section" id="pillar-3">
+          <div class="pillar-header" onclick="togglePillar(3)">
+            <span class="pillar-num">IV</span>
+            <span class="pillar-name">Intelligence</span>
+            <span class="pillar-count">4</span>
+            <span class="pillar-chevron">▾</span>
+          </div>
+          <div class="pillar-modules" id="pillar-modules-3">
+            <div class="module-row" data-mod="RGO" onclick="selectModule(this,'RGO')">
+              <span class="type-badge type-DAT">DAT</span>
+              <span class="module-acronym">RGO</span>
+              <span class="module-name">Region Oracle</span>
+            </div>
+            <div class="module-row" data-mod="THE" onclick="selectModule(this,'THE')">
+              <span class="type-badge type-ENR">ENR</span>
+              <span class="module-acronym">THE</span>
+              <span class="module-name">Terrain Hazard Evaluator</span>
+            </div>
+            <div class="module-row" data-mod="RNS" onclick="selectModule(this,'RNS')">
+              <span class="type-badge type-DAT">DAT</span>
+              <span class="module-acronym">RNS</span>
+              <span class="module-name">Resource Node Scanner</span>
+            </div>
+            <div class="module-row" data-mod="GMC" onclick="selectModule(this,'GMC')">
+              <span class="type-badge type-DAT">DAT</span>
+              <span class="module-acronym">GMC</span>
+              <span class="module-name">Geographic Memory Cache</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-module detail panel -->
+      <div class="ls-detail">
+        <div class="ls-detail-header">
+          <span class="ls-detail-title">Sub-Module Detail</span>
+          <span class="ls-detail-module" id="detail-module-id">WOA</span>
+        </div>
+        <div class="submods-list" id="submods-list"></div>
+      </div>
+    </div>
+
+    <!-- CANVAS AREA -->
+    <div id="canvas-wrap">
+      <canvas id="terrain-canvas"></canvas>
+      <div class="canvas-tooltip" id="canvas-tooltip"></div>
+      <div id="gen-overlay">
+        <div class="gen-title">Generating Terrain</div>
+        <div class="gen-step" id="gen-step-text">Initializing pipeline…</div>
+        <div class="gen-bar-wrap">
+          <div class="gen-bar" id="gen-bar"></div>
+        </div>
+        <div class="gen-pct" id="gen-pct-text">0%</div>
+      </div>
+    </div>
+
+    <!-- RIGHT INSPECTOR -->
+    <div id="right-panel">
+      <div class="rp-header">
+        <span class="rp-header-title">Inspector</span>
+        <span class="rp-hex-id" id="rp-hex-id">—</span>
+      </div>
+      <div class="rp-scroll" id="rp-scroll">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+  </div><!-- /body -->
+
+  <!-- STATUS BAR -->
+  <div id="status-bar">
+    <div class="sb-dot ready" id="sb-dot"></div>
+    <div class="sb-status" id="sb-status">SYSTEM READY</div>
+    <div class="sb-pipeline" id="sb-pipeline">Awaiting generation trigger</div>
+    <div class="sb-seed" id="sb-seed">SEED: 42</div>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+'use strict';
+
+// ============================================================
+// UTILITY — RNG, NOISE
+// ============================================================
+
+function makeRng(seed) {
+  let s = seed | 0;
+  return function() {
+    s = (s ^ (s << 13)) | 0;
+    s = (s ^ (s >> 17)) | 0;
+    s = (s ^ (s << 5)) | 0;
+    return ((s >>> 0) / 4294967296);
+  };
+}
+
+function mix(a, b, t) { return a + (b - a) * t; }
+
+function hash21(x, y) {
+  let n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453123;
+  return n - Math.floor(n);
+}
+
+function valueNoise(x, y) {
+  const ix = Math.floor(x), iy = Math.floor(y);
+  const fx = x - ix, fy = y - iy;
+  const ux = fx * fx * (3 - 2 * fx);
+  const uy = fy * fy * (3 - 2 * fy);
+  return mix(
+    mix(hash21(ix, iy), hash21(ix + 1, iy), ux),
+    mix(hash21(ix, iy + 1), hash21(ix + 1, iy + 1), ux),
+    uy
+  );
+}
+
+function fbm(x, y, seed, octaves = 6) {
+  let v = 0, a = 0.5, f = 1;
+  for (let i = 0; i < octaves; i++) {
+    v += a * valueNoise(x * f + seed * 17.3 + i * 91.7, y * f + seed * 5.1 + i * 43.2);
+    a *= 0.5;
+    f *= 2.1;
+  }
+  return v; // ~0 to ~1
+}
+
+// ============================================================
+// HEX MATH
+// ============================================================
+
+const HEX_DIRS = [[1,0],[1,-1],[0,-1],[-1,0],[-1,1],[0,1]];
+const HEX_RADIUS = 14; // grid radius → 631 hexes
+const HEX_SIZE = 13;   // px
+
+function axialToPixel(q, r, size) {
+  const x = size * Math.sqrt(3) * (q + r / 2);
+  const y = size * (3 / 2) * r;
+  return { x, y };
+}
+
+function pixelToAxial(px, py, size) {
+  const q = (px * Math.sqrt(3) / 3 - py / 3) / size;
+  const r = (py * 2 / 3) / size;
+  return hexRound(q, r);
+}
+
+function hexRound(q, r) {
+  const s = -q - r;
+  let rq = Math.round(q), rr = Math.round(r), rs = Math.round(s);
+  const dq = Math.abs(rq - q), dr = Math.abs(rr - r), ds = Math.abs(rs - s);
+  if (dq > dr && dq > ds) rq = -rr - rs;
+  else if (dr > ds) rr = -rq - rs;
+  return { q: rq, r: rr };
+}
+
+function hexKey(q, r) { return `${q},${r}`; }
+
+function hexCorners(cx, cy, size) {
+  const pts = [];
+  for (let i = 0; i < 6; i++) {
+    const angle = Math.PI / 180 * (60 * i - 30);
+    pts.push({ x: cx + size * Math.cos(angle), y: cy + size * Math.sin(angle) });
+  }
+  return pts;
+}
+
+// ============================================================
+// BIOME COLORS
+// ============================================================
+
+const BIOME_COLORS = {
+  'Frozen Ocean':    '#0a1f35',
+  'Tropical Ocean':  '#0d2d4d',
+  'Temperate Ocean': '#152b42',
+  'Deep Water':      '#1a3a55',
+  'Shallows / Shore':'#1a5276',
+  'Sandy Beach':     '#c8a96e',
+  'Icy Coast':       '#8ab4c8',
+  'Mudflats':        '#6b5a44',
+  'Mangrove Swamp':  '#1e4d30',
+  'Tundra':          '#5a7070',
+  'Taiga Steppe':    '#3a5a3a',
+  'Arid Desert':     '#c4904a',
+  'Savanna':         '#8aaa40',
+  'Lush Grassland':  '#3a9a3a',
+  'Temperate Plains':'#5a8a40',
+  'Plains':          '#6a9a50',
+  'Hills':           '#607040',
+  'Mountain Peak':   '#888888',
+};
+
+function biomeFillColor(biome, faultLine) {
+  let hex = BIOME_COLORS[biome] || '#3a5a3a';
+  if (faultLine) {
+    // darken slightly
+    hex = darkenHex(hex, 0.2);
+  }
+  return hex;
+}
+
+function darkenHex(hex, amount) {
+  let r = parseInt(hex.slice(1, 3), 16);
+  let g = parseInt(hex.slice(3, 5), 16);
+  let b = parseInt(hex.slice(5, 7), 16);
+  r = Math.max(0, Math.round(r * (1 - amount)));
+  g = Math.max(0, Math.round(g * (1 - amount)));
+  b = Math.max(0, Math.round(b * (1 - amount)));
+  return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+}
+
+// ============================================================
+// BIOME CLASSIFICATION
+// ============================================================
+
+function classifyBiome(elevation, temperature, moisture, macroTerrain) {
+  if (macroTerrain === 'Deep Water') {
+    if (temperature < 0) return 'Frozen Ocean';
+    if (temperature > 20) return 'Tropical Ocean';
+    return 'Temperate Ocean';
+  }
+  if (macroTerrain === 'Shallows / Shore') {
+    if (temperature < 5) return 'Icy Coast';
+    if (moisture > 4 && temperature > 15) return 'Mangrove Swamp';
+    if (moisture > 2) return 'Mudflats';
+    return 'Sandy Beach';
+  }
+  if (macroTerrain === 'Plains') {
+    if (temperature < 0) return 'Tundra';
+    if (temperature < 10) return 'Taiga Steppe';
+    if (temperature > 22 && moisture < 2) return 'Arid Desert';
+    if (temperature > 18 && moisture < 3) return 'Savanna';
+    if (moisture > 4) return 'Lush Grassland';
+    return 'Temperate Plains';
+  }
+  if (macroTerrain === 'Hills') return 'Hills';
+  if (macroTerrain === 'Mountain Peak') return 'Mountain Peak';
+  return 'Plains';
+}
+
+// ============================================================
+// RESOURCE NODES
+// ============================================================
+
+const RESOURCE_COLORS = {
+  'Mineral': '#9b7fd4',
+  'Flora':   '#4dc8a0',
+  'Fauna':   '#e8b84b',
+  'Material':'#f98f3b',
+};
+
+function placeResourceNodes(hex, rng) {
+  const nodes = [];
+  const { base_elevation, macro_terrain, fault_line } = hex.topology;
+  const { biome_type, flora_density } = hex.ecology;
+  const { river_volume } = hex.hydrology;
+
+  if (base_elevation > 40 && rng() > 0.5)
+    nodes.push({ type: 'Mineral', name: 'Iron Vein', rarity: rng() > 0.85 ? 'Rare' : 'Common' });
+  if (biome_type === 'Mangrove Swamp' && rng() > 0.4)
+    nodes.push({ type: 'Flora', name: 'Blood-root Algae', rarity: rng() > 0.8 ? 'Uncommon' : 'Common' });
+  if (biome_type === 'Savanna' && flora_density > 0.3)
+    nodes.push({ type: 'Flora', name: 'Dry Sun-grass', rarity: 'Common' });
+  if (river_volume > 15 && rng() > 0.3)
+    nodes.push({ type: 'Fauna', name: 'River Crab', rarity: 'Common' });
+  if (river_volume > 10)
+    nodes.push({ type: 'Material', name: 'Riverbed Clay', rarity: 'Common' });
+  if (biome_type === 'Sandy Beach' && rng() > 0.6)
+    nodes.push({ type: 'Mineral', name: 'Silica Sand', rarity: 'Common' });
+  if (base_elevation > 100 && rng() > 0.7)
+    nodes.push({ type: 'Mineral', name: 'Silver Vein', rarity: 'Uncommon' });
+  if (fault_line && rng() > 0.6)
+    nodes.push({ type: 'Mineral', name: 'Volcanic Stone', rarity: 'Uncommon' });
+
+  return nodes;
+}
+
+// ============================================================
+// REGION ORACLE
+// ============================================================
+
+const PREFIXES = ['Aethel','Tor','Val','Gloom','Sun','Salt','Iron','Myra','Vor','Crest'];
+const SUFFIXES = {
+  water: 'basin', swamp: 'marsh', shore: 'strand',
+  mountain: 'peak', plains: 'run', desert: 'waste',
+  hills: 'reach', default: 'gard'
+};
+const FACTIONS = [
+  'The Crown Imperial',
+  'Wildland Nomads',
+  'The Merchant Consortium',
+  'Unclaimed',
+  'The Void Collective'
+];
+const FACTION_COLORS = {
+  'The Crown Imperial':       '#e8b84b',
+  'Wildland Nomads':          '#4dc8a0',
+  'The Merchant Consortium':  '#f98f3b',
+  'Unclaimed':                'rgba(255,255,255,.3)',
+  'The Void Collective':      '#9b7fd4',
+};
+
+function getBiomeSuffixKey(biome) {
+  if (biome.includes('Ocean') || biome.includes('Water') || biome.includes('Shore')) return 'water';
+  if (biome.includes('Swamp') || biome.includes('Marsh')) return 'swamp';
+  if (biome.includes('Beach') || biome.includes('Coast') || biome.includes('Mudflat')) return 'shore';
+  if (biome.includes('Mountain') || biome.includes('Peak')) return 'mountain';
+  if (biome.includes('Desert') || biome.includes('Waste')) return 'desert';
+  if (biome.includes('Hills')) return 'hills';
+  if (biome.includes('Plains') || biome.includes('Grassland') || biome.includes('Tundra') || biome.includes('Savanna') || biome.includes('Taiga')) return 'plains';
+  return 'default';
+}
+
+function buildRegions(hexes, seed) {
+  const rng = makeRng(seed + 5000);
+  const NUM_REGIONS = 8;
+  const seeds = [];
+  for (let i = 0; i < NUM_REGIONS; i++) {
+    seeds.push({
+      x: (rng() - 0.5) * 2 * HEX_RADIUS,
+      y: (rng() - 0.5) * 2 * HEX_RADIUS,
+      id: i,
+      faction: FACTIONS[Math.floor(rng() * FACTIONS.length)],
+      prefix: PREFIXES[Math.floor(rng() * PREFIXES.length)],
+    });
+  }
+
+  // assign hexes to nearest seed
+  for (const h of hexes) {
+    let best = 0, bestDist = Infinity;
+    for (const s of seeds) {
+      const d = (h.q - s.x) ** 2 + (h.r - s.y) ** 2;
+      if (d < bestDist) { bestDist = d; best = s.id; }
+    }
+    h.political.region_id = best;
+    const s = seeds[best];
+    const suffixKey = getBiomeSuffixKey(h.ecology.biome_type);
+    const suffix = SUFFIXES[suffixKey] || SUFFIXES.default;
+    h.political.region_name = s.prefix + '-' + suffix;
+    h.political.controlling_faction = s.faction;
+  }
+}
+
+// ============================================================
+// FAULT LINE SEEDER
+// ============================================================
+
+function seedFaultLines(hexes, count, seed) {
+  const faults = [];
+  const rng = makeRng(seed + 100);
+  for (let i = 0; i < count; i++) {
+    const angle = rng() * Math.PI;
+    const cx = (rng() - 0.5) * 400;
+    const cy = (rng() - 0.5) * 400;
+    faults.push({ nx: Math.cos(angle), ny: Math.sin(angle), cx, cy });
+  }
+  for (const h of hexes) {
+    const dist = faults.reduce((minD, f) => {
+      const d = Math.abs(f.nx * (h.world.x - f.cx) + f.ny * (h.world.y - f.cy));
+      return Math.min(minD, d);
+    }, Infinity);
+    h.topology.fault_distance = dist;
+    h.topology.fault_line = dist < 25;
+    if (h.topology.fault_line) h.topology.base_elevation += 15;
+  }
+}
+
+// ============================================================
+// PIPELINE
+// ============================================================
+
+let hexes = [];
+let hexMap = {};
+let currentSeed = 42;
+let selectedHex = null;
+let generating = false;
+
+// Camera state
+let camera = { x: 0, y: 0, zoom: 1 };
+
+const SUB_MODULES_BY_MODULE = {
+  WOA: ['Origin frame bootstrap','Axis orientation lock','World-unit calibration','Datum plane setter','Polar reference hook','Epoch offset register','Gravity vector binder','Scale factor cache','Frame-of-ref validator','Anchor persist store','Drift correction pulse','Realign trigger bus','Spatial hash builder','Anchor sync relay','Origin snapshot dump','Restore from snapshot'],
+  HGM: ['Axial coord generator','Radius sweep engine','Cell ID hasher','Neighbor graph builder','Ring iterator','Hex-to-pixel mapper','Pixel-to-hex resolver','Hex distance calc','Hex line tracer','Hex area selector','Rotation transform','Reflection transform','Hex sort utility','Centroid calculator','Grid serializer','Grid deserializer'],
+  SDC: ['Strata layer model','Depth-to-pressure table','Thermal gradient probe','Lithic boundary finder','Compression ratio calc','Uplift velocity model','Erosion rate estimator','Layer thickness map','Cross-section exporter','Fault depth resolver','Strata color mapper','Age dating estimator','Overburden pressure','Fluid column modeler','Strata hash table','Depth cache flush'],
+  CTE: ['Axial-to-world xform','World-to-screen xform','Screen-to-world xform','Cube coord converter','Offset coord converter','Doubled coord conv.','Camera project matrix','Zoom transform chain','Pan offset applier','Viewport clip test','Transform pipeline bus','Coord diff calculator','Batch transform queue','Inverse xform solver','Precision loss guard','Xform profile logger'],
+  HMG: ['FBM noise sampler','Octave compositor','Seed offset injector','Elevation normalizer','Height clamp filter','Plateau smoother','Valley carver','Ridge extruder','Noise cache layer','Gradient estimator','Contour line tracer','Elevation colormap','Export heightmap PNG','Diff-map generator','Mask compositor','LOD downsampler'],
+  WST: ['Sort-by-elevation pass','Flow direction resolver','Accumulation counter','River threshold gate','Delta mouth finder','Lake basin filler','Stream order calc','Bifurcation handler','Tributary merger','Estuary detector','Coastal discharge','Flow rate modeler','Sediment load est.','Evaporation model','Runoff surface est.','Watershed export'],
+  BBP: ['Temperature lapse calc','Moisture diffusion','Biome rule engine','Boundary smoothing','Enclave resolver','Patch size limiter','Transition blend zone','Color palette binder','Biome legend gen','Override layer','Biome audit pass','Rare biome seeder','Climate zone mapper','Biome change tracker','Export biome mask','Biome diff reporter'],
+  GFS: ['Fault arc generator','Distance field calc','Uplift applicator','Fold band modeler','Rift valley carver','Shear stress map','Seismic zone tagger','Fault age assigner','Offset accumulator','Fault intersection','Strike-slip calc','Thrust sheet model','Normal fault model','Reverse fault model','Fault export mesh','Fault viz renderer'],
+  PFS: ['A-star solver','Dijkstra solver','Cost map builder','Heuristic selector','Path cache store','Multi-agent path','Hierarchical path','Jump-point search','Path smooth filter','Obstacle avoidance','Dynamic replan','Path viz renderer','Cost debug overlay','Benchmark runner','Path export GPX','Waypoint editor'],
+  ZTG: ['Zone boundary store','Transition trigger','Entry/exit validator','Teleport resolver','Portal linker','One-way gate flag','Faction gate filter','Time-lock gate','Zone load trigger','Async zone swap','Transition FX hook','Gate health check','Failsafe fallback','Gate audit log','Multi-zone overlap','Gate serializer'],
+  TCC: ['Base cost table','Terrain modifier','Elevation penalty','Road discount','Water crossing cost','Status effect mult.','Weather modifier','Party size factor','Load weight factor','Time-of-day factor','Mount modifier','Skill check hook','Cost cache flush','Total cost export','Cost viz overlay','Stamina depletion'],
+  ERP: ['Radius definition','Cone arc variant','LOS ray caster','Obstacle filter','Faction filter','Distance falloff','Encounter roll hook','Density modifier','Spawn weight table','Probe viz renderer','Hit-list builder','Radius debug ring','Multi-probe batch','Async probe queue','Result cache','Probe export JSON'],
+  RGO: ['Voronoi seed gen','Nearest-point assign','Region name builder','Capital hex picker','Region border trace','Adjacency graph','Disputed zone marker','Region area calc','Population model','Region color map','Border smooth pass','Region export mesh','Enclave detector','Region merge op','Region split op','Region audit log'],
+  THE: ['Hazard rule table','Damage per step calc','Lava zone detector','Avalanche risk map','Flood risk map','Poison swamp flag','Extreme temp flag','Radiation zone tag','Hazard decay model','Safe path advisor','Hazard viz overlay','Hazard log writer','Threshold calibrator','Warning broadcast','Hazard diff tracker','Export hazard JSON'],
+  RNS: ['Node placement rules','Biome filter pass','Elevation filter','Rarity roll engine','Node type registry','Node name resolver','Cluster detector','Depletion tracker','Respawn timer','Node viz renderer','Scan radius probe','Node export JSON','Abundance map','Conflict resolver','Node merge op','Scan audit log'],
+  GMC: ['Hex snapshot store','LRU eviction policy','Cache warm pass','Dirty flag tracker','Write-back batcher','Read-ahead prefetch','Cache size monitor','Serializer (binary)','Deserializer','Checksum validator','Cache diff reporter','Expiry scheduler','Cache export ZIP','Restore from ZIP','Corruption recover','Cache stats panel'],
+};
+
+const ALL_STEPS = [
+  { pct: 5,  name: 'WOA · World Origin Anchor' },
+  { pct: 15, name: 'HGM · Hex Grid Mapper' },
+  { pct: 30, name: 'HMG · Heightmap Generator' },
+  { pct: 42, name: 'GFS · Geological Fault Seeder' },
+  { pct: 55, name: 'WST · Watershed Tracer' },
+  { pct: 70, name: 'BBP · Biome Boundary Painter' },
+  { pct: 82, name: 'RNS · Resource Node Scanner' },
+  { pct: 92, name: 'RGO · Region Oracle' },
+  { pct: 100,name: 'GMC · Geographic Memory Cache' },
+];
+
+function setStatus(state, text, pipeline) {
+  const dot = document.getElementById('sb-dot');
+  const st = document.getElementById('sb-status');
+  const pl = document.getElementById('sb-pipeline');
+  dot.className = 'sb-dot ' + state;
+  st.textContent = text;
+  if (pipeline !== undefined) pl.textContent = pipeline;
+}
+
+function setGenProgress(pct, stepName) {
+  document.getElementById('gen-bar').style.width = pct + '%';
+  document.getElementById('gen-pct-text').textContent = Math.round(pct) + '%';
+  document.getElementById('gen-step-text').textContent = stepName;
+  setStatus('busy', 'GENERATING…', stepName);
+}
+
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function runPipeline(seed) {
+  if (generating) return;
+  generating = true;
+  selectedHex = null;
+
+  const overlay = document.getElementById('gen-overlay');
+  overlay.classList.add('active');
+  document.getElementById('sb-seed').textContent = 'SEED: ' + seed;
+
+  // ── STEP 1: WOA — World Origin Anchor
+  setGenProgress(ALL_STEPS[0].pct, ALL_STEPS[0].name);
+  await sleep(40);
+
+  // ── STEP 2: HGM — Generate hex grid
+  setGenProgress(ALL_STEPS[1].pct, ALL_STEPS[1].name);
+  await sleep(30);
+
+  hexes = [];
+  hexMap = {};
+  for (let q = -HEX_RADIUS; q <= HEX_RADIUS; q++) {
+    const r1 = Math.max(-HEX_RADIUS, -q - HEX_RADIUS);
+    const r2 = Math.min(HEX_RADIUS, -q + HEX_RADIUS);
+    for (let r = r1; r <= r2; r++) {
+      const s = -q - r;
+      const world = axialToPixel(q, r, 1);
+      const h = {
+        q, r, s,
+        id: hexKey(q, r),
+        world: { x: world.x, y: world.y, z: 0 },
+        topology: {
+          base_elevation: 0,
+          macro_terrain: '',
+          nav_flags: 0,
+          fault_line: false,
+          fault_distance: 9999,
+        },
+        hydrology: {
+          river_volume: 0,
+          moisture_level: 0,
+          flow_direction: null,
+        },
+        ecology: {
+          temperature: 0,
+          biome_type: '',
+          flora_density: 0,
+        },
+        resources: [],
+        political: {
+          region_id: -1,
+          region_name: '',
+          controlling_faction: 'Unclaimed',
+        },
+      };
+      hexes.push(h);
+      hexMap[h.id] = h;
+    }
+  }
+  await sleep(30);
+
+  // ── STEP 3: HMG — Heightmap
+  setGenProgress(ALL_STEPS[2].pct, ALL_STEPS[2].name);
+  await sleep(30);
+
+  const SCALE = 0.008;
+  for (const h of hexes) {
+    const nx = h.world.x * SCALE;
+    const ny = h.world.y * SCALE;
+    const raw = fbm(nx, ny, seed);
+    // map 0..1 → -80..250
+    h.topology.base_elevation = raw * 330 - 80;
+    const e = h.topology.base_elevation;
+    if (e < 0) h.topology.macro_terrain = 'Deep Water';
+    else if (e < 15) h.topology.macro_terrain = 'Shallows / Shore';
+    else if (e < 80) h.topology.macro_terrain = 'Plains';
+    else if (e < 160) h.topology.macro_terrain = 'Hills';
+    else h.topology.macro_terrain = 'Mountain Peak';
+  }
+  await sleep(30);
+
+  // ── STEP 4: GFS — Fault Lines
+  setGenProgress(ALL_STEPS[3].pct, ALL_STEPS[3].name);
+  await sleep(30);
+  const faultCount = 3 + Math.floor(makeRng(seed + 77)() * 3);
+  seedFaultLines(hexes, faultCount, seed);
+  await sleep(30);
+
+  // ── STEP 5: WST — Watershed
+  setGenProgress(ALL_STEPS[4].pct, ALL_STEPS[4].name);
+  await sleep(30);
+
+  // Sort high → low elevation
+  const sorted = [...hexes].sort((a, b) => b.topology.base_elevation - a.topology.base_elevation);
+  // flow to lowest neighbor, accumulate river_volume
+  for (const h of sorted) {
+    let bestNeighbor = null, bestElev = h.topology.base_elevation;
+    for (const [dq, dr] of HEX_DIRS) {
+      const nb = hexMap[hexKey(h.q + dq, h.r + dr)];
+      if (nb && nb.topology.base_elevation < bestElev) {
+        bestElev = nb.topology.base_elevation;
+        bestNeighbor = nb;
+      }
+    }
+    if (bestNeighbor) {
+      bestNeighbor.hydrology.river_volume += h.hydrology.river_volume + 1;
+      h.hydrology.flow_direction = hexKey(bestNeighbor.q, bestNeighbor.r);
+    }
+  }
+  // moisture from water proximity
+  for (const h of hexes) {
+    let moist = 0;
+    for (const [dq, dr] of HEX_DIRS) {
+      const nb = hexMap[hexKey(h.q + dq, h.r + dr)];
+      if (nb && (nb.topology.macro_terrain === 'Deep Water' || nb.topology.macro_terrain === 'Shallows / Shore')) moist++;
+    }
+    moist += Math.min(5, h.hydrology.river_volume / 8);
+    h.hydrology.moisture_level = moist;
+  }
+  await sleep(30);
+
+  // ── STEP 6: BBP — Biome Painting
+  setGenProgress(ALL_STEPS[5].pct, ALL_STEPS[5].name);
+  await sleep(30);
+
+  for (const h of hexes) {
+    // temperature: equator at r=0, poles at edges; lapse rate for elevation
+    const latFactor = Math.abs(h.r) / HEX_RADIUS; // 0=equator, 1=pole
+    const tempBase = 28 - latFactor * 42; // -14 to 28
+    const lapseRate = 0.065; // °C per meter
+    h.ecology.temperature = tempBase - lapseRate * Math.max(0, h.topology.base_elevation);
+    // flora density from moisture + temp
+    h.ecology.flora_density = Math.max(0, Math.min(1, (h.hydrology.moisture_level / 6) * (h.ecology.temperature / 30)));
+    h.ecology.biome_type = classifyBiome(
+      h.topology.base_elevation,
+      h.ecology.temperature,
+      h.hydrology.moisture_level,
+      h.topology.macro_terrain
+    );
+    // nav flags
+    let flags = 0;
+    if (h.topology.macro_terrain === 'Deep Water') flags |= 1;
+    if (h.topology.macro_terrain === 'Mountain Peak') flags |= 2;
+    if (h.topology.fault_line) flags |= 4;
+    if (h.hydrology.river_volume > 10) flags |= 8;
+    h.topology.nav_flags = flags;
+  }
+  await sleep(30);
+
+  // ── STEP 7: RNS — Resource Nodes
+  setGenProgress(ALL_STEPS[6].pct, ALL_STEPS[6].name);
+  await sleep(30);
+
+  const resRng = makeRng(seed + 333);
+  for (const h of hexes) {
+    h.resources = placeResourceNodes(h, resRng);
+  }
+  await sleep(30);
+
+  // ── STEP 8: RGO — Region Oracle
+  setGenProgress(ALL_STEPS[7].pct, ALL_STEPS[7].name);
+  await sleep(30);
+  buildRegions(hexes, seed);
+  await sleep(30);
+
+  // ── STEP 9: GMC — Cache
+  setGenProgress(ALL_STEPS[8].pct, ALL_STEPS[8].name);
+  await sleep(40);
+
+  // Done
+  overlay.classList.remove('active');
+  generating = false;
+
+  const riverCount = hexes.filter(h => h.hydrology.river_volume > 10).length;
+  const resCount = hexes.reduce((s, h) => s + h.resources.length, 0);
+
+  setStatus('done', 'COMPLETE', `631 hexes · ${riverCount} river nodes · ${resCount} resource nodes`);
+
+  // Persist snapshot for downstream modules (e.g. 02 · Environment)
+  try {
+    const snapshot = { system:'Quantum Atlas', module:'01 · Terrain', generated: new Date().toISOString(), seed: currentSeed, hex_count: hexes.length, hexes };
+    localStorage.setItem('qa-terrain-snapshot', JSON.stringify(snapshot));
+    window.parent.postMessage({type:'hub:storage:write',key:'qa-terrain-snapshot',value:JSON.stringify(snapshot)},'*');
+  } catch(e) { console.warn('Could not persist terrain snapshot:', e); }
+
+  renderCanvas();
+  updateInspector(null);
+}
+
+// ============================================================
+// CANVAS RENDERING
+// ============================================================
+
+const canvas = document.getElementById('terrain-canvas');
+const ctx = canvas.getContext('2d');
+
+let isPanning = false;
+let panStart = { x: 0, y: 0 };
+let camStart = { x: 0, y: 0 };
+
+function resizeCanvas() {
+  const wrap = document.getElementById('canvas-wrap');
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  renderCanvas();
+}
+
+function worldToScreen(wx, wy) {
+  return {
+    x: canvas.width / 2 + (wx + camera.x) * camera.zoom,
+    y: canvas.height / 2 + (wy + camera.y) * camera.zoom,
+  };
+}
+
+function screenToWorld(sx, sy) {
+  return {
+    x: (sx - canvas.width / 2) / camera.zoom - camera.x,
+    y: (sy - canvas.height / 2) / camera.zoom - camera.y,
+  };
+}
+
+function renderCanvas() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#04050a';
+  ctx.fillRect(0, 0, W, H);
+
+  if (hexes.length === 0) {
+    ctx.fillStyle = 'rgba(255,255,255,.1)';
+    ctx.font = '12px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('Press GENERATE to render terrain', W / 2, H / 2);
+    return;
+  }
+
+  const size = HEX_SIZE * camera.zoom;
+
+  for (const h of hexes) {
+    const pix = axialToPixel(h.q, h.r, HEX_SIZE);
+    const sc = worldToScreen(pix.x, pix.y);
+    const cx = sc.x, cy = sc.y;
+
+    // Frustum cull
+    if (cx < -size * 2 || cx > W + size * 2 || cy < -size * 2 || cy > H + size * 2) continue;
+
+    const corners = hexCorners(cx, cy, size);
+
+    // Base fill
+    ctx.beginPath();
+    ctx.moveTo(corners[0].x, corners[0].y);
+    for (let i = 1; i < 6; i++) ctx.lineTo(corners[i].x, corners[i].y);
+    ctx.closePath();
+
+    const fillColor = biomeFillColor(h.ecology.biome_type || 'Plains', h.topology.fault_line);
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+
+    // River overlay
+    if (h.hydrology.river_volume > 10) {
+      ctx.fillStyle = 'rgba(30,140,255,0.38)';
+      ctx.fill();
+    }
+
+    // Stroke
+    const isSelected = selectedHex && selectedHex.id === h.id;
+    if (isSelected) {
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2 / camera.zoom;
+    } else if (h.topology.fault_line) {
+      ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+      ctx.lineWidth = 1 / camera.zoom;
+    } else {
+      ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+      ctx.lineWidth = 0.5 / camera.zoom;
+    }
+    ctx.stroke();
+
+    // Resource dot
+    if (h.resources.length > 0) {
+      const firstType = h.resources[0].type;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 2 * camera.zoom, 0, Math.PI * 2);
+      ctx.fillStyle = RESOURCE_COLORS[firstType] || '#fff';
+      ctx.fill();
+    }
+  }
+}
+
+// ============================================================
+// HIT TEST
+// ============================================================
+
+function hitTestHex(sx, sy) {
+  const w = screenToWorld(sx, sy);
+  const ax = axialToPixel(0, 0, 1); // origin check
+  const pxPerUnit = HEX_SIZE * camera.zoom;
+  const wx = w.x / HEX_SIZE;
+  const wy = w.y / HEX_SIZE;
+  const { q, r } = pixelToAxial(wx, wy, 1);
+  const key = hexKey(q, r);
+  return hexMap[key] || null;
+}
+
+// Canvas events
+canvas.addEventListener('mousedown', e => {
+  if (e.button === 0) {
+    isPanning = true;
+    panStart = { x: e.clientX, y: e.clientY };
+    camStart = { x: camera.x, y: camera.y };
+    canvas.style.cursor = 'grabbing';
+  }
+});
+
+canvas.addEventListener('mousemove', e => {
+  if (isPanning) {
+    const dx = (e.clientX - panStart.x) / camera.zoom;
+    const dy = (e.clientY - panStart.y) / camera.zoom;
+    camera.x = camStart.x + dx;
+    camera.y = camStart.y + dy;
+    renderCanvas();
+    return;
+  }
+  // Tooltip
+  const rect = canvas.getBoundingClientRect();
+  const sx = e.clientX - rect.left;
+  const sy = e.clientY - rect.top;
+  const h = hitTestHex(sx, sy);
+  const tooltip = document.getElementById('canvas-tooltip');
+  if (h) {
+    tooltip.textContent = `${h.id} · ${h.ecology.biome_type}`;
+    tooltip.style.left = (sx + 12) + 'px';
+    tooltip.style.top = (sy - 8) + 'px';
+    tooltip.classList.add('visible');
+  } else {
+    tooltip.classList.remove('visible');
+  }
+});
+
+canvas.addEventListener('mouseup', e => {
+  if (isPanning) {
+    const dist = Math.hypot(e.clientX - panStart.x, e.clientY - panStart.y);
+    isPanning = false;
+    canvas.style.cursor = 'crosshair';
+    if (dist < 4) {
+      // Click: select hex
+      const rect = canvas.getBoundingClientRect();
+      const sx = e.clientX - rect.left;
+      const sy = e.clientY - rect.top;
+      const h = hitTestHex(sx, sy);
+      if (h) {
+        selectedHex = h;
+        updateInspector(h);
+        renderCanvas();
+      }
+    }
+  }
+});
+
+canvas.addEventListener('mouseleave', () => {
+  isPanning = false;
+  canvas.style.cursor = 'crosshair';
+  document.getElementById('canvas-tooltip').classList.remove('visible');
+});
+
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const sx = e.clientX - rect.left;
+  const sy = e.clientY - rect.top;
+  const wBefore = screenToWorld(sx, sy);
+  const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+  camera.zoom = Math.max(0.3, Math.min(6, camera.zoom * factor));
+  const wAfter = screenToWorld(sx, sy);
+  camera.x += wAfter.x - wBefore.x;
+  camera.y += wAfter.y - wBefore.y;
+  renderCanvas();
+}, { passive: false });
+
+window.addEventListener('resize', resizeCanvas);
+
+// ============================================================
+// INSPECTOR
+// ============================================================
+
+function barHtml(val, max, color, extraClass) {
+  const pct = Math.max(0, Math.min(100, (val / max) * 100));
+  return `<div class="insp-bar-wrap"><div class="insp-bar" style="width:${pct}%;background:${color};"></div></div>`;
+}
+
+function tempBarHtml(temp) {
+  // -20 to 35 range, blue → red
+  const pct = Math.max(0, Math.min(100, ((temp + 20) / 55) * 100));
+  const r = Math.round(pct * 2.55);
+  const b = Math.round((100 - pct) * 2.55);
+  const color = `rgb(${r},80,${b})`;
+  return `<div class="insp-bar-wrap"><div class="insp-bar" style="width:${pct}%;background:${color};"></div></div>`;
+}
+
+function updateInspector(hex) {
+  const rpHexId = document.getElementById('rp-hex-id');
+  const rpScroll = document.getElementById('rp-scroll');
+
+  if (!hex) {
+    rpHexId.textContent = '—';
+    // Overview stats
+    if (hexes.length === 0) {
+      rpScroll.innerHTML = `<div class="ov-section"><div class="ov-stat"><span class="ov-num">—</span><span class="ov-label">No data generated</span></div></div>`;
+      return;
+    }
+    const biomeCounts = {};
+    for (const h of hexes) {
+      biomeCounts[h.ecology.biome_type] = (biomeCounts[h.ecology.biome_type] || 0) + 1;
+    }
+    const sortedBiomes = Object.entries(biomeCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    const riverCount = hexes.filter(h => h.hydrology.river_volume > 10).length;
+    const resCount = hexes.reduce((s, h) => s + h.resources.length, 0);
+
+    let biomeRows = sortedBiomes.map(([name, count]) => {
+      const pct = (count / hexes.length * 100).toFixed(1);
+      const color = BIOME_COLORS[name] || '#3a5a3a';
+      const barW = Math.round(count / hexes.length * 120);
+      return `<div class="ov-biome-row">
+        <span class="ov-biome-label">${name}</span>
+        <div class="ov-biome-fill" style="width:${barW}px;background:${color};height:3px;border-radius:2px;"></div>
+        <span class="ov-biome-pct">${pct}%</span>
+      </div>`;
+    }).join('');
+
+    rpScroll.innerHTML = `
+      <div class="ov-section">
+        <div class="ov-stat"><span class="ov-num">${hexes.length}</span><span class="ov-label">Total Hexes</span></div>
+        <div class="ov-stat"><span class="ov-num">${riverCount}</span><span class="ov-label">River Nodes</span></div>
+        <div class="ov-stat"><span class="ov-num">${resCount}</span><span class="ov-label">Resource Nodes</span></div>
+      </div>
+      <div class="ov-section">
+        <div class="insp-section-title">Biome Distribution</div>
+        <div class="ov-biome-bar">${biomeRows}</div>
+      </div>
+    `;
+    return;
+  }
+
+  rpHexId.textContent = hex.id;
+  const e = hex.topology;
+  const hyd = hex.hydrology;
+  const eco = hex.ecology;
+  const pol = hex.political;
+
+  // Travel cost
+  let travelCost = 1;
+  if (e.macro_terrain === 'Hills') travelCost = 2;
+  if (e.macro_terrain === 'Mountain Peak') travelCost = 4;
+  if (e.macro_terrain === 'Deep Water') travelCost = 99;
+  if (e.fault_line) travelCost += 1;
+  if (hyd.river_volume > 10) travelCost += 1;
+
+  const navFlagStr = [
+    (e.nav_flags & 1) ? 'IMPASSABLE' : '',
+    (e.nav_flags & 2) ? 'HIGH_ALT' : '',
+    (e.nav_flags & 4) ? 'FAULT_ZONE' : '',
+    (e.nav_flags & 8) ? 'RIVER_CROSS' : '',
+  ].filter(Boolean).join(' | ') || '—';
+
+  const biomeColor = BIOME_COLORS[eco.biome_type] || '#3a5a3a';
+  const factionColor = FACTION_COLORS[pol.controlling_faction] || 'rgba(255,255,255,.4)';
+
+  const resRows = hex.resources.length === 0
+    ? `<div style="font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);">No resources</div>`
+    : hex.resources.map(r => `
+        <div class="res-row">
+          <div class="res-dot" style="background:${RESOURCE_COLORS[r.type] || '#fff'};"></div>
+          <span class="res-name">${r.name}</span>
+          <span class="res-rarity">${r.rarity}</span>
+        </div>`).join('');
+
+  rpScroll.innerHTML = `
+    <div class="insp-section">
+      <div class="insp-section-title">Hex Identity</div>
+      <div class="insp-row"><span class="insp-key">Axial (q, r, s)</span><span class="insp-val accent">${hex.q}, ${hex.r}, ${hex.s}</span></div>
+      <div class="insp-row"><span class="insp-key">World X</span><span class="insp-val">${hex.world.x.toFixed(2)}</span></div>
+      <div class="insp-row"><span class="insp-key">World Y</span><span class="insp-val">${hex.world.y.toFixed(2)}</span></div>
+      <div class="insp-row"><span class="insp-key">World Z</span><span class="insp-val">0.00</span></div>
+    </div>
+    <div class="insp-section">
+      <div class="insp-section-title">Topology</div>
+      <div class="insp-row">
+        <span class="insp-key">Elevation</span>
+        <span class="insp-val">${e.base_elevation.toFixed(1)}m</span>
+        ${barHtml(e.base_elevation + 80, 330, '#1e8cff', '')}
+      </div>
+      <div class="insp-row"><span class="insp-key">Macro Terrain</span><span class="insp-val">${e.macro_terrain}</span></div>
+      <div class="insp-row"><span class="insp-key">Nav Flags</span><span class="insp-val" style="font-size:.28rem;">${navFlagStr}</span></div>
+      <div class="insp-row"><span class="insp-key">Fault Line</span><span class="insp-val" style="color:${e.fault_line?'#f98f3b':'rgba(255,255,255,.3)'}">${e.fault_line ? 'YES' : 'no'}</span></div>
+    </div>
+    <div class="insp-section">
+      <div class="insp-section-title">Hydrology</div>
+      <div class="insp-row">
+        <span class="insp-key">River Volume</span>
+        <span class="insp-val">${hyd.river_volume.toFixed(0)}</span>
+        ${barHtml(hyd.river_volume, 60, '#1e8cff', '')}
+      </div>
+      <div class="insp-row">
+        <span class="insp-key">Moisture</span>
+        <span class="insp-val">${hyd.moisture_level.toFixed(1)}</span>
+        ${barHtml(hyd.moisture_level, 8, '#4dc8a0', '')}
+      </div>
+      <div class="insp-row"><span class="insp-key">Flow Dir</span><span class="insp-val">${hyd.flow_direction || '—'}</span></div>
+    </div>
+    <div class="insp-section">
+      <div class="insp-section-title">Ecology</div>
+      <div class="insp-row">
+        <span class="insp-key">Temperature</span>
+        <span class="insp-val">${eco.temperature.toFixed(1)}°C</span>
+        ${tempBarHtml(eco.temperature)}
+      </div>
+      <div class="insp-row">
+        <span class="insp-key">Biome</span>
+        <span class="biome-badge" style="color:${biomeColor};border-color:${biomeColor};">${eco.biome_type}</span>
+      </div>
+      <div class="insp-row">
+        <span class="insp-key">Flora Density</span>
+        <span class="insp-val">${eco.flora_density.toFixed(2)}</span>
+        ${barHtml(eco.flora_density, 1, '#4dc8a0', '')}
+      </div>
+    </div>
+    <div class="insp-section">
+      <div class="insp-section-title">Resources</div>
+      ${resRows}
+    </div>
+    <div class="insp-section">
+      <div class="insp-section-title">Political</div>
+      <div class="insp-row"><span class="insp-key">Region ID</span><span class="insp-val accent">${pol.region_id}</span></div>
+      <div class="insp-row"><span class="insp-key">Region Name</span><span class="insp-val">${pol.region_name}</span></div>
+      <div class="insp-row"><span class="insp-key">Faction</span><span class="insp-val" style="color:${factionColor};">${pol.controlling_faction}</span></div>
+    </div>
+    <div class="insp-section">
+      <div class="insp-section-title">Travel Cost</div>
+      <div class="insp-row">
+        <span class="insp-key">Stamina Cost</span>
+        <span class="insp-val accent" style="font-size:.5rem;">${travelCost === 99 ? '∞' : travelCost}</span>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// SUB-MODULE DETAIL PANEL
+// ============================================================
+
+function updateSubmodDetail(modId) {
+  document.getElementById('detail-module-id').textContent = modId;
+  const list = document.getElementById('submods-list');
+  const subs = SUB_MODULES_BY_MODULE[modId] || [];
+  list.innerHTML = subs.map((name, i) => `
+    <div class="submod-row">
+      <span class="submod-idx">${String(i + 1).padStart(2, '0')}</span>
+      <span class="submod-name">${name}</span>
+    </div>
+  `).join('');
+}
+
+function selectModule(el, modId) {
+  document.querySelectorAll('.module-row').forEach(r => r.classList.remove('active'));
+  el.classList.add('active');
+  updateSubmodDetail(modId);
+}
+
+function togglePillar(idx) {
+  const sec = document.getElementById(`pillar-${idx}`);
+  sec.classList.toggle('collapsed');
+  // Update max-height
+  const mods = document.getElementById(`pillar-modules-${idx}`);
+  if (sec.classList.contains('collapsed')) {
+    mods.style.maxHeight = '0px';
+  } else {
+    mods.style.maxHeight = mods.scrollHeight + 'px';
+  }
+}
+
+// Initialize pillar heights
+function initPillarHeights() {
+  for (let i = 0; i < 4; i++) {
+    const mods = document.getElementById(`pillar-modules-${i}`);
+    mods.style.maxHeight = mods.scrollHeight + 'px';
+  }
+}
+
+// Pillar tabs
+document.querySelectorAll('.tb-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const pi = parseInt(tab.dataset.pillar);
+    // Expand target pillar, collapse others
+    for (let i = 0; i < 4; i++) {
+      const sec = document.getElementById(`pillar-${i}`);
+      const mods = document.getElementById(`pillar-modules-${i}`);
+      if (i === pi) {
+        sec.classList.remove('collapsed');
+        mods.style.maxHeight = mods.scrollHeight + 'px';
+        // Scroll to it
+        setTimeout(() => {
+          sec.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }, 50);
+      }
+    }
+  });
+});
+
+// ============================================================
+// GENERATE BUTTON
+// ============================================================
+
+document.getElementById('btn-generate').addEventListener('click', () => {
+  const seedVal = parseInt(document.getElementById('seed-input').value) || 42;
+  currentSeed = seedVal;
+  runPipeline(seedVal);
+});
+
+// ============================================================
+// EXPORT
+// ============================================================
+
+document.getElementById('btn-export').addEventListener('click', () => {
+  if (hexes.length === 0) {
+    alert('Generate terrain first.');
+    return;
+  }
+  const data = JSON.stringify({
+    system: 'Quantum Atlas',
+    module: '01 · Terrain',
+    generated: new Date().toISOString(),
+    seed: currentSeed,
+    hex_count: hexes.length,
+    hexes,
+  }, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `atlas-terrain-${currentSeed}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+});
+
+// ============================================================
+// INIT
+// ============================================================
+
+window.addEventListener('DOMContentLoaded', () => {
+  resizeCanvas();
+  initPillarHeights();
+  updateSubmodDetail('WOA');
+  updateInspector(null);
+  setStatus('ready', 'SYSTEM READY', 'Awaiting generation trigger');
+  renderCanvas();
+});
+
+// ── Theme sync (receives ql:theme from hub) ─────────────────────────────────
+(function() {
+  const MAP = {
+    'c-bg':      '--bg',
+    'c-surf':    '--surface',
+    'c-surf2':   '--surface2',
+    'c-edge':    '--edge',
+    'c-edge-hi': '--edge-hi',
+    'c-accent1': '--venturan',
+    'c-accent2': '--amber',
+    'c-accent3': '--emerald',
+    'c-accent4': '--fusion',
+    'c-danger':  '--blood',
+    'c-warm':    '--solari',
+    'c-text':    '--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Terrain`;
+  }
+  if (d.type === 'hub:layer:activate') renderCanvas();
+});
+</script>
+</body>
+</html>

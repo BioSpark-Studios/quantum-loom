@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 03 · Architect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #04050a;
+  --surface:  rgba(8,11,18,.98);
+  --surface2: rgba(12,16,24,.97);
+  --edge:     rgba(255,255,255,.055);
+  --edge-hi:  rgba(255,255,255,.12);
+  --venturan: #b1d0f0;
+  --amber:    #e8b84b;
+  --emerald:  #4dc8a0;
+  --solari:   #f98f3b;
+  --fusion:   #9b7fd4;
+  --blood:    #d45b5b;
+  --totem:    #7fd4c8;
+  --terrain:  #1e8cff;
+  --environ:  #4ecdc4;
+  --architect:#64b4ff;
+  --fm: 'Orbitron', monospace;
+  --fd: 'Space Grotesk', sans-serif;
+  --fc: 'JetBrains Mono', monospace;
+}
+
+html,body{
+  height:100%;overflow:hidden;
+  background:var(--bg);color:#fff;
+  font-family:var(--fd);font-size:14px;
+}
+
+#shell{
+  display:flex;flex-direction:column;height:100vh;overflow:hidden;
+}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;
+  overflow:hidden;
+}
+
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--architect);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--fm);font-size:.7rem;color:var(--architect);
+  animation:breathe-arch 4s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes breathe-arch{
+  0%,100%{box-shadow:0 0 4px rgba(255,209,102,.15);opacity:.85;}
+  50%{box-shadow:0 0 14px rgba(255,209,102,.45);opacity:1;}
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--architect);white-space:nowrap;
+}
+
+.tb-tabs{
+  display:flex;align-items:center;height:100%;gap:0;padding:0 4px;
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+.tb-tab{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.10em;
+  text-transform:uppercase;padding:0 8px;height:100%;
+  display:flex;align-items:center;cursor:pointer;
+  color:rgba(255,255,255,.35);border-bottom:2px solid transparent;
+  transition:all .12s;white-space:nowrap;
+}
+.tb-tab:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.03)}
+.tb-tab.active{color:var(--architect);border-bottom-color:var(--architect);}
+
+.tb-spacer{flex:1;}
+
+/* Terrain link chip */
+.tb-terrain-chip{
+  display:flex;align-items:center;gap:5px;
+  padding:0 10px;border-left:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-terrain-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tb-terrain-label{
+  font-family:var(--fc);font-size:.30rem;letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+/* Settle count */
+.tb-count-wrap{
+  display:flex;align-items:center;gap:6px;padding:0 10px;
+  border-left:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-count-label{
+  font-family:var(--fc);font-size:.30rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.35);text-transform:uppercase;white-space:nowrap;
+}
+.tb-count-input{
+  font-family:var(--fc);font-size:.4rem;letter-spacing:.06em;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  border-radius:3px;color:#fff;padding:3px 6px;width:44px;
+  outline:none;transition:border-color .12s;text-align:center;
+}
+.tb-count-input:focus{border-color:var(--architect);background:rgba(255,209,102,.05);}
+
+/* Action buttons */
+.tb-actions{
+  display:flex;gap:4px;padding:0 8px;height:100%;align-items:center;
+  border-left:1px solid var(--edge);flex-shrink:0;
+}
+.tb-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 8px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);
+  white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff}
+.tb-btn.hot{
+  border-color:rgba(255,209,102,.45);background:rgba(255,209,102,.08);color:var(--architect);
+}
+.tb-btn.hot:hover{background:rgba(255,209,102,.16);box-shadow:0 0 12px rgba(255,209,102,.2);}
+
+/* ── BODY ── */
+#body{
+  flex:1;display:flex;overflow:hidden;
+}
+
+/* ── LEFT SIDEBAR ── */
+#left-sidebar{
+  width:240px;flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+
+.ls-header{
+  padding:8px 10px 6px;border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.ls-header-title{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--architect);opacity:.8;
+}
+
+.ls-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;
+}
+.ls-scroll::-webkit-scrollbar{width:3px;}
+.ls-scroll::-webkit-scrollbar-track{background:transparent;}
+.ls-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+/* Pillar sections */
+.pillar-section{border-bottom:1px solid var(--edge);}
+.pillar-header{
+  display:flex;align-items:center;gap:6px;padding:7px 10px;
+  cursor:pointer;transition:background .1s;user-select:none;
+}
+.pillar-header:hover{background:rgba(255,255,255,.025);}
+.pillar-num{
+  font-family:var(--fm);font-size:.38rem;color:var(--architect);
+  letter-spacing:.06em;flex-shrink:0;opacity:.75;
+}
+.pillar-name{
+  font-family:var(--fm);font-size:.34rem;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(255,255,255,.6);flex:1;
+}
+.pillar-count{
+  font-family:var(--fc);font-size:.32rem;
+  color:rgba(255,255,255,.3);padding:1px 5px;
+  background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  border-radius:8px;flex-shrink:0;
+}
+.pillar-chevron{
+  font-size:.5rem;color:rgba(255,255,255,.25);
+  transition:transform .18s;flex-shrink:0;
+}
+.pillar-section.collapsed .pillar-chevron{transform:rotate(-90deg);}
+.pillar-modules{overflow:hidden;transition:max-height .22s ease;}
+.pillar-section.collapsed .pillar-modules{max-height:0!important;}
+
+/* Module row */
+.module-row{
+  display:flex;align-items:center;gap:6px;padding:5px 10px 5px 14px;
+  cursor:pointer;transition:background .1s;position:relative;
+}
+.module-row:hover{background:rgba(255,255,255,.03);}
+.module-row.active{background:rgba(255,209,102,.07);border-right:2px solid var(--architect);}
+
+.type-badge{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.05em;
+  padding:1px 4px;border-radius:2px;flex-shrink:0;font-weight:400;
+  border:1px solid currentColor;opacity:.85;
+}
+.type-SPA{color:#1e8cff;}
+.type-CTL{color:#4dc8a0;}
+.type-DAT{color:#9b7fd4;}
+.type-UIX{color:#e8b84b;}
+
+.module-acronym{
+  font-family:var(--fc);font-size:.34rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.7);flex-shrink:0;min-width:28px;
+}
+.module-name{
+  font-family:var(--fd);font-size:.34rem;font-weight:300;
+  color:rgba(255,255,255,.4);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.module-row.active .module-acronym{color:#fff;}
+.module-row.active .module-name{color:rgba(255,255,255,.7);}
+
+/* Settlement roster */
+.roster-panel{
+  border-top:1px solid var(--edge);flex-shrink:0;
+  background:var(--surface2);display:flex;flex-direction:column;
+  max-height:220px;min-height:80px;
+}
+.roster-header{
+  padding:6px 10px;display:flex;align-items:center;gap:6px;
+  border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.roster-title{
+  font-family:var(--fm);font-size:.30rem;letter-spacing:.15em;
+  text-transform:uppercase;color:rgba(255,255,255,.35);flex:1;
+}
+.roster-count{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);
+}
+.roster-list{
+  flex:1;overflow-y:auto;padding:3px 0;
+}
+.roster-list::-webkit-scrollbar{width:2px;}
+.roster-list::-webkit-scrollbar-thumb{background:var(--edge);}
+.roster-row{
+  display:flex;align-items:center;gap:7px;padding:4px 10px 4px 10px;
+  cursor:pointer;transition:background .1s;border-left:2px solid transparent;
+}
+.roster-row:hover{background:rgba(255,255,255,.03);}
+.roster-row.selected{background:rgba(255,209,102,.07);border-left-color:var(--architect);}
+.roster-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.roster-name{
+  font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.6);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.roster-pop{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);white-space:nowrap;
+}
+.roster-wealth{
+  font-family:var(--fc);font-size:.28rem;color:var(--architect);opacity:.7;white-space:nowrap;
+}
+
+/* ── CANVAS AREA ── */
+#canvas-wrap{
+  flex:1;overflow:hidden;position:relative;background:var(--bg);
+}
+#arch-canvas{
+  display:block;cursor:grab;position:absolute;top:0;left:0;
+}
+#arch-canvas.panning{cursor:grabbing;}
+
+/* No-terrain notice (shown inside canvas via draw) */
+
+/* Generation overlay */
+#gen-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;
+  background:rgba(4,5,10,.88);z-index:30;
+  pointer-events:none;opacity:0;transition:opacity .25s;
+}
+#gen-overlay.active{opacity:1;pointer-events:all;}
+.gen-title{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--architect);
+}
+.gen-step{
+  font-family:var(--fc);font-size:.36rem;color:rgba(255,255,255,.5);
+  letter-spacing:.06em;min-height:16px;
+}
+.gen-bar-wrap{
+  width:260px;height:3px;background:rgba(255,255,255,.06);
+  border-radius:2px;overflow:hidden;
+}
+.gen-bar{
+  height:100%;background:var(--architect);border-radius:2px;
+  transition:width .18s ease;width:0%;
+}
+.gen-sub{
+  font-family:var(--fc);font-size:.30rem;
+  color:rgba(255,255,255,.25);letter-spacing:.05em;
+}
+
+/* Zoom panel overlay (bottom-right of canvas) */
+#zoom-panel{
+  position:absolute;bottom:14px;right:14px;
+  width:320px;height:240px;
+  background:rgba(8,11,18,.9);
+  border:1px solid rgba(255,209,102,.2);
+  border-radius:6px;
+  backdrop-filter:blur(10px);
+  z-index:20;
+  overflow:hidden;
+  display:none;
+  flex-direction:column;
+}
+#zoom-panel.visible{display:flex;}
+#zoom-panel-header{
+  padding:5px 9px;display:flex;align-items:center;gap:6px;
+  border-bottom:1px solid rgba(255,209,102,.12);flex-shrink:0;
+}
+#zoom-panel-title{
+  font-family:var(--fm);font-size:.28rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--architect);flex:1;opacity:.8;
+}
+#zoom-panel-close{
+  font-family:var(--fc);font-size:.5rem;color:rgba(255,255,255,.3);
+  cursor:pointer;padding:0 3px;line-height:1;
+}
+#zoom-panel-close:hover{color:rgba(255,255,255,.7);}
+#zoom-canvas{display:block;width:100%;flex:1;}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:280px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.rp-header{
+  padding:8px 12px 6px;border-bottom:1px solid var(--edge);flex-shrink:0;
+}
+.rp-header-title{
+  font-family:var(--fm);font-size:.30rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--architect);opacity:.8;
+}
+.rp-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;padding:0;
+}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-track{background:transparent;}
+.rp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+/* Inspector sections */
+.insp-section{
+  border-bottom:1px solid var(--edge);padding:8px 12px;
+}
+.insp-section-title{
+  font-family:var(--fm);font-size:.28rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--architect);opacity:.6;
+  margin-bottom:7px;
+}
+.insp-row{
+  display:flex;align-items:baseline;gap:4px;margin-bottom:4px;
+}
+.insp-label{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);
+  letter-spacing:.05em;flex-shrink:0;min-width:90px;
+}
+.insp-val{
+  font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.75);
+  letter-spacing:.04em;flex:1;word-break:break-all;
+}
+.insp-val.accent{color:var(--architect);}
+
+/* Bar */
+.insp-bar-wrap{
+  height:3px;background:rgba(255,255,255,.06);border-radius:2px;
+  overflow:hidden;margin-top:1px;margin-bottom:5px;
+}
+.insp-bar{
+  height:100%;border-radius:2px;
+  transition:width .3s ease;
+}
+
+/* World overview */
+.world-stat{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03);
+}
+.world-stat:last-child{border-bottom:none;}
+.world-stat-label{
+  font-family:var(--fd);font-size:.32rem;color:rgba(255,255,255,.4);
+}
+.world-stat-val{
+  font-family:var(--fc);font-size:.34rem;color:rgba(255,255,255,.75);
+}
+.world-stat-val.accent{color:var(--architect);}
+
+/* Trade list */
+.trade-entry{
+  display:flex;align-items:center;gap:6px;
+  padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);
+}
+.trade-entry:last-child{border-bottom:none;}
+.trade-name{
+  font-family:var(--fc);font-size:.30rem;color:rgba(255,255,255,.55);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.trade-vol{
+  font-family:var(--fc);font-size:.28rem;color:var(--architect);opacity:.7;
+  white-space:nowrap;
+}
+.trade-commodity{
+  font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.25);
+  white-space:nowrap;
+}
+
+/* Warehouse bars */
+.wh-grid{
+  display:flex;flex-wrap:wrap;gap:3px;margin-top:3px;
+}
+.wh-item{
+  display:flex;flex-direction:column;gap:1px;
+  width:calc(50% - 2px);
+}
+.wh-name{
+  font-family:var(--fc);font-size:.24rem;color:rgba(255,255,255,.3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.wh-bar-row{display:flex;align-items:center;gap:4px;}
+.wh-bar-bg{
+  flex:1;height:3px;background:rgba(255,255,255,.06);
+  border-radius:1px;overflow:hidden;
+}
+.wh-bar-fill{height:100%;border-radius:1px;}
+.wh-qty{
+  font-family:var(--fc);font-size:.24rem;color:rgba(255,255,255,.4);
+  min-width:18px;text-align:right;
+}
+
+/* Production log */
+.prod-log-entry{
+  font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.4);
+  padding:2px 0;border-bottom:1px solid rgba(255,255,255,.03);
+  letter-spacing:.03em;
+}
+.prod-log-entry:last-child{border-bottom:none;}
+.prod-log-entry.fresh{color:var(--emerald);}
+
+/* Status bar */
+#status-bar{
+  height:26px;flex-shrink:0;
+  background:var(--surface);border-top:1px solid var(--edge);
+  display:flex;align-items:center;padding:0 12px;gap:16px;
+  z-index:10;
+}
+.sb-item{
+  display:flex;align-items:center;gap:5px;
+}
+.sb-dot{width:5px;height:5px;border-radius:50%;}
+.sb-label{
+  font-family:var(--fc);font-size:.28rem;
+  color:rgba(255,255,255,.3);letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.sb-val{
+  font-family:var(--fc);font-size:.28rem;
+  color:rgba(255,255,255,.55);
+}
+.sb-sep{
+  width:1px;height:12px;background:var(--edge);
+}
+#sb-status-text{
+  font-family:var(--fc);font-size:.28rem;
+  color:rgba(255,255,255,.25);letter-spacing:.04em;
+  flex:1;text-align:right;
+}
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- TOP BAR -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">⊓</div>
+      <span class="tb-module-id">03 · ARCHITECT</span>
+    </div>
+
+    <div class="tb-tabs">
+      <div class="tb-tab active" data-tab="0">I-SETTLE</div>
+      <div class="tb-tab" data-tab="1">II-ARCH</div>
+      <div class="tb-tab" data-tab="2">III-ECON</div>
+      <div class="tb-tab" data-tab="3">IV-CIVIC</div>
+    </div>
+
+    <div class="tb-spacer"></div>
+
+    <div class="tb-terrain-chip">
+      <div class="tb-terrain-dot" id="terrain-dot" style="background:rgba(255,255,255,.2)"></div>
+      <span class="tb-terrain-label" id="terrain-label" style="color:rgba(255,255,255,.3)">NO TERRAIN</span>
+    </div>
+
+    <div class="tb-count-wrap">
+      <span class="tb-count-label">Settle Count</span>
+      <input class="tb-count-input" type="number" id="settle-count" min="3" max="8" value="5">
+    </div>
+
+    <div class="tb-actions">
+      <button class="tb-btn hot" id="btn-build">BUILD</button>
+      <button class="tb-btn" id="btn-tick">TICK ECONOMY</button>
+      <button class="tb-btn" id="btn-export">EXPORT JSON</button>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div id="body">
+
+    <!-- LEFT SIDEBAR -->
+    <div id="left-sidebar">
+      <div class="ls-header">
+        <div class="ls-header-title">Component Matrix</div>
+      </div>
+
+      <div class="ls-scroll" id="ls-scroll">
+
+        <!-- I — SETTLEMENT -->
+        <div class="pillar-section" id="pillar-0">
+          <div class="pillar-header" onclick="togglePillar(0)">
+            <span class="pillar-num">I</span>
+            <span class="pillar-name">Settlement</span>
+            <span class="pillar-count">4</span>
+            <span class="pillar-chevron">›</span>
+          </div>
+          <div class="pillar-modules" style="max-height:200px">
+            <div class="module-row active" onclick="selectModule(this,'SSE','Site Suitability Evaluator')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">SSE</span>
+              <span class="module-name">Site Suitability Evaluator</span>
+            </div>
+            <div class="module-row" onclick="selectModule(this,'ZPA','Zoning & Parcel Allocator')">
+              <span class="type-badge type-DAT">DAT</span>
+              <span class="module-acronym">ZPA</span>
+              <span class="module-name">Zoning & Parcel Allocator</span>
+            </div>
+            <div class="module-row" onclick="selectModule(this,'SNR','Street Network Router')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">SNR</span>
+              <span class="module-name">Street Network Router</span>
+            </div>
+            <div class="module-row" onclick="selectModule(this,'PDD','Population Density Director')">
+              <span class="type-badge type-CTL">CTL</span>
+              <span class="module-acronym">PDD</span>
+              <span class="module-name">Population Density Director</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- II — ARCHITECTURE -->
+        <div class="pillar-section" id="pillar-1">
+          <div class="pillar-header" onclick="togglePillar(1)">
+            <span class="pillar-num">II</span>
+            <span class="pillar-name">Architecture</span>
+            <span class="pillar-count">4</span>
+            <span class="pillar-chevron">›</span>
+          </div>
+          <div class="pillar-modules" style="max-height:200px">
+            <div class="module-row" onclick="selectModule(this,'PSE','Procedural Structure Extruder')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">PSE</span>
+              <span class="module-name">Procedural Structure Extruder</span>
+            </div>
+            <div class="module-row" onclick="selectModule(this,'FSL','Foundation Slab Leveler')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">FSL</span>
+              <span class="module-name">Foundation Slab Leveler</span>
+            </div>
+            <div class="module-row" onclick="selectModule(this,'MFP','Material & Facade Painter')">
+              <span class="type-badge type-UIX">UIX</span>
+              <span class="module-acronym">MFP</span>
+              <span class="module-name">Material & Facade Painter</span>
+            </div>
+            <div class="module-row" onclick="selectModule(this,'GHP','Gable & Hip Pitch Solver')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">GHP</span>
+              <span class="module-name">Gable & Hip Pitch Solver</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- III — ECONOMY -->
+        <div class="pillar-section" id="pillar-2">
+          <div class="pillar-header" onclick="togglePillar(2)">
+            <span class="pillar-num">III</span>
+            <span class="pillar-name">Economy</span>
+            <span class="pillar-count">4</span>
+            <span class="pillar-chevron">›</span>
+          </div>
+          <div class="pillar-modules" style="max-height:200px">
+            <div class="module-row" onclick="selectModule(this,'SCL','Supply Chain Ledger')">
+              <span class="type-badge type-DAT">DAT</span>
+              <span class="module-acronym">SCL</span>
+              <span class="module-name">Supply Chain Ledger</span>
+            </div>
+            <div class="module-row" onclick="selectModule(this,'CWL','Crafting Workshop Logic')">
+              <span class="type-badge type-CTL">CTL</span>
+              <span class="module-acronym">CWL</span>
+              <span class="module-name">Crafting Workshop Logic</span>
+            </div>
+            <div class="module-row" onclick="selectModule(this,'ETR','Economic Trade Routes')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">ETR</span>
+              <span class="module-name">Economic Trade Routes</span>
+            </div>
+            <div class="module-row" onclick="selectModule(this,'DES','Dynamic Economy Scarcity')">
+              <span class="type-badge type-CTL">CTL</span>
+              <span class="module-acronym">DES</span>
+              <span class="module-name">Dynamic Economy Scarcity</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- IV — CIVIC -->
+        <div class="pillar-section" id="pillar-3">
+          <div class="pillar-header" onclick="togglePillar(3)">
+            <span class="pillar-num">IV</span>
+            <span class="pillar-name">Civic</span>
+            <span class="pillar-count">4</span>
+            <span class="pillar-chevron">›</span>
+          </div>
+          <div class="pillar-modules" style="max-height:200px">
+            <div class="module-row" onclick="selectModule(this,'CTL','Civic Treasury Ledger')">
+              <span class="type-badge type-DAT">DAT</span>
+              <span class="module-acronym">CTL</span>
+              <span class="module-name">Civic Treasury Ledger</span>
+            </div>
+            <div class="module-row" onclick="selectModule(this,'ITR','Infrastructure Network')">
+              <span class="type-badge type-SPA">SPA</span>
+              <span class="module-acronym">ITR</span>
+              <span class="module-name">Infrastructure Network</span>
+            </div>
+            <div class="module-row" onclick="selectModule(this,'PMG','Population Migration Gate')">
+              <span class="type-badge type-CTL">CTL</span>
+              <span class="module-acronym">PMG</span>
+              <span class="module-name">Population Migration Gate</span>
+            </div>
+            <div class="module-row" onclick="selectModule(this,'URB','Urban Sprawl Renderer')">
+              <span class="type-badge type-UIX">UIX</span>
+              <span class="module-acronym">URB</span>
+              <span class="module-name">Urban Sprawl Renderer</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /ls-scroll -->
+
+      <!-- Settlement roster -->
+      <div class="roster-panel">
+        <div class="roster-header">
+          <span class="roster-title">Settlement Roster</span>
+          <span class="roster-count" id="roster-count">0</span>
+        </div>
+        <div class="roster-list" id="roster-list">
+          <div style="padding:10px 12px;font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);">Run BUILD to generate settlements</div>
+        </div>
+      </div>
+
+    </div><!-- /left-sidebar -->
+
+    <!-- CANVAS -->
+    <div id="canvas-wrap">
+      <canvas id="arch-canvas"></canvas>
+
+      <!-- Generation overlay -->
+      <div id="gen-overlay">
+        <div class="gen-title">⊓ FORGE PIPELINE</div>
+        <div class="gen-step" id="gen-step-text">Initialising…</div>
+        <div class="gen-bar-wrap"><div class="gen-bar" id="gen-bar"></div></div>
+        <div class="gen-sub" id="gen-sub-text">03 · ARCHITECT</div>
+      </div>
+
+      <!-- Zoom panel -->
+      <div id="zoom-panel">
+        <div id="zoom-panel-header">
+          <span id="zoom-panel-title">STREET MAP</span>
+          <span id="zoom-panel-close" onclick="closeZoomPanel()">×</span>
+        </div>
+        <canvas id="zoom-canvas"></canvas>
+      </div>
+    </div><!-- /canvas-wrap -->
+
+    <!-- RIGHT PANEL -->
+    <div id="right-panel">
+      <div class="rp-header">
+        <div class="rp-header-title">Settlement Inspector</div>
+      </div>
+      <div class="rp-scroll" id="inspector-content">
+        <!-- filled by JS -->
+        <div class="insp-section">
+          <div style="font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);padding:4px 0;">
+            No settlements generated.<br>Press BUILD to begin.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /body -->
+
+  <!-- STATUS BAR -->
+  <div id="status-bar">
+    <div class="sb-item">
+      <div class="sb-dot" style="background:var(--architect);opacity:.7;"></div>
+      <span class="sb-label">Settlements</span>
+      <span class="sb-val" id="sb-settlements">0</span>
+    </div>
+    <div class="sb-sep"></div>
+    <div class="sb-item">
+      <span class="sb-label">Population</span>
+      <span class="sb-val" id="sb-population">—</span>
+    </div>
+    <div class="sb-sep"></div>
+    <div class="sb-item">
+      <span class="sb-label">Routes</span>
+      <span class="sb-val" id="sb-routes">0</span>
+    </div>
+    <div class="sb-sep"></div>
+    <div class="sb-item">
+      <span class="sb-label">Economy Tick</span>
+      <span class="sb-val" id="sb-tick">0</span>
+    </div>
+    <span id="sb-status-text">03 · ARCHITECT · FORGE · ⊓</span>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+/* ========================================================
+   QUANTUM ATLAS — Module 03 · Architect
+   ======================================================== */
+
+// ── Pillar toggle ──────────────────────────────────────────
+function togglePillar(idx) {
+  const sec = document.getElementById('pillar-' + idx);
+  const mods = sec.querySelector('.pillar-modules');
+  sec.classList.toggle('collapsed');
+  if (!sec.classList.contains('collapsed')) {
+    mods.style.maxHeight = mods.scrollHeight + 'px';
+  }
+}
+
+// ── Module selection ───────────────────────────────────────
+function selectModule(el, acronym, name) {
+  document.querySelectorAll('.module-row').forEach(r => r.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── Tab switching ──────────────────────────────────────────
+document.querySelectorAll('.tb-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+// ── State ─────────────────────────────────────────────────
+let hexGrid = null;
+let settlements = [];
+let tradeRoutes = [];
+let selectedSettlement = null;
+let economyTick = 0;
+
+// Canvas pan/zoom
+const canvas = document.getElementById('arch-canvas');
+const ctx = canvas.getContext('2d');
+let camX = 0, camY = 0, camScale = 1;
+let isPanning = false, panStartX = 0, panStartY = 0, camStartX = 0, camStartY = 0;
+
+// rAF state
+let dashOffset = 0;
+let offscreenHex = null;
+let needHexRedraw = true;
+
+// ── Resize canvas ──────────────────────────────────────────
+function resizeCanvas() {
+  const wrap = document.getElementById('canvas-wrap');
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  needHexRedraw = true;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// ── Zoom canvas ────────────────────────────────────────────
+const zoomCanvas = document.getElementById('zoom-canvas');
+const zCtx = zoomCanvas.getContext('2d');
+
+function resizeZoomCanvas() {
+  const panel = document.getElementById('zoom-panel');
+  zoomCanvas.width = panel.clientWidth;
+  zoomCanvas.height = panel.clientHeight - 28; // minus header
+}
+
+// ── RNG ────────────────────────────────────────────────────
+function makeRng(seed) {
+  let s = seed ^ 0xdeadbeef;
+  return function() {
+    s = (s ^ (s << 13)) >>> 0;
+    s = (s ^ (s >> 7)) >>> 0;
+    s = (s ^ (s << 17)) >>> 0;
+    return (s >>> 0) / 4294967296;
+  };
+}
+
+function strSeed(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = (h * 16777619) >>> 0;
+  }
+  return h;
+}
+
+// ── Hex math ───────────────────────────────────────────────
+const HEX_SIZE = 13;
+
+function hexToWorld(q, r) {
+  const x = HEX_SIZE * (Math.sqrt(3) * q + Math.sqrt(3) / 2 * r);
+  const y = HEX_SIZE * (3 / 2 * r);
+  return { x, y };
+}
+
+function hexDist(aq, ar, bq, br) {
+  const dx = bq - aq, dy = br - ar;
+  return Math.max(Math.abs(dx), Math.abs(dy), Math.abs(dx + dy));
+}
+
+// ── Terrain loading ────────────────────────────────────────
+function loadTerrain() {
+  try {
+    const raw = localStorage.getItem('qa-terrain-snapshot');
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    return Array.isArray(data) ? data : (data.hexes || data.grid || null);
+  } catch(e) { return null; }
+}
+
+function checkTerrainLink() {
+  const dot = document.getElementById('terrain-dot');
+  const lbl = document.getElementById('terrain-label');
+  const grid = loadTerrain();
+  if (grid && grid.length > 0) {
+    dot.style.background = 'var(--architect)';
+    lbl.style.color = 'var(--architect)';
+    lbl.textContent = grid.length + ' HEX LINKED';
+    return grid;
+  } else {
+    dot.style.background = 'var(--blood)';
+    lbl.style.color = 'var(--blood)';
+    lbl.textContent = 'NO TERRAIN';
+    return null;
+  }
+}
+
+// ── Biome colors (matching Module 01) ─────────────────────
+const BIOME_COLORS = {
+  'Temperate Forest':   '#2d6a4f',
+  'Tropical Rainforest':'#1b4332',
+  'Boreal Forest':      '#354f52',
+  'Grassland':          '#52b788',
+  'Savanna':            '#b7c9a8',
+  'Shrubland':          '#74a57f',
+  'Arid Desert':        '#d4a853',
+  'Hot Desert':         '#c9a84c',
+  'Sandy Desert':       '#e9c46a',
+  'Tundra':             '#adb5bd',
+  'Alpine Tundra':      '#ced4da',
+  'Arctic Ice':         '#dee2e6',
+  'Wetland':            '#4a8fa3',
+  'Mangrove Swamp':     '#2d6a73',
+  'Freshwater Marsh':   '#40916c',
+  'Shallows / Shore':   '#4895ef',
+  'Deep Water':         '#023e8a',
+  'Ocean':              '#03045e',
+  'Mountain':           '#6b6570',
+  'Rocky Highland':     '#8d8893',
+  'Volcanic':           '#9d0208',
+  'Coastal Cliffs':     '#6c757d',
+};
+function biomeColor(biome) {
+  return BIOME_COLORS[biome] || '#333840';
+}
+
+// ── Draw hex underlay to offscreen canvas ──────────────────
+function buildHexCache(grid) {
+  if (!grid || grid.length === 0) return null;
+  const oc = document.createElement('canvas');
+  // find bounds
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const h of grid) {
+    const w = hexToWorld(h.axial.q, h.axial.r);
+    if (w.x < minX) minX = w.x;
+    if (w.x > maxX) maxX = w.x;
+    if (w.y < minY) minY = w.y;
+    if (w.y > maxY) maxY = w.y;
+  }
+  const pad = HEX_SIZE * 2;
+  oc.width  = Math.ceil(maxX - minX + pad * 2);
+  oc.height = Math.ceil(maxY - minY + pad * 2);
+  const oc_ctx = oc.getContext('2d');
+  oc_ctx.save();
+  oc_ctx.translate(-minX + pad, -minY + pad);
+
+  const s = HEX_SIZE;
+  for (const h of grid) {
+    const w = hexToWorld(h.axial.q, h.axial.r);
+    const pts = [];
+    for (let i = 0; i < 6; i++) {
+      const ang = Math.PI / 180 * (60 * i + 30); // pointy-top
+      pts.push([w.x + s * Math.cos(ang), w.y + s * Math.sin(ang)]);
+    }
+    oc_ctx.beginPath();
+    oc_ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < 6; i++) oc_ctx.lineTo(pts[i][0], pts[i][1]);
+    oc_ctx.closePath();
+    const c = biomeColor(h.ecology?.biome_type || '');
+    oc_ctx.fillStyle = c;
+    oc_ctx.fill();
+    oc_ctx.strokeStyle = 'rgba(0,0,0,.35)';
+    oc_ctx.lineWidth = 0.5;
+    oc_ctx.stroke();
+  }
+  oc_ctx.restore();
+
+  // store offset
+  oc._offX = minX - pad;
+  oc._offY = minY - pad;
+  return oc;
+}
+
+// ── Faction color ──────────────────────────────────────────
+function factionColor(faction) {
+  if (!faction) return 'rgba(255,255,255,0.3)';
+  const f = faction.toLowerCase();
+  if (f.includes('imperial') || f.includes('crown')) return '#b1d0f0';
+  if (f.includes('nomad') || f.includes('wild'))     return '#4dc8a0';
+  if (f.includes('merchant'))                         return '#64b4ff';
+  if (f.includes('void') || f.includes('collective')) return '#9b7fd4';
+  return 'rgba(255,255,255,0.3)';
+}
+
+// ── SSE: Site Suitability ──────────────────────────────────
+const FACTIONS = ['The Crown Imperial', 'The Merchant Consortium', 'Wildland Nomads', 'The Void Collective'];
+
+function evaluateHex(hex, factionType) {
+  let score = 0;
+  const topo  = hex.topology  || {};
+  const hydro = hex.hydrology || {};
+  const eco   = hex.ecology   || {};
+  const res   = hex.resources || [];
+
+  const macro  = topo.macro_terrain   || '';
+  const elev   = topo.base_elevation  || 0;
+  const rivVol = hydro.river_volume   || 0;
+  const moist  = hydro.moisture_level || 0;
+  const biome  = eco.biome_type       || '';
+
+  if (macro === 'Deep Water' || biome === 'Deep Water' || biome === 'Ocean') return -999;
+
+  if (rivVol > 15)                              score += 40;
+  else if (rivVol > 0 || moist > 4)            score += 15;
+
+  const ft = factionType.toLowerCase();
+  if (ft.includes('merchant')) {
+    if (elev < 20 && (macro === 'Shallows / Shore' || biome.includes('Shore'))) score += 30;
+    if (elev > 50) score -= 20;
+  } else if (ft.includes('nomad')) {
+    if (elev > 40) score += 35;
+  } else if (ft.includes('imperial') || ft.includes('crown')) {
+    if (elev > 20 && elev < 80) score += 25;
+    score += 10;
+  } else {
+    // void / other
+    if (biome.includes('Volcanic') || biome.includes('Arctic')) score += 20;
+  }
+
+  const resCount = res.filter(r => r.type !== 'None').length;
+  score += resCount * 10;
+
+  if (biome === 'Mangrove Swamp' && ft.includes('nomad')) score -= 30;
+  if (biome === 'Arid Desert')  score -= 15;
+  if (biome === 'Tundra')       score -= 25;
+
+  return score;
+}
+
+function pickSettlementHexes(grid, count) {
+  const chosen = [];
+  const factions = [];
+
+  // For each faction (cycling if count > 4)
+  for (let i = 0; i < count; i++) {
+    const faction = FACTIONS[i % FACTIONS.length];
+    let bestHex = null, bestScore = -Infinity;
+
+    for (const h of grid) {
+      // Check minimum distance from already chosen
+      let tooClose = false;
+      for (const c of chosen) {
+        if (hexDist(h.axial.q, h.axial.r, c.axial.q, c.axial.r) < 5) {
+          tooClose = true;
+          break;
+        }
+      }
+      if (tooClose) continue;
+
+      const score = evaluateHex(h, faction);
+      if (score > bestScore) {
+        bestScore = score;
+        bestHex = h;
+      }
+    }
+
+    if (bestHex) {
+      chosen.push(bestHex);
+      factions.push(faction);
+    }
+  }
+
+  return chosen.map((h, i) => ({ hex: h, faction: factions[i] }));
+}
+
+// ── Settlement creation ────────────────────────────────────
+const PREFIXES = ['Aethel','Tor','Val','Gloom','Sun','Salt','Iron','Myra','Stone','Crest'];
+const SUFFIXES = { water:'port', swamp:'fen', shore:'haven', mountain:'hold', plains:'field', desert:'oasis', hills:'ford', default:'wick' };
+
+function createSettlement(hex, faction, idx) {
+  const seed = strSeed(hex.id || (hex.axial.q + '_' + hex.axial.r)) ^ idx;
+  const rng  = makeRng(seed);
+
+  const biomeKey = (hex.ecology?.biome_type || '').toLowerCase();
+  const sufKey   = Object.keys(SUFFIXES).find(k => biomeKey.includes(k)) || 'default';
+  const raw      = PREFIXES[Math.floor(rng() * PREFIXES.length)] + SUFFIXES[sufKey];
+  const name     = raw.charAt(0).toUpperCase() + raw.slice(1);
+
+  // World position from axial
+  const w = hex.world || hexToWorld(hex.axial.q, hex.axial.r);
+
+  return {
+    id:           `SET_${hex.axial.q}_${hex.axial.r}`,
+    name,
+    hex_id:       hex.id || `${hex.axial.q}_${hex.axial.r}`,
+    axial:        hex.axial,
+    world:        { x: w.x !== undefined ? w.x : hexToWorld(hex.axial.q, hex.axial.r).x,
+                    y: w.y !== undefined ? w.y : hexToWorld(hex.axial.q, hex.axial.r).y },
+    faction,
+    region_name:  hex.political?.region_name || 'Unknown',
+    danger_level: Math.floor(rng() * 5) + 1,
+    population:   Math.floor(rng() * 3000) + 200,
+    growth_rate:  (rng() * 0.05 - 0.01).toFixed(3),
+    civic_wealth: 500 + Math.floor(rng() * 2000),
+    warehouse:    { raw: {}, refined: {} },
+    production_log: [],
+    buildings:    [],
+    streets:      { arteries: [], secondary: [] },
+    trade_partners: [],
+    _seed: seed,
+    _hex: hex,
+  };
+}
+
+// ── Street network (SNR SPA) ───────────────────────────────
+function generateStreets(cx, cy, faction, seed) {
+  const rng = makeRng(seed ^ 0xc0ffee);
+  const arteries = [], secondary = [];
+  const segLen = 25 + rng() * 10;
+  const variance = 0.08;
+
+  function seg(x, y, angleDeg, len) {
+    const rad = angleDeg * Math.PI / 180 + (rng() - 0.5) * variance * 2;
+    return { x1: x, y1: y, x2: x + Math.cos(rad) * len, y2: y + Math.sin(rad) * len };
+  }
+
+  const ft = faction.toLowerCase();
+  const angles = ft.includes('nomad')    ? [0, 60, 120, 180, 240, 300] :
+                 ft.includes('imperial') ? [45, 135, 225, 315] : [0, 90, 180, 270];
+
+  for (const angle of angles) {
+    let px = cx, py = cy;
+    for (let i = 0; i < 3; i++) {
+      const s = seg(px, py, angle, segLen);
+      arteries.push(s);
+      if (i === 1 && rng() > 0.4) {
+        secondary.push(seg(s.x2, s.y2, angle + 90, segLen * 0.7));
+        secondary.push(seg(s.x2, s.y2, angle - 90, segLen * 0.65));
+      }
+      px = s.x2; py = s.y2;
+    }
+  }
+
+  // Nomad: add perimeter ring
+  if (ft.includes('nomad')) {
+    const r = segLen * 2;
+    for (let i = 0; i < 6; i++) {
+      const a1 = (i * 60) * Math.PI / 180;
+      const a2 = ((i + 1) * 60) * Math.PI / 180;
+      secondary.push({
+        x1: cx + Math.cos(a1) * r, y1: cy + Math.sin(a1) * r,
+        x2: cx + Math.cos(a2) * r, y2: cy + Math.sin(a2) * r,
+      });
+    }
+  }
+
+  return { arteries, secondary };
+}
+
+// ── Building placement (PSE SPA) ───────────────────────────
+function placeBuildings(streets, faction, resources, seed) {
+  const rng = makeRng(seed ^ 0x77abcd);
+  const buildings = [];
+
+  for (const seg of streets.arteries) {
+    const len = Math.hypot(seg.x2 - seg.x1, seg.y2 - seg.y1);
+    const slots = Math.max(1, Math.floor(len / 12));
+    for (let i = 0; i < slots; i++) {
+      const t  = (i + 0.5) / slots;
+      const bx = seg.x1 + (seg.x2 - seg.x1) * t + (rng() - 0.5) * 8;
+      const by = seg.y1 + (seg.y2 - seg.y1) * t + (rng() - 0.5) * 8;
+      const role = rng() < 0.5 ? 'residential' :
+                   rng() < 0.7 ? 'commercial'  :
+                   rng() < 0.8 ? 'workshop'    : 'civic';
+      buildings.push({
+        x: bx, y: by,
+        w: 6 + rng() * 10,
+        h: 4 + rng() * 8,
+        role,
+        stories: role === 'commercial' ? Math.floor(rng() * 2) + 1 : 1,
+      });
+    }
+  }
+  return buildings;
+}
+
+const BLDG_COLORS = {
+  residential: '#c8a96e',
+  commercial:  '#e8b84b',
+  workshop:    '#f98f3b',
+  civic:       '#1e8cff',
+};
+
+// ── Trade routes (ETR SPA) ────────────────────────────────
+function pickCommodity(a, b) {
+  const commodities = ['Grain','Timber','Iron','Cloth','Salt','Pottery','Fish','Spice','Coal','Gems'];
+  const seed = strSeed(a.id + b.id);
+  return commodities[seed % commodities.length];
+}
+
+function buildTradeRoutes(slist) {
+  const routes = [];
+  // Clear existing
+  for (const s of slist) s.trade_partners = [];
+
+  for (let i = 0; i < slist.length; i++) {
+    for (let j = i + 1; j < slist.length; j++) {
+      const a = slist[i], b = slist[j];
+      const dist = Math.hypot(a.world.x - b.world.x, a.world.y - b.world.y);
+      if (dist < 700) {
+        const volume = Math.max(10, Math.floor((700 - dist) / 70) * 10);
+        routes.push({ from: a.id, to: b.id, volume, commodity: pickCommodity(a, b) });
+        a.trade_partners.push({ id: b.id, name: b.name, volume, commodity: pickCommodity(a, b) });
+        b.trade_partners.push({ id: a.id, name: a.name, volume, commodity: pickCommodity(b, a) });
+      }
+    }
+  }
+  return routes;
+}
+
+// ── Economy cycle (SCL DAT) ────────────────────────────────
+function tickEconomy(slist, grid) {
+  for (const s of slist) {
+    const hex = grid ? grid.find(h => (h.id || `${h.axial.q}_${h.axial.r}`) === s.hex_id) : null;
+    if (hex) {
+      for (const res of (hex.resources || [])) {
+        if (res.type !== 'None' && res.name) {
+          s.warehouse.raw[res.name] = (s.warehouse.raw[res.name] || 0) + (res.yield_amount || 3);
+        }
+      }
+    }
+
+    let tax = 0;
+    const log = [];
+
+    if ((s.warehouse.raw['Blood-root Algae'] || 0) >= 2) {
+      s.warehouse.raw['Blood-root Algae'] -= 2;
+      s.warehouse.refined['Minor Health Potion'] = (s.warehouse.refined['Minor Health Potion'] || 0) + 1;
+      tax += 1.5;
+      log.push('Alchemy: 2 Blood-root → 1 Potion (+1.5g)');
+    }
+    if ((s.warehouse.raw['Riverbed Clay'] || 0) >= 5) {
+      s.warehouse.raw['Riverbed Clay'] -= 5;
+      s.warehouse.refined['Terracotta Pitcher'] = (s.warehouse.refined['Terracotta Pitcher'] || 0) + 1;
+      tax += 0.8;
+      log.push('Kiln: 5 Clay → 1 Pitcher (+0.8g)');
+    }
+    if ((s.warehouse.raw['Iron Vein'] || 0) >= 3) {
+      s.warehouse.raw['Iron Vein'] -= 3;
+      s.warehouse.refined['Iron Ingot'] = (s.warehouse.refined['Iron Ingot'] || 0) + 1;
+      tax += 2.0;
+      log.push('Smelter: 3 Iron → 1 Ingot (+2.0g)');
+    }
+
+    // Generic workshop fallback
+    const rawKeys = Object.keys(s.warehouse.raw);
+    for (const key of rawKeys) {
+      if ((s.warehouse.raw[key] || 0) >= 4 && log.length < 3) {
+        s.warehouse.raw[key] -= 4;
+        const product = key + ' Goods';
+        s.warehouse.refined[product] = (s.warehouse.refined[product] || 0) + 1;
+        tax += 1.0;
+        log.push(`Workshop: 4 ${key} → 1 ${product} (+1.0g)`);
+      }
+    }
+
+    s.civic_wealth = +(s.civic_wealth + tax).toFixed(2);
+    s.production_log = [...log.slice(0, 2), ...s.production_log].slice(0, 10);
+    s._lastTax = tax;
+  }
+  economyTick++;
+}
+
+// ── Center camera on world bounds ─────────────────────────
+function centerCamera() {
+  if (settlements.length === 0 && (!hexGrid || hexGrid.length === 0)) return;
+  const items = settlements.length > 0 ? settlements.map(s => s.world) :
+                hexGrid.map(h => hexToWorld(h.axial.q, h.axial.r));
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const p of items) {
+    if (p.x < minX) minX = p.x;
+    if (p.x > maxX) maxX = p.x;
+    if (p.y < minY) minY = p.y;
+    if (p.y > maxY) maxY = p.y;
+  }
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
+  const sw = canvas.width, sh = canvas.height;
+  const scaleX = sw / (maxX - minX + 80);
+  const scaleY = sh / (maxY - minY + 80);
+  camScale = Math.min(Math.max(scaleX, scaleY) * 0.85, 4);
+  camX = sw / 2 - cx * camScale;
+  camY = sh / 2 - cy * camScale;
+}
+
+// ── RENDER ────────────────────────────────────────────────
+function worldToScreen(wx, wy) {
+  return { x: wx * camScale + camX, y: wy * camScale + camY };
+}
+
+function drawHexUnderlay() {
+  if (!hexGrid || hexGrid.length === 0) {
+    // Draw notice
+    ctx.save();
+    ctx.font = '400 11px "Space Grotesk", sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,.12)';
+    ctx.textAlign = 'center';
+    ctx.fillText('Link Terrain Module first — no qa-terrain-snapshot found', canvas.width / 2, canvas.height / 2);
+    ctx.restore();
+    return;
+  }
+
+  if (needHexRedraw || !offscreenHex) {
+    offscreenHex = buildHexCache(hexGrid);
+    needHexRedraw = false;
+  }
+  if (!offscreenHex) return;
+
+  ctx.save();
+  ctx.globalAlpha = 0.30;
+  const sx = offscreenHex._offX * camScale + camX;
+  const sy = offscreenHex._offY * camScale + camY;
+  ctx.drawImage(offscreenHex, sx, sy, offscreenHex.width * camScale, offscreenHex.height * camScale);
+  ctx.restore();
+}
+
+function drawTradeRoutes() {
+  if (tradeRoutes.length === 0) return;
+  const settlMap = {};
+  for (const s of settlements) settlMap[s.id] = s;
+
+  ctx.save();
+  ctx.setLineDash([6, 6]);
+  ctx.lineDashOffset = -dashOffset;
+
+  for (const route of tradeRoutes) {
+    const a = settlMap[route.from], b = settlMap[route.to];
+    if (!a || !b) continue;
+    const pa = worldToScreen(a.world.x, a.world.y);
+    const pb = worldToScreen(b.world.x, b.world.y);
+    const thick = Math.max(1, Math.min(4, route.volume / 30));
+    ctx.beginPath();
+    ctx.moveTo(pa.x, pa.y);
+    ctx.lineTo(pb.x, pb.y);
+    ctx.strokeStyle = 'rgba(255,209,102,0.40)';
+    ctx.lineWidth = thick;
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+function drawSettlements() {
+  for (const s of settlements) {
+    const p   = worldToScreen(s.world.x, s.world.y);
+    const col = factionColor(s.faction);
+    const pop = s.population;
+    const radius = Math.max(12, Math.min(40, 12 + (pop / 3200) * 28)) * Math.max(0.5, camScale * 0.8);
+
+    // Glow
+    const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius);
+    grad.addColorStop(0,   hexToRgba(col, 0.55));
+    grad.addColorStop(0.4, hexToRgba(col, 0.20));
+    grad.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Street network (fine lines)
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    const streetScale = camScale * 0.7;
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+    ctx.lineWidth   = 0.8;
+    for (const seg of [...s.streets.arteries, ...s.streets.secondary]) {
+      const dx1 = (seg.x1 - s.world.x) * streetScale;
+      const dy1 = (seg.y1 - s.world.y) * streetScale;
+      const dx2 = (seg.x2 - s.world.x) * streetScale;
+      const dy2 = (seg.y2 - s.world.y) * streetScale;
+      ctx.beginPath();
+      ctx.moveTo(dx1, dy1);
+      ctx.lineTo(dx2, dy2);
+      ctx.stroke();
+    }
+
+    // Building footprints
+    for (const b of s.buildings) {
+      const bx = (b.x - s.world.x) * streetScale;
+      const by = (b.y - s.world.y) * streetScale;
+      const bw = b.w * streetScale * 0.5;
+      const bh = b.h * streetScale * 0.5;
+      ctx.fillStyle = BLDG_COLORS[b.role] || '#888';
+      ctx.globalAlpha = 0.75;
+      ctx.fillRect(bx - bw / 2, by - bh / 2, bw, bh);
+      ctx.globalAlpha = 1;
+    }
+
+    ctx.restore();
+
+    // Core dot
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, Math.max(3, 5 * camScale), 0, Math.PI * 2);
+    ctx.fillStyle = col;
+    ctx.fill();
+
+    // Selected ring
+    if (selectedSettlement && selectedSettlement.id === s.id) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, radius + 4, 0, Math.PI * 2);
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    // Label
+    if (camScale > 0.4) {
+      ctx.font = `400 ${Math.max(7, 7 * camScale)}px "Orbitron", monospace`;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
+      ctx.fillText(s.name, p.x, p.y + radius + 11);
+    }
+  }
+}
+
+function hexToRgba(hex, alpha) {
+  // hex may already be rgba
+  if (hex.startsWith('rgba')) return hex.replace(/[\d.]+\)$/, alpha + ')');
+  if (hex.startsWith('rgb(')) return hex.replace('rgb(', 'rgba(').replace(')', ',' + alpha + ')');
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function render() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  dashOffset += 0.3;
+
+  drawHexUnderlay();
+  drawTradeRoutes();
+  drawSettlements();
+
+  requestAnimationFrame(render);
+}
+render();
+
+// ── Zoom panel ─────────────────────────────────────────────
+function drawZoomPanel() {
+  if (!selectedSettlement) return;
+  const s = selectedSettlement;
+
+  resizeZoomCanvas();
+  const W = zoomCanvas.width, H = zoomCanvas.height;
+  zCtx.clearRect(0, 0, W, H);
+
+  // Background
+  zCtx.fillStyle = 'rgba(4,5,10,.6)';
+  zCtx.fillRect(0, 0, W, H);
+
+  // Compute bounds of streets
+  const allSegs = [...s.streets.arteries, ...s.streets.secondary];
+  if (allSegs.length === 0) return;
+
+  const xs = allSegs.flatMap(sg => [sg.x1, sg.x2]);
+  const ys = allSegs.flatMap(sg => [sg.y1, sg.y2]);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const bw = maxX - minX || 100, bh = maxY - minY || 100;
+
+  const pad = 20;
+  const scl = Math.min((W - pad * 2) / bw, (H - pad * 2) / bh) * 0.9;
+  const offX = W / 2 - ((minX + maxX) / 2) * scl;
+  const offY = H / 2 - ((minY + maxY) / 2) * scl;
+
+  function tp(x, y) { return { x: x * scl + offX, y: y * scl + offY }; }
+
+  // Grid bg lines
+  zCtx.strokeStyle = 'rgba(255,255,255,.04)';
+  zCtx.lineWidth = 1;
+  for (let gx = Math.floor(minX / 20) * 20; gx < maxX + 20; gx += 20) {
+    const pp = tp(gx, minY - 10);
+    const pq = tp(gx, maxY + 10);
+    zCtx.beginPath(); zCtx.moveTo(pp.x, pp.y); zCtx.lineTo(pq.x, pq.y); zCtx.stroke();
+  }
+  for (let gy = Math.floor(minY / 20) * 20; gy < maxY + 20; gy += 20) {
+    const pp = tp(minX - 10, gy);
+    const pq = tp(maxX + 10, gy);
+    zCtx.beginPath(); zCtx.moveTo(pp.x, pp.y); zCtx.lineTo(pq.x, pq.y); zCtx.stroke();
+  }
+
+  // Buildings
+  for (const b of s.buildings) {
+    const pc = tp(b.x, b.y);
+    const bw2 = b.w * scl * 0.5, bh2 = b.h * scl * 0.5;
+    zCtx.fillStyle = BLDG_COLORS[b.role] || '#888';
+    zCtx.globalAlpha = 0.85;
+    zCtx.fillRect(pc.x - bw2, pc.y - bh2, bw2 * 2, bh2 * 2);
+    zCtx.strokeStyle = 'rgba(0,0,0,.4)';
+    zCtx.lineWidth = 0.5;
+    zCtx.globalAlpha = 1;
+    zCtx.strokeRect(pc.x - bw2, pc.y - bh2, bw2 * 2, bh2 * 2);
+
+    // Role label if big enough
+    if (bw2 > 8) {
+      zCtx.font = '400 5px "JetBrains Mono",monospace';
+      zCtx.fillStyle = 'rgba(255,255,255,.5)';
+      zCtx.textAlign = 'center';
+      zCtx.fillText(b.role.slice(0,3).toUpperCase(), pc.x, pc.y + 2);
+    }
+  }
+
+  // Arteries
+  zCtx.strokeStyle = 'rgba(255,255,255,0.55)';
+  zCtx.lineWidth = 2;
+  for (const sg of s.streets.arteries) {
+    const pa = tp(sg.x1, sg.y1), pb = tp(sg.x2, sg.y2);
+    zCtx.beginPath(); zCtx.moveTo(pa.x, pa.y); zCtx.lineTo(pb.x, pb.y); zCtx.stroke();
+  }
+
+  // Secondary
+  zCtx.strokeStyle = 'rgba(255,255,255,0.25)';
+  zCtx.lineWidth = 1;
+  for (const sg of s.streets.secondary) {
+    const pa = tp(sg.x1, sg.y1), pb = tp(sg.x2, sg.y2);
+    zCtx.beginPath(); zCtx.moveTo(pa.x, pa.y); zCtx.lineTo(pb.x, pb.y); zCtx.stroke();
+  }
+
+  // Center dot
+  const pc = tp(s.world.x, s.world.y);
+  zCtx.beginPath();
+  zCtx.arc(pc.x, pc.y, 4, 0, Math.PI * 2);
+  zCtx.fillStyle = factionColor(s.faction);
+  zCtx.fill();
+
+  // Title
+  document.getElementById('zoom-panel-title').textContent = s.name.toUpperCase() + ' · STREET MAP';
+}
+
+function closeZoomPanel() {
+  document.getElementById('zoom-panel').classList.remove('visible');
+}
+
+// ── Inspector ──────────────────────────────────────────────
+function renderInspector() {
+  const el = document.getElementById('inspector-content');
+
+  if (!selectedSettlement) {
+    // World overview
+    const total    = settlements.length;
+    const totalPop = settlements.reduce((a, s) => a + s.population, 0);
+    const totalW   = settlements.reduce((a, s) => a + s.civic_wealth, 0);
+    const largest  = settlements.reduce((a, s) => s.population > (a?.population || 0) ? s : a, null);
+    const richest  = settlements.reduce((a, s) => s.civic_wealth > (a?.civic_wealth || 0) ? s : a, null);
+    const workshops = settlements.reduce((a, s) => a + s.buildings.filter(b => b.role === 'workshop').length, 0);
+
+    el.innerHTML = `
+      <div class="insp-section">
+        <div class="insp-section-title">World Overview</div>
+        <div class="world-stat"><span class="world-stat-label">Settlements</span><span class="world-stat-val accent">${total}</span></div>
+        <div class="world-stat"><span class="world-stat-label">Total Population</span><span class="world-stat-val">${totalPop.toLocaleString()}</span></div>
+        <div class="world-stat"><span class="world-stat-label">World Wealth</span><span class="world-stat-val accent">${totalW.toFixed(0)}g</span></div>
+        <div class="world-stat"><span class="world-stat-label">Largest Settlement</span><span class="world-stat-val">${largest?.name || '—'}</span></div>
+        <div class="world-stat"><span class="world-stat-label">Richest Faction</span><span class="world-stat-val">${richest?.faction || '—'}</span></div>
+        <div class="world-stat"><span class="world-stat-label">Trade Routes</span><span class="world-stat-val">${tradeRoutes.length}</span></div>
+        <div class="world-stat"><span class="world-stat-label">Active Workshops</span><span class="world-stat-val">${workshops}</span></div>
+        <div class="world-stat"><span class="world-stat-label">Economy Tick</span><span class="world-stat-val accent">${economyTick}</span></div>
+      </div>`;
+    return;
+  }
+
+  const s = selectedSettlement;
+  const bBreakdown = { residential: 0, commercial: 0, workshop: 0, civic: 0 };
+  for (const b of s.buildings) bBreakdown[b.role] = (bBreakdown[b.role] || 0) + 1;
+  const totalBldg = s.buildings.length;
+
+  const popPct = Math.min(100, (s.population / 10000) * 100).toFixed(1);
+  const densityApprox = (s.population / 2.5).toFixed(0);
+  const dailyTax = (s._lastTax || 0).toFixed(2);
+
+  // Warehouse bars
+  function whBars(obj, color) {
+    const keys = Object.keys(obj);
+    if (keys.length === 0) return '<div style="font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.2);padding:3px 0">Empty</div>';
+    const maxVal = Math.max(...Object.values(obj), 1);
+    return keys.map(k => `
+      <div class="wh-item">
+        <div class="wh-name">${k}</div>
+        <div class="wh-bar-row">
+          <div class="wh-bar-bg"><div class="wh-bar-fill" style="width:${Math.min(100,(obj[k]/maxVal)*100).toFixed(0)}%;background:${color}"></div></div>
+          <div class="wh-qty">${obj[k]}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  const prodLog = s.production_log.slice(0, 2);
+  const logHtml = prodLog.length > 0
+    ? prodLog.map((l, i) => `<div class="prod-log-entry${i === 0 ? ' fresh' : ''}">${l}</div>`).join('')
+    : '<div class="prod-log-entry">No production yet</div>';
+
+  const tradeHtml = s.trade_partners.length > 0
+    ? s.trade_partners.slice(0, 6).map(tp => `
+        <div class="trade-entry">
+          <span class="trade-name">${tp.name}</span>
+          <span class="trade-vol">${tp.volume}v</span>
+          <span class="trade-commodity">${tp.commodity}</span>
+        </div>`).join('')
+    : '<div style="font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);padding:3px 0">No trade partners</div>';
+
+  const col = factionColor(s.faction);
+
+  el.innerHTML = `
+    <!-- IDENTITY -->
+    <div class="insp-section">
+      <div class="insp-section-title">Identity</div>
+      <div class="insp-row"><span class="insp-label">Name</span><span class="insp-val accent">${s.name}</span></div>
+      <div class="insp-row"><span class="insp-label">Hex ID</span><span class="insp-val">${s.hex_id}</span></div>
+      <div class="insp-row"><span class="insp-label">Faction</span><span class="insp-val" style="color:${col}">${s.faction}</span></div>
+      <div class="insp-row"><span class="insp-label">Region</span><span class="insp-val">${s.region_name}</span></div>
+      <div class="insp-row"><span class="insp-label">Danger</span><span class="insp-val">${'★'.repeat(s.danger_level)}${'☆'.repeat(5-s.danger_level)}</span></div>
+    </div>
+    <!-- POPULATION -->
+    <div class="insp-section">
+      <div class="insp-section-title">Population</div>
+      <div class="insp-row"><span class="insp-label">Count</span><span class="insp-val accent">${s.population.toLocaleString()}</span></div>
+      <div class="insp-bar-wrap"><div class="insp-bar" style="width:${popPct}%;background:${col}"></div></div>
+      <div class="insp-row"><span class="insp-label">Density /km²</span><span class="insp-val">${densityApprox}</span></div>
+      <div class="insp-row"><span class="insp-label">Growth Rate</span><span class="insp-val">${(s.growth_rate*100).toFixed(2)}%</span></div>
+    </div>
+    <!-- ARCHITECTURE -->
+    <div class="insp-section">
+      <div class="insp-section-title">Architecture</div>
+      <div class="insp-row"><span class="insp-label">Total Buildings</span><span class="insp-val accent">${totalBldg}</span></div>
+      <div class="insp-row"><span class="insp-label">Residential</span><span class="insp-val">${bBreakdown.residential}</span></div>
+      <div class="insp-row"><span class="insp-label">Commercial</span><span class="insp-val">${bBreakdown.commercial}</span></div>
+      <div class="insp-row"><span class="insp-label">Workshop</span><span class="insp-val">${bBreakdown.workshop}</span></div>
+      <div class="insp-row"><span class="insp-label">Civic</span><span class="insp-val">${bBreakdown.civic}</span></div>
+      <div class="insp-row"><span class="insp-label">Streets</span><span class="insp-val">${s.streets.arteries.length} arteries · ${s.streets.secondary.length} sec</span></div>
+    </div>
+    <!-- ECONOMY -->
+    <div class="insp-section">
+      <div class="insp-section-title">Economy</div>
+      <div class="insp-row"><span class="insp-label">Civic Wealth</span><span class="insp-val accent">${s.civic_wealth.toFixed(0)}g</span></div>
+      <div class="insp-row"><span class="insp-label">Last Tax Rev</span><span class="insp-val">${dailyTax}g</span></div>
+      <div style="margin:4px 0 2px;font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.25);letter-spacing:.06em;">RAW MATERIALS</div>
+      <div class="wh-grid">${whBars(s.warehouse.raw, 'var(--solari)')}</div>
+      <div style="margin:6px 0 2px;font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.25);letter-spacing:.06em;">REFINED GOODS</div>
+      <div class="wh-grid">${whBars(s.warehouse.refined, 'var(--emerald)')}</div>
+      <div style="margin:6px 0 2px;font-family:var(--fc);font-size:.26rem;color:rgba(255,255,255,.25);letter-spacing:.06em;">PRODUCTION LOG</div>
+      ${logHtml}
+    </div>
+    <!-- TRADE -->
+    <div class="insp-section">
+      <div class="insp-section-title">Trade</div>
+      ${tradeHtml}
+    </div>
+  `;
+}
+
+// ── Roster ─────────────────────────────────────────────────
+function renderRoster() {
+  const list = document.getElementById('roster-list');
+  document.getElementById('roster-count').textContent = settlements.length;
+
+  if (settlements.length === 0) {
+    list.innerHTML = '<div style="padding:10px 12px;font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.2);">Run BUILD to generate settlements</div>';
+    return;
+  }
+
+  list.innerHTML = settlements.map(s => {
+    const col  = factionColor(s.faction);
+    const sel  = selectedSettlement?.id === s.id ? ' selected' : '';
+    return `
+      <div class="roster-row${sel}" onclick="selectSettlement('${s.id}')">
+        <div class="roster-dot" style="background:${col}"></div>
+        <span class="roster-name">${s.name}</span>
+        <span class="roster-pop">${s.population.toLocaleString()}</span>
+        <span class="roster-wealth">${s.civic_wealth.toFixed(0)}g</span>
+      </div>`;
+  }).join('');
+}
+
+function selectSettlement(id) {
+  selectedSettlement = settlements.find(s => s.id === id) || null;
+
+  if (selectedSettlement) {
+    // Center camera on settlement
+    const wx = selectedSettlement.world.x;
+    const wy = selectedSettlement.world.y;
+    camScale = Math.min(camScale * 1.5, 4);
+    camX = canvas.width  / 2 - wx * camScale;
+    camY = canvas.height / 2 - wy * camScale;
+
+    // Show zoom panel
+    const zp = document.getElementById('zoom-panel');
+    zp.classList.add('visible');
+    setTimeout(() => { resizeZoomCanvas(); drawZoomPanel(); }, 50);
+  } else {
+    document.getElementById('zoom-panel').classList.remove('visible');
+  }
+
+  renderRoster();
+  renderInspector();
+}
+
+// ── Status bar update ──────────────────────────────────────
+function updateStatusBar() {
+  document.getElementById('sb-settlements').textContent = settlements.length;
+  const totalPop = settlements.reduce((a, s) => a + s.population, 0);
+  document.getElementById('sb-population').textContent = totalPop > 0 ? totalPop.toLocaleString() : '—';
+  document.getElementById('sb-routes').textContent = tradeRoutes.length;
+  document.getElementById('sb-tick').textContent = economyTick;
+}
+
+// ── BUILD pipeline ─────────────────────────────────────────
+const PIPELINE_STEPS = [
+  { id: 'SSE SPA', label: 'Evaluating site suitability…'     },
+  { id: 'ZPA DAT', label: 'Allocating zones & parcels…'      },
+  { id: 'SNR SPA', label: 'Routing street networks…'         },
+  { id: 'PSE SPA', label: 'Extruding building volumes…'      },
+  { id: 'ETR SPA', label: 'Mapping trade routes…'            },
+  { id: 'SCL DAT', label: 'Initialising supply chains…'      },
+  { id: 'URB UIX', label: 'Rendering urban layer…'           },
+];
+
+function setStatus(msg) {
+  document.getElementById('sb-status-text').textContent = msg;
+}
+
+async function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+async function runBuildPipeline() {
+  const grid = loadTerrain();
+  if (!grid || grid.length === 0) {
+    setStatus('ERROR: No terrain snapshot found — run Module 01 first');
+    return;
+  }
+  hexGrid = grid;
+  needHexRedraw = true;
+  checkTerrainLink();
+  offscreenHex = null;
+
+  const overlay    = document.getElementById('gen-overlay');
+  const stepEl     = document.getElementById('gen-step-text');
+  const barEl      = document.getElementById('gen-bar');
+  const subEl      = document.getElementById('gen-sub-text');
+  overlay.classList.add('active');
+
+  const count = parseInt(document.getElementById('settle-count').value) || 5;
+  const total = PIPELINE_STEPS.length;
+
+  function setStep(i, label) {
+    stepEl.textContent = PIPELINE_STEPS[i].id + ' — ' + label;
+    barEl.style.width  = ((i + 1) / total * 100) + '%';
+    subEl.textContent  = `Step ${i+1} of ${total}`;
+  }
+
+  await sleep(80);
+
+  // Step 0 — SSE SPA
+  setStep(0, PIPELINE_STEPS[0].label);
+  await sleep(200);
+  const chosen = pickSettlementHexes(hexGrid, count);
+
+  // Step 1 — ZPA DAT
+  setStep(1, PIPELINE_STEPS[1].label);
+  await sleep(180);
+  settlements = chosen.map((c, i) => createSettlement(c.hex, c.faction, i));
+  selectedSettlement = null;
+
+  // Step 2 — SNR SPA
+  setStep(2, PIPELINE_STEPS[2].label);
+  await sleep(200);
+  for (const s of settlements) {
+    s.streets = generateStreets(s.world.x, s.world.y, s.faction, s._seed);
+  }
+
+  // Step 3 — PSE SPA
+  setStep(3, PIPELINE_STEPS[3].label);
+  await sleep(220);
+  for (const s of settlements) {
+    s.buildings = placeBuildings(s.streets, s.faction, s._hex?.resources || [], s._seed);
+  }
+
+  // Step 4 — ETR SPA
+  setStep(4, PIPELINE_STEPS[4].label);
+  await sleep(180);
+  tradeRoutes = buildTradeRoutes(settlements);
+
+  // Step 5 — SCL DAT
+  setStep(5, PIPELINE_STEPS[5].label);
+  await sleep(160);
+  tickEconomy(settlements, hexGrid); // initial harvest
+  economyTick = 0; // reset counter — initial tick doesn't count
+
+  // Step 6 — URB UIX
+  setStep(6, PIPELINE_STEPS[6].label);
+  await sleep(200);
+  centerCamera();
+
+  // Persist snapshot
+  try {
+    const snap = settlements.map(s => ({
+      id: s.id, name: s.name, hex_id: s.hex_id, axial: s.axial,
+      world: s.world, faction: s.faction, region_name: s.region_name,
+      danger_level: s.danger_level, population: s.population,
+      growth_rate: s.growth_rate, civic_wealth: s.civic_wealth,
+      warehouse: s.warehouse, production_log: s.production_log,
+      trade_partners: s.trade_partners,
+    }));
+    localStorage.setItem('qa-architect-snapshot', JSON.stringify(snap));
+    window.parent.postMessage({type:'hub:storage:write',key:'qa-architect-snapshot',value:JSON.stringify(snap)},'*');
+  } catch(e) { console.warn('Snapshot write failed', e); }
+
+  await sleep(100);
+  overlay.classList.remove('active');
+  barEl.style.width = '0%';
+
+  renderRoster();
+  renderInspector();
+  updateStatusBar();
+  setStatus('BUILD complete — ' + settlements.length + ' settlements placed');
+}
+
+// ── TICK ECONOMY button ────────────────────────────────────
+document.getElementById('btn-tick').addEventListener('click', () => {
+  if (settlements.length === 0) {
+    setStatus('No settlements — run BUILD first');
+    return;
+  }
+  tickEconomy(settlements, hexGrid);
+  renderInspector();
+  renderRoster();
+  updateStatusBar();
+  setStatus('Economy tick ' + economyTick + ' — wealth updated');
+
+  // Persist
+  try {
+    const snap = settlements.map(s => ({
+      id: s.id, name: s.name, hex_id: s.hex_id, axial: s.axial,
+      world: s.world, faction: s.faction, region_name: s.region_name,
+      danger_level: s.danger_level, population: s.population,
+      growth_rate: s.growth_rate, civic_wealth: s.civic_wealth,
+      warehouse: s.warehouse, production_log: s.production_log,
+      trade_partners: s.trade_partners,
+    }));
+    localStorage.setItem('qa-architect-snapshot', JSON.stringify(snap));
+    window.parent.postMessage({type:'hub:storage:write',key:'qa-architect-snapshot',value:JSON.stringify(snap)},'*');
+  } catch(e) {}
+});
+
+// ── BUILD button ───────────────────────────────────────────
+document.getElementById('btn-build').addEventListener('click', runBuildPipeline);
+
+// ── EXPORT JSON ────────────────────────────────────────────
+document.getElementById('btn-export').addEventListener('click', () => {
+  if (settlements.length === 0) { setStatus('Nothing to export — run BUILD first'); return; }
+  const data = {
+    module: '03-architect',
+    generated: new Date().toISOString(),
+    economy_tick: economyTick,
+    settlements: settlements.map(s => ({
+      id: s.id, name: s.name, hex_id: s.hex_id, axial: s.axial,
+      world: s.world, faction: s.faction, region_name: s.region_name,
+      danger_level: s.danger_level, population: s.population,
+      growth_rate: s.growth_rate, civic_wealth: s.civic_wealth,
+      warehouse: s.warehouse, production_log: s.production_log,
+      trade_partners: s.trade_partners,
+      buildings_count: s.buildings.length,
+      streets_arteries: s.streets.arteries.length,
+    })),
+    trade_routes: tradeRoutes,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'qa-architect-snapshot.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  setStatus('Exported JSON snapshot');
+});
+
+// ── Pan & Zoom ─────────────────────────────────────────────
+canvas.addEventListener('mousedown', e => {
+  if (e.button !== 0) return;
+  isPanning  = true;
+  panStartX  = e.clientX;
+  panStartY  = e.clientY;
+  camStartX  = camX;
+  camStartY  = camY;
+  canvas.classList.add('panning');
+});
+window.addEventListener('mousemove', e => {
+  if (!isPanning) return;
+  camX = camStartX + (e.clientX - panStartX);
+  camY = camStartY + (e.clientY - panStartY);
+});
+window.addEventListener('mouseup', () => {
+  isPanning = false;
+  canvas.classList.remove('panning');
+});
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const rect   = canvas.getBoundingClientRect();
+  const mx     = e.clientX - rect.left;
+  const my     = e.clientY - rect.top;
+  const delta  = e.deltaY > 0 ? 0.88 : 1.14;
+  const newS   = Math.min(Math.max(camScale * delta, 0.15), 8);
+  camX = mx - (mx - camX) * (newS / camScale);
+  camY = my - (my - camY) * (newS / camScale);
+  camScale = newS;
+}, { passive: false });
+
+// Click to select settlement
+canvas.addEventListener('click', e => {
+  if (Math.abs(e.clientX - panStartX) > 4 || Math.abs(e.clientY - panStartY) > 4) return;
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  let hit = null, hitDist = Infinity;
+  for (const s of settlements) {
+    const p    = worldToScreen(s.world.x, s.world.y);
+    const dist = Math.hypot(mx - p.x, my - p.y);
+    const rad  = Math.max(12, Math.min(40, 12 + (s.population / 3200) * 28)) * Math.max(0.5, camScale * 0.8) + 8;
+    if (dist < rad && dist < hitDist) {
+      hitDist = dist;
+      hit = s;
+    }
+  }
+
+  if (hit) {
+    selectSettlement(hit.id);
+  } else {
+    selectedSettlement = null;
+    document.getElementById('zoom-panel').classList.remove('visible');
+    renderRoster();
+    renderInspector();
+  }
+});
+
+// ── Init ───────────────────────────────────────────────────
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Architect`;
+  }
+  if (d.type === 'hub:layer:activate') {
+    hexGrid = checkTerrainLink();
+    if (hexGrid) { needHexRedraw = true; }
+    render();
+  }
+});
+
+(function init() {
+  hexGrid = checkTerrainLink();
+  if (hexGrid) {
+    needHexRedraw = true;
+    centerCamera();
+  }
+  renderInspector();
+  renderRoster();
+  updateStatusBar();
+  setStatus('03 · ARCHITECT ready — press BUILD to forge settlements');
+})();
+
+// ── Theme sync (receives ql:theme from hub) ─────────────────────────────────
+(function() {
+  const MAP = {
+    'c-bg':      '--bg',
+    'c-surf':    '--surface',
+    'c-surf2':   '--surface2',
+    'c-edge':    '--edge',
+    'c-edge-hi': '--edge-hi',
+    'c-accent1': '--venturan',
+    'c-accent2': '--amber',
+    'c-accent3': '--emerald',
+    'c-accent4': '--fusion',
+    'c-danger':  '--blood',
+    'c-warm':    '--solari',
+    'c-text':    '--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+</script>
+</body>
+</html>

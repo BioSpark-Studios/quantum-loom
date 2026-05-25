@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Atlas — 09 · Sequencer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04050a;
+  --surface:rgba(8,11,18,.98);
+  --surface2:rgba(12,16,24,.97);
+  --edge:rgba(255,255,255,.055);
+  --edge-hi:rgba(255,255,255,.12);
+  --venturan:#b1d0f0;
+  --amber:#e8b84b;
+  --emerald:#4dc8a0;
+  --solari:#f98f3b;
+  --fusion:#9b7fd4;
+  --blood:#d45b5b;
+  --totem:#7fd4c8;
+  --sequencer:#b08030;
+  --text:#e2e8f0;
+  --fm:'Orbitron',monospace;
+  --fd:'Space Grotesk',sans-serif;
+  --fc:'JetBrains Mono',monospace;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--fd);font-size:15px;}
+#shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOP BAR ── */
+#top-bar{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-bottom:1px solid var(--edge);
+  position:relative;z-index:20;
+}
+.tb-module-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tb-glyph{
+  width:24px;height:24px;border:1.5px solid var(--sequencer);
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;color:var(--sequencer);
+  animation:breathe 4s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes breathe{
+  0%,100%{opacity:.7;box-shadow:0 0 4px rgba(176,128,48,.2);}
+  50%{opacity:1;box-shadow:0 0 12px rgba(176,128,48,.55);}
+}
+.tb-module-id{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--sequencer);white-space:nowrap;
+}
+.tb-subcrest{
+  font-family:var(--fm);font-size:.36rem;letter-spacing:.18em;
+  color:rgba(176,128,48,.45);text-transform:uppercase;
+}
+
+/* Transport controls in top bar */
+.tb-transport{
+  display:flex;align-items:center;gap:4px;
+  padding:0 12px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.tp-btn{
+  width:28px;height:28px;border-radius:3px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;
+  color:rgba(255,255,255,.45);font-size:.7rem;
+}
+.tp-btn:hover{background:rgba(255,255,255,.07);border-color:var(--edge-hi);color:#fff;}
+.tp-btn.active{
+  border-color:rgba(176,128,48,.55);background:rgba(176,128,48,.15);
+  color:var(--sequencer);box-shadow:0 0 10px rgba(176,128,48,.25);
+}
+.tp-btn.stop-btn{color:rgba(212,91,91,.6);}
+.tp-btn.stop-btn:hover{border-color:rgba(212,91,91,.4);color:var(--blood);}
+
+.tb-bpm-block{
+  display:flex;align-items:center;gap:6px;
+  padding:0 12px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.bpm-label{font-family:var(--fc);font-size:.3rem;letter-spacing:.12em;color:rgba(255,255,255,.3);text-transform:uppercase;}
+.bpm-input{
+  width:46px;background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  border-radius:3px;padding:3px 6px;
+  font-family:var(--fc);font-size:.42rem;color:var(--sequencer);text-align:center;
+  outline:none;transition:border-color .15s;
+}
+.bpm-input:focus{border-color:rgba(176,128,48,.45);}
+.tsig-select{
+  background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  border-radius:3px;padding:3px 6px;
+  font-family:var(--fc);font-size:.38rem;color:rgba(255,255,255,.6);
+  outline:none;cursor:pointer;
+}
+.tsig-select option{background:#0a0e18;}
+.pos-display{
+  font-family:var(--fc);font-size:.38rem;color:var(--sequencer);
+  letter-spacing:.05em;padding:4px 8px;
+  border:1px solid rgba(176,128,48,.2);border-radius:3px;
+  background:rgba(176,128,48,.05);min-width:90px;text-align:center;
+}
+
+.tb-chapter-select{
+  display:flex;align-items:center;gap:6px;
+  padding:0 12px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.chap-label{font-family:var(--fc);font-size:.3rem;letter-spacing:.12em;color:rgba(255,255,255,.3);text-transform:uppercase;}
+.chap-select{
+  background:rgba(255,255,255,.04);border:1px solid var(--edge);
+  border-radius:3px;padding:3px 8px;
+  font-family:var(--fc);font-size:.38rem;color:rgba(255,255,255,.65);
+  outline:none;cursor:pointer;max-width:160px;
+}
+.chap-select option{background:#0a0e18;}
+
+.tb-spacer{flex:1;}
+.tb-upstream{
+  display:flex;align-items:center;gap:4px;
+  padding:0 10px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.up-chip{
+  font-family:var(--fc);font-size:.3rem;letter-spacing:.06em;
+  padding:2px 7px;border-radius:2px;border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.3);text-transform:uppercase;transition:all .25s;
+}
+.up-chip.lit{border-color:rgba(77,200,160,.45);color:var(--emerald);background:rgba(77,200,160,.07);}
+
+.tb-actions{
+  display:flex;gap:4px;padding:0 10px;height:100%;align-items:center;
+  border-left:1px solid var(--edge);flex-shrink:0;
+}
+.tb-btn{
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .12s;
+  border:1px solid var(--edge);background:transparent;color:rgba(255,255,255,.45);
+  white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge-hi);color:#fff;}
+.tb-btn.hot{
+  border-color:rgba(176,128,48,.55);background:rgba(176,128,48,.12);
+  color:var(--sequencer);font-weight:600;
+}
+.tb-btn.hot:hover{background:rgba(176,128,48,.2);box-shadow:0 0 14px rgba(176,128,48,.3);}
+
+/* ── BODY ── */
+#body{flex:1;display:flex;overflow:hidden;}
+
+/* ── LEFT PANEL ── */
+#left-panel{
+  width:240px;flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.lp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.lp-scroll::-webkit-scrollbar{width:3px;}
+.lp-scroll::-webkit-scrollbar-track{background:transparent;}
+.lp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+.sec-header{
+  padding:7px 10px 6px;border-bottom:1px solid var(--edge);
+  font-family:var(--fm);font-size:.32rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--sequencer);opacity:.85;flex-shrink:0;
+  display:flex;align-items:center;gap:6px;
+}
+.sec-header-count{
+  font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.3);
+  padding:1px 5px;background:rgba(255,255,255,.04);
+  border:1px solid var(--edge);border-radius:8px;margin-left:auto;
+}
+
+/* Component matrix 4×4 */
+.comp-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;
+  padding:8px;
+}
+.comp-card{
+  background:rgba(255,255,255,.025);border:1px solid var(--edge);
+  border-radius:4px;padding:6px 7px;cursor:pointer;
+  transition:all .15s;position:relative;
+}
+.comp-card:hover{background:rgba(176,128,48,.06);border-color:rgba(176,128,48,.25);}
+.comp-card.active{
+  background:rgba(176,128,48,.1);border-color:rgba(176,128,48,.45);
+  box-shadow:0 0 10px rgba(176,128,48,.15);
+}
+.cc-code{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.05em;
+  color:var(--sequencer);margin-bottom:3px;
+}
+.cc-name{
+  font-family:var(--fd);font-size:.35rem;
+  color:rgba(255,255,255,.75);line-height:1.3;margin-bottom:3px;
+}
+.cc-footer{display:flex;align-items:center;justify-content:space-between;}
+.cc-wire{
+  font-family:var(--fc);font-size:.25rem;letter-spacing:.05em;
+  padding:1px 4px;border-radius:2px;border:1px solid currentColor;
+  opacity:.65;
+}
+.wire-TMP{color:var(--venturan);}
+.wire-EVT{color:var(--solari);}
+.wire-LGC{color:var(--fusion);}
+.wire-VIS{color:var(--totem);}
+.wire-BHV{color:var(--emerald);}
+.wire-NAR{color:var(--amber);}
+.wire-DAT{color:var(--blood);}
+.cc-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);
+  flex-shrink:0;
+}
+.cc-dot.on{background:var(--emerald);border-color:var(--emerald);box-shadow:0 0 5px var(--emerald);}
+.cc-dot.warn{background:var(--amber);border-color:var(--amber);}
+
+/* Layer dividers */
+.layer-divider{
+  padding:4px 8px 2px;
+  font-family:var(--fm);font-size:.26rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.2);
+  border-top:1px solid var(--edge);margin-top:2px;
+}
+
+/* ── CENTER / CANVAS ── */
+#center{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);position:relative;}
+
+.timeline-ruler{
+  height:24px;flex-shrink:0;background:var(--surface2);
+  border-bottom:1px solid var(--edge);position:relative;overflow:hidden;
+}
+#ruler-canvas{width:100%;height:100%;display:block;}
+
+.track-area{flex:1;position:relative;overflow:hidden;}
+#timeline-canvas{
+  display:block;width:100%;height:100%;cursor:crosshair;
+}
+
+.track-labels{
+  position:absolute;left:0;top:0;width:72px;
+  display:flex;flex-direction:column;pointer-events:none;z-index:5;
+}
+.track-label{
+  height:40px;display:flex;align-items:center;padding:0 8px;
+  font-family:var(--fc);font-size:.26rem;letter-spacing:.1em;
+  text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.03);
+  background:rgba(4,5,10,.92);backdrop-filter:blur(4px);
+  border-right:1px solid var(--edge);flex-shrink:0;
+}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:280px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--edge);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.rp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+.rp-scroll::-webkit-scrollbar{width:3px;}
+.rp-scroll::-webkit-scrollbar-track{background:transparent;}
+.rp-scroll::-webkit-scrollbar-thumb{background:var(--edge-hi);border-radius:2px;}
+
+/* Chapter list */
+.chapter-row{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 10px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,.025);
+  transition:background .1s;
+}
+.chapter-row:hover{background:rgba(255,255,255,.03);}
+.chapter-row.selected{background:rgba(176,128,48,.08);border-right:2px solid var(--sequencer);}
+.chap-swatch{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.chap-info{flex:1;min-width:0;}
+.chap-num{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.35);}
+.chap-name{font-family:var(--fd);font-size:.38rem;color:rgba(255,255,255,.8);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chap-meta{font-family:var(--fc);font-size:.28rem;color:rgba(255,255,255,.3);margin-top:1px;}
+
+/* Event inspector */
+.inspector-block{padding:8px 10px;border-bottom:1px solid var(--edge);}
+.insp-title{
+  font-family:var(--fm);font-size:.3rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--sequencer);opacity:.8;margin-bottom:6px;
+}
+.insp-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:2px 0;border-bottom:1px solid rgba(255,255,255,.02);
+}
+.insp-key{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.35);letter-spacing:.04em;}
+.insp-val{font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.7);}
+.insp-val.accent{color:var(--sequencer);}
+.insp-val.ok{color:var(--emerald);}
+.insp-val.warn{color:var(--amber);}
+.insp-empty{
+  font-family:var(--fc);font-size:.32rem;color:rgba(255,255,255,.2);
+  text-align:center;padding:12px 0;letter-spacing:.08em;
+}
+
+/* Snapshot preview */
+.snap-block{padding:8px 10px;}
+.snap-code{
+  font-family:var(--fc);font-size:.28rem;line-height:1.6;
+  color:rgba(255,255,255,.4);word-break:break-all;
+}
+.snap-code .sk{color:rgba(176,128,48,.8);}
+.snap-code .sv{color:rgba(177,208,240,.7);}
+.snap-code .sn{color:rgba(77,200,160,.7);}
+.snap-code .sb{color:rgba(155,127,212,.7);}
+
+/* Status bar */
+#status-bar{
+  height:26px;flex-shrink:0;
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);border-top:1px solid var(--edge);
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.06em;
+  color:rgba(255,255,255,.3);overflow:hidden;
+}
+.sb-seg{
+  display:flex;align-items:center;gap:5px;
+  padding:0 10px;border-right:1px solid var(--edge);height:100%;
+  white-space:nowrap;
+}
+.sb-dot{
+  width:5px;height:5px;border-radius:50%;background:var(--emerald);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+.sb-dot.off{background:rgba(255,255,255,.15);animation:none;}
+.sb-dot.play{background:var(--sequencer);box-shadow:0 0 5px var(--sequencer);}
+.sb-spacer{flex:1;}
+.sb-val{color:rgba(255,255,255,.55);}
+
+/* Scrollbar for timeline */
+.tl-scroll-bar{
+  height:10px;flex-shrink:0;background:rgba(255,255,255,.02);
+  border-top:1px solid var(--edge);position:relative;cursor:pointer;
+}
+.tl-scroll-thumb{
+  position:absolute;height:100%;background:rgba(176,128,48,.25);
+  border-radius:2px;cursor:grab;min-width:40px;
+  border:1px solid rgba(176,128,48,.2);
+}
+.tl-scroll-thumb:active{cursor:grabbing;}
+
+/* Zoom controls */
+.zoom-controls{
+  display:flex;align-items:center;gap:2px;
+  padding:0 6px;border-left:1px solid var(--edge);height:100%;flex-shrink:0;
+}
+.zoom-btn{
+  width:18px;height:18px;border-radius:2px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:1px solid var(--edge);
+  background:transparent;color:rgba(255,255,255,.4);
+  font-size:.55rem;transition:all .1s;line-height:1;
+}
+.zoom-btn:hover{background:rgba(255,255,255,.06);color:#fff;}
+
+/* Loop region overlay */
+.loop-badge{
+  font-family:var(--fc);font-size:.28rem;letter-spacing:.08em;
+  padding:2px 7px;border-radius:2px;
+  border:1px solid rgba(176,128,48,.3);
+  color:rgba(176,128,48,.7);text-transform:uppercase;
+}
+.loop-badge.on{
+  border-color:rgba(176,128,48,.6);
+  color:var(--sequencer);background:rgba(176,128,48,.1);
+}
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- ── TOP BAR ── -->
+  <div id="top-bar">
+    <div class="tb-module-chip">
+      <div class="tb-glyph">▶</div>
+      <div>
+        <div class="tb-module-id">09 · SEQUENCER</div>
+        <div class="tb-subcrest">CHRONICLE</div>
+      </div>
+    </div>
+
+    <!-- Transport -->
+    <div class="tb-transport">
+      <button class="tp-btn" id="btn-play" title="Play">▶</button>
+      <button class="tp-btn" id="btn-pause" title="Pause">⏸</button>
+      <button class="tp-btn stop-btn" id="btn-stop" title="Stop">■</button>
+      <button class="tp-btn" id="btn-loop" title="Loop">⟳</button>
+      <div style="width:8px;"></div>
+      <div class="pos-display" id="pos-display">001:1:000</div>
+    </div>
+
+    <!-- BPM / Time sig -->
+    <div class="tb-bpm-block">
+      <span class="bpm-label">BPM</span>
+      <input class="bpm-input" id="bpm-input" type="number" min="20" max="300" value="120">
+      <span class="bpm-label">SIG</span>
+      <select class="tsig-select" id="tsig-select">
+        <option value="4/4">4/4</option>
+        <option value="3/4">3/4</option>
+        <option value="6/8">6/8</option>
+        <option value="2/4">2/4</option>
+      </select>
+    </div>
+
+    <!-- Chapter jump -->
+    <div class="tb-chapter-select">
+      <span class="chap-label">CHAPTER</span>
+      <select class="chap-select" id="chap-jump-select">
+        <option value="">Jump to…</option>
+      </select>
+    </div>
+
+    <div class="tb-spacer"></div>
+
+    <!-- Upstream chips -->
+    <div class="tb-upstream">
+      <div class="up-chip" id="chip-behavior">BEHAVIOR</div>
+      <div class="up-chip" id="chip-choreo">CHOREO</div>
+      <div class="up-chip" id="chip-society">SOCIETY</div>
+    </div>
+
+    <div class="tb-actions">
+      <button class="tb-btn" id="btn-add-chapter">+ CHAPTER</button>
+      <button class="tb-btn" id="btn-add-event">+ EVENT</button>
+      <button class="tb-btn hot" id="btn-export">EXPORT</button>
+    </div>
+  </div>
+
+  <!-- ── BODY ── -->
+  <div id="body">
+
+    <!-- LEFT PANEL — Component Matrix -->
+    <div id="left-panel">
+      <div class="sec-header">
+        COMPONENT MATRIX
+        <span class="sec-header-count">16</span>
+      </div>
+      <div class="lp-scroll">
+        <div class="layer-divider">I — TIMELINE</div>
+        <div class="comp-grid" id="comp-grid-I">
+          <div class="comp-card active" data-comp="CBM" data-layer="I">
+            <div class="cc-code">CBM</div>
+            <div class="cc-name">Chapter Boundary Marker</div>
+            <div class="cc-footer"><span class="cc-wire wire-TMP">TMP</span><span class="cc-dot on"></span></div>
+          </div>
+          <div class="comp-card" data-comp="SBI" data-layer="I">
+            <div class="cc-code">SBI</div>
+            <div class="cc-name">Scene Beat Indexer</div>
+            <div class="cc-footer"><span class="cc-wire wire-TMP">TMP</span><span class="cc-dot on"></span></div>
+          </div>
+          <div class="comp-card" data-comp="ADP" data-layer="I">
+            <div class="cc-code">ADP</div>
+            <div class="cc-name">Arc Duration Planner</div>
+            <div class="cc-footer"><span class="cc-wire wire-TMP">TMP</span><span class="cc-dot warn"></span></div>
+          </div>
+          <div class="comp-card" data-comp="ECD" data-layer="I">
+            <div class="cc-code">ECD</div>
+            <div class="cc-name">Epoch Clock Driver</div>
+            <div class="cc-footer"><span class="cc-wire wire-TMP">TMP</span><span class="cc-dot on"></span></div>
+          </div>
+        </div>
+
+        <div class="layer-divider">II — EVENTS</div>
+        <div class="comp-grid" id="comp-grid-II">
+          <div class="comp-card" data-comp="ETR" data-layer="II">
+            <div class="cc-code">ETR</div>
+            <div class="cc-name">Event Trigger Registry</div>
+            <div class="cc-footer"><span class="cc-wire wire-EVT">EVT</span><span class="cc-dot on"></span></div>
+          </div>
+          <div class="comp-card" data-comp="CEC" data-layer="II">
+            <div class="cc-code">CEC</div>
+            <div class="cc-name">Cause-Effect Chain Builder</div>
+            <div class="cc-footer"><span class="cc-wire wire-LGC">LGC</span><span class="cc-dot warn"></span></div>
+          </div>
+          <div class="comp-card" data-comp="CBR" data-layer="II">
+            <div class="cc-code">CBR</div>
+            <div class="cc-name">Conditional Branch Resolver</div>
+            <div class="cc-footer"><span class="cc-wire wire-LGC">LGC</span><span class="cc-dot on"></span></div>
+          </div>
+          <div class="comp-card" data-comp="CTS" data-layer="II">
+            <div class="cc-code">CTS</div>
+            <div class="cc-name">Cooldown Timer Stack</div>
+            <div class="cc-footer"><span class="cc-wire wire-TMP">TMP</span><span class="cc-dot on"></span></div>
+          </div>
+        </div>
+
+        <div class="layer-divider">III — TRANSITIONS</div>
+        <div class="comp-grid" id="comp-grid-III">
+          <div class="comp-card" data-comp="FES" data-layer="III">
+            <div class="cc-code">FES</div>
+            <div class="cc-name">Fade Envelope Shaper</div>
+            <div class="cc-footer"><span class="cc-wire wire-VIS">VIS</span><span class="cc-dot on"></span></div>
+          </div>
+          <div class="comp-card" data-comp="SCM" data-layer="III">
+            <div class="cc-code">SCM</div>
+            <div class="cc-name">Scene Crossfade Manager</div>
+            <div class="cc-footer"><span class="cc-wire wire-VIS">VIS</span><span class="cc-dot on"></span></div>
+          </div>
+          <div class="comp-card" data-comp="ASB" data-layer="III">
+            <div class="cc-code">ASB</div>
+            <div class="cc-name">Ambient State Blender</div>
+            <div class="cc-footer"><span class="cc-wire wire-BHV">BHV</span><span class="cc-dot warn"></span></div>
+          </div>
+          <div class="comp-card" data-comp="NGC" data-layer="III">
+            <div class="cc-code">NGC</div>
+            <div class="cc-name">Narrative Gate Controller</div>
+            <div class="cc-footer"><span class="cc-wire wire-LGC">LGC</span><span class="cc-dot on"></span></div>
+          </div>
+        </div>
+
+        <div class="layer-divider">IV — OUTPUT</div>
+        <div class="comp-grid" id="comp-grid-IV">
+          <div class="comp-card" data-comp="ELW" data-layer="IV">
+            <div class="cc-code">ELW</div>
+            <div class="cc-name">Event Log Writer</div>
+            <div class="cc-footer"><span class="cc-wire wire-NAR">NAR</span><span class="cc-dot on"></span></div>
+          </div>
+          <div class="comp-card" data-comp="SMB" data-layer="IV">
+            <div class="cc-code">SMB</div>
+            <div class="cc-name">Scene Manifest Builder</div>
+            <div class="cc-footer"><span class="cc-wire wire-NAR">NAR</span><span class="cc-dot on"></span></div>
+          </div>
+          <div class="comp-card" data-comp="PSE" data-layer="IV">
+            <div class="cc-code">PSE</div>
+            <div class="cc-name">Playback State Exporter</div>
+            <div class="cc-footer"><span class="cc-wire wire-DAT">DAT</span><span class="cc-dot warn"></span></div>
+          </div>
+          <div class="comp-card" data-comp="CPS" data-layer="IV">
+            <div class="cc-code">CPS</div>
+            <div class="cc-name">Chronicle Packet Sender</div>
+            <div class="cc-footer"><span class="cc-wire wire-NAR">NAR</span><span class="cc-dot on"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER — DAW Timeline -->
+    <div id="center">
+      <div class="timeline-ruler">
+        <canvas id="ruler-canvas"></canvas>
+      </div>
+      <div class="track-area" id="track-area">
+        <!-- Track labels overlay -->
+        <div class="track-labels" id="track-labels">
+          <div class="track-label" style="color:var(--sequencer);">CHAPTER</div>
+          <div class="track-label" style="color:var(--amber);">SCENE</div>
+          <div class="track-label" style="color:var(--solari);">EVENTS</div>
+          <div class="track-label" style="color:var(--emerald);">BEHAVIOR</div>
+          <div class="track-label" style="color:#b08060;">SOCIETY</div>
+          <div class="track-label" style="color:var(--fusion);">TRIGGER</div>
+        </div>
+        <canvas id="timeline-canvas"></canvas>
+      </div>
+      <!-- Scrollbar -->
+      <div class="tl-scroll-bar" id="tl-scroll-bar">
+        <div class="tl-scroll-thumb" id="tl-scroll-thumb"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div id="right-panel">
+      <div class="sec-header">SEQUENCER CONTROLS</div>
+      <div class="rp-scroll" id="rp-scroll">
+
+        <!-- Transport summary -->
+        <div class="inspector-block">
+          <div class="insp-title">TRANSPORT STATE</div>
+          <div class="insp-row">
+            <span class="insp-key">STATUS</span>
+            <span class="insp-val" id="insp-status">STOPPED</span>
+          </div>
+          <div class="insp-row">
+            <span class="insp-key">POSITION</span>
+            <span class="insp-val accent" id="insp-pos">Bar 1, Beat 1</span>
+          </div>
+          <div class="insp-row">
+            <span class="insp-key">LOOP</span>
+            <span class="insp-val" id="insp-loop">OFF</span>
+          </div>
+          <div class="insp-row">
+            <span class="insp-key">ELAPSED</span>
+            <span class="insp-val" id="insp-elapsed">0:00.000</span>
+          </div>
+        </div>
+
+        <!-- Chapter list -->
+        <div class="sec-header">
+          CHAPTERS
+          <span class="sec-header-count" id="chap-count">0</span>
+        </div>
+        <div id="chapter-list"></div>
+
+        <!-- Scene list -->
+        <div class="sec-header">
+          SCENES
+          <span class="sec-header-count" id="scene-count">0</span>
+        </div>
+        <div id="scene-list"></div>
+
+        <!-- Event Inspector -->
+        <div class="sec-header">EVENT INSPECTOR</div>
+        <div class="inspector-block" id="event-inspector">
+          <div class="insp-empty" id="inspector-empty">Select a block on the timeline</div>
+          <div id="inspector-fields" style="display:none;">
+            <div class="insp-row">
+              <span class="insp-key">TYPE</span>
+              <span class="insp-val accent" id="itype">—</span>
+            </div>
+            <div class="insp-row">
+              <span class="insp-key">NAME</span>
+              <span class="insp-val" id="iname">—</span>
+            </div>
+            <div class="insp-row">
+              <span class="insp-key">START BAR</span>
+              <span class="insp-val" id="istart">—</span>
+            </div>
+            <div class="insp-row">
+              <span class="insp-key">DURATION</span>
+              <span class="insp-val" id="iduration">—</span>
+            </div>
+            <div class="insp-row">
+              <span class="insp-key">TRIGGER</span>
+              <span class="insp-val" id="itrigger">—</span>
+            </div>
+            <div class="insp-row">
+              <span class="insp-key">DOWNSTREAM</span>
+              <span class="insp-val" id="idownstream">—</span>
+            </div>
+            <div class="insp-row">
+              <span class="insp-key">TRACK</span>
+              <span class="insp-val" id="itrack">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upstream snapshot status -->
+        <div class="sec-header">UPSTREAM SNAPSHOTS</div>
+        <div class="inspector-block">
+          <div class="insp-row">
+            <span class="insp-key">BEHAVIOR</span>
+            <span class="insp-val" id="up-behavior-status">—</span>
+          </div>
+          <div class="insp-row">
+            <span class="insp-key">CHOREO</span>
+            <span class="insp-val" id="up-choreo-status">—</span>
+          </div>
+          <div class="insp-row">
+            <span class="insp-key">SOCIETY</span>
+            <span class="insp-val" id="up-society-status">—</span>
+          </div>
+        </div>
+
+        <!-- Snapshot preview -->
+        <div class="sec-header">SNAPSHOT PREVIEW</div>
+        <div class="snap-block">
+          <div class="snap-code" id="snap-preview">loading…</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div id="status-bar">
+    <div class="sb-seg">
+      <div class="sb-dot" id="sb-dot"></div>
+      <span id="sb-state">READY</span>
+    </div>
+    <div class="sb-seg">
+      <span>MODULE</span>
+      <span class="sb-val">09 · SEQUENCER</span>
+    </div>
+    <div class="sb-seg">
+      <span>DEPT</span>
+      <span class="sb-val">NarrativeSystems</span>
+    </div>
+    <div class="sb-seg">
+      <span>TRACKS</span>
+      <span class="sb-val" id="sb-tracks">6</span>
+    </div>
+    <div class="sb-seg">
+      <span>BLOCKS</span>
+      <span class="sb-val" id="sb-blocks">0</span>
+    </div>
+    <div class="sb-seg">
+      <span>EVENTS</span>
+      <span class="sb-val" id="sb-events">0</span>
+    </div>
+    <div class="sb-spacer"></div>
+    <div class="sb-seg" style="border-left:1px solid var(--edge);border-right:none;">
+      <span>BPM</span>
+      <span class="sb-val" id="sb-bpm">120</span>
+    </div>
+    <div class="sb-seg" style="border-right:none;">
+      <span>SNAP</span>
+      <span class="sb-val" id="sb-snap">qa-sequencer-snapshot</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────
+// QUANTUM ATLAS · MODULE 09 · SEQUENCER · NarrativeSystems
+// Narrative timeline and event sequencer — DAW-style
+// ─────────────────────────────────────────────────────────────────────────
+(function() {
+'use strict';
+
+// ── Constants & Config ─────────────────────────────────────────────────
+const TRACK_H    = 40;
+const TRACK_N    = 6;
+const LABEL_W    = 72;
+const TOTAL_BARS = 64;
+const MIN_ZOOM   = 0.5;
+const MAX_ZOOM   = 8;
+
+const TRACK_NAMES = ['CHAPTER','SCENE','EVENTS','BEHAVIOR','SOCIETY','TRIGGER'];
+const TRACK_COLORS = {
+  CHAPTER:  '#b08030',
+  SCENE:    '#e8b84b',
+  EVENTS:   '#f98f3b',
+  BEHAVIOR: '#4dc8a0',
+  SOCIETY:  '#b08060',
+  TRIGGER:  '#9b7fd4'
+};
+
+const CHAPTER_NAMES = [
+  'The Awakening','Fractured Alliances','The Long Silence',
+  'Empire of Ash','Threshold Crossing','Chronicles Unbound',
+  'Tide of Iron','The Final Reckoning'
+];
+const SCENE_NAMES = [
+  'Opening Vista','First Contact','Council Debate','Market Square',
+  'Night Ambush','Temple Ritual','Diplomatic Summit','Battle Prelude',
+  'The Betrayal','Aftermath Silence','Homecoming','Final Gambit',
+  'Storm Warning','The Reckoning','Ghost Harbor','Dawn Patrol',
+  'Siege Begins','Last Stand'
+];
+const TRIGGER_LABELS = ['ON_ENTER','ON_EXIT','ON_DEATH','ON_TRADE','ON_WAR','ON_PEACE','ON_EVENT','ON_TIME'];
+
+// ── State ──────────────────────────────────────────────────────────────
+const S = {
+  bpm:        120,
+  timeSig:    '4/4',
+  playing:    false,
+  paused:     false,
+  loop:       false,
+  playheadBar: 0,
+  playheadFrac: 0,
+  scrollBar:  0,
+  zoom:       1,
+  selectedBlock: null,
+  activeComp: 'CBM',
+  animT:      0,
+  startTime:  null,
+  pauseTime:  null,
+  elapsed:    0,
+  blocks:     [],    // {id,track,startBar,durationBars,label,color,type}
+  events:     [],    // {id,bar,label,color,triggerCond}
+  triggers:   [],    // {id,bar,label}
+  chapters:   [],
+  scenes:     [],
+  upBehavior: null,
+  upChoreo:   null,
+  upSociety:  null,
+  nextId:     1,
+  dragBlock:  null,
+  dragOffsetBars: 0,
+  rafId:      null,
+  lastRaf:    0,
+};
+
+// ── DOM refs ───────────────────────────────────────────────────────────
+const rulerCanvas    = document.getElementById('ruler-canvas');
+const tlCanvas       = document.getElementById('timeline-canvas');
+const rCtx           = rulerCanvas.getContext('2d');
+const tCtx           = tlCanvas.getContext('2d');
+const trackArea      = document.getElementById('track-area');
+const posDisplay     = document.getElementById('pos-display');
+const bpmInput       = document.getElementById('bpm-input');
+const tsigSelect     = document.getElementById('tsig-select');
+const chapJump       = document.getElementById('chap-jump-select');
+const btnPlay        = document.getElementById('btn-play');
+const btnPause       = document.getElementById('btn-pause');
+const btnStop        = document.getElementById('btn-stop');
+const btnLoop        = document.getElementById('btn-loop');
+const btnAddChap     = document.getElementById('btn-add-chapter');
+const btnAddEvent    = document.getElementById('btn-add-event');
+const btnExport      = document.getElementById('btn-export');
+const chipBehavior   = document.getElementById('chip-behavior');
+const chipChoreo     = document.getElementById('chip-choreo');
+const chipSociety    = document.getElementById('chip-society');
+const chapList       = document.getElementById('chapter-list');
+const sceneList      = document.getElementById('scene-list');
+const chapCount      = document.getElementById('chap-count');
+const sceneCount     = document.getElementById('scene-count');
+const tlScrollBar    = document.getElementById('tl-scroll-bar');
+const tlScrollThumb  = document.getElementById('tl-scroll-thumb');
+const inspEmpty      = document.getElementById('inspector-empty');
+const inspFields     = document.getElementById('inspector-fields');
+const sbDot          = document.getElementById('sb-dot');
+const sbState        = document.getElementById('sb-state');
+const sbBlocks       = document.getElementById('sb-blocks');
+const sbEvents       = document.getElementById('sb-events');
+const sbBpm          = document.getElementById('sb-bpm');
+const snapPreview    = document.getElementById('snap-preview');
+const instrStatus    = document.getElementById('insp-status');
+const instrPos       = document.getElementById('insp-pos');
+const instrLoop      = document.getElementById('insp-loop');
+const instrElapsed   = document.getElementById('insp-elapsed');
+
+// ── Geometry helpers ───────────────────────────────────────────────────
+function getCanvasWidth() { return tlCanvas.width; }
+function getVisibleBars() { return TOTAL_BARS / S.zoom; }
+function barToX(bar) {
+  const visW = getCanvasWidth() - LABEL_W;
+  const visBars = getVisibleBars();
+  return LABEL_W + ((bar - S.scrollBar) / visBars) * visW;
+}
+function xToBar(x) {
+  const visW = getCanvasWidth() - LABEL_W;
+  const visBars = getVisibleBars();
+  return S.scrollBar + ((x - LABEL_W) / visW) * visBars;
+}
+function barsToW(bars) {
+  const visW = getCanvasWidth() - LABEL_W;
+  const visBars = getVisibleBars();
+  return (bars / visBars) * visW;
+}
+
+// ── Initialize default content ─────────────────────────────────────────
+function initDefaults() {
+  // Chapters — 6 chapters spanning 64 bars
+  const chapDurations = [10, 10, 10, 10, 12, 12];
+  const chapColors    = ['#b08030','#c09040','#a07020','#d0a040','#906020','#e0b050'];
+  let bar = 1;
+  for (let i = 0; i < 6; i++) {
+    const dur = chapDurations[i];
+    S.blocks.push({
+      id: S.nextId++,
+      track: 0,
+      startBar: bar,
+      durationBars: dur,
+      label: CHAPTER_NAMES[i],
+      color: chapColors[i],
+      type: 'CHAPTER'
+    });
+    S.chapters.push({ num: i+1, name: CHAPTER_NAMES[i], startBar: bar, durationBars: dur, color: chapColors[i] });
+    bar += dur;
+  }
+
+  // Scenes — 18 scenes across bars
+  const sceneData = [
+    {s:1,d:3},{s:2,d:2},{s:5,d:3},{s:8,d:2},{s:11,d:3},
+    {s:12,d:2},{s:15,d:3},{s:16,d:3},{s:21,d:2},{s:22,d:3},
+    {s:24,d:3},{s:28,d:2},{s:31,d:3},{s:32,d:4},{s:36,d:3},
+    {s:42,d:3},{s:48,d:4},{s:55,d:6}
+  ];
+  sceneData.forEach((sc, i) => {
+    S.blocks.push({
+      id: S.nextId++,
+      track: 1,
+      startBar: sc.s,
+      durationBars: sc.d,
+      label: SCENE_NAMES[i] || `Scene ${i+1}`,
+      color: '#e8b84b',
+      type: 'SCENE'
+    });
+    S.scenes.push({ num: i+1, name: SCENE_NAMES[i] || `Scene ${i+1}`, startBar: sc.s, durationBars: sc.d });
+  });
+
+  // Behavior blocks (from behavior snapshot)
+  const bhvData = [{s:3,d:5},{s:14,d:4},{s:24,d:6},{s:38,d:5},{s:52,d:6}];
+  bhvData.forEach((b, i) => {
+    S.blocks.push({
+      id: S.nextId++,
+      track: 3,
+      startBar: b.s,
+      durationBars: b.d,
+      label: `BHV-${String(i+1).padStart(2,'0')}`,
+      color: '#4dc8a0',
+      type: 'BEHAVIOR'
+    });
+  });
+
+  // Society blocks
+  const socData = [{s:6,d:4},{s:18,d:5},{s:30,d:4},{s:44,d:7}];
+  socData.forEach((b, i) => {
+    S.blocks.push({
+      id: S.nextId++,
+      track: 4,
+      startBar: b.s,
+      durationBars: b.d,
+      label: `SOC-${String(i+1).padStart(2,'0')}`,
+      color: '#b08060',
+      type: 'SOCIETY'
+    });
+  });
+
+  // Events (pip markers on track 2)
+  const evtBars = [4,8,12,17,22,27,32,37,44,50,57,62];
+  const evtLabels = ['FACTION_SHIFT','BATTLE_START','TRADE_OPEN','GATE_CLOSE',
+    'ALLIANCE_FORM','DISASTER','COUNCIL_VOTE','SIEGE_BEGIN',
+    'TREATY','COLLAPSE','MIGRATION','WAR_END'];
+  evtBars.forEach((bar, i) => {
+    S.events.push({
+      id: S.nextId++,
+      bar,
+      label: evtLabels[i] || `EVT-${i+1}`,
+      color: '#f98f3b',
+      triggerCond: 'ON_BAR_REACH'
+    });
+  });
+
+  // Trigger markers on track 5
+  const trgBars = [3,10,16,24,31,38,45,55];
+  trgBars.forEach((bar, i) => {
+    S.triggers.push({
+      id: S.nextId++,
+      bar,
+      label: TRIGGER_LABELS[i % TRIGGER_LABELS.length]
+    });
+  });
+}
+
+// ── Resize canvases ────────────────────────────────────────────────────
+function resizeCanvases() {
+  const rRect = rulerCanvas.parentElement.getBoundingClientRect();
+  rulerCanvas.width  = rRect.width;
+  rulerCanvas.height = rRect.height;
+
+  const tRect = trackArea.getBoundingClientRect();
+  tlCanvas.width  = tRect.width;
+  tlCanvas.height = TRACK_N * TRACK_H;
+
+  updateScrollThumb();
+}
+
+// ── Draw ruler ─────────────────────────────────────────────────────────
+function drawRuler() {
+  const W = rulerCanvas.width;
+  const H = rulerCanvas.height;
+  rCtx.clearRect(0,0,W,H);
+  rCtx.fillStyle = 'rgba(12,16,24,.97)';
+  rCtx.fillRect(0,0,W,H);
+
+  const visW   = W - LABEL_W;
+  const visBars = getVisibleBars();
+  const step   = visBars / TOTAL_BARS;
+
+  // Determine label interval based on zoom
+  let labelInterval = 4;
+  if (S.zoom >= 3) labelInterval = 2;
+  if (S.zoom >= 6) labelInterval = 1;
+
+  for (let b = 0; b <= TOTAL_BARS; b++) {
+    const x = LABEL_W + ((b - S.scrollBar) / visBars) * visW;
+    if (x < LABEL_W || x > W + 2) continue;
+
+    const isMajor = (b % 16 === 0);
+    const isMid   = (b % 4 === 0);
+
+    rCtx.beginPath();
+    rCtx.strokeStyle = isMajor ? 'rgba(176,128,48,.5)' : isMid ? 'rgba(255,255,255,.15)' : 'rgba(255,255,255,.05)';
+    rCtx.lineWidth   = isMajor ? 1.5 : 0.5;
+    rCtx.moveTo(x, isMajor ? 4 : isMid ? 8 : 12);
+    rCtx.lineTo(x, H);
+    rCtx.stroke();
+
+    if (b % labelInterval === 0 && b > 0) {
+      rCtx.fillStyle = isMajor ? 'rgba(176,128,48,.9)' : 'rgba(255,255,255,.35)';
+      rCtx.font = `${isMajor ? 400 : 300} 9px 'JetBrains Mono', monospace`;
+      rCtx.textAlign = 'center';
+      rCtx.fillText(String(b), x, H - 4);
+    }
+  }
+
+  // Label area background
+  rCtx.fillStyle = 'rgba(4,5,10,.92)';
+  rCtx.fillRect(0,0,LABEL_W,H);
+  rCtx.fillStyle = 'rgba(176,128,48,.6)';
+  rCtx.font = '300 8px "JetBrains Mono", monospace';
+  rCtx.textAlign = 'center';
+  rCtx.fillText('BAR', LABEL_W/2, H/2 + 3);
+
+  // Edge line
+  rCtx.strokeStyle = 'rgba(255,255,255,.055)';
+  rCtx.lineWidth   = 1;
+  rCtx.beginPath();
+  rCtx.moveTo(LABEL_W, 0);
+  rCtx.lineTo(LABEL_W, H);
+  rCtx.stroke();
+}
+
+// ── Draw timeline ──────────────────────────────────────────────────────
+function drawTimeline(animT) {
+  const W = tlCanvas.width;
+  const H = TRACK_N * TRACK_H;
+  tCtx.clearRect(0,0,W,H);
+
+  // Background
+  tCtx.fillStyle = '#04050a';
+  tCtx.fillRect(0,0,W,H);
+
+  const visW    = W - LABEL_W;
+  const visBars = getVisibleBars();
+
+  // Alternating track bg
+  for (let t = 0; t < TRACK_N; t++) {
+    const y = t * TRACK_H;
+    tCtx.fillStyle = t % 2 === 0 ? 'rgba(255,255,255,.012)' : 'rgba(0,0,0,.08)';
+    tCtx.fillRect(LABEL_W, y, visW, TRACK_H);
+  }
+
+  // Grid lines
+  for (let b = 0; b <= TOTAL_BARS; b++) {
+    const x = LABEL_W + ((b - S.scrollBar) / visBars) * visW;
+    if (x < LABEL_W || x > W + 1) continue;
+    const isMajor = (b % 16 === 0);
+    const isMid   = (b % 4 === 0);
+    tCtx.beginPath();
+    tCtx.strokeStyle = isMajor ? 'rgba(176,128,48,.18)' : isMid ? 'rgba(255,255,255,.06)' : 'rgba(255,255,255,.025)';
+    tCtx.lineWidth   = isMajor ? 1 : 0.5;
+    tCtx.moveTo(x, 0);
+    tCtx.lineTo(x, H);
+    tCtx.stroke();
+  }
+
+  // Track separators
+  for (let t = 1; t < TRACK_N; t++) {
+    const y = t * TRACK_H;
+    tCtx.strokeStyle = 'rgba(255,255,255,.055)';
+    tCtx.lineWidth = 1;
+    tCtx.beginPath();
+    tCtx.moveTo(LABEL_W, y);
+    tCtx.lineTo(W, y);
+    tCtx.stroke();
+  }
+
+  // Loop region highlight
+  if (S.loop) {
+    const lx1 = barToX(0);
+    const lx2 = barToX(TOTAL_BARS);
+    tCtx.fillStyle = 'rgba(176,128,48,.04)';
+    tCtx.fillRect(Math.max(LABEL_W, lx1), 0, Math.min(W, lx2) - Math.max(LABEL_W, lx1), H);
+  }
+
+  // Draw chapter/scene/behavior/society blocks
+  S.blocks.forEach(blk => {
+    const x1 = barToX(blk.startBar);
+    const x2 = barToX(blk.startBar + blk.durationBars);
+    if (x2 < LABEL_W || x1 > W) return;
+
+    const cx = Math.max(LABEL_W, x1);
+    const cw = Math.min(W, x2) - cx;
+    if (cw < 1) return;
+
+    const y = blk.track * TRACK_H;
+    const isSelected = S.selectedBlock && S.selectedBlock.id === blk.id;
+
+    // Block fill
+    const r = parseInt(blk.color.slice(1,3),16);
+    const g = parseInt(blk.color.slice(3,5),16);
+    const b = parseInt(blk.color.slice(5,7),16);
+    tCtx.fillStyle = `rgba(${r},${g},${b},${isSelected ? 0.45 : 0.25})`;
+    tCtx.fillRect(cx, y + 3, cw, TRACK_H - 6);
+
+    // Block border
+    tCtx.strokeStyle = isSelected ? blk.color : `rgba(${r},${g},${b},0.55)`;
+    tCtx.lineWidth   = isSelected ? 1.5 : 1;
+    tCtx.strokeRect(cx, y + 3, cw, TRACK_H - 6);
+
+    // Label
+    if (cw > 24) {
+      tCtx.fillStyle  = isSelected ? '#fff' : `rgba(${r},${g},${b},0.9)`;
+      tCtx.font       = '400 9px "JetBrains Mono", monospace';
+      tCtx.textAlign  = 'left';
+      const textX     = cx + 5;
+      const maxW      = cw - 10;
+      let label       = blk.label;
+      tCtx.save();
+      tCtx.rect(cx, y, cw, TRACK_H);
+      tCtx.clip();
+      tCtx.fillText(label, textX, y + TRACK_H/2 + 3, maxW);
+      tCtx.restore();
+    }
+
+    // Selected glow
+    if (isSelected) {
+      tCtx.shadowColor = blk.color;
+      tCtx.shadowBlur  = 8;
+      tCtx.strokeStyle = blk.color;
+      tCtx.lineWidth   = 1.5;
+      tCtx.strokeRect(cx, y + 3, cw, TRACK_H - 6);
+      tCtx.shadowBlur  = 0;
+    }
+  });
+
+  // Draw event pips (track 2)
+  S.events.forEach(evt => {
+    const x = barToX(evt.bar);
+    if (x < LABEL_W || x > W) return;
+    const y = 2 * TRACK_H + TRACK_H/2;
+    const r = parseInt(evt.color.slice(1,3),16);
+    const g = parseInt(evt.color.slice(3,5),16);
+    const b = parseInt(evt.color.slice(5,7),16);
+
+    // Diamond shape
+    tCtx.save();
+    tCtx.beginPath();
+    tCtx.moveTo(x, y - 9);
+    tCtx.lineTo(x + 6, y);
+    tCtx.lineTo(x, y + 9);
+    tCtx.lineTo(x - 6, y);
+    tCtx.closePath();
+    tCtx.fillStyle = `rgba(${r},${g},${b},0.8)`;
+    tCtx.fill();
+    tCtx.strokeStyle = `rgba(${r},${g},${b},1)`;
+    tCtx.lineWidth = 1;
+    tCtx.stroke();
+    tCtx.restore();
+
+    // Animated pulse if playing
+    if (S.playing) {
+      const pulse = 0.4 + 0.3 * Math.sin(animT * 4 + evt.bar * 0.5);
+      tCtx.beginPath();
+      tCtx.arc(x, y, 8 + pulse * 4, 0, Math.PI * 2);
+      tCtx.strokeStyle = `rgba(${r},${g},${b},${pulse * 0.3})`;
+      tCtx.lineWidth = 1;
+      tCtx.stroke();
+    }
+  });
+
+  // Draw trigger markers (track 5)
+  S.triggers.forEach(trg => {
+    const x = barToX(trg.bar);
+    if (x < LABEL_W || x > W) return;
+    const y = 5 * TRACK_H;
+    const cr = 155, cg = 127, cb = 212;
+
+    // Inverted triangle
+    tCtx.save();
+    tCtx.beginPath();
+    tCtx.moveTo(x - 7, y + 4);
+    tCtx.lineTo(x + 7, y + 4);
+    tCtx.lineTo(x, y + 20);
+    tCtx.closePath();
+    tCtx.fillStyle = `rgba(${cr},${cg},${cb},0.7)`;
+    tCtx.fill();
+    tCtx.strokeStyle = `rgba(${cr},${cg},${cb},1)`;
+    tCtx.lineWidth = 1;
+    tCtx.stroke();
+    tCtx.restore();
+  });
+
+  // Playhead
+  const phX = barToX(S.playheadBar + S.playheadFrac);
+  if (phX >= LABEL_W && phX <= W) {
+    // Shadow/glow
+    tCtx.save();
+    tCtx.shadowColor = 'rgba(232,184,75,.7)';
+    tCtx.shadowBlur  = 10;
+    tCtx.strokeStyle = '#e8b84b';
+    tCtx.lineWidth   = 1.5;
+    tCtx.beginPath();
+    tCtx.moveTo(phX, 0);
+    tCtx.lineTo(phX, H);
+    tCtx.stroke();
+    tCtx.shadowBlur = 0;
+    tCtx.restore();
+
+    // Playhead handle (top triangle)
+    tCtx.beginPath();
+    tCtx.moveTo(phX - 7, 0);
+    tCtx.lineTo(phX + 7, 0);
+    tCtx.lineTo(phX, 12);
+    tCtx.closePath();
+    tCtx.fillStyle = '#e8b84b';
+    tCtx.fill();
+  }
+
+  // Label strip (left side overlay)
+  for (let t = 0; t < TRACK_N; t++) {
+    const y = t * TRACK_H;
+    tCtx.fillStyle = 'rgba(4,5,10,.92)';
+    tCtx.fillRect(0, y, LABEL_W, TRACK_H);
+  }
+  // Right edge of label strip
+  tCtx.strokeStyle = 'rgba(255,255,255,.055)';
+  tCtx.lineWidth = 1;
+  tCtx.beginPath();
+  tCtx.moveTo(LABEL_W, 0);
+  tCtx.lineTo(LABEL_W, H);
+  tCtx.stroke();
+}
+
+// ── Playback engine ────────────────────────────────────────────────────
+function beatsPerBar() {
+  const ts = S.timeSig;
+  if (ts === '3/4') return 3;
+  if (ts === '6/8') return 6;
+  if (ts === '2/4') return 2;
+  return 4;
+}
+
+function updatePlayhead(dt) {
+  if (!S.playing) return;
+  // bars per second = BPM / 60 / beatsPerBar
+  const barsPerSec = S.bpm / 60 / beatsPerBar();
+  S.playheadFrac += barsPerSec * dt;
+  while (S.playheadFrac >= 1) {
+    S.playheadBar++;
+    S.playheadFrac -= 1;
+  }
+  if (S.playheadBar >= TOTAL_BARS) {
+    if (S.loop) {
+      S.playheadBar = 0;
+      S.playheadFrac = 0;
+    } else {
+      S.playing = false;
+      S.playheadBar = TOTAL_BARS;
+      S.playheadFrac = 0;
+      updateTransportUI();
+    }
+  }
+  // Auto-scroll
+  const visEnd = S.scrollBar + getVisibleBars();
+  if (S.playheadBar >= visEnd - 2 && S.playheadBar < TOTAL_BARS) {
+    S.scrollBar = Math.min(TOTAL_BARS - getVisibleBars(), S.playheadBar - 2);
+    updateScrollThumb();
+  }
+}
+
+function formatPos() {
+  const bar  = S.playheadBar + 1;
+  const beat = Math.floor(S.playheadFrac * beatsPerBar()) + 1;
+  const tick = Math.floor((S.playheadFrac * beatsPerBar() % 1) * 960);
+  return `${String(bar).padStart(3,'0')}:${beat}:${String(tick).padStart(3,'0')}`;
+}
+
+function formatElapsed() {
+  const totalSec = S.elapsed;
+  const m = Math.floor(totalSec / 60);
+  const s = Math.floor(totalSec % 60);
+  const ms = Math.floor((totalSec % 1) * 1000);
+  return `${m}:${String(s).padStart(2,'0')}.${String(ms).padStart(3,'0')}`;
+}
+
+// ── RAF loop ───────────────────────────────────────────────────────────
+function tick(ts) {
+  const dt = Math.min((ts - S.lastRaf) / 1000, 0.1);
+  S.lastRaf = ts;
+  S.animT   = ts / 1000;
+
+  if (S.playing) {
+    S.elapsed += dt;
+    updatePlayhead(dt);
+  }
+
+  drawRuler();
+  drawTimeline(S.animT);
+  updateHUD();
+  saveSnapshot();
+
+  S.rafId = requestAnimationFrame(tick);
+}
+
+function startRaf() {
+  if (S.rafId) return;
+  S.lastRaf = performance.now();
+  S.rafId = requestAnimationFrame(tick);
+}
+
+// ── HUD updates ────────────────────────────────────────────────────────
+function updateHUD() {
+  const pos = formatPos();
+  posDisplay.textContent   = pos;
+  instrPos.textContent     = `Bar ${S.playheadBar+1}, Beat ${Math.floor(S.playheadFrac * beatsPerBar())+1}`;
+  instrElapsed.textContent = formatElapsed();
+
+  const blockCount = S.blocks.length;
+  const evtCount   = S.events.length + S.triggers.length;
+  sbBlocks.textContent = blockCount;
+  sbEvents.textContent = evtCount;
+  sbBpm.textContent    = S.bpm;
+}
+
+function updateTransportUI() {
+  btnPlay.classList.toggle('active',  S.playing && !S.paused);
+  btnPause.classList.toggle('active', S.paused);
+  btnLoop.classList.toggle('active',  S.loop);
+
+  const statusTxt = S.playing ? 'PLAYING' : S.paused ? 'PAUSED' : 'STOPPED';
+  instrStatus.textContent = statusTxt;
+  instrStatus.className   = 'insp-val ' + (S.playing ? 'ok' : S.paused ? 'warn' : '');
+  instrLoop.textContent   = S.loop ? 'ON' : 'OFF';
+  instrLoop.className     = 'insp-val ' + (S.loop ? 'ok' : '');
+
+  sbState.textContent = statusTxt;
+  sbDot.className = 'sb-dot ' + (S.playing ? 'play' : S.paused ? 'off' : '');
+}
+
+// ── Transport controls ─────────────────────────────────────────────────
+btnPlay.addEventListener('click', () => {
+  if (S.paused) {
+    S.paused  = false;
+    S.playing = true;
+  } else if (!S.playing) {
+    S.playing = true;
+    S.paused  = false;
+  }
+  updateTransportUI();
+});
+
+btnPause.addEventListener('click', () => {
+  if (S.playing) {
+    S.playing = false;
+    S.paused  = true;
+  } else if (S.paused) {
+    S.paused  = false;
+  }
+  updateTransportUI();
+});
+
+btnStop.addEventListener('click', () => {
+  S.playing    = false;
+  S.paused     = false;
+  S.playheadBar = 0;
+  S.playheadFrac = 0;
+  S.elapsed     = 0;
+  updateTransportUI();
+});
+
+btnLoop.addEventListener('click', () => {
+  S.loop = !S.loop;
+  updateTransportUI();
+});
+
+bpmInput.addEventListener('change', () => {
+  S.bpm = Math.max(20, Math.min(300, parseInt(bpmInput.value) || 120));
+  bpmInput.value = S.bpm;
+});
+
+tsigSelect.addEventListener('change', () => {
+  S.timeSig = tsigSelect.value;
+});
+
+// ── Chapter jump ───────────────────────────────────────────────────────
+function populateChapSelect() {
+  chapJump.innerHTML = '<option value="">Jump to…</option>';
+  S.chapters.forEach((ch, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${ch.num}. ${ch.name}`;
+    chapJump.appendChild(opt);
+  });
+}
+
+chapJump.addEventListener('change', () => {
+  const idx = parseInt(chapJump.value);
+  if (isNaN(idx)) return;
+  const ch = S.chapters[idx];
+  if (!ch) return;
+  S.scrollBar = Math.max(0, Math.min(ch.startBar - 2, TOTAL_BARS - getVisibleBars()));
+  if (!S.playing) {
+    S.playheadBar  = ch.startBar;
+    S.playheadFrac = 0;
+  }
+  updateScrollThumb();
+  chapJump.value = '';
+  selectChapter(idx);
+});
+
+// ── Chapter & scene list ───────────────────────────────────────────────
+function renderChapterList() {
+  chapList.innerHTML = '';
+  chapCount.textContent = S.chapters.length;
+  S.chapters.forEach((ch, i) => {
+    const row = document.createElement('div');
+    row.className = 'chapter-row' + (S._selectedChap === i ? ' selected' : '');
+    row.innerHTML = `
+      <div class="chap-swatch" style="background:${ch.color};"></div>
+      <div class="chap-info">
+        <div class="chap-num">CH.${String(ch.num).padStart(2,'0')}</div>
+        <div class="chap-name">${ch.name}</div>
+        <div class="chap-meta">Bar ${ch.startBar} · ${ch.durationBars} bars</div>
+      </div>`;
+    row.addEventListener('click', () => {
+      selectChapter(i);
+      S.scrollBar = Math.max(0, Math.min(ch.startBar - 1, TOTAL_BARS - getVisibleBars()));
+      updateScrollThumb();
+    });
+    chapList.appendChild(row);
+  });
+}
+
+function renderSceneList() {
+  sceneList.innerHTML = '';
+  sceneCount.textContent = S.scenes.length;
+  S.scenes.forEach((sc, i) => {
+    const row = document.createElement('div');
+    row.className = 'chapter-row';
+    row.innerHTML = `
+      <div class="chap-swatch" style="background:#e8b84b;"></div>
+      <div class="chap-info">
+        <div class="chap-num">SC.${String(sc.num).padStart(2,'0')}</div>
+        <div class="chap-name">${sc.name}</div>
+        <div class="chap-meta">Bar ${sc.startBar} · ${sc.durationBars} bars</div>
+      </div>`;
+    sceneList.appendChild(row);
+  });
+}
+
+function selectChapter(idx) {
+  S._selectedChap = idx;
+  renderChapterList();
+}
+
+// ── Add chapter/event ──────────────────────────────────────────────────
+btnAddChap.addEventListener('click', () => {
+  const num = S.chapters.length + 1;
+  const name = CHAPTER_NAMES[num - 1] || `Chapter ${num}`;
+  const startBar = S.chapters.length > 0
+    ? S.chapters[S.chapters.length - 1].startBar + S.chapters[S.chapters.length - 1].durationBars
+    : 1;
+  const dur = 8;
+  if (startBar + dur > TOTAL_BARS + 1) { return; }
+  const color = '#b08030';
+  S.chapters.push({ num, name, startBar, durationBars: dur, color });
+  S.blocks.push({
+    id: S.nextId++, track: 0, startBar, durationBars: dur,
+    label: name, color, type: 'CHAPTER'
+  });
+  renderChapterList();
+  populateChapSelect();
+});
+
+btnAddEvent.addEventListener('click', () => {
+  const bar = Math.floor(S.playheadBar) || 1;
+  const labels = ['FACTION_SHIFT','BATTLE_START','TRADE_OPEN','GATE_CLOSE','ALLIANCE_FORM','DISASTER'];
+  const label = labels[S.events.length % labels.length];
+  S.events.push({ id: S.nextId++, bar, label, color: '#f98f3b', triggerCond: 'ON_BAR_REACH' });
+});
+
+// ── Export ─────────────────────────────────────────────────────────────
+btnExport.addEventListener('click', () => {
+  const snap = buildSnapshot();
+  const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'qa-sequencer-snapshot.json';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// ── Snapshot ───────────────────────────────────────────────────────────
+let _lastSnapStr = '';
+function buildSnapshot() {
+  return {
+    system:      'Quantum Atlas',
+    module:      '09 · Sequencer',
+    generated:   new Date().toISOString(),
+    bpm:         S.bpm,
+    time_sig:    S.timeSig,
+    total_bars:  TOTAL_BARS,
+    playhead_bar: S.playheadBar,
+    playing:     S.playing,
+    chapter_count: S.chapters.length,
+    scene_count: S.scenes.length,
+    event_count: S.events.length,
+    trigger_count: S.triggers.length,
+    chapters:    S.chapters.map(ch => ({
+      num: ch.num, name: ch.name, startBar: ch.startBar, durationBars: ch.durationBars
+    }))
+  };
+}
+
+function saveSnapshot() {
+  const snap = buildSnapshot();
+  const str  = JSON.stringify(snap);
+  if (str === _lastSnapStr) return;
+  _lastSnapStr = str;
+  try {
+    localStorage.setItem('qa-sequencer-snapshot', str);
+    window.parent.postMessage({type:'hub:storage:write',key:'qa-sequencer-snapshot',value:str},'*');
+  } catch(e) {}
+  updateSnapPreview(snap);
+}
+
+function updateSnapPreview(snap) {
+  snapPreview.innerHTML = `
+<span class="sk">"system"</span>: <span class="sv">"${snap.system}"</span>,
+<span class="sk">"module"</span>: <span class="sv">"${snap.module}"</span>,
+<span class="sk">"bpm"</span>: <span class="sn">${snap.bpm}</span>,
+<span class="sk">"time_sig"</span>: <span class="sv">"${snap.time_sig}"</span>,
+<span class="sk">"playing"</span>: <span class="sb">${snap.playing}</span>,
+<span class="sk">"playhead_bar"</span>: <span class="sn">${snap.playhead_bar}</span>,
+<span class="sk">"chapter_count"</span>: <span class="sn">${snap.chapter_count}</span>,
+<span class="sk">"scene_count"</span>: <span class="sn">${snap.scene_count}</span>,
+<span class="sk">"event_count"</span>: <span class="sn">${snap.event_count}</span>,
+<span class="sk">"trigger_count"</span>: <span class="sn">${snap.trigger_count}</span>`;
+}
+
+// ── Upstream snapshot reading ──────────────────────────────────────────
+function readUpstreamSnapshots() {
+  try {
+    const bSnap = JSON.parse(localStorage.getItem('qa-behavior-snapshot') || 'null');
+    if (bSnap) {
+      S.upBehavior = bSnap;
+      chipBehavior.classList.add('lit');
+      document.getElementById('up-behavior-status').textContent = bSnap.module || 'Found';
+      document.getElementById('up-behavior-status').className = 'insp-val ok';
+    }
+  } catch(e) {}
+
+  try {
+    const cSnap = JSON.parse(localStorage.getItem('qa-choreography-snapshot') || 'null');
+    if (cSnap) {
+      S.upChoreo = cSnap;
+      chipChoreo.classList.add('lit');
+      document.getElementById('up-choreo-status').textContent = cSnap.module || 'Found';
+      document.getElementById('up-choreo-status').className = 'insp-val ok';
+    }
+  } catch(e) {}
+
+  try {
+    const sSnap = JSON.parse(localStorage.getItem('qa-society-snapshot') || 'null');
+    if (sSnap) {
+      S.upSociety = sSnap;
+      chipSociety.classList.add('lit');
+      document.getElementById('up-society-status').textContent = sSnap.module || 'Found';
+      document.getElementById('up-society-status').className = 'insp-val ok';
+    }
+  } catch(e) {}
+}
+
+// ── Component matrix click ─────────────────────────────────────────────
+document.querySelectorAll('.comp-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.comp-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    S.activeComp = card.dataset.comp;
+  });
+});
+
+// ── Timeline mouse interaction ─────────────────────────────────────────
+let mouseDownState = null;
+
+tlCanvas.addEventListener('mousedown', e => {
+  const rect   = tlCanvas.getBoundingClientRect();
+  const mx     = e.clientX - rect.left;
+  const my     = e.clientY - rect.top;
+  if (mx < LABEL_W) return;
+
+  const clickBar   = xToBar(mx);
+  const clickTrack = Math.floor(my / TRACK_H);
+  if (clickTrack < 0 || clickTrack >= TRACK_N) return;
+
+  // Check if clicking on existing block
+  const hit = findBlockAt(clickBar, clickTrack);
+  if (hit) {
+    S.selectedBlock    = hit;
+    S.dragBlock        = hit;
+    S.dragOffsetBars   = clickBar - hit.startBar;
+    mouseDownState = { type: 'drag', block: hit };
+    showInspector(hit);
+    return;
+  }
+
+  // Click on event track (2)
+  if (clickTrack === 2) {
+    const evtHit = findEventAt(clickBar);
+    if (evtHit) {
+      S.selectedBlock = { ...evtHit, track: 2, durationBars: 0, type: 'EVENT' };
+      showInspector(S.selectedBlock);
+      return;
+    }
+    // Add new event
+    S.events.push({
+      id: S.nextId++,
+      bar: Math.round(clickBar),
+      label: 'EVT-' + S.nextId,
+      color: '#f98f3b',
+      triggerCond: 'ON_BAR_REACH'
+    });
+    return;
+  }
+
+  // Click on trigger track (5)
+  if (clickTrack === 5) {
+    S.triggers.push({
+      id: S.nextId++,
+      bar: Math.round(clickBar),
+      label: TRIGGER_LABELS[S.triggers.length % TRIGGER_LABELS.length]
+    });
+    return;
+  }
+
+  // Add block on chapter/scene/behavior/society tracks
+  if (clickTrack === 0 || clickTrack === 1 || clickTrack === 3 || clickTrack === 4) {
+    const types  = ['CHAPTER','SCENE','BEHAVIOR','SOCIETY'];
+    const trackMap = { 0: 'CHAPTER', 1: 'SCENE', 3: 'BEHAVIOR', 4: 'SOCIETY' };
+    const colors   = { 0: '#b08030', 1: '#e8b84b', 3: '#4dc8a0', 4: '#b08060' };
+    const type = trackMap[clickTrack];
+    const newBlk = {
+      id: S.nextId++,
+      track: clickTrack,
+      startBar: Math.round(clickBar),
+      durationBars: 4,
+      label: `${type}-${S.nextId}`,
+      color: colors[clickTrack],
+      type
+    };
+    S.blocks.push(newBlk);
+    S.selectedBlock = newBlk;
+    S.dragBlock = newBlk;
+    S.dragOffsetBars = 0;
+    mouseDownState = { type: 'drag', block: newBlk };
+    showInspector(newBlk);
+  }
+
+  // Move playhead on click (if in playhead area near top)
+  if (my < 12) {
+    S.playheadBar  = Math.max(0, Math.min(TOTAL_BARS - 1, Math.floor(clickBar)));
+    S.playheadFrac = clickBar - S.playheadBar;
+  }
+});
+
+tlCanvas.addEventListener('mousemove', e => {
+  if (!S.dragBlock) return;
+  const rect    = tlCanvas.getBoundingClientRect();
+  const mx      = e.clientX - rect.left;
+  const clickBar = xToBar(mx);
+  const newStart = Math.max(0, Math.round(clickBar - S.dragOffsetBars));
+  S.dragBlock.startBar = Math.min(TOTAL_BARS - S.dragBlock.durationBars, newStart);
+  if (S.selectedBlock && S.selectedBlock.id === S.dragBlock.id) {
+    showInspector(S.dragBlock);
+  }
+});
+
+tlCanvas.addEventListener('mouseup', e => {
+  S.dragBlock = null;
+  mouseDownState = null;
+});
+
+tlCanvas.addEventListener('mouseleave', e => {
+  S.dragBlock = null;
+});
+
+tlCanvas.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  const rect     = tlCanvas.getBoundingClientRect();
+  const mx       = e.clientX - rect.left;
+  const my       = e.clientY - rect.top;
+  if (mx < LABEL_W) return;
+  const clickBar   = xToBar(mx);
+  const clickTrack = Math.floor(my / TRACK_H);
+
+  if (clickTrack === 2) {
+    const evtHit = findEventAt(clickBar);
+    if (evtHit) {
+      S.events = S.events.filter(ev => ev.id !== evtHit.id);
+      if (S.selectedBlock && S.selectedBlock.id === evtHit.id) {
+        S.selectedBlock = null;
+        hideInspector();
+      }
+    }
+    return;
+  }
+  if (clickTrack === 5) {
+    const trgHit = findTriggerAt(clickBar);
+    if (trgHit) {
+      S.triggers = S.triggers.filter(t => t.id !== trgHit.id);
+    }
+    return;
+  }
+  const hit = findBlockAt(clickBar, clickTrack);
+  if (hit) {
+    S.blocks = S.blocks.filter(b => b.id !== hit.id);
+    if (S.selectedBlock && S.selectedBlock.id === hit.id) {
+      S.selectedBlock = null;
+      hideInspector();
+    }
+  }
+});
+
+// Drag playhead by clicking ruler
+rulerCanvas.addEventListener('mousedown', e => {
+  const rect = rulerCanvas.getBoundingClientRect();
+  const mx   = e.clientX - rect.left;
+  if (mx < LABEL_W) return;
+  const bar = xToBar(mx);
+  S.playheadBar  = Math.max(0, Math.min(TOTAL_BARS, Math.floor(bar)));
+  S.playheadFrac = bar - S.playheadBar;
+});
+rulerCanvas.addEventListener('mousemove', e => {
+  if (e.buttons !== 1) return;
+  const rect = rulerCanvas.getBoundingClientRect();
+  const mx   = e.clientX - rect.left;
+  if (mx < LABEL_W) return;
+  const bar = xToBar(mx);
+  S.playheadBar  = Math.max(0, Math.min(TOTAL_BARS, Math.floor(bar)));
+  S.playheadFrac = bar - S.playheadBar;
+});
+
+// ── Hit testing ────────────────────────────────────────────────────────
+function findBlockAt(bar, track) {
+  // Search in reverse to get topmost
+  for (let i = S.blocks.length - 1; i >= 0; i--) {
+    const blk = S.blocks[i];
+    if (blk.track === track && bar >= blk.startBar && bar <= blk.startBar + blk.durationBars) {
+      return blk;
+    }
+  }
+  return null;
+}
+function findEventAt(bar) {
+  return S.events.find(ev => Math.abs(ev.bar - bar) < 1.5) || null;
+}
+function findTriggerAt(bar) {
+  return S.triggers.find(t => Math.abs(t.bar - bar) < 1.5) || null;
+}
+
+// ── Inspector ──────────────────────────────────────────────────────────
+function showInspector(blk) {
+  inspEmpty.style.display    = 'none';
+  inspFields.style.display   = 'block';
+  document.getElementById('itype').textContent      = blk.type || 'BLOCK';
+  document.getElementById('iname').textContent      = blk.label || '—';
+  document.getElementById('istart').textContent     = `Bar ${blk.startBar}`;
+  document.getElementById('iduration').textContent  = blk.durationBars ? `${blk.durationBars} bars` : '1 pip';
+  document.getElementById('itrigger').textContent   = blk.triggerCond || 'AUTO';
+  document.getElementById('idownstream').textContent = blk.type === 'CHAPTER' ? 'SceneList, EventLog' :
+    blk.type === 'SCENE' ? 'EventBus, GateCtrl' :
+    blk.type === 'BEHAVIOR' ? 'NPCDirector' : 'Chronicle';
+  document.getElementById('itrack').textContent    = TRACK_NAMES[blk.track] || String(blk.track);
+}
+function hideInspector() {
+  inspEmpty.style.display  = 'block';
+  inspFields.style.display = 'none';
+}
+
+// ── Scroll / Zoom ──────────────────────────────────────────────────────
+function updateScrollThumb() {
+  const W          = tlScrollBar.clientWidth;
+  const visBars    = getVisibleBars();
+  const ratio      = visBars / TOTAL_BARS;
+  const thumbW     = Math.max(40, W * ratio);
+  const maxScroll  = TOTAL_BARS - visBars;
+  const thumbLeft  = maxScroll > 0 ? (S.scrollBar / maxScroll) * (W - thumbW) : 0;
+  tlScrollThumb.style.width = thumbW + 'px';
+  tlScrollThumb.style.left  = thumbLeft + 'px';
+}
+
+// Scroll thumb drag
+let thumbDrag = null;
+tlScrollThumb.addEventListener('mousedown', e => {
+  e.stopPropagation();
+  thumbDrag = { startX: e.clientX, startScroll: S.scrollBar };
+  e.preventDefault();
+});
+document.addEventListener('mousemove', e => {
+  if (!thumbDrag) return;
+  const W        = tlScrollBar.clientWidth;
+  const visBars  = getVisibleBars();
+  const thumbW   = parseFloat(tlScrollThumb.style.width) || 40;
+  const maxLeft  = W - thumbW;
+  const dx       = e.clientX - thumbDrag.startX;
+  const frac     = maxLeft > 0 ? dx / maxLeft : 0;
+  const maxScroll = TOTAL_BARS - visBars;
+  S.scrollBar    = Math.max(0, Math.min(maxScroll, thumbDrag.startScroll + frac * maxScroll));
+  updateScrollThumb();
+});
+document.addEventListener('mouseup', () => { thumbDrag = null; });
+
+// Click scrollbar track
+tlScrollBar.addEventListener('click', e => {
+  if (e.target === tlScrollThumb) return;
+  const rect      = tlScrollBar.getBoundingClientRect();
+  const frac      = (e.clientX - rect.left) / rect.width;
+  const visBars   = getVisibleBars();
+  const maxScroll = TOTAL_BARS - visBars;
+  S.scrollBar     = Math.max(0, Math.min(maxScroll, frac * TOTAL_BARS - visBars / 2));
+  updateScrollThumb();
+});
+
+// Wheel scroll on canvas
+tlCanvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  if (e.ctrlKey || e.metaKey) {
+    // Zoom
+    const factor = e.deltaY > 0 ? 0.85 : 1.15;
+    S.zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, S.zoom * factor));
+    const visBars = getVisibleBars();
+    S.scrollBar = Math.max(0, Math.min(TOTAL_BARS - visBars, S.scrollBar));
+  } else {
+    // Scroll
+    const visBars   = getVisibleBars();
+    const maxScroll = TOTAL_BARS - visBars;
+    S.scrollBar = Math.max(0, Math.min(maxScroll, S.scrollBar + (e.deltaX || e.deltaY) * 0.1));
+  }
+  updateScrollThumb();
+}, { passive: false });
+
+rulerCanvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  if (e.ctrlKey || e.metaKey) {
+    const factor = e.deltaY > 0 ? 0.85 : 1.15;
+    S.zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, S.zoom * factor));
+  } else {
+    const visBars   = getVisibleBars();
+    const maxScroll = TOTAL_BARS - visBars;
+    S.scrollBar = Math.max(0, Math.min(maxScroll, S.scrollBar + (e.deltaX || e.deltaY) * 0.1));
+  }
+  updateScrollThumb();
+}, { passive: false });
+
+// ── Resize observer ────────────────────────────────────────────────────
+const ro = new ResizeObserver(() => { resizeCanvases(); });
+ro.observe(trackArea);
+ro.observe(rulerCanvas.parentElement);
+
+// ── Init ───────────────────────────────────────────────────────────────
+function init() {
+  initDefaults();
+  resizeCanvases();
+  readUpstreamSnapshots();
+  renderChapterList();
+  renderSceneList();
+  populateChapSelect();
+  updateTransportUI();
+  startRaf();
+}
+
+init();
+
+})();
+</script>
+
+<!-- ── THEME SYNC IIFE ── -->
+<script>
+(function() {
+  const MAP = {
+    'c-bg':'--bg','c-surf':'--surface','c-surf2':'--surface2',
+    'c-edge':'--edge','c-edge-hi':'--edge-hi','c-accent1':'--venturan',
+    'c-accent2':'--amber','c-accent3':'--emerald','c-accent4':'--fusion',
+    'c-danger':'--blood','c-warm':'--solari','c-text':'--text',
+  };
+  function applyTokens(tokens) {
+    const root = document.documentElement;
+    Object.entries(MAP).forEach(([k, v]) => {
+      if (tokens[k] !== undefined) root.style.setProperty(v, tokens[k]);
+    });
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('ql-theme') || '{}');
+    if (saved.tokens) applyTokens(saved.tokens);
+  } catch(e) {}
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'ql:theme' && e.data.tokens) applyTokens(e.data.tokens);
+  });
+})();
+
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'hub:init' && d.project) {
+    document.title = `${d.project.name || 'Quantum Loom'} — Atlas · Sequencer | Chronicle`;
+  }
+  if (d.type === 'hub:layer:activate') { try { init(); } catch(err) {} }
+});
+</script>
+</body>
+</html>

@@ -10,6 +10,7 @@
 
 :root{
   /* Core palette — aged brass & vellum against void */
+  --bg:          #07080a;
   --void:        #07080a;
   --void-2:      #0c0d10;
   --void-3:      #111318;
@@ -74,7 +75,7 @@
 @keyframes spin      {to{transform:rotate(360deg)}}
 
 body{
-  background:var(--void);
+  background:var(--bg);
   font-family:var(--fd);
   color:var(--ink);
   height:100vh;
@@ -435,6 +436,13 @@ body{
   box-shadow:0 4px 20px rgba(0,0,0,.8);
 }
 #toast.show{animation:toast-in 2.5s ease forwards}
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
 </style>
 </head>
 <body>
@@ -1228,9 +1236,9 @@ document.addEventListener('DOMContentLoaded', init);
 /* ── Quantum Loom Theme System ──────────────────────────────── */
 (function initQLTheme() {
   const MAP = {
-    'c-bg':'--panel',
-    'c-surf':'--panel-hi',
-    'c-surf2':'--panel-edge',
+    'c-bg':'--bg',
+    'c-surf':'--panel',
+    'c-surf2':'--panel-hi',
     'c-accent3':'--emerald'
   };
   function applyTokens(tokens) {

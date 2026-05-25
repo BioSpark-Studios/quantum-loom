@@ -9,10 +9,22 @@
  *   4. Loom loops until user clicks → hub shows
  */
 
-const { app, BrowserWindow, Menu, dialog, ipcMain, shell, nativeTheme } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain, shell, nativeTheme, safeStorage } = require('electron');
 const path  = require('path');
 const fs    = require('fs');
 const os    = require('os');
+
+function getSecretsPath() {
+  return path.join(app.getPath('userData'), 'ql-secrets.json');
+}
+
+function readSecrets() {
+  try { return JSON.parse(fs.readFileSync(getSecretsPath(), 'utf8')); } catch(e) { return {}; }
+}
+
+function writeSecrets(secrets) {
+  fs.writeFileSync(getSecretsPath(), JSON.stringify(secrets), 'utf8');
+}
 
 let mainWindow   = null;
 let splashWindow = null;
@@ -73,10 +85,11 @@ function createMainWindow() {
     backgroundColor: '#04050a',
     icon:           path.join(__dirname, 'assets', 'icon.png'),
     webPreferences: {
-      preload:            path.join(__dirname, 'preload.js'),
-      contextIsolation:   true,
-      nodeIntegration:    false,
-      partition:          'persist:quantumloom',
+      preload:                    path.join(__dirname, 'preload.js'),
+      contextIsolation:           true,
+      nodeIntegration:            false,
+      webSecurity:                false,   // allows local file iframes
+      allowRunningInsecureContent: false,
     },
   });
 
@@ -210,6 +223,49 @@ ipcMain.handle('folder:open', async () => {
   ensureDocsDir();
   shell.openPath(DOCS_DIR);
   return {};
+});
+
+/* ════════════════════════════════════════════════════════════════
+   SECURE CREDENTIAL STORAGE
+════════════════════════════════════════════════════════════════ */
+ipcMain.handle('secret:save', async (_event, { key, value }) => {
+  if (!safeStorage.isEncryptionAvailable()) {
+    return { ok: false, reason: 'encryption_unavailable' };
+  }
+  try {
+    const encrypted = safeStorage.encryptString(value);
+    const secrets   = readSecrets();
+    secrets[key]    = encrypted.toString('base64');
+    writeSecrets(secrets);
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, reason: e.message };
+  }
+});
+
+ipcMain.handle('secret:load', async (_event, { key }) => {
+  if (!safeStorage.isEncryptionAvailable()) {
+    return { ok: false, reason: 'encryption_unavailable' };
+  }
+  try {
+    const secrets = readSecrets();
+    if (!secrets[key]) return { ok: false, reason: 'not_found' };
+    const decrypted = safeStorage.decryptString(Buffer.from(secrets[key], 'base64'));
+    return { ok: true, value: decrypted };
+  } catch(e) {
+    return { ok: false, reason: e.message };
+  }
+});
+
+ipcMain.handle('secret:delete', async (_event, { key }) => {
+  try {
+    const secrets = readSecrets();
+    delete secrets[key];
+    writeSecrets(secrets);
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, reason: e.message };
+  }
 });
 
 /* ════════════════════════════════════════════════════════════════
