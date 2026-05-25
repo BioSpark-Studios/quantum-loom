@@ -1,11 +1,8 @@
 <div align="center">
 # quantum-loom
+
 Procedural world simulation platform — build living, breathing worlds from terrain to narrative.
 </div>
-
-# quantum-loom
-Procedural world simulation platform — build living, breathing worlds from terrain to narrative.
-
 <div align="center">
 <img width="1200" height="475" alt="sequencer" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/loom-sequencer.jpg" />
 </div>
