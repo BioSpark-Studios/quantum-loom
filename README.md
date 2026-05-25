@@ -1,5 +1,5 @@
 <div align="center">
-# quantum-loom
+THE QUANTUM LOOM
 
 Procedural world simulation platform — build living, breathing worlds from terrain to narrative.
 </div>
@@ -12,7 +12,7 @@ Quantum Loom is a creative operating system for world-builders. It treats a worl
 Built by BioSpark Studios as part of the Quantum Ecosystem — a modular platform where every creative tool speaks the same language.
 
 ## The Quantum Atlas — 16 Modules
-
+<div align="center">
 | # | Module | Crest | Department |
 |---|--------|-------|------------|
 | 01 | Terrain | Atlas | WorldConstruction |
@@ -31,7 +31,7 @@ Built by BioSpark Studios as part of the Quantum Ecosystem — a modular platfor
 | 14 | Simulation | Continuum | PipelineSystems |
 | 15 | Forge | Forge | PipelineSystems |
 | 16 | Network | Nexus | PipelineSystems |
-
+</div>
 ## Features
 
 - **16-module Atlas pipeline** — WorldConstruction → EntitySystems → NarrativeSystems → PipelineSystems
