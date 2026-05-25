@@ -1,6 +1,9 @@
-
-
-
+<div align="center">
+<img width="256" height="256" alt="loom" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/icon-256-00.jpg" />
+<img width="256" height="256" alt="loom" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/icon-256-01.jpg" />
+<img width="256" height="256" alt="loom" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/icon-256-02.jpg" />
+<img width="256" height="256" alt="loom" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/icon-256-03.jpg" />
+</div>
 
 # quantum-loom
 Procedural world simulation platform — build living, breathing worlds from terrain to narrative.
@@ -64,19 +67,16 @@ Open Genesis import via the **↑ Import** button in the header, or drag a `.qge
 Press **F1** for the in-app User Manual.
 
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/loom](https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/loom-nodes.jpg" />
+<img width="1200" height="475" alt="nodes" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/loom-nodes.jpg" />
 </div>
 
 # Run and deploy your AI Studio app
 
 This contains everything you need to run your app locally.
 
-View your app in AI Studio: https://ai.studio/apps/1fb3ad3b-a334-43ca-b1b5-9ded58c5f92b
-
 ## Run Locally
 
 **Prerequisites:**  Node.js
-
 
 1. Install dependencies:
    `npm install`
