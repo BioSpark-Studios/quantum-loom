@@ -69,13 +69,20 @@ html,body{
 /* ── Top header bar ──────────────────────────────────── */
 #hub-header{
   height:52px;flex-shrink:0;
-  display:flex;align-items:center;gap:0;
+  display:grid;
+  grid-template-columns: auto 1fr auto;
+  align-items:center;
   background:var(--surface);border-bottom:1px solid var(--edge);
   position:relative;z-index:20;
 }
+/* Left cell */
+.hh-left{
+  display:flex;align-items:center;gap:0;height:100%;
+  border-right:1px solid var(--edge);
+}
 .hh-logo{
   display:flex;align-items:center;gap:8px;
-  padding:0 16px;border-right:1px solid var(--edge);height:100%;flex-shrink:0;
+  padding:0 16px;height:100%;flex-shrink:0;
 }
 .hh-glyph{
   width:22px;height:22px;border:1.5px solid var(--venturan);
@@ -104,13 +111,10 @@ html,body{
   border-radius:3px;padding:2px 8px;outline:none;display:none;
 }
 
-.hh-spacer{flex:1}
-
-/* ── Header centered nav tabs ────────────────────────── */
+/* ── Header centered nav tabs — center grid cell ─────── */
 #hub-main-nav{
-  position:absolute;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:3px;
-  pointer-events:all;
+  display:flex;align-items:center;justify-content:center;gap:3px;
+  padding:0 8px;
 }
 .hn-tab{
   font-family:var(--fm);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;
@@ -144,9 +148,13 @@ html,body{
 .sc.active-layer{border-color:var(--lc,var(--venturan));color:var(--lc,var(--venturan))}
 .sc.active-layer .sc-dot{opacity:1}
 
-/* Header actions */
+/* Header right cell */
+.hh-right{
+  display:flex;align-items:center;gap:0;height:100%;
+  border-left:1px solid var(--edge);
+}
 .hh-actions{
-  display:flex;gap:4px;padding:0 12px;border-left:1px solid var(--edge);height:100%;
+  display:flex;gap:4px;padding:0 12px;height:100%;
   align-items:center;
 }
 .hh-btn{
@@ -168,8 +176,9 @@ html,body{
   transition:width .24s cubic-bezier(.2,.8,.2,1), opacity .2s;
   position:relative;z-index:8;
 }
-#hub-right-panel::-webkit-scrollbar{width:3px}
-#hub-right-panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+#hub-right-panel::-webkit-scrollbar{width:5px}
+#hub-right-panel::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
+#hub-right-panel::-webkit-scrollbar-thumb:hover{background:rgba(200,151,58,.6)}
 #hub-right-panel.collapsed{
   width:0;opacity:0;pointer-events:none;overflow:hidden;
 }
@@ -228,7 +237,7 @@ html,body{
   line-height:1.6;margin:0;white-space:pre-wrap;word-break:break-all;
 }
 .rp-snapshot-pre::-webkit-scrollbar{width:3px;height:3px}
-.rp-snapshot-pre::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.rp-snapshot-pre::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
 .rp-snapshot-empty{
   font-family:var(--fc);font-size:.3rem;color:rgba(255,255,255,.2);
   font-style:italic;padding:2px 0;
@@ -248,7 +257,7 @@ html,body{
 
 /* ── Atlas Footer Bar ────────────────────────────────── */
 #atlas-footer{
-  height:72px;flex-shrink:0;
+  height:76px;flex-shrink:0;
   display:flex;align-items:center;
   background:var(--surface);border-top:1px solid var(--edge);
   position:relative;z-index:15;
@@ -257,6 +266,7 @@ html,body{
 .af-label{
   padding:0 14px;flex-shrink:0;border-right:1px solid var(--edge);
   display:flex;flex-direction:column;justify-content:center;gap:3px;height:100%;
+  min-width:88px;
 }
 .af-title{
   font-family:var(--fm);font-size:.45rem;letter-spacing:.18em;text-transform:uppercase;
@@ -268,33 +278,51 @@ html,body{
 }
 .af-strip-wrap{
   flex:1;overflow-x:auto;overflow-y:hidden;
-  display:flex;align-items:center;padding:0 6px;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 8px;
   scrollbar-width:none;
 }
 .af-strip-wrap::-webkit-scrollbar{display:none}
 .af-strip{
-  display:flex;align-items:center;gap:3px;
-  padding:4px 2px;
+  display:flex;align-items:center;gap:5px;
+  padding:6px 4px;
 }
+/* ── Glyph tile buttons ──────────────────────────────── */
 .af-module-btn{
-  width:48px;height:52px;border-radius:5px;flex-shrink:0;
+  width:46px;height:54px;border-radius:8px;flex-shrink:0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;transition:all .15s;gap:3px;
-  border:1px solid transparent;background:transparent;
-  border-top:2px solid transparent;
+  cursor:pointer;transition:all .15s;gap:4px;
+  border:1px solid var(--edge);
+  background:var(--surface2);
   position:relative;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
 }
-.af-module-btn:hover{background:rgba(255,255,255,.06);border-color:var(--edge)}
-.af-module-btn.active{
+.af-module-btn:hover{
   background:rgba(255,255,255,.07);
-  border-color:var(--mc, var(--venturan));
-  border-top-color:var(--mc, var(--venturan));
+  border-color:var(--mc,var(--edge-hi));
+  box-shadow:0 0 8px rgba(255,255,255,.06),0 1px 4px rgba(0,0,0,.4);
+  transform:translateY(-1px);
 }
-.af-glyph{font-size:1.15rem;flex-shrink:0;color:var(--mc,rgba(255,255,255,.45));transition:color .12s}
-.af-module-btn.active .af-glyph{color:var(--mc,var(--venturan))}
+.af-module-btn.active{
+  background:rgba(0,0,0,.25);
+  border-color:var(--mc, var(--venturan));
+  box-shadow:0 0 10px color-mix(in srgb, var(--mc,var(--venturan)) 30%, transparent),
+             inset 0 0 6px color-mix(in srgb, var(--mc,var(--venturan)) 12%, transparent);
+}
+.af-glyph{
+  font-size:1.3rem;flex-shrink:0;
+  color:var(--mc,rgba(255,255,255,.35));
+  transition:color .12s,text-shadow .12s;
+  line-height:1;
+}
+.af-module-btn:hover .af-glyph{color:var(--mc,rgba(255,255,255,.7));}
+.af-module-btn.active .af-glyph{
+  color:var(--mc,var(--venturan));
+  text-shadow:0 0 8px var(--mc,var(--venturan));
+}
 .af-abbr{
-  font-family:var(--fm);font-size:.28rem;letter-spacing:.06em;text-transform:uppercase;
-  color:rgba(255,255,255,.28);transition:color .12s;
+  font-family:var(--fm);font-size:.26rem;letter-spacing:.06em;text-transform:uppercase;
+  color:rgba(255,255,255,.22);transition:color .12s;
 }
 .af-module-btn.active .af-abbr{color:var(--mc,var(--venturan));opacity:.9}
 .af-expand-btn{
@@ -559,8 +587,8 @@ html,body{
 .op-close{background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.8rem;padding:2px 6px;border-radius:3px}
 .op-close:hover{color:#fff;background:rgba(255,255,255,.08)}
 .op-body{flex:1;overflow-y:auto;padding:16px 18px}
-.op-body::-webkit-scrollbar{width:3px}
-.op-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.op-body::-webkit-scrollbar{width:5px}
+.op-body::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
 .op-stats{
   display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;
 }
@@ -655,8 +683,8 @@ html,body{
 .fb-tab.active{ color:#c8973a;border-bottom-color:#c8973a }
 .fb-tab:hover:not(.active){ color:rgba(255,255,255,.55) }
 .fb-body{ padding:20px;overflow-y:auto;flex:1 }
-.fb-body::-webkit-scrollbar{ width:3px }
-.fb-body::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08) }
+.fb-body::-webkit-scrollbar{ width:5px }
+.fb-body::-webkit-scrollbar-thumb{ background:rgba(200,151,58,.35) }
 .fb-row{ margin-bottom:14px }
 .fb-label{
   font-family:var(--fm);font-size:.36rem;letter-spacing:.18em;text-transform:uppercase;
@@ -727,8 +755,8 @@ html,body{
   color:rgba(255,255,255,.35);max-height:120px;overflow-y:auto;
   background:rgba(0,0,0,.2);border-radius:4px;padding:8px 10px;margin-top:10px;
 }
-.fb-log::-webkit-scrollbar{ width:2px }
-.fb-log::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08) }
+.fb-log::-webkit-scrollbar{ width:4px }
+.fb-log::-webkit-scrollbar-thumb{ background:rgba(200,151,58,.35) }
 .fb-log-entry{ color:rgba(255,255,255,.3) }
 .fb-log-entry.ok{ color:rgba(77,200,160,.7) }
 .fb-log-entry.warn{ color:rgba(232,184,75,.6) }
@@ -763,8 +791,8 @@ html,body{
   padding:20px;overflow-y:auto;flex:1;
   display:grid;grid-template-columns:1fr 1fr;gap:12px;
 }
-.tm-body::-webkit-scrollbar{width:3px}
-.tm-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.tm-body::-webkit-scrollbar{width:5px}
+.tm-body::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
 .theme-card{
   border:1px solid rgba(255,255,255,.07);border-radius:8px;
   padding:14px;cursor:pointer;transition:all .18s;
@@ -939,8 +967,8 @@ html,body{
 
 /* Config tab */
 .lp-body{padding:16px;overflow-y:auto;flex:1}
-.lp-body::-webkit-scrollbar{width:3px}
-.lp-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.lp-body::-webkit-scrollbar{width:5px}
+.lp-body::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
 .lp-row{margin-bottom:12px}
 .lp-label{
   font-family:var(--fm);font-size:.34rem;letter-spacing:.16em;text-transform:uppercase;
@@ -990,8 +1018,8 @@ html,body{
 
 /* Chat tab */
 .lp-chat-msgs{flex:1;overflow-y:auto;padding:14px 14px 0;display:flex;flex-direction:column;gap:10px}
-.lp-chat-msgs::-webkit-scrollbar{width:3px}
-.lp-chat-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+.lp-chat-msgs::-webkit-scrollbar{width:5px}
+.lp-chat-msgs::-webkit-scrollbar-thumb{background:rgba(200,151,58,.35)}
 .chat-msg{
   max-width:92%;padding:8px 11px;border-radius:8px;
   font-family:var(--fd);font-size:.62rem;line-height:1.6;
@@ -1005,6 +1033,24 @@ html,body{
   border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.75);
 }
 .chat-msg.ai.streaming{border-color:rgba(200,151,58,.3)}
+/* LLM thinking bar */
+#lp-thinking{
+  display:none;align-items:center;gap:8px;
+  padding:8px 14px;border-top:1px solid var(--edge);flex-shrink:0;
+  background:rgba(200,151,58,.05);
+}
+#lp-thinking.visible{display:flex}
+.lp-think-spinner{
+  width:14px;height:14px;border-radius:50%;flex-shrink:0;
+  border:2px solid rgba(200,151,58,.2);
+  border-top-color:#c8973a;
+  animation:spin-cw .7s linear infinite;
+}
+@keyframes spin-cw{to{transform:rotate(360deg)}}
+.lp-think-dots{
+  font-family:var(--fc);font-size:.48rem;color:rgba(200,151,58,.65);
+  letter-spacing:.08em;
+}
 .lp-chat-input-row{
   display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--edge);flex-shrink:0;
 }
@@ -1019,10 +1065,14 @@ html,body{
   font-family:var(--fm);font-size:.36rem;letter-spacing:.1em;text-transform:uppercase;
   padding:0 12px;border-radius:5px;cursor:pointer;transition:all .13s;
   border:1px solid rgba(200,151,58,.4);background:rgba(200,151,58,.12);
-  color:#c8973a;align-self:stretch;
+  color:#c8973a;align-self:stretch;min-width:54px;
 }
 .lp-send-btn:hover{background:rgba(200,151,58,.22)}
-.lp-send-btn:disabled{opacity:.3;cursor:not-allowed}
+.lp-send-btn:disabled{opacity:.5;cursor:not-allowed}
+.lp-send-btn.thinking{
+  border-color:rgba(200,151,58,.25);background:rgba(200,151,58,.06);
+  color:rgba(200,151,58,.5);
+}
 
 .lp-actions{display:flex;gap:6px;padding:12px 16px;border-top:1px solid var(--edge);flex-shrink:0;flex-wrap:wrap}
 .lp-act-btn{
@@ -1036,6 +1086,13 @@ html,body{
   border-color:rgba(200,151,58,.4);background:rgba(200,151,58,.12);color:#c8973a;
 }
 .lp-act-btn.primary:hover{background:rgba(200,151,58,.22)}
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
 </style>
 </head>
 <body>
@@ -1043,15 +1100,18 @@ html,body{
 
   <!-- TOP HEADER -->
   <div id="hub-header">
-    <div class="hh-logo">
-      <div class="hh-glyph">⬡</div>
-      <div class="hh-name">Quantum Loom</div>
+    <!-- LEFT: logo + project name -->
+    <div class="hh-left">
+      <div class="hh-logo">
+        <div class="hh-glyph">⬡</div>
+        <div class="hh-name">Quantum Loom</div>
+      </div>
+      <div class="hh-sep"></div>
+      <span id="proj-name" onclick="openProjModal()" title="Click to rename project">Untitled Project</span>
+      <input id="proj-name-input" type="text" placeholder="Project name…" onblur="saveProjName()" onkeydown="if(event.key==='Enter')saveProjName()">
     </div>
-    <div class="hh-sep"></div>
-    <span id="proj-name" onclick="openProjModal()" title="Click to rename project">Untitled Project</span>
-    <input id="proj-name-input" type="text" placeholder="Project name…" onblur="saveProjName()" onkeydown="if(event.key==='Enter')saveProjName()">
 
-    <!-- CENTERED MAIN NAV TABS -->
+    <!-- CENTER: main nav tabs -->
     <div id="hub-main-nav">
       <div class="hn-tab active" id="hnt-workspace" onclick="switchLayer('workspace')" title="Character Workspace" data-tip="Node canvas — build signal flow graphs and connect modules" data-tip-title="WORKSPACE">
         <span class="hn-icon">◈</span>Workspace
@@ -1079,39 +1139,28 @@ html,body{
       </div>
     </div>
 
-    <div class="hh-spacer"></div>
-      <span id="theme-lbl" onclick="openThemeModal()" title="Change theme">🌌 Void-Tech</span>
-
-    <!-- Live storage status chips -->
-    <div id="status-bar">
-      <div class="sc" id="sc-capsules" style="--lc:var(--c-library)" title="Capsules in library">
-        <div class="sc-dot"></div>
-        <span id="sc-caps-n">0</span> capsules
+    <!-- RIGHT: actions -->
+    <div class="hh-right">
+      <div class="hh-actions">
+        <button class="hh-btn" onclick="openProjModal()" data-tip="Open project settings" data-tip-title="PROJECT">⊞ Project</button>
+        <button class="hh-btn" id="btn-import-genesis" onclick="document.getElementById('genesis-file-input').click()" title="Import .qgenesis container" data-tip="Import a .qgenesis world container file" data-tip-title="IMPORT">↑ Import</button>
+        <button class="hh-btn" id="btn-export-genesis" onclick="genesisExport()" title="Export .qgenesis container" data-tip="Export the current world state as a .qgenesis file" data-tip-title="EXPORT">↓ Export</button>
+        <button class="hh-btn" id="llm-btn" onclick="openLLMPanel()" title="AI Assistant" data-tip="Open AI assistant panel" data-tip-title="AI">🤖</button>
+        <button class="hh-btn" id="theme-btn" onclick="openThemeModal()" title="Change theme" data-tip="Open theme settings and colour palette" data-tip-title="THEME">🎨</button>
+        <button class="hh-btn" id="fb-btn" onclick="openFBModal()" data-tip="Cloud sync" data-tip-title="CLOUD">🔥</button>
+        <button class="hh-btn hot" onclick="saveProject()" data-tip="Save current project state" data-tip-title="SAVE">↓ Save</button>
       </div>
-      <div class="sc" id="sc-scenes" style="--lc:var(--c-scenes)" title="Scenes / Acts">
-        <div class="sc-dot"></div>
-        <span id="sc-scenes-n">0</span> scenes
-      </div>
-      <div class="sc" id="sc-tracks" style="--lc:var(--c-sequencer)" title="Sequencer tracks">
-        <div class="sc-dot"></div>
-        <span id="sc-tracks-n">0</span> tracks
-      </div>
-      <div class="sc" id="sc-compiled" style="--lc:var(--c-subgraph)" title="Compiled graphs">
-        <div class="sc-dot"></div>
-        <span id="sc-comp-n">0</span> compiled
-      </div>
-    </div>
-
-    <div class="hh-actions">
-      <button class="hh-btn" onclick="openProjModal()">⊞ Project</button>
-      <button class="hh-btn" id="btn-import-genesis" onclick="document.getElementById('genesis-file-input').click()" title="Import .qgenesis container" data-tip="Import a .qgenesis world container file" data-tip-title="IMPORT">↑ Import</button>
-      <button class="hh-btn" id="btn-export-genesis" onclick="genesisExport()" title="Export .qgenesis container" data-tip="Export the current world state as a .qgenesis file" data-tip-title="EXPORT">↓ Export</button>
-      <button class="hh-btn" id="llm-btn" onclick="openLLMPanel()" title="AI Assistant" data-tip="Open AI assistant panel" data-tip-title="AI">🤖</button>
-      <button class="hh-btn" id="theme-btn" onclick="openThemeModal()" title="Change theme" data-tip="Open theme settings and colour palette" data-tip-title="THEME">🎨</button>
-      <button class="hh-btn" id="fb-btn" onclick="openFBModal()">🔥 Cloud</button>
-      <button class="hh-btn hot" onclick="saveProject()">↓ Save</button>
     </div>
   </div>
+
+  <!-- Status chips — moved below header, hidden by default, used by JS -->
+  <div id="status-bar" style="display:none">
+    <div class="sc" id="sc-capsules" style="--lc:var(--c-library)"><div class="sc-dot"></div><span id="sc-caps-n">0</span></div>
+    <div class="sc" id="sc-scenes" style="--lc:var(--c-scenes)"><div class="sc-dot"></div><span id="sc-scenes-n">0</span></div>
+    <div class="sc" id="sc-tracks" style="--lc:var(--c-sequencer)"><div class="sc-dot"></div><span id="sc-tracks-n">0</span></div>
+    <div class="sc" id="sc-compiled" style="--lc:var(--c-subgraph)"><div class="sc-dot"></div><span id="sc-comp-n">0</span></div>
+  </div>
+  <span id="theme-lbl" style="display:none">Void-Tech</span>
 
   <!-- Hidden file input for Genesis Container import -->
   <input type="file" id="genesis-file-input" accept=".qgenesis,.json" style="display:none"
@@ -1446,16 +1495,6 @@ html,body{
       <iframe class="layer-frame" id="frame-behavior"
         src="quantum-atlas-behavior.html"
         onload="frameLoaded('behavior')"></iframe>
-
-      <!-- 16 · Network | Nexus -->
-      <div class="frame-loader" id="loader-network">
-        <div class="loader-glyph" style="color:var(--c-network)">⇋</div>
-        <div class="loader-lbl">Loading 16 · Network | Nexus</div>
-        <div class="loader-bar"><div class="loader-fill" style="background:var(--c-network)"></div></div>
-      </div>
-      <iframe class="layer-frame" id="frame-network"
-        src="quantum-atlas-network.html"
-        onload="frameLoaded('network')"></iframe>
 
       <!-- Manual -->
       <div class="frame-loader" id="loader-manual">
@@ -1994,6 +2033,13 @@ html,body{
   <!-- CHAT TAB -->
   <div id="lp-pane-chat" style="display:none;flex:1;flex-direction:column;overflow:hidden">
     <div class="lp-chat-msgs" id="lp-msgs"></div>
+    <div style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0">
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:.47rem;color:rgba(255,255,255,.35);font-family:var(--fmono,monospace);white-space:nowrap" title="DM Mode: the AI challenges your world-building instead of just helping">
+        <input type="checkbox" id="dm-mode-toggle" style="accent-color:var(--amber)"> DM MODE
+      </label>
+      <button class="lp-act-btn" onclick="injectWorldContext()" style="font-size:.42rem;padding:2px 8px" title="Sync current world state into conversation context">⟳ Sync World</button>
+      <button class="lp-act-btn" onclick="clearChatHistory()" style="font-size:.42rem;padding:2px 8px;margin-left:auto">Clear</button>
+    </div>
     <div class="lp-chat-input-row">
       <textarea class="lp-chat-input" id="lp-chat-input" placeholder="Ask anything about your story…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();llmSend()}"></textarea>
       <button class="lp-send-btn" id="lp-send-btn" onclick="llmSend()">↑ Send</button>
@@ -2023,6 +2069,16 @@ html,body{
     <div class="lp-label" style="margin-bottom:10px">Lore Document Import</div>
     <textarea class="lp-input" id="lp-lore-text" style="height:100px;resize:vertical" placeholder="Paste lore text, world-building notes, or a rough draft here…"></textarea>
     <button class="lp-act-btn primary" style="width:100%;margin-top:8px" onclick="llmParseLore()">↑ Parse into Library</button>
+
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:16px 0">
+    <div class="lp-label" style="margin-bottom:8px">AI World Tools</div>
+    <input class="lp-input" id="lp-ai-prompt" placeholder="Describe what you want to generate…" style="margin-bottom:8px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px">
+      <button class="lp-act-btn" onclick="llmGenerateCharacter()" title="Generate a character and add to workspace">+ Character</button>
+      <button class="lp-act-btn" onclick="llmGenerateArc()" title="Generate a story arc and add beats to Scenes">⟳ Story Arc</button>
+      <button class="lp-act-btn" onclick="llmGenerateNodeGraph()" title="Generate a logic node graph and save to Sub-Graph">⬡ Node Graph</button>
+      <button class="lp-act-btn" onclick="llmSuggestEvent()" title="Suggest a world event — answer streams to Chat">⚡ World Event</button>
+    </div>
 
     <div class="lp-hint" style="margin-top:14px" id="lp-tools-status">Connect an AI provider first.</div>
   </div>
@@ -3276,8 +3332,60 @@ function lpSetStatus(state, msg) {
   if (hdot) hdot.className = 'lp-dot ' + (state === 'ok' ? 'ok' : '');
 }
 
+/* ── World context builder — feeds LLM with live world state ─── */
+function buildWorldContext() {
+  const parts = [];
+  try {
+    const meta = JSON.parse(localStorage.getItem('ql-workspace-meta') || '{}');
+    if (meta.name) parts.push(`Project: "${meta.name}"`);
+    if (LAYERS[activeLayer]) parts.push(`Currently viewing: ${LAYERS[activeLayer].label}`);
+
+    const ws = JSON.parse(localStorage.getItem('ql-workspace') || '[]');
+    if (ws.length) {
+      const chars = ws.slice(0,10).map(c => {
+        const ev = c.emotionalVector || {};
+        const top = Object.entries(ev).filter(([,v])=>v>5).map(([k,v])=>`${k}:${v}`).join(', ');
+        return `• ${c.name}${c.race?' ('+c.race+')':''}${c.role?' — '+c.role:''}${top?' ['+top+']':''}${c.wound?' wound:'+c.wound:''}`;
+      }).join('\n');
+      parts.push(`Characters (${ws.length}):\n${chars}`);
+    }
+
+    const lib = JSON.parse(localStorage.getItem('ql-library') || '[]');
+    if (lib.length) {
+      const types = [...new Set(lib.map(l=>l.type))].join(', ');
+      const names = lib.slice(0,8).map(l=>l.name).join(', ');
+      parts.push(`Library: ${lib.length} capsules (${types}) — ${names}…`);
+    }
+
+    const zones = JSON.parse(localStorage.getItem('ql-zones') || '[]');
+    if (zones.length) parts.push(`Zones: ${zones.slice(0,8).map(z=>z.name||z.label||z.id).join(', ')}`);
+
+    const scenes = JSON.parse(localStorage.getItem('ql-scenes') || '[]');
+    if (scenes.length) parts.push(`Scenes: ${scenes.slice(0,6).map(s=>s.title||s.name).join(', ')}`);
+
+    const terrain = JSON.parse(localStorage.getItem('qa-terrain-snapshot') || 'null');
+    if (terrain?.worldName) parts.push(`World: "${terrain.worldName}" — biome: ${terrain.biome||'?'}, climate: ${terrain.climate||'?'}`);
+
+    const society = JSON.parse(localStorage.getItem('qa-society-snapshot') || 'null');
+    if (society?.factions?.length) parts.push(`Factions: ${society.factions.slice(0,5).map(f=>f.name||f).join(', ')}`);
+  } catch(e) {}
+  return parts.join('\n\n') || 'No world data yet.';
+}
+
 /* ── Chat ────────────────────────────────────────────────────── */
 const chatHistory = [];
+
+function clearChatHistory() {
+  chatHistory.length = 0;
+  document.getElementById('lp-msgs').innerHTML = '';
+}
+
+function injectWorldContext() {
+  const ctx = buildWorldContext();
+  chatHistory.push({ role:'user', content:'[World context update]\n\n' + ctx });
+  lpAddMsg('user', `[World synced — ${ctx.split('\n\n').length} sections loaded into context]`);
+  toast('World context synced into chat');
+}
 
 async function llmSend() {
   const input = document.getElementById('lp-chat-input');
@@ -3288,37 +3396,43 @@ async function llmSend() {
   lpAddMsg('user', msg);
   chatHistory.push({ role:'user', content: msg });
 
-  const sendBtn = document.getElementById('lp-send-btn');
-  sendBtn.disabled = true;
-
+  llmSetThinking(true);
   const aiEl = lpAddMsg('ai', '', true);
+  let firstChunk = true;
 
   try {
     await llmEnsureLib();
     LoomLLM.init();
 
-    const system = `You are a creative writing and world-building assistant for the Quantum Loom narrative system. You help authors brainstorm characters, plots, themes, and world details. Be concise, creative, and specific. Current project: ${(JSON.parse(localStorage.getItem('ql-workspace-meta')||'{}').name)||'Untitled'}.`;
+    const isDM  = document.getElementById('dm-mode-toggle')?.checked;
+    const ctx   = buildWorldContext();
+    const system = isDM
+      ? `You are the Dungeon Master and co-creator of this world. You know everything about it. Challenge the author's assumptions, introduce complications, ask hard questions, and push them to go deeper. Be Socratic, provocative, and deeply specific. Don't just validate — interrogate. Make them earn the story.\n\nWorld context:\n${ctx}`
+      : `You are a creative world-building assistant inside Quantum Loom. You have full knowledge of the author's world — use it. Be specific, never generic. Reference actual characters, places, and tensions from the world. Help brainstorm, design, and refine.\n\nWorld context:\n${ctx}`;
 
     const messages = [
       { role:'system', content: system },
-      ...chatHistory.slice(-12),
+      ...chatHistory.slice(-14),
     ];
 
     let full = '';
     await LoomLLM.chatStream(messages, {}, chunk => {
+      if (firstChunk) { llmSetThinking(false); firstChunk = false; }
       full += chunk;
       aiEl.textContent = full;
       document.getElementById('lp-msgs').scrollTop = 9999;
     }, () => {
+      llmSetThinking(false);
       aiEl.classList.remove('streaming');
       chatHistory.push({ role:'assistant', content: full });
     });
   } catch(e) {
+    llmSetThinking(false);
     aiEl.textContent = '⚠ ' + e.message;
     aiEl.classList.remove('streaming');
     aiEl.style.color = '#d45b5b';
   } finally {
-    sendBtn.disabled = false;
+    llmSetThinking(false);
   }
 }
 
@@ -3332,6 +3446,107 @@ function lpAddMsg(role, text, streaming=false) {
   return div;
 }
 
+/* ── AI World Tools ──────────────────────────────────────────── */
+
+async function llmGenerateCharacter() {
+  const prompt = document.getElementById('lp-ai-prompt').value.trim() || 'a complex, surprising character that fits this world';
+  const statusEl = document.getElementById('lp-tools-status');
+  statusEl.textContent = 'Generating character…';
+  const schema = {
+    name:'string', race:'string', role:'string', archetype:'string', age:'number',
+    desc:'string (2–3 sentences)', backstory:'string (2–3 sentences)',
+    goal:'string (what they want)', wound:'string (core emotional wound)',
+    emotionalVector:{ hope:'0-10', fear:'0-10', resolve:'0-10', grief:'0-10', wonder:'0-10', fury:'0-10' },
+    traits:['3–5 trait strings'], tags:['thematic tags'],
+  };
+  try {
+    await llmEnsureLib(); LoomLLM.init();
+    const system = `You are a character designer for Quantum Loom. Create a deeply specific character that feels inevitable for this world. Make them contradictory, surprising, and human. Never use clichés.\n\nWorld context:\n${buildWorldContext()}`;
+    const result = await LoomLLM.structured(system, `Design a character: ${prompt}`, schema);
+    if (!result?.name) { statusEl.textContent = '⚠ No character returned — check connection.'; return; }
+    const ws = JSON.parse(localStorage.getItem('ql-workspace') || '[]');
+    ws.push({ id:'ai-c-'+Date.now(), ...result, source:'ai-generated', createdAt:new Date().toISOString() });
+    localStorage.setItem('ql-workspace', JSON.stringify(ws));
+    statusEl.textContent = `✓ "${result.name}" added to Character Workspace`;
+    toast(`+ ${result.name} added to workspace`);
+    lpTab('chat');
+    lpAddMsg('ai', `Created: ${result.name} (${result.race||''} ${result.role||''})\n\n${result.desc||''}\n\nWound: ${result.wound||''}\nGoal: ${result.goal||''}\nTraits: ${(result.traits||[]).join(', ')}`);
+  } catch(e) { statusEl.textContent = '⚠ ' + e.message.slice(0,80); }
+}
+
+async function llmGenerateArc() {
+  const prompt = document.getElementById('lp-ai-prompt').value.trim() || 'a compelling narrative arc that uses the existing characters';
+  const statusEl = document.getElementById('lp-tools-status');
+  statusEl.textContent = 'Generating story arc…';
+  const schema = {
+    title:'string', logline:'string (one sentence)',
+    beats:[{ beat:'string', description:'string', chapter:'number 1–10', characters:['names involved'] }],
+    themes:['thematic strings'], emotionalArc:'string (e.g. hope → grief → resolve)',
+    worldImpact:'string (how this permanently changes the world)',
+  };
+  try {
+    await llmEnsureLib(); LoomLLM.init();
+    const system = `You are a narrative architect for Quantum Loom. Design arcs that feel inevitable in hindsight. Use the world's specific characters, tensions, and geography. Every beat should have consequence.\n\nWorld context:\n${buildWorldContext()}`;
+    const result = await LoomLLM.structured(system, `Design a story arc: ${prompt}`, schema);
+    if (!result?.title) { statusEl.textContent = '⚠ No arc returned.'; return; }
+    const scenes = JSON.parse(localStorage.getItem('ql-scenes') || '[]');
+    (result.beats||[]).forEach((b,i) => scenes.push({
+      id:'ai-s-'+Date.now()+'-'+i, title:`[${result.title}] ${b.beat}`,
+      desc:b.description, chapter:b.chapter, tags:result.themes||[], source:'ai-arc'
+    }));
+    localStorage.setItem('ql-scenes', JSON.stringify(scenes));
+    statusEl.textContent = `✓ "${result.title}" — ${result.beats?.length||0} beats added to Scenes`;
+    toast(`⟳ Arc "${result.title}" saved to Scenes`);
+    lpTab('chat');
+    lpAddMsg('ai', `Arc: ${result.title}\n${result.logline}\n\nJourney: ${result.emotionalArc}\nWorld impact: ${result.worldImpact}\n\nBeats:\n${(result.beats||[]).map((b,i)=>`${i+1}. ${b.beat} — ${b.description}`).join('\n')}`);
+  } catch(e) { statusEl.textContent = '⚠ ' + e.message.slice(0,80); }
+}
+
+async function llmGenerateNodeGraph() {
+  const prompt = document.getElementById('lp-ai-prompt').value.trim() || 'a character behavior and condition logic graph';
+  const statusEl = document.getElementById('lp-tools-status');
+  statusEl.textContent = 'Generating node graph…';
+  const schema = {
+    id:'string slug', label:'string',
+    nodes:[{ id:'string', type:'character|stat|condition|modifier|narrative|router|output', x:'0–1200', y:'0–600', data:{ label:'string', value:'optional 0–100', desc:'optional string' } }],
+    edges:[{ id:'string', from:'node id', fromPort:'right', to:'node id', toPort:'left', color:'#hex' }],
+  };
+  try {
+    await llmEnsureLib(); LoomLLM.init();
+    const system = `You are a narrative logic designer for Quantum Loom. Create node graphs that wire character traits, conditions, and story events into causal networks. Nodes flow left→right. Use: character, stat, condition, modifier, narrative, router, output types. X range 0–1200, Y range 0–600. World context:\n${buildWorldContext()}`;
+    const result = await LoomLLM.structured(system, `Design a logic node graph: ${prompt}`, schema);
+    if (!result?.nodes?.length) { statusEl.textContent = '⚠ No graph returned.'; return; }
+    result.edges = result.edges || [];
+    const gid = (result.id || 'ai-g-' + Date.now()).replace(/\s/g,'-');
+    const graphs = JSON.parse(localStorage.getItem('ql-graphs') || '{}');
+    graphs[gid] = { nodes:result.nodes, edges:result.edges };
+    localStorage.setItem('ql-graphs', JSON.stringify(graphs));
+    const sgList = JSON.parse(localStorage.getItem('ql-subgraphs') || '[]');
+    if (!sgList.find(g=>g.id===gid)) sgList.push({ id:gid, label:result.label||prompt, owner:'ai-generated', nodes:result.nodes, wires:[], edges:result.edges });
+    localStorage.setItem('ql-subgraphs', JSON.stringify(sgList));
+    statusEl.textContent = `✓ "${result.label||gid}" — ${result.nodes.length} nodes, ${result.edges.length} edges → open Sub-Graph`;
+    toast('⬡ Node graph saved — switch to Sub-Graph to view');
+  } catch(e) { statusEl.textContent = '⚠ ' + e.message.slice(0,80); }
+}
+
+async function llmSuggestEvent() {
+  const prompt = document.getElementById('lp-ai-prompt').value.trim() || 'a world-shaking event that raises the stakes for everyone';
+  const statusEl = document.getElementById('lp-tools-status');
+  statusEl.textContent = 'Generating event…';
+  const ctx = buildWorldContext();
+  try {
+    await llmEnsureLib(); LoomLLM.init();
+    lpTab('chat');
+    let reply = '';
+    const aiEl = lpAddMsg('ai', '', true);
+    await LoomLLM.chatStream([
+      { role:'system', content:`You are a world event designer for Quantum Loom. Create specific, consequential events that ripple through the world. Be concrete: name the characters affected, the location, the immediate and long-term consequences. World context:\n${ctx}` },
+      { role:'user', content:`Suggest a world event: ${prompt}` }
+    ], {}, chunk => { reply += chunk; aiEl.textContent = reply; document.getElementById('lp-msgs').scrollTop = 9999; },
+    () => { aiEl.classList.remove('streaming'); chatHistory.push({role:'assistant',content:reply}); statusEl.textContent = '✓ Event streamed to Chat'; });
+  } catch(e) { statusEl.textContent = '⚠ ' + e.message.slice(0,80); }
+}
+
 /* ── Tools ───────────────────────────────────────────────────── */
 async function llmGenerateLibrary() {
   const concept = document.getElementById('lp-concept').value.trim();
@@ -3341,7 +3556,7 @@ async function llmGenerateLibrary() {
   if (!concept) { toast('Enter a concept first'); return; }
 
   const statusEl = document.getElementById('lp-tools-status');
-  statusEl.textContent = 'Generating ' + count + ' capsules…';
+  statusEl.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;border:2px solid rgba(200,151,58,.2);border-top-color:#c8973a;animation:spin-cw .7s linear infinite;display:inline-block"></span> Generating ' + count + ' capsules…</span>';
 
   try {
     await llmEnsureLib();
@@ -3380,7 +3595,7 @@ async function llmParseLore() {
   if (!text) { toast('Paste lore text first'); return; }
 
   const statusEl = document.getElementById('lp-tools-status');
-  statusEl.textContent = 'Parsing document…';
+  statusEl.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;border:2px solid rgba(200,151,58,.2);border-top-color:#c8973a;animation:spin-cw .7s linear infinite;display:inline-block"></span> Parsing document…</span>';
 
   try {
     await llmEnsureLib();

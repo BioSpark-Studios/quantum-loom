@@ -363,6 +363,13 @@ body{background:var(--bg);font-family:var(--fd);color:#fff;height:100vh;overflow
   color:rgba(255,80,80,.3);cursor:pointer;transition:all .12s;flex-shrink:0;
 }
 .dl-del:hover { background:rgba(255,0,0,.08);color:rgba(255,80,80,.7); }
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
 </style>
 </head>
 <body>

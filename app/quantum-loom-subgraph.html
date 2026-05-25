@@ -483,6 +483,13 @@ body{background:var(--bg);font-family:var(--fd);color:#fff;height:100vh;overflow
 .cl-chip-name{ font-family:var(--fm);font-size:.38rem;letter-spacing:.08em;text-transform:uppercase;color:#4dc8a0 }
 .cl-chip-ver{ font-family:var(--fcode);font-size:.32rem;color:rgba(77,200,160,.45) }
 
+
+/* ── Themed scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,151,58,0.6); }
+::-webkit-scrollbar-corner { background: transparent; }
 </style>
 </head>
 <body>
@@ -1316,7 +1323,7 @@ function renderWires() {
 
 function canvasDown(e) {
   if (e.target.closest('#node-toolbar') || e.target.closest('#canvas-controls')) return;
-  if (e.button === 1 || (e.button === 0 && e.altKey)) {
+  if (e.button === 1 || (e.button === 2 && !e.target.closest('.loom-node')) || (e.button === 0 && e.altKey)) {
     isPanning = true;
     panSX = e.clientX - tx;
     panSY = e.clientY - ty;
@@ -1377,6 +1384,22 @@ function zoom(delta) {
 }
 
 function resetView() { tx=80; ty=60; tz=1; applyTransform(); }
+
+/* ── Mousewheel zoom ──────────────────────────────────────────── */
+document.getElementById('canvas').addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY < 0 ? 0.1 : -0.1;
+  const canvas = document.getElementById('canvas');
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const nz = Math.min(3, Math.max(0.15, tz + delta * tz));
+  const zr = nz / tz;
+  tx = mx - (mx - tx) * zr;
+  ty = my - (my - ty) * zr;
+  tz = nz;
+  applyTransform();
+}, { passive: false });
 
 function fitView(animate=true) {
   if (!currentGraph?.nodes.length) return;
@@ -2311,9 +2334,9 @@ function attachPortEvents(nodeEl, nodeId) {
   });
 }
 
-/* ── Patch cMove to also move the drag wire ───────────────────── */
-const _connOrigCMove = cMove;
-cMove = function(e) {
+/* ── Patch canvasMove to also move the drag wire ─────────────── */
+const _connOrigCMove = canvasMove;
+canvasMove = function(e) {
   _connOrigCMove(e);
   if (connecting) {
     const cRect = document.getElementById('canvas').getBoundingClientRect();
@@ -2325,9 +2348,9 @@ cMove = function(e) {
   }
 };
 
-/* ── Patch cUp to finalize or cancel connection ───────────────── */
-const _connOrigCUp = cUp;
-cUp = function(e) {
+/* ── Patch canvasUp to finalize or cancel connection ─────────── */
+const _connOrigCUp = canvasUp;
+canvasUp = function(e) {
   _connOrigCUp(e);
   if (connecting) {
     /* Check if we landed on a port */
