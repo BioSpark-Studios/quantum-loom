@@ -6,7 +6,7 @@
 Procedural world simulation platform — build living, breathing worlds from terrain to narrative.
 
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/loom-sequencer.jpg" />
+<img width="1200" height="475" alt="sequencer" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/loom-sequencer.jpg" />
 </div>
 
 Quantum Loom is a creative operating system for world-builders. It treats a world the way a producer treats music: terrain is the foundation track, societies are arrangement blocks, story arcs are automation lanes, and the whole simulation is a project you sequence, remix, and run in real time. The 16-module Quantum Atlas engine handles every layer of a synthetic world — from raw geology to multi-agent networks — all wired together through a live signal graph and saved in a portable Genesis Container.
