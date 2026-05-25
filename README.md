@@ -64,7 +64,7 @@ Open Genesis import via the **↑ Import** button in the header, or drag a `.qge
 Press **F1** for the in-app User Manual.
 
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/loom-nodes.jpg" />
+<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/loom](https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/loom-nodes.jpg" />
 </div>
 
 # Run and deploy your AI Studio app
