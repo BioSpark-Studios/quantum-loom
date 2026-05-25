@@ -1,8 +1,8 @@
 <div align="center">
-<img width="256" height="256" alt="loom" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/icon-256-00.jpg" />
-<img width="256" height="256" alt="loom" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/icon-256-01.jpg" />
-<img width="256" height="256" alt="loom" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/icon-256-02.jpg" />
-<img width="256" height="256" alt="loom" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/icon-256-03.jpg" />
+<img width="256" height="256" alt="loom" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/icon-256-00.png" />
+<img width="256" height="256" alt="loom" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/icon-256-01.png" />
+<img width="256" height="256" alt="loom" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/icon-256-02.png" />
+<img width="256" height="256" alt="loom" src="https://github.com/BioSpark-Studios/quantum-loom/blob/main/assets/icon-256-03.png" />
 </div>
 
 # quantum-loom
