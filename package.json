@@ -10,7 +10,7 @@
     "start": "electron .",
     "dev": "QL_DEV=1 electron .",
     "generate-icon": "node scripts/generate-icon.js",
-    "build:win": "npm run generate-icon && electron-builder --win",
+    "build:win": "electron-builder --win",
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux",
     "build:all": "npm run generate-icon && electron-builder --win --mac --linux"
