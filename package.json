@@ -9,10 +9,11 @@
   "scripts": {
     "start": "electron .",
     "dev": "QL_DEV=1 electron .",
-    "build:win": "electron-builder --win",
+    "generate-icon": "node scripts/generate-icon.js",
+    "build:win": "npm run generate-icon && electron-builder --win",
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux",
-    "build:all": "electron-builder --win --mac --linux"
+    "build:all": "npm run generate-icon && electron-builder --win --mac --linux"
   },
   "build": {
     "appId": "com.phantori.quantumloom",
@@ -92,6 +93,7 @@
   },
   "devDependencies": {
     "electron": "^33.0.0",
-    "electron-builder": "^25.0.0"
+    "electron-builder": "^25.0.0",
+    "png-to-ico": "^1.0.0"
   }
 }
