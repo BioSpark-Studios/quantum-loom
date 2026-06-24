@@ -328,7 +328,11 @@ body { background:var(--bg); color:#fff; font-family:var(--font-d); height:100vh
 .port {
   position:absolute; width:10px; height:10px;
   border-radius:50%; border:2px solid; z-index:20;
+  cursor:pointer; transition:transform .15s, box-shadow .15s;
 }
+.port:hover { transform:scale(1.5) translateY(-33%); box-shadow:0 0 6px currentColor; }
+.port-l:hover { transform:scale(1.5) translateX(33%) translateY(-33%); }
+.port-b:hover { transform:scale(1.5) translateX(-33%); }
 .port-l { left:-5px; top:50%; transform:translateY(-50%); }
 .port-r { right:-5px; top:50%; transform:translateY(-50%); }
 .port-b { bottom:-5px; left:50%; transform:translateX(-50%); }
@@ -1376,9 +1380,9 @@ function updateNodeDOM(el, char) {
     <div class="node-corner nc-bl"><div class="ch" style="background:${accent}"></div><div class="cv" style="background:${accent}"></div></div>
     <div class="node-corner nc-br"><div class="ch" style="background:${accent}"></div><div class="cv" style="background:${accent}"></div></div>
 
-    <div class="port port-l" style="background:#1d1d1d;border-color:#b1d0f0"></div>
-    <div class="port port-r" style="background:#1d1d1d;border-color:${accent}"></div>
-    <div class="port port-b" style="background:#1d1d1d;border-color:${accent}"></div>
+    <div class="port port-l" style="background:#1d1d1d;border-color:#b1d0f0" title="Open IO Nodes to wire connections" onclick="openIONodes()"></div>
+    <div class="port port-r" style="background:#1d1d1d;border-color:${accent}" title="Open IO Nodes to wire connections" onclick="openIONodes()"></div>
+    <div class="port port-b" style="background:#1d1d1d;border-color:${accent}" title="Open IO Nodes to wire connections" onclick="openIONodes()"></div>
 
     <div class="node-header" style="border-bottom:1px solid rgba(255,255,255,0.06)">
       <div class="n-sigil ${sigilState}" style="background:${accent};box-shadow:0 0 6px ${accent}88"></div>
@@ -1515,6 +1519,10 @@ function selectChar(id) {
     applyTransform();
   }
   updateAll();
+}
+
+function openIONodes() {
+  try { window.parent.postMessage({ type:'hub:layer:request', layerId:'ionodes' }, '*'); } catch(e) {}
 }
 
 function editChar(id) {
