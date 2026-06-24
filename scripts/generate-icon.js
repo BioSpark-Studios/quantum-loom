@@ -5,6 +5,13 @@ const pngToIco = require('png-to-ico');
 (async () => {
   try {
     const repoRoot = path.resolve(__dirname, '..');
+    const dest = path.join(repoRoot, 'assets', 'icon.ico');
+
+    if (fs.existsSync(dest)) {
+      console.log('icon.ico already exists, skipping generation.');
+      return;
+    }
+
     const candidates = [
       path.join(repoRoot, 'assets', 'icon-1024.png'),
       path.join(repoRoot, 'assets', 'icon-512.png'),
@@ -17,7 +24,6 @@ const pngToIco = require('png-to-ico');
       process.exit(1);
     }
 
-    const dest = path.join(repoRoot, 'assets', 'icon.ico');
     const buf = await pngToIco(src);
     fs.writeFileSync(dest, buf);
     console.log('Wrote', dest);
