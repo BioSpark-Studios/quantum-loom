@@ -22,6 +22,11 @@ pub struct Gpu {
 }
 
 impl Gpu {
+    /// Share a device that already exists, e.g. the one eframe created.
+    pub fn from_parts(device: wgpu::Device, queue: wgpu::Queue) -> Gpu {
+        Gpu { device, queue }
+    }
+
     /// A device with no window, for tests and offscreen work. `None` if no
     /// adapter exists (a software Vulkan driver counts).
     pub fn headless() -> Option<Gpu> {

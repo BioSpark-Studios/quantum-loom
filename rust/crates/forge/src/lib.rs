@@ -5,6 +5,7 @@ pub mod assets;
 pub mod decks;
 pub mod drawer;
 pub mod forge;
+pub mod gpu;
 pub mod matrix;
 pub mod rack;
 pub mod sections;

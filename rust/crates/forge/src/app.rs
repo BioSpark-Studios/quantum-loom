@@ -170,6 +170,8 @@ pub enum Action {
 }
 
 pub struct ForgeApp {
+    /// Stencil compositor on eframe's device; `None` in headless tests.
+    pub gpu: Option<crate::gpu::GpuView>,
     pub ws: Workspace,
     ctx: egui::Context,
     pub settings: Settings,
@@ -252,6 +254,7 @@ impl ForgeApp {
             ..Default::default()
         };
         Self {
+            gpu: None,
             saved_state: state.clone(),
             saved_prefs: prefs.clone(),
             saved_rev: bus.rev,

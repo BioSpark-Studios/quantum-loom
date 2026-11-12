@@ -13,6 +13,7 @@ workspace = true
 rack-core = { path = "../rack-core" }
 rack-llm = { path = "../rack-llm" }
 instrument-kit = { path = "../instrument-kit" }
+stencil-gpu = { path = "../stencil-gpu" }
 egui.workspace = true
 eframe.workspace = true
 serde.workspace = true

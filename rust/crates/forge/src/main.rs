@@ -27,10 +27,9 @@ fn main() -> eframe::Result {
         "FORGE · BioSpark",
         options,
         Box::new(|cc| {
-            Ok(Box::new(Host(ForgeApp::new(
-                &cc.egui_ctx,
-                Workspace::default_root(),
-            ))))
+            let mut app = ForgeApp::new(&cc.egui_ctx, Workspace::default_root());
+            app.gpu = cc.wgpu_render_state.as_ref().map(forge::gpu::GpuView::new);
+            Ok(Box::new(Host(app)))
         }),
     )
 }
