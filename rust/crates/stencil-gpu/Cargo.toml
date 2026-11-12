@@ -1,0 +1,16 @@
+[package]
+name = "stencil-gpu"
+description = "Stencil-Stack GPU compositor: layers render to offscreen textures and are flattened back to front with real blend modes (WGSL). Verified against a CPU reference."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+stencil-core = { path = "../stencil-core" }
+wgpu.workspace = true
+bytemuck.workspace = true
+pollster.workspace = true
