@@ -3,6 +3,7 @@
 //! panel in the rack.
 
 use serde::{Deserialize, Serialize};
+use stencil_core as sc;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -168,6 +169,138 @@ impl Node {
                     a.set_ratio_for(id, ratio) || b.set_ratio_for(id, ratio)
                 }
             }
+        }
+    }
+}
+
+impl Node {
+    fn to_bsp(
+        &self,
+        leaves: &mut std::collections::BTreeMap<String, sc::faceplate::LeafContent>,
+    ) -> sc::BspNode {
+        match self {
+            Node::Leaf(p) => {
+                leaves.insert(
+                    p.id.clone(),
+                    sc::faceplate::LeafContent {
+                        title: p.title.clone(),
+                        show_header: p.show_header,
+                        material: p.material.clone(),
+                        accent: p.accent.clone(),
+                        components: p
+                            .components
+                            .iter()
+                            .map(|c| sc::faceplate::Placed {
+                                id: c.id.clone(),
+                                asset: c.kind.clone(),
+                                label: c.label.clone(),
+                                x: c.x,
+                                y: c.y,
+                                param: c.param.clone(),
+                            })
+                            .collect(),
+                    },
+                );
+                sc::BspNode::leaf(&p.id)
+            }
+            Node::Split { dir, ratio, a, b } => sc::BspNode::branch(
+                match dir {
+                    // children side by side = the width is divided
+                    Dir::Row => sc::SplitAxis::Vertical,
+                    Dir::Col => sc::SplitAxis::Horizontal,
+                },
+                *ratio,
+                a.to_bsp(leaves),
+                b.to_bsp(leaves),
+            ),
+        }
+    }
+
+    fn from_bsp(
+        n: &sc::BspNode,
+        leaves: &std::collections::BTreeMap<String, sc::faceplate::LeafContent>,
+    ) -> Node {
+        match n {
+            sc::BspNode::Leaf { id, .. } => {
+                let c = leaves.get(id).cloned().unwrap_or_default();
+                Node::Leaf(Pane {
+                    id: id.clone(),
+                    title: c.title,
+                    show_header: c.show_header,
+                    material: if c.material.is_empty() {
+                        "inherit".into()
+                    } else {
+                        c.material
+                    },
+                    accent: c.accent,
+                    components: c
+                        .components
+                        .into_iter()
+                        .map(|p| Comp {
+                            id: p.id,
+                            kind: p.asset,
+                            label: p.label,
+                            x: p.x,
+                            y: p.y,
+                            param: p.param,
+                        })
+                        .collect(),
+                })
+            }
+            sc::BspNode::Branch {
+                axis,
+                ratio,
+                child_a,
+                child_b,
+            } => Node::Split {
+                dir: match axis {
+                    sc::SplitAxis::Vertical => Dir::Row,
+                    sc::SplitAxis::Horizontal => Dir::Col,
+                },
+                ratio: *ratio,
+                a: Box::new(Node::from_bsp(child_a, leaves)),
+                b: Box::new(Node::from_bsp(child_b, leaves)),
+            },
+        }
+    }
+}
+
+impl Faceplate {
+    /// The same faceplate as a Stencil document (bones + leaf content).
+    pub fn to_stencil(&self) -> sc::faceplate::Faceplate {
+        let mut leaves = Default::default();
+        let layout = self.tree.to_bsp(&mut leaves);
+        sc::faceplate::Faceplate {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            preset: self.preset.clone(),
+            material: self.material.clone(),
+            layout,
+            leaves,
+            bind: self.bind.clone(),
+        }
+    }
+
+    /// Rebuild from a Stencil document. `next` is recomputed from the ids in use.
+    pub fn from_stencil(d: &sc::faceplate::Faceplate) -> Self {
+        let tree = Node::from_bsp(&d.layout, &d.leaves);
+        let next = tree
+            .panes()
+            .iter()
+            .flat_map(|p| {
+                std::iter::once(p.id.as_str()).chain(p.components.iter().map(|c| c.id.as_str()))
+            })
+            .filter_map(|id| id.get(1..)?.parse::<u32>().ok())
+            .max()
+            .unwrap_or(0);
+        Faceplate {
+            id: d.id.clone(),
+            name: d.name.clone(),
+            preset: d.preset.clone(),
+            material: d.material.clone(),
+            tree,
+            bind: d.bind.clone(),
+            next,
         }
     }
 }
@@ -480,5 +613,69 @@ mod tests {
         let d = ForgeDoc::default();
         let s = serde_json::to_string(&d).unwrap();
         assert_eq!(serde_json::from_str::<ForgeDoc>(&s).unwrap(), d);
+    }
+}
+
+#[cfg(test)]
+mod stencil_tests {
+    use super::*;
+
+    #[test]
+    fn every_template_round_trips_through_stencil() {
+        for (key, _) in TEMPLATES {
+            let plate = template(key);
+            let back = Faceplate::from_stencil(&plate.to_stencil());
+            assert_eq!(back.tree, plate.tree, "{key}");
+            assert_eq!(back.preset, plate.preset);
+            assert_eq!(back.component_count(), plate.component_count());
+        }
+    }
+
+    #[test]
+    fn manifest_is_valid_and_resolves_every_pane() {
+        for (key, _) in TEMPLATES {
+            let plate = template(key);
+            let m = plate.to_stencil().to_manifest();
+            assert!(m.validate().is_empty(), "{key}: {:?}", m.validate());
+            let r = m.layout_tree.resolved(sc::Rect::new(0.0, 0.0, 1.0, 1.0));
+            assert_eq!(r.len(), plate.tree.panes().len(), "{key}");
+            // JSON file survives a round trip
+            let json = sc::bsp::export_layout_to_json(&m.layout_tree).unwrap();
+            assert_eq!(
+                sc::bsp::load_layout_from_json(&json).unwrap(),
+                m.layout_tree
+            );
+        }
+    }
+
+    #[test]
+    fn row_is_width_division() {
+        let mut plate = template("strip1u");
+        let a = plate.tree.panes()[0].id.clone();
+        let before = plate
+            .to_stencil()
+            .layout
+            .resolved(sc::Rect::new(0.0, 0.0, 1.0, 1.0))
+            .into_iter()
+            .find(|p| p.id == a)
+            .unwrap()
+            .rect;
+        let b = plate.split(&a, Dir::Row).unwrap();
+        let r = plate
+            .to_stencil()
+            .layout
+            .resolved(sc::Rect::new(0.0, 0.0, 1.0, 1.0));
+        let (ra, rb) = (
+            r.iter().find(|p| p.id == a).unwrap().rect,
+            r.iter().find(|p| p.id == b).unwrap().rect,
+        );
+        assert_eq!(ra.y, rb.y);
+        assert_eq!(ra.height, rb.height);
+        assert!((ra.width + rb.width - before.width).abs() < 1e-6);
+        assert!((ra.height - before.height).abs() < 1e-6);
+        assert!(
+            rb.x >= ra.x + ra.width - 1e-6,
+            "second pane sits to the right"
+        );
     }
 }

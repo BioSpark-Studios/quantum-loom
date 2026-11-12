@@ -10,6 +10,7 @@
 //! egui or wgpu, so the Theater and the client can read the same files.
 
 pub mod bsp;
+pub mod faceplate;
 pub mod laws;
 pub mod manifest;
 

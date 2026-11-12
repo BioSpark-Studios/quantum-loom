@@ -153,9 +153,19 @@ pub fn tools(app: &mut ForgeApp, ui: &mut Ui, compact: bool) {
                         inst.faceplate = Some(id.clone());
                     }
                     if app.draft.id == app.forge_doc.current.bind.clone().unwrap_or_default() {
-                        app.draft.faceplate = Some(id);
+                        app.draft.faceplate = Some(id.clone());
                     }
-                    app.fui.msg = "Faceplate saved".into();
+                    // Also write it in Stencil form: the .qgcp layout manifest
+                    // (bones) and the sidecar with placed components.
+                    let doc = app.forge_doc.current.to_stencil();
+                    let wrote = app
+                        .ws
+                        .save(&format!("stencil-{id}-layout"), &doc.to_manifest())
+                        .and_then(|()| app.ws.save(&format!("stencil-{id}-content"), &doc));
+                    app.fui.msg = match wrote {
+                        Ok(()) => "Faceplate saved · Stencil layout exported".into(),
+                        Err(e) => format!("Faceplate saved · Stencil export failed: {e}"),
+                    };
                 }
             } else if widgets::tool_btn(ui, "panel", Some("OPEN IN PANEL"), false, Some(GOLD))
                 .clicked()
