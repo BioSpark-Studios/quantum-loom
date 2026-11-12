@@ -45,15 +45,26 @@ single source of truth.
   materials, accent, bind and save a faceplate to an instrument), LAYOUTS (7 partition templates, faction
   resonance), NODE GRAPH (typed wires, cycle check, RUN in dependency order, D/R/L flags, bus writes).
 
+## Pass 3 so far
+
+- **Local LLM** (`rack-llm`) — Ollama over plain http, streaming chat and model list, run on worker threads.
+  Node Graph MODEL nodes call it; an unreachable server marks the node and grounds what is downstream.
+  Settings drawer tab: endpoint, model picker, connection test. Local only, no cloud providers.
+- **Faceplates in the rack** — a faceplate bound to an instrument is its folded front panel.
+- **MIDI logic** (`rack_core::midi`) — message parsing, CC → `midi.cc.<n>` on the bus, LEARN for routes.
+  No device backend yet (see below).
+- **Main Timeline** — real face: preview, track inspector, transport, draggable clip lanes, concurrent
+  Quill / Loom / Chronicle timelines; publishes `aft.time`, `<prefix>.t<i>` and `aft.alt.*`.
+
 ## Not ported yet
 
-- Faceplates are saved and bound, but a bound instrument still shows its macro knobs in the rack
-  (`assets::plate` draws a faceplate live and is ready to hook in).
-- Bespoke faces for Main Timeline, Eidolon Stage, Chronoscriptorium, Orchestration Nexus,
-  Hearthstone, Herald, Axiomatic Loom, Atom Graph, Atmosphere (control surface for now).
-- The EXTENDED deck layout; the asset families that are mostly art (scenes, icon atlas, QMF / Alchemy sets).
-- Drawer tabs other than Console; Settings; the LLM router (Ollama first) — model nodes pass through, marked.
-- Audio output and MIDI input (controller profiles, MIDI Learn). `rack_core::engine::AudioBackend` is the seam.
+- Bespoke faces for Eidolon Stage, Chronoscriptorium, Orchestration Nexus, Hearthstone, Herald,
+  Axiomatic Loom, Atom Graph, Atmosphere (control surface for now).
+- Audio output and MIDI **device** input. `midir` and `cpal` need ALSA headers, which the build
+  container lacks, so they could not be compiled or tested; `AudioBackend` and `Midi::handle` are the seams.
+- Controller profiles for the decks (needs the MIDI backend).
+- The EXTENDED deck layout; asset families that are mostly art (scenes, icon atlas, QMF / Alchemy sets).
+- Drawer tabs PERFORM, STAGE and BROWSER.
 - `.qgcp` (zip / sealed) packages — only plaintext `{header, manifest}` JSON is read.
 
 ## Tests

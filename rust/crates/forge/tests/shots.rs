@@ -221,3 +221,16 @@ fn settings_drawer_and_faceplate_in_rack() {
     });
     snap(&mut h, "09-faceplate-in-rack");
 }
+
+#[test]
+fn main_timeline() {
+    if !gpu() {
+        return;
+    }
+    let mut h = harness("timeline", SIZE, |a| {
+        signed_in(a, "rack");
+        a.state.rack.retain(|d| d.inst == "i-main");
+        a.state.rack[0].open = true;
+    });
+    snap(&mut h, "10-main-timeline");
+}

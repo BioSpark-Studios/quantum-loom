@@ -14,6 +14,7 @@ pub mod midi;
 pub mod model;
 pub mod panel;
 pub mod store;
+pub mod timeline;
 
 pub use bus::{Bus, Value};
 pub use engine::Engine;

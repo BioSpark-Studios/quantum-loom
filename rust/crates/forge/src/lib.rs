@@ -10,6 +10,7 @@ pub mod rack;
 pub mod sections;
 pub mod settings;
 pub mod shell;
+pub mod timeline_ui;
 pub mod util;
 
 pub use app::ForgeApp;

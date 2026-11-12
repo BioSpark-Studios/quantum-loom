@@ -174,6 +174,7 @@ pub struct ForgeApp {
     ctx: egui::Context,
     pub settings: Settings,
     pub jobs: Vec<Job>,
+    pub timelines: std::collections::HashMap<String, rack_core::timeline::Timeline>,
     pub llm_models: Vec<String>,
     pub llm_status: String,
     pub midi: rack_core::midi::Midi,
@@ -214,6 +215,7 @@ impl ForgeApp {
         instrument_kit::theme::install(ctx);
         let ws = Workspace::new(root);
         let settings = ws.load::<Settings>("settings").unwrap_or_default();
+        let timelines = ws.load("timelines").unwrap_or_default();
         let mut bus = Bus::new();
         Engine::seed(&mut bus);
         if let Some(params) = ws.load::<HashMap<String, rack_core::Value>>("params") {
@@ -266,6 +268,7 @@ impl ForgeApp {
             saved_settings: settings.clone(),
             settings,
             jobs: vec![],
+            timelines,
             llm_models: vec![],
             llm_status: String::new(),
             midi: Default::default(),
@@ -537,6 +540,11 @@ impl ForgeApp {
 
     fn tick(&mut self, dt: f64) {
         self.poll_jobs();
+        let transport = self.engine.playing;
+        for (prefix, tl) in self.timelines.iter_mut() {
+            tl.update(dt as f32, transport);
+            tl.publish(&mut self.bus, prefix);
+        }
         self.engine.update(&mut self.bus, dt);
         let t_ms = self.engine.time * 1000.0;
         if let Some(g) = &self.genesis {
@@ -599,6 +607,7 @@ impl ForgeApp {
             self.saved_prefs = self.prefs.clone();
         }
         let _ = self.ws.save("forge-doc", &self.forge_doc);
+        let _ = self.ws.save("timelines", &self.timelines);
         let _ = self.ws.save("graph", &self.graph);
         if self.save_decks {
             let _ = self.ws.save("decks", &self.decks);

@@ -36,6 +36,7 @@ pub const VIEW_MODES: [(&str, &str); 10] = [
 fn body_h(kind: &str) -> f32 {
     match kind {
         "dmx" => 138.0,
+        "aftimeline" => crate::timeline_ui::HEIGHT,
         "automata" | "fractal" => 126.0,
         "fader3" => 104.0,
         "sigils" => 104.0,
@@ -707,6 +708,7 @@ fn module_body(
                 });
             }
         }),
+        "aftimeline" => crate::timeline_ui::face(app, ui, r, prefix),
         "stem" => centered(ui, r, salt, 10.0, |ui| {
             let (sr, _) = ui.allocate_exact_size(vec2(120.0, 72.0), Sense::hover());
             let g = mat_screen(ui.painter(), sr, 6.0);

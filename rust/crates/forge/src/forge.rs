@@ -22,6 +22,8 @@ use rack_core::panel::{self, Dir, PRESETS, TEMPLATES};
 /// Transient editor state.
 #[derive(Default)]
 pub struct ForgeUi {
+    /// Selected Main Timeline track.
+    pub track: Option<String>,
     pub family: Option<&'static str>,
     pub search: String,
     pub pane: Option<String>,
