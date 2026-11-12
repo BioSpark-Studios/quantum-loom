@@ -1,0 +1,112 @@
+{
+  "genesis_id": "genesis_phantori_system_01",
+  "name": "Phantori System Genesis",
+  "domain": "software",
+  "lifecycle": "active",
+  "capacity": {
+    "growth_mode": "dynamic",
+    "current_octave": 4,
+    "max_children_current": 16,
+    "child_count": 4
+  },
+  "bdna_signature": "sha256_b_dna_genesis_signature_hash_019283",
+  "layout_tree": {
+    "type": "branch",
+    "axis": "vertical",
+    "ratio": 0.22,
+    "child_a": {
+      "type": "leaf",
+      "id": "sidebar_controls",
+      "active_template_id": "sidebar_navigation_template"
+    },
+    "child_b": {
+      "type": "leaf",
+      "id": "primary_viewport",
+      "active_template_id": "meso_voxel_canvas_template"
+    }
+  },
+  "instrument_library": {
+    "sidebar_navigation_template": {
+      "name": "Sidebar Heraldic Navigator",
+      "layers": [
+        {
+          "name": "Background",
+          "opacity": 0.9,
+          "blend_mode": "normal",
+          "renderer": {
+            "type": "static_ui_panel"
+          },
+          "faction_crest": "Luminarite",
+          "border_weight": 0.25,
+          "color_hex": "#EDD878"
+        }
+      ]
+    },
+    "meso_voxel_canvas_template": {
+      "name": "Meso Voxel Canvas Viewport",
+      "layers": [
+        {
+          "name": "Atmospheric Particles",
+          "opacity": 0.4,
+          "blend_mode": "screen",
+          "renderer": {
+            "type": "particles",
+            "system_type": "boids_flocking",
+            "particle_count": 64
+          },
+          "faction_crest": "Venturan",
+          "border_weight": 1.2,
+          "color_hex": "#00BFFF"
+        },
+        {
+          "name": "3D Voxel Grid Core",
+          "opacity": 1.0,
+          "blend_mode": "normal",
+          "renderer": {
+            "type": "infinite_canvas"
+          },
+          "faction_crest": "Sylvanid",
+          "border_weight": 1.6,
+          "color_hex": "#2ECC71"
+        }
+      ]
+    }
+  },
+  "meso_voxels": [
+    {
+      "voxel_id": "2,3,5",
+      "coordinates": {
+        "x": 2,
+        "y": 3,
+        "z": 5
+      },
+      "layer": "ground",
+      "faction_influence": {
+        "Sylvanid": 0.8,
+        "Syntaran": 0.2
+      },
+      "bound_nodes": [
+        {
+          "node_id": "node_combat_calculator_01",
+          "name": "Damage Vector Node",
+          "heraldry": {
+            "birth": "Mark",
+            "current": "Glyph",
+            "peak": "Crest",
+            "nadir": "Mark",
+            "crest": "Syntaran"
+          },
+          "bdna": {
+            "signature": "sha256_bdna_node_signature_998822",
+            "generation": 1,
+            "parent_ids": [
+              "node_combat_calculator_00"
+            ],
+            "root_id": "node_combat_calculator_00",
+            "sealed": false
+          }
+        }
+      ]
+    }
+  ]
+}

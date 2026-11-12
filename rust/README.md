@@ -16,6 +16,7 @@ State is kept under `$FORGE_HOME`, or the platform data directory
 | Crate | Role | Depends on |
 |---|---|---|
 | `rack-core` | Headless core: parameter bus, transport clock, module / effect catalog, rack model, routing engine, core output frame, Genesis reading, workspace persistence, vaults. No UI, GPU or async. | `serde` |
+| `stencil-core` | Stencil-Stack data model: BSP layout, layer stacks, the instrument template library and the `.qgcp` layout manifest with its three laws (octave capacity, three-way alignment, crest border weights). Plain serde data so the Theater can share it. Tested against the real package in `reference/stencil/`. | `serde` |
 | `instrument-kit` | Shared egui kit: design tokens, materials, knobs, faders, pads, readouts, meters, glyph tiles, icon set, glass-screen visualizers. App-neutral. | `egui`, `resvg` |
 | `forge` | The client: sign-in gate, project vaults, three-row header, icon rails, Main Rack, Routing Matrix, drawer. Thin binary over a library. | both |
 

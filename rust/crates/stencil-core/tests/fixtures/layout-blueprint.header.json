@@ -1,0 +1,25 @@
+{
+  "formatVersion": "1.0",
+  "packageId": "gc_quantum_architect_01",
+  "name": "Quantum Architect Workspace",
+  "domain": "software",
+  "lifecycle": "active",
+  "capsuleCount": 4,
+  "capsuleCapacity": 4096,
+  "capacityLocked": false,
+  "wireTypes": [
+    "NAR",
+    "VIS",
+    "SPA",
+    "DAT",
+    "RES"
+  ],
+  "sealId": "seal_quantum_architect_01",
+  "sealedAt": 1782384000000,
+  "createdAt": 1782384000000,
+  "previewImage": "assets/_genesis/icon.png",
+  "bannerImage": "assets/_genesis/banner.webp",
+  "description": "Compiled layout specification for the Quantum Architect Workspace, containing 3D Meso voxel nodes and Sylvanid/Syntaran heraldic controls.",
+  "dependsOn": [],
+  "cipherRegistered": false
+}
