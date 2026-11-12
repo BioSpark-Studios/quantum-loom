@@ -437,11 +437,7 @@ pub fn read_rgba8(gpu: &Gpu, tex: &wgpu::Texture) -> Vec<[u8; 4]> {
     let data = slice.get_mapped_range().expect("range");
     let mut out = Vec::with_capacity(w * h);
     for row in data.chunks_exact(padded).take(h) {
-        out.extend(
-            row[..w * 4]
-                .chunks_exact(4)
-                .map(|p| [p[0], p[1], p[2], p[3]]),
-        );
+        out.extend_from_slice(row[..w * 4].as_chunks::<4>().0);
     }
     out
 }
