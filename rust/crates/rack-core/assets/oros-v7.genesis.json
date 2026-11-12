@@ -1,0 +1,6829 @@
+{
+ "header": {
+  "formatVersion": "1.0",
+  "packageId": "gc_oros_v7",
+  "name": "OROS-V7 · SYLLABARY",
+  "domain": "narrative",
+  "lifecycle": "active",
+  "capsuleCount": 256,
+  "capsuleCapacity": 4096,
+  "capacityLocked": false,
+  "wireTypes": [
+   "NAR",
+   "SPA",
+   "ENR",
+   "TMP"
+  ],
+  "sealId": "OROS_V7_FINAL_GENESIS_SEAL",
+  "description": "Harmonic-physics world: 108Hz Hum, 60 BPM / 16-pulse lattice, Echo-Grip 14.22, light 192,000 Phon/s. 4 departments × 4 Mythos × 16 entries. Artist: Vril-Hap-Res.",
+  "dependsOn": [],
+  "cipherRegistered": false
+ },
+ "manifest": {
+  "id": "OROS-V7",
+  "name": "OROS-V7 · THE SYLLABARY OF OROS",
+  "seal_type": "lesser",
+  "domain": "narrative",
+  "lifecycle": "active",
+  "resonance_hz": 108,
+  "wire_types": [
+   "NAR",
+   "SPA",
+   "ENR",
+   "TMP",
+   "AUD",
+   "BHV",
+   "SOC",
+   "LGC"
+  ],
+  "constants": {
+   "echo_grip_g": 14.22,
+   "visual_c_speed": 192000,
+   "global_hum": 108,
+   "tempo_bpm": 60,
+   "pulses_per_measure": 16
+  },
+  "palette": {
+   "primary": "#00F2FF",
+   "secondary": "#7B00FF",
+   "accent": "#E1FF00",
+   "void": "#1A1A1A"
+  },
+  "departments": [
+   {
+    "name": "WORLD CONSTRUCTION",
+    "crest": "atlas",
+    "mythos": [
+     "TERRAIN",
+     "ENVIRONMENT",
+     "ARCHITECT",
+     "LIGHTING"
+    ]
+   },
+   {
+    "name": "LIFE & LOGIC",
+    "crest": "animus",
+    "mythos": [
+     "MODELING",
+     "CHOREOGRAPHY",
+     "BEHAVIOR",
+     "SOCIETY"
+    ]
+   },
+   {
+    "name": "NARRATIVE & SOUND",
+    "crest": "quill",
+    "mythos": [
+     "SEQUENCER",
+     "STORY",
+     "MEMORY",
+     "SOUND"
+    ]
+   },
+   {
+    "name": "SYSTEMS",
+    "crest": "axiom",
+    "mythos": [
+     "LOGIC",
+     "SIMULATION",
+     "FORGE",
+     "NETWORK"
+    ]
+   }
+  ],
+  "elements": [
+   "Khy-Lith",
+   "Pho-Gla",
+   "Vril-Hum",
+   "Hap-Chord",
+   "Met-Stave",
+   "Zhy-Null",
+   "Res-Echo",
+   "Oros-Lyric",
+   "Mute-Vitr",
+   "Spur-Tonal",
+   "Drift-Sem",
+   "Grip-Harm",
+   "Cres-Lumen",
+   "Glis-Slope",
+   "Braid-Caus",
+   "Calyx-Seed"
+  ],
+  "prime_seal_midi": [
+   60,
+   63,
+   67,
+   72,
+   58,
+   62,
+   65,
+   70,
+   60,
+   64,
+   67,
+   71,
+   55,
+   59,
+   62,
+   67,
+   60,
+   63,
+   67,
+   72,
+   65,
+   68,
+   72,
+   77,
+   63,
+   67,
+   70,
+   75,
+   51,
+   55,
+   58,
+   63,
+   60,
+   60,
+   60,
+   60,
+   72,
+   72,
+   72,
+   72,
+   48,
+   52,
+   55,
+   60,
+   67,
+   71,
+   74,
+   79,
+   60,
+   63,
+   67,
+   72,
+   53,
+   57,
+   60,
+   65,
+   56,
+   60,
+   63,
+   68,
+   48,
+   48,
+   48,
+   48
+  ],
+  "final_seal_code": "0xOROS-V7-Σ-108-64-16",
+  "capacity": {
+   "growth_mode": "fixed",
+   "declared_octave": 4,
+   "current_octave": 4,
+   "max_children_current": 16,
+   "child_count": 16
+  },
+  "mythos": [
+   {
+    "id": "oros-terrain",
+    "parent_genesis_id": "OROS-V7",
+    "name": "TERRAIN",
+    "crest": "atlas",
+    "department": "WORLD CONSTRUCTION",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-terrain-c1",
+      "parent_mythos_id": "oros-terrain",
+      "name": "RESONANCE CORE",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-terrain-01",
+        "parent_container_id": "oros-terrain-c1",
+        "name": "Khy-Met Monoliths",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Obsidian pillars humming at 108Hz",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:1",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-terrain-02",
+        "parent_container_id": "oros-terrain-c1",
+        "name": "Lith-Grip Slabs",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Hyper-dense flatlands pinning matter",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.54,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:2",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-terrain-03",
+        "parent_container_id": "oros-terrain-c1",
+        "name": "Met-Stave Mesas",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Rectangular plateaus set by the lattice tempo",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:3",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-terrain-04",
+        "parent_container_id": "oros-terrain-c1",
+        "name": "Calyx-Core Wells",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Resonance craters housing the Seed",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:4",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-terrain-c2",
+      "parent_mythos_id": "oros-terrain",
+      "name": "ATMOSPHERIC WILDS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-terrain-05",
+        "parent_container_id": "oros-terrain-c2",
+        "name": "Oros-Lyric Wilds",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Coral-forests growing 16 pulses a measure",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:5",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-terrain-06",
+        "parent_container_id": "oros-terrain-c2",
+        "name": "Pho-Gla Spires",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Glass towers of frozen wind",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:6",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-terrain-07",
+        "parent_container_id": "oros-terrain-c2",
+        "name": "Vril-Hum Vines",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Congealed potential, climbable bridges",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:7",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-terrain-08",
+        "parent_container_id": "oros-terrain-c2",
+        "name": "Hap-Chord Moss",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Tactile carpet with harmonic feedback",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:8",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-terrain-c3",
+      "parent_mythos_id": "oros-terrain",
+      "name": "DECAY WELLS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-terrain-09",
+        "parent_container_id": "oros-terrain-c3",
+        "name": "Zhy-Null Dunes",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Grey silt where sound goes to die",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:9",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-terrain-10",
+        "parent_container_id": "oros-terrain-c3",
+        "name": "Res-Echo Cliffs",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Rock faces replaying passers 16 cycles ago",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:10",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-terrain-11",
+        "parent_container_id": "oros-terrain-c3",
+        "name": "Drift-Sem Slopes",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Mountains shifting with the observer's Hum",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:11",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-terrain-12",
+        "parent_container_id": "oros-terrain-c3",
+        "name": "Glis-Slope Scree",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Valleys of falling-glissando gravity",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:12",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-terrain-c4",
+      "parent_mythos_id": "oros-terrain",
+      "name": "ATONAL PERIPHERY",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-terrain-13",
+        "parent_container_id": "oros-terrain-c4",
+        "name": "Braid-Caus Tangles",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Knots tying cause to effect",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:13",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-terrain-14",
+        "parent_container_id": "oros-terrain-c4",
+        "name": "Spur-Tonal Barrens",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Crystal fields amplifying intent",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:14",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-terrain-15",
+        "parent_container_id": "oros-terrain-c4",
+        "name": "Mute-Vitr Flats",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Plains reflecting neither light nor sound",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.55,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:15",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-terrain-16",
+        "parent_container_id": "oros-terrain-c4",
+        "name": "Cres-Lumen Craters",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Bedrock scorched by light friction",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:TERRAIN:16",
+        "created_at": 0,
+        "tags": [
+         "terrain"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-environment",
+    "parent_genesis_id": "OROS-V7",
+    "name": "ENVIRONMENT",
+    "crest": "mythos",
+    "department": "WORLD CONSTRUCTION",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-environment-c1",
+      "parent_mythos_id": "oros-environment",
+      "name": "WINDS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-environment-01",
+        "parent_container_id": "oros-environment-c1",
+        "name": "Pho-Hum Gusts",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Winds playing the land like a flute",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:1",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-environment-02",
+        "parent_container_id": "oros-environment-c1",
+        "name": "Vril-Static Storms",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Discharges of pure potential",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.94,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:2",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-environment-03",
+        "parent_container_id": "oros-environment-c1",
+        "name": "Hap-Mist Chords",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Fog dense enough to pluck",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:3",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-environment-04",
+        "parent_container_id": "oros-environment-c1",
+        "name": "Cres-Lumen Aurora",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Friction light of fast winds",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:4",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-environment-c2",
+      "parent_mythos_id": "oros-environment",
+      "name": "STORMS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-environment-05",
+        "parent_container_id": "oros-environment-c2",
+        "name": "Zhy-Silence Pockets",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Bubbles of absolute vacuum",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.45,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:5",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-environment-06",
+        "parent_container_id": "oros-environment-c2",
+        "name": "Res-Memory Drizzle",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Rain carrying old world-states",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:6",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-environment-07",
+        "parent_container_id": "oros-environment-c2",
+        "name": "Met-Pulse Hail",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Precipitation falling in 4/4",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:7",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-environment-08",
+        "parent_container_id": "oros-environment-c2",
+        "name": "Oros-Bloom Pollen",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Spores syncing local tempo",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:8",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-environment-c3",
+      "parent_mythos_id": "oros-environment",
+      "name": "FOGS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-environment-09",
+        "parent_container_id": "oros-environment-c3",
+        "name": "Drift-Sem Haze",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Fog turning thought to shape",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:9",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-environment-10",
+        "parent_container_id": "oros-environment-c3",
+        "name": "Grip-Harm Pressure",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Weight swells on low frequencies",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:10",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-environment-11",
+        "parent_container_id": "oros-environment-c3",
+        "name": "Glis-Kinetic Downpours",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Rain accelerating as it falls",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:11",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-environment-12",
+        "parent_container_id": "oros-environment-c3",
+        "name": "Braid-Causal Fog",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Mist blurring the order of events",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:12",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-environment-c4",
+      "parent_mythos_id": "oros-environment",
+      "name": "FROST & DUST",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-environment-13",
+        "parent_container_id": "oros-environment-c4",
+        "name": "Spur-Catalyst Heat",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Warming from focused intent",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.61,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:13",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-environment-14",
+        "parent_container_id": "oros-environment-c4",
+        "name": "Mute-Glass Frost",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Silence freezing onto surfaces",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.18,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:14",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-environment-15",
+        "parent_container_id": "oros-environment-c4",
+        "name": "Lyric-Pulse Steam",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Vapour from the growing Calyx",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:15",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-environment-16",
+        "parent_container_id": "oros-environment-c4",
+        "name": "Khy-Lith Dust",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Bedrock motes grounding Vril",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ENVIRONMENT:16",
+        "created_at": 0,
+        "tags": [
+         "environment"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-architect",
+    "parent_genesis_id": "OROS-V7",
+    "name": "ARCHITECT",
+    "crest": "architect",
+    "department": "WORLD CONSTRUCTION",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-architect-c1",
+      "parent_mythos_id": "oros-architect",
+      "name": "STACKING",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-architect-01",
+        "parent_container_id": "oros-architect-c1",
+        "name": "Khy-Lith Layering",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Stacked nouns as load walls",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:1",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-architect-02",
+        "parent_container_id": "oros-architect-c1",
+        "name": "Met-Stave Weaving",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Lattices interlaced into rooms",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.69,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:2",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-architect-03",
+        "parent_container_id": "oros-architect-c1",
+        "name": "Vril-Congealing",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Potential cooled into beams",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:3",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-architect-04",
+        "parent_container_id": "oros-architect-c1",
+        "name": "Lyric-Growth",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Singing a seed into a room",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:4",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-architect-c2",
+      "parent_mythos_id": "oros-architect",
+      "name": "WEAVING",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-architect-05",
+        "parent_container_id": "oros-architect-c2",
+        "name": "Echo-Inversion",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "A mountain's shadow flipped into a home",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:5",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-architect-06",
+        "parent_container_id": "oros-architect-c2",
+        "name": "Mute-Extrusion",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Silence pushed through a die",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.42,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:6",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-architect-07",
+        "parent_container_id": "oros-architect-c2",
+        "name": "Braid-Tying",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Knotted threads keep a building 'now'",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:7",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-architect-08",
+        "parent_container_id": "oros-architect-c2",
+        "name": "Syllable-Etching",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "A name carved into air",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:8",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-architect-c3",
+      "parent_mythos_id": "oros-architect",
+      "name": "INVERSION",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-architect-09",
+        "parent_container_id": "oros-architect-c3",
+        "name": "Hap-Chord Braiding",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Matter twisted into cables",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:9",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-architect-10",
+        "parent_container_id": "oros-architect-c3",
+        "name": "Res-Resonance Chambers",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Halls amplifying the Hum",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:10",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-architect-11",
+        "parent_container_id": "oros-architect-c3",
+        "name": "Drift-Flux Pavilions",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Tents sized by occupants",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:11",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-architect-12",
+        "parent_container_id": "oros-architect-c3",
+        "name": "Spur-Focus Altars",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Needles directing intent upward",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.64,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:12",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-architect-c4",
+      "parent_mythos_id": "oros-architect",
+      "name": "ANCHORING",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-architect-13",
+        "parent_container_id": "oros-architect-c4",
+        "name": "Glis-Descending Halls",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Corridors of moving gravity",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:13",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-architect-14",
+        "parent_container_id": "oros-architect-c4",
+        "name": "Pho-Aero Domes",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Held up by phonemic winds",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:14",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-architect-15",
+        "parent_container_id": "oros-architect-c4",
+        "name": "Cres-Lumen Lanterns",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Shells catching light friction",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:15",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-architect-16",
+        "parent_container_id": "oros-architect-c4",
+        "name": "Sem-Meaning Anchors",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Stones defining a building's purpose",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:ARCHITECT:16",
+        "created_at": 0,
+        "tags": [
+         "architect"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-lighting",
+    "parent_genesis_id": "OROS-V7",
+    "name": "LIGHTING",
+    "crest": "prism",
+    "department": "WORLD CONSTRUCTION",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-lighting-c1",
+      "parent_mythos_id": "oros-lighting",
+      "name": "CRESCENDO",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-lighting-01",
+        "parent_container_id": "oros-lighting-c1",
+        "name": "Full-Crescendo",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Blinding high-friction white",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.57,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:1",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-lighting-02",
+        "parent_container_id": "oros-lighting-c1",
+        "name": "Staccato-Lumen",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Gold bursts at 60 BPM",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.69,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:2",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-lighting-03",
+        "parent_container_id": "oros-lighting-c1",
+        "name": "Mute-Absorption",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Total darkness",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:3",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-lighting-04",
+        "parent_container_id": "oros-lighting-c1",
+        "name": "Vril-Violet",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "High-potential glow",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:4",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-lighting-c2",
+      "parent_mythos_id": "oros-lighting",
+      "name": "GLOWS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-lighting-05",
+        "parent_container_id": "oros-lighting-c2",
+        "name": "Haptic-Teal",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Soft glow of stable matter",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.45,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:5",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-lighting-06",
+        "parent_container_id": "oros-lighting-c2",
+        "name": "Atonal-Gray",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Flat light of decay",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.42,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:6",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-lighting-07",
+        "parent_container_id": "oros-lighting-c2",
+        "name": "Res-Phosphor",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Ghost trails of motion",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:7",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-lighting-08",
+        "parent_container_id": "oros-lighting-c2",
+        "name": "Calyx-Amber",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Warm glow of the world-seed",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.76,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:8",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-lighting-c3",
+      "parent_mythos_id": "oros-lighting",
+      "name": "GHOST LIGHT",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-lighting-09",
+        "parent_container_id": "oros-lighting-c3",
+        "name": "Glis-Shift",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Red/blue shift with speed",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:9",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-lighting-10",
+        "parent_container_id": "oros-lighting-c3",
+        "name": "Met-Grid",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Lattice lines across the sky",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:10",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-lighting-11",
+        "parent_container_id": "oros-lighting-c3",
+        "name": "Pho-Gla Prism",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Rainbow glass-wind refraction",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:11",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-lighting-12",
+        "parent_container_id": "oros-lighting-c3",
+        "name": "Braid-Twinkle",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Flicker where threads overlap",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:12",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-lighting-c4",
+      "parent_mythos_id": "oros-lighting",
+      "name": "PULSE",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-lighting-13",
+        "parent_container_id": "oros-lighting-c4",
+        "name": "Spur-Intensity",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Light brightening with will",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:13",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-lighting-14",
+        "parent_container_id": "oros-lighting-c4",
+        "name": "Drift-Sepia",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Dusty light of meaning-flux",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:14",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-lighting-15",
+        "parent_container_id": "oros-lighting-c4",
+        "name": "Grip-Density",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Light sagging under gravity",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:15",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-lighting-16",
+        "parent_container_id": "oros-lighting-c4",
+        "name": "Lyric-Pulse Green",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Emerald pulse of growth",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:LIGHTING:16",
+        "created_at": 0,
+        "tags": [
+         "lighting"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-modeling",
+    "parent_genesis_id": "OROS-V7",
+    "name": "MODELING",
+    "crest": "animus",
+    "department": "LIFE & LOGIC",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-modeling-c1",
+      "parent_mythos_id": "oros-modeling",
+      "name": "ANCHORS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-modeling-01",
+        "parent_container_id": "oros-modeling-c1",
+        "name": "Khy-Lith-Minos",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Stone constructs anchoring land",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MODELING:1",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-modeling-02",
+        "parent_container_id": "oros-modeling-c1",
+        "name": "Pho-Gla-Wisp",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Weightless humming spirits",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.69,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MODELING:2",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-modeling-03",
+        "parent_container_id": "oros-modeling-c1",
+        "name": "Vril-Hum-Spark",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Energy motes leaping conductors",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MODELING:3",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-modeling-04",
+        "parent_container_id": "oros-modeling-c1",
+        "name": "Hap-Chord-Spinner",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Weavers between the mesas",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MODELING:4",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-modeling-c2",
+      "parent_mythos_id": "oros-modeling",
+      "name": "SPIRITS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-modeling-05",
+        "parent_container_id": "oros-modeling-c2",
+        "name": "Met-Stave-Clock",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Sentinels pulsing once a measure",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MODELING:5",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-modeling-06",
+        "parent_container_id": "oros-modeling-c2",
+        "name": "Zhy-Null-Worm",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Scavengers of data-leaks",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:MODELING:6",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-modeling-07",
+        "parent_container_id": "oros-modeling-c2",
+        "name": "Res-Echo-Ghost",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Imprints repeating the past",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:MODELING:7",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-modeling-08",
+        "parent_container_id": "oros-modeling-c2",
+        "name": "Oros-Lyric-Bloom",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Flora growing by song",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:MODELING:8",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-modeling-c3",
+      "parent_mythos_id": "oros-modeling",
+      "name": "SENTINELS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-modeling-09",
+        "parent_container_id": "oros-modeling-c3",
+        "name": "Mute-Vitr-Wall",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Guardians of sonic reflection",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:MODELING:9",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-modeling-10",
+        "parent_container_id": "oros-modeling-c3",
+        "name": "Spur-Tonal-Lens",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Crystals focusing intent",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:MODELING:10",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-modeling-11",
+        "parent_container_id": "oros-modeling-c3",
+        "name": "Drift-Sem-Cloud",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Swarms reshaped by their names",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.67,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:MODELING:11",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-modeling-12",
+        "parent_container_id": "oros-modeling-c3",
+        "name": "Grip-Harm-Weight",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Orbs bending gravity",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MODELING:12",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-modeling-c4",
+      "parent_mythos_id": "oros-modeling",
+      "name": "KEEPERS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-modeling-13",
+        "parent_container_id": "oros-modeling-c4",
+        "name": "Cres-Lumen-Flicker",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Brighter the faster they move",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MODELING:13",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-modeling-14",
+        "parent_container_id": "oros-modeling-c4",
+        "name": "Glis-Slope-Skater",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Variable-pitch legs for descent",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MODELING:14",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-modeling-15",
+        "parent_container_id": "oros-modeling-c4",
+        "name": "Braid-Caus-Weaver",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Spiders tying time",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MODELING:15",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-modeling-16",
+        "parent_container_id": "oros-modeling-c4",
+        "name": "Calyx-Seed-Keeper",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Densest guardians of the core",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:MODELING:16",
+        "created_at": 0,
+        "tags": [
+         "modeling"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-choreography",
+    "parent_genesis_id": "OROS-V7",
+    "name": "CHOREOGRAPHY",
+    "crest": "loom",
+    "department": "LIFE & LOGIC",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-choreography-c1",
+      "parent_mythos_id": "oros-choreography",
+      "name": "JUMPS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-choreography-01",
+        "parent_container_id": "oros-choreography-c1",
+        "name": "Staccato-Jump",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Teleport one Stave per 4 beats",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:1",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-choreography-02",
+        "parent_container_id": "oros-choreography-c1",
+        "name": "Glissando-Slide",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Velocity mapped to rising pitch",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.69,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:2",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-choreography-03",
+        "parent_container_id": "oros-choreography-c1",
+        "name": "Boid-Swarm",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Flocking by frequency",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.91,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:3",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-choreography-04",
+        "parent_container_id": "oros-choreography-c1",
+        "name": "Lattice-Snap",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Movement on matrix nodes",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:4",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-choreography-c2",
+      "parent_mythos_id": "oros-choreography",
+      "name": "SWARMS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-choreography-05",
+        "parent_container_id": "oros-choreography-c2",
+        "name": "Harmonic-Osc",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "108Hz pendulum arcs",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:5",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-choreography-06",
+        "parent_container_id": "oros-choreography-c2",
+        "name": "Echo-Trace",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Moving as another did 16 pulses ago",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:6",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-choreography-07",
+        "parent_container_id": "oros-choreography-c2",
+        "name": "Vril-Dash",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Instant traversal on currents",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:7",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-choreography-08",
+        "parent_container_id": "oros-choreography-c2",
+        "name": "Null-Inertia",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Frictionless constant drift",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:8",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-choreography-c3",
+      "parent_mythos_id": "oros-choreography",
+      "name": "RUSHES",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-choreography-09",
+        "parent_container_id": "oros-choreography-c3",
+        "name": "Cres-Rush",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Accelerating to the light limit",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.73,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:9",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-choreography-10",
+        "parent_container_id": "oros-choreography-c3",
+        "name": "Braid-Tether",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Circling a causal knot",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:10",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-choreography-11",
+        "parent_container_id": "oros-choreography-c3",
+        "name": "Lyric-Pulse",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Expand and contract to swim",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:11",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-choreography-12",
+        "parent_container_id": "oros-choreography-c3",
+        "name": "Mirror-Axis",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Opposing the observer",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:12",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-choreography-c4",
+      "parent_mythos_id": "oros-choreography",
+      "name": "ROOTS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-choreography-13",
+        "parent_container_id": "oros-choreography-c4",
+        "name": "Fractal-Iter",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "L-system paths growing each measure",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:13",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-choreography-14",
+        "parent_container_id": "oros-choreography-c4",
+        "name": "Resonant-Lev",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Height set by nearness to the Hum",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:14",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-choreography-15",
+        "parent_container_id": "oros-choreography-c4",
+        "name": "Semic-Flux",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Blinking with shifting meaning",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:15",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-choreography-16",
+        "parent_container_id": "oros-choreography-c4",
+        "name": "Khy-Rooting",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Rotation, zero travel",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:CHOREOGRAPHY:16",
+        "created_at": 0,
+        "tags": [
+         "choreography"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-behavior",
+    "parent_genesis_id": "OROS-V7",
+    "name": "BEHAVIOR",
+    "crest": "instinct",
+    "department": "LIFE & LOGIC",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-behavior-c1",
+      "parent_mythos_id": "oros-behavior",
+      "name": "HUNGER",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-behavior-01",
+        "parent_container_id": "oros-behavior-c1",
+        "name": "Tonal-Greed",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Seeks the loudest source",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:1",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-behavior-02",
+        "parent_container_id": "oros-behavior-c1",
+        "name": "Silence-Mandate",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Flees sound over 60dB",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.54,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:2",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-behavior-03",
+        "parent_container_id": "oros-behavior-c1",
+        "name": "Metric-Sync",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Thinks only on the downbeat",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:3",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-behavior-04",
+        "parent_container_id": "oros-behavior-c1",
+        "name": "Vril-Harvest",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Patrols vines to recharge",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:4",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-behavior-c2",
+      "parent_mythos_id": "oros-behavior",
+      "name": "REPAIR",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-behavior-05",
+        "parent_container_id": "oros-behavior-c2",
+        "name": "Causal-Repair",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Reties broken knots",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:5",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-behavior-06",
+        "parent_container_id": "oros-behavior-c2",
+        "name": "Entropy-Spread",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Expands the dunes",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:6",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-behavior-07",
+        "parent_container_id": "oros-behavior-c2",
+        "name": "Lyric-Cultivate",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Sings into Calyx-Seeds",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:7",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-behavior-08",
+        "parent_container_id": "oros-behavior-c2",
+        "name": "Resonant-Shield",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Emits 108Hz against dissonance",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:8",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-behavior-c3",
+      "parent_mythos_id": "oros-behavior",
+      "name": "MIMICRY",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-behavior-09",
+        "parent_container_id": "oros-behavior-c3",
+        "name": "Meaning-Obscure",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Renames itself to hide",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:9",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-behavior-10",
+        "parent_container_id": "oros-behavior-c3",
+        "name": "Friction-Glow",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Moves fast to make light",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:10",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-behavior-11",
+        "parent_container_id": "oros-behavior-c3",
+        "name": "Mimic-Shadow",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Markov copy of others",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:11",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-behavior-12",
+        "parent_container_id": "oros-behavior-c3",
+        "name": "Foundation-Stay",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Dormant until structure fails",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.24,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:12",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-behavior-c4",
+      "parent_mythos_id": "oros-behavior",
+      "name": "ASCENT",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-behavior-13",
+        "parent_container_id": "oros-behavior-c4",
+        "name": "Echo-Recall",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Replays decayed voices",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:13",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-behavior-14",
+        "parent_container_id": "oros-behavior-c4",
+        "name": "Spur-Focus",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Converges to amplify decrees",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:14",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-behavior-15",
+        "parent_container_id": "oros-behavior-c4",
+        "name": "Octave-Ascend",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Heads for the world-boundary",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:15",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-behavior-16",
+        "parent_container_id": "oros-behavior-c4",
+        "name": "Null-Resolve",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Seeks voluntary deletion",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:BEHAVIOR:16",
+        "created_at": 0,
+        "tags": [
+         "behavior"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-society",
+    "parent_genesis_id": "OROS-V7",
+    "name": "SOCIETY",
+    "crest": "order",
+    "department": "LIFE & LOGIC",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-society-c1",
+      "parent_mythos_id": "oros-society",
+      "name": "HIVE & REBELS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-society-01",
+        "parent_container_id": "oros-society-c1",
+        "name": "The Monochord",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Hive-mind sharing one Hum",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:1",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-society-02",
+        "parent_container_id": "oros-society-c1",
+        "name": "The Atonal Rebels",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Silencers of the Lyric",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.54,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:2",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-society-03",
+        "parent_container_id": "oros-society-c1",
+        "name": "The Metric Guild",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Keepers of 60 BPM",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:3",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-society-04",
+        "parent_container_id": "oros-society-c1",
+        "name": "The Glissando Nomads",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Never-still slope dwellers",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:4",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-society-c2",
+      "parent_mythos_id": "oros-society",
+      "name": "KEEPERS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-society-05",
+        "parent_container_id": "oros-society-c2",
+        "name": "The Calyx Cult",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Protectors of the 16th element",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:5",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-society-06",
+        "parent_container_id": "oros-society-c2",
+        "name": "The Vril-Circuit",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Living power grid",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:6",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-society-07",
+        "parent_container_id": "oros-society-c2",
+        "name": "The Echo-Witnesses",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The living archive",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:7",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-society-08",
+        "parent_container_id": "oros-society-c2",
+        "name": "The Lyric-Gardeners",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Growers of coral-forests",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:8",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-society-c3",
+      "parent_mythos_id": "oros-society",
+      "name": "ARCHIVISTS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-society-09",
+        "parent_container_id": "oros-society-c3",
+        "name": "The Mute-Order",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Enforcers of silence",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.33,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:9",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-society-10",
+        "parent_container_id": "oros-society-c3",
+        "name": "The Spur-Projectors",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Cabal manifesting thought",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:10",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-society-11",
+        "parent_container_id": "oros-society-c3",
+        "name": "The Sem-Shifters",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Fluid shared identity",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:11",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-society-12",
+        "parent_container_id": "oros-society-c3",
+        "name": "The Braid-Knotters",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Keep the timeline looped",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:12",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-society-c4",
+      "parent_mythos_id": "oros-society",
+      "name": "ORDERS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-society-13",
+        "parent_container_id": "oros-society-c4",
+        "name": "The Resonant Octave",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Rank by Hz alignment",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:13",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-society-14",
+        "parent_container_id": "oros-society-c4",
+        "name": "The Friction-Seekers",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Light-bringers",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:14",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-society-15",
+        "parent_container_id": "oros-society-c4",
+        "name": "The Null-Voiders",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Dissolvers of corruption",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:15",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-society-16",
+        "parent_container_id": "oros-society-c4",
+        "name": "The Khy-Foundation",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Resisters of all modulation",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOCIETY:16",
+        "created_at": 0,
+        "tags": [
+         "society"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-sequencer",
+    "parent_genesis_id": "OROS-V7",
+    "name": "SEQUENCER",
+    "crest": "chronicle",
+    "department": "NARRATIVE & SOUND",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-sequencer-c1",
+      "parent_mythos_id": "oros-sequencer",
+      "name": "AWAKENING",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-sequencer-01",
+        "parent_container_id": "oros-sequencer-c1",
+        "name": "Khy-Awakening",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Pitch wakes at 108Hz, pillars rise",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:1",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-sequencer-02",
+        "parent_container_id": "oros-sequencer-c1",
+        "name": "Met-Ordering",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The 16-pulse stave begins time",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.69,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:2",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-sequencer-03",
+        "parent_container_id": "oros-sequencer-c1",
+        "name": "Pho-Inhalation",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Glass winds begin to circle",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:3",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-sequencer-04",
+        "parent_container_id": "oros-sequencer-c1",
+        "name": "Hap-Cohesion",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Matter gains integrity",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:4",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-sequencer-c2",
+      "parent_mythos_id": "oros-sequencer",
+      "name": "IGNITION",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-sequencer-05",
+        "parent_container_id": "oros-sequencer-c2",
+        "name": "Vril-Activation",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Potential currents ignite",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:5",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-sequencer-06",
+        "parent_container_id": "oros-sequencer-c2",
+        "name": "Oros-Expansion",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Growth spreads through the zones",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:6",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-sequencer-07",
+        "parent_container_id": "oros-sequencer-c2",
+        "name": "Cres-Ignition",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Light friction becomes visible",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:7",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-sequencer-08",
+        "parent_container_id": "oros-sequencer-c2",
+        "name": "Zhy-Damping",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Entropy wells drain dissonance",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:8",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-sequencer-c3",
+      "parent_mythos_id": "oros-sequencer",
+      "name": "APEX",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-sequencer-09",
+        "parent_container_id": "oros-sequencer-c3",
+        "name": "Resonant-Monochord",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "All entities sync to one pitch",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:9",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-sequencer-10",
+        "parent_container_id": "oros-sequencer-c3",
+        "name": "Harmonic-Apex",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Gravity pulls toward the sky",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.7,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:10",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-sequencer-11",
+        "parent_container_id": "oros-sequencer-c3",
+        "name": "Lith-Consolidation",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Terrain hardens for good",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:11",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-sequencer-12",
+        "parent_container_id": "oros-sequencer-c3",
+        "name": "Spur-Projection",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Intent builds structures",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:12",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-sequencer-c4",
+      "parent_mythos_id": "oros-sequencer",
+      "name": "RESOLUTION",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-sequencer-13",
+        "parent_container_id": "oros-sequencer-c4",
+        "name": "Braid-Knotting",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "History becomes linear",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:13",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-sequencer-14",
+        "parent_container_id": "oros-sequencer-c4",
+        "name": "Glis-Descent",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "A world-wide slide",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:14",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-sequencer-15",
+        "parent_container_id": "oros-sequencer-c4",
+        "name": "Sem-Fluctuation",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Names shift and confuse",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:15",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-sequencer-16",
+        "parent_container_id": "oros-sequencer-c4",
+        "name": "Mute-Resolution",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Total silence; the Seed readies",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.52,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:SEQUENCER:16",
+        "created_at": 0,
+        "tags": [
+         "sequencer"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-story",
+    "parent_genesis_id": "OROS-V7",
+    "name": "STORY",
+    "crest": "quill",
+    "department": "NARRATIVE & SOUND",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-story-c1",
+      "parent_mythos_id": "oros-story",
+      "name": "GENESIS ERAS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-story-01",
+        "parent_container_id": "oros-story-c1",
+        "name": "Epoch of Khy-Genesis",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Only the foundation, in silence",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.17,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:STORY:1",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-story-02",
+        "parent_container_id": "oros-story-c1",
+        "name": "Epoch of Met-Lattice",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The Grid-War enforces tempo",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.94,
+         "mood": "wrath"
+        },
+        "lineage_hash": "OROS-V7:STORY:2",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-story-03",
+        "parent_container_id": "oros-story-c1",
+        "name": "Epoch of Pho-Storms",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Storms raise the glass spires",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.91,
+         "mood": "wrath"
+        },
+        "lineage_hash": "OROS-V7:STORY:3",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-story-04",
+        "parent_container_id": "oros-story-c1",
+        "name": "Epoch of Vril-Harvest",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Potential becomes a tool",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:STORY:4",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-story-c2",
+      "parent_mythos_id": "oros-story",
+      "name": "WARS & BLOOMS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-story-05",
+        "parent_container_id": "oros-story-c2",
+        "name": "Epoch of Hap-Binding",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Matter learns touch",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:STORY:5",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-story-06",
+        "parent_container_id": "oros-story-c2",
+        "name": "Epoch of Oros-Bloom",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Life nearly overruns the stave",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:STORY:6",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-story-07",
+        "parent_container_id": "oros-story-c2",
+        "name": "Epoch of the Dissonant Divide",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Civil war: Hum vs Anarchy",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.79,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:STORY:7",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-story-08",
+        "parent_container_id": "oros-story-c2",
+        "name": "Epoch of the Braid-Covenant",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Causality woven into land",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:STORY:8",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-story-c3",
+      "parent_mythos_id": "oros-story",
+      "name": "DARK AGES",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-story-09",
+        "parent_container_id": "oros-story-c3",
+        "name": "Epoch of Res-Memory",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The first echoes archived",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:STORY:9",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-story-10",
+        "parent_container_id": "oros-story-c3",
+        "name": "Epoch of the Mute-Priesthood",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Dark age of enforced silence",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.3,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:STORY:10",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-story-11",
+        "parent_container_id": "oros-story-c3",
+        "name": "Epoch of Cres-Illumination",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Light friction banishes the Void",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:STORY:11",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-story-12",
+        "parent_container_id": "oros-story-c3",
+        "name": "Epoch of the Glis-Migration",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "All life on the slopes",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:STORY:12",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-story-c4",
+      "parent_mythos_id": "oros-story",
+      "name": "THE GUARD",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-story-13",
+        "parent_container_id": "oros-story-c4",
+        "name": "Epoch of Spur-Manifest",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Cities carved from air",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:STORY:13",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-story-14",
+        "parent_container_id": "oros-story-c4",
+        "name": "Epoch of Sem-Fracture",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Language collapses",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "wrath"
+        },
+        "lineage_hash": "OROS-V7:STORY:14",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-story-15",
+        "parent_container_id": "oros-story-c4",
+        "name": "Epoch of the Calyx-Guard",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The current era",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:STORY:15",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-story-16",
+        "parent_container_id": "oros-story-c4",
+        "name": "Epoch of the Final Resolve",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "All sound returns to the Hum",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:STORY:16",
+        "created_at": 0,
+        "tags": [
+         "story"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-memory",
+    "parent_genesis_id": "OROS-V7",
+    "name": "MEMORY",
+    "crest": "codex",
+    "department": "NARRATIVE & SOUND",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-memory-c1",
+      "parent_mythos_id": "oros-memory",
+      "name": "ORIGINS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-memory-01",
+        "parent_container_id": "oros-memory-c1",
+        "name": "Seal-Alpha-Log",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The vocalization that made OROS-V7",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:1",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-memory-02",
+        "parent_container_id": "oros-memory-c1",
+        "name": "The 108-Constant",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The first stable frequency",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.69,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:2",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-memory-03",
+        "parent_container_id": "oros-memory-c1",
+        "name": "Met-Stave-Crash",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The day tempo slipped 1 BPM",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "wrath"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:3",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-memory-04",
+        "parent_container_id": "oros-memory-c1",
+        "name": "First-Bloom-Data",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Sequence of the first flower",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:4",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-memory-c2",
+      "parent_mythos_id": "oros-memory",
+      "name": "MAPS & SONGS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-memory-05",
+        "parent_container_id": "oros-memory-c2",
+        "name": "The Void-Leaking",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "An incursion from the dunes",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:5",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-memory-06",
+        "parent_container_id": "oros-memory-c2",
+        "name": "Vril-Conduit-Map",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The original energy vines",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:6",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-memory-07",
+        "parent_container_id": "oros-memory-c2",
+        "name": "Architect-Last-Song",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The Great Monolith's naming",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:7",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-memory-08",
+        "parent_container_id": "oros-memory-c2",
+        "name": "Braid-Tether-Guide",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "How to retie a knot",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:8",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-memory-c3",
+      "parent_mythos_id": "oros-memory",
+      "name": "INDEXES",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-memory-09",
+        "parent_container_id": "oros-memory-c3",
+        "name": "Dissonance-Purge-List",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Every banned frequency",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "wrath"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:9",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-memory-10",
+        "parent_container_id": "oros-memory-c3",
+        "name": "Echo-Mirror-Script",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Logic of copying entities",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:10",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-memory-11",
+        "parent_container_id": "oros-memory-c3",
+        "name": "Syllabary-Key",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Phonemes to physical properties",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:11",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-memory-12",
+        "parent_container_id": "oros-memory-c3",
+        "name": "Gravity-Shift-Index",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "History of Echo-Grip",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:12",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-memory-c4",
+      "parent_mythos_id": "oros-memory",
+      "name": "THE SEED",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-memory-13",
+        "parent_container_id": "oros-memory-c4",
+        "name": "Lumen-Velocity-Cap",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Why light stops at 192k",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:13",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-memory-14",
+        "parent_container_id": "oros-memory-c4",
+        "name": "Mute-Glass-Formula",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Extruding silence",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.18,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:14",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-memory-15",
+        "parent_container_id": "oros-memory-c4",
+        "name": "The Reboot-Trigger",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Encrypted 16th law",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:15",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-memory-16",
+        "parent_container_id": "oros-memory-c4",
+        "name": "Lyric-Pulse-Seed-Core",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The world's backup state",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:MEMORY:16",
+        "created_at": 0,
+        "tags": [
+         "memory"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-sound",
+    "parent_genesis_id": "OROS-V7",
+    "name": "SOUND",
+    "crest": "composer",
+    "department": "NARRATIVE & SOUND",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-sound-c1",
+      "parent_mythos_id": "oros-sound",
+      "name": "EARTH & AIR",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-sound-01",
+        "parent_container_id": "oros-sound-c1",
+        "name": "Khy-Lith",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Granular sub-hum, grinding plates",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOUND:1",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-sound-02",
+        "parent_container_id": "oros-sound-c1",
+        "name": "Pho-Gla",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "High whistle through crystal",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.69,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOUND:2",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-sound-03",
+        "parent_container_id": "oros-sound-c1",
+        "name": "Vril-Hum",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Transformer buzz",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOUND:3",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-sound-04",
+        "parent_container_id": "oros-sound-c1",
+        "name": "Hap-Chord",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Plucked wire-cello",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOUND:4",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-sound-c2",
+      "parent_mythos_id": "oros-sound",
+      "name": "PULSE & VOID",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-sound-05",
+        "parent_container_id": "oros-sound-c2",
+        "name": "Met-Stave",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Dry percussive pulse",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOUND:5",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-sound-06",
+        "parent_container_id": "oros-sound-c2",
+        "name": "Zhy-Null",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Air sucked from a room",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:SOUND:6",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-sound-07",
+        "parent_container_id": "oros-sound-c2",
+        "name": "Res-Echo",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Ghostly convolution shimmer",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:SOUND:7",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-sound-08",
+        "parent_container_id": "oros-sound-c2",
+        "name": "Oros-Lyric",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Wet organic FM chirps",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:SOUND:8",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-sound-c3",
+      "parent_mythos_id": "oros-sound",
+      "name": "LIFE & SHIELD",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-sound-09",
+        "parent_container_id": "oros-sound-c3",
+        "name": "Mute-Vitr",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Phase-cancelled stillness",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:SOUND:9",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-sound-10",
+        "parent_container_id": "oros-sound-c3",
+        "name": "Spur-Tonal",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Piercing focused sine",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:SOUND:10",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-sound-11",
+        "parent_container_id": "oros-sound-c3",
+        "name": "Drift-Sem",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Hiss circling the head",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOUND:11",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-sound-12",
+        "parent_container_id": "oros-sound-c3",
+        "name": "Grip-Harm",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Wobbling low thrum",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOUND:12",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-sound-c4",
+      "parent_mythos_id": "oros-sound",
+      "name": "FALL & SEED",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-sound-13",
+        "parent_container_id": "oros-sound-c4",
+        "name": "Cres-Lumen",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "White-noise waterfall roar",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOUND:13",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-sound-14",
+        "parent_container_id": "oros-sound-c4",
+        "name": "Glis-Slope",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Endless falling Shepard tone",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SOUND:14",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-sound-15",
+        "parent_container_id": "oros-sound-c4",
+        "name": "Braid-Caus",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Stutter-edit loops",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "wrath"
+        },
+        "lineage_hash": "OROS-V7:SOUND:15",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-sound-16",
+        "parent_container_id": "oros-sound-c4",
+        "name": "Calyx-Seed",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "All 16 at 1/16th volume",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:SOUND:16",
+        "created_at": 0,
+        "tags": [
+         "sound"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-logic",
+    "parent_genesis_id": "OROS-V7",
+    "name": "LOGIC",
+    "crest": "axiom",
+    "department": "SYSTEMS",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-logic-c1",
+      "parent_mythos_id": "oros-logic",
+      "name": "COHESION",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-logic-01",
+        "parent_container_id": "oros-logic-c1",
+        "name": "Khy-Lith Cohesion",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Density +108% on a shared stave",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:1",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-logic-02",
+        "parent_container_id": "oros-logic-c1",
+        "name": "Zhy-Null Inhibition",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Nullifies Vril within 4 pulses",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.69,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:2",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-logic-03",
+        "parent_container_id": "oros-logic-c1",
+        "name": "Pho-Gla Refraction",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Breath through glass makes light",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:3",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-logic-04",
+        "parent_container_id": "oros-logic-c1",
+        "name": "Hap-Chord Feedback",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Touching echoes loops 16 beats",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:4",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-logic-c2",
+      "parent_mythos_id": "oros-logic",
+      "name": "REFRACTION",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-logic-05",
+        "parent_container_id": "oros-logic-c2",
+        "name": "Met-Stave Quantization",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Slides snap to the grid",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:5",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-logic-06",
+        "parent_container_id": "oros-logic-c2",
+        "name": "Oros-Lyric Proliferation",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Intent accelerates growth",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:6",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-logic-07",
+        "parent_container_id": "oros-logic-c2",
+        "name": "Vril-Hum Conductance",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Flows only at 108Hz",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:7",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-logic-08",
+        "parent_container_id": "oros-logic-c2",
+        "name": "Mute-Vitr Isolation",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Reflects echo and intent",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:8",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-logic-c3",
+      "parent_mythos_id": "oros-logic",
+      "name": "ISOLATION",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-logic-09",
+        "parent_container_id": "oros-logic-c3",
+        "name": "Drift-Sem Flux",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Whispered meaning shifts mass",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:9",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-logic-10",
+        "parent_container_id": "oros-logic-c3",
+        "name": "Grip-Harm Attraction",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Gravity climbs exponentially",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:10",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-logic-11",
+        "parent_container_id": "oros-logic-c3",
+        "name": "Cres-Lumen Friction",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Speed makes heat",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:11",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-logic-12",
+        "parent_container_id": "oros-logic-c3",
+        "name": "Glis-Slope Decay",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Misaligned motion bleeds energy",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:12",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-logic-c4",
+      "parent_mythos_id": "oros-logic",
+      "name": "TRANSPOSITION",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "cool"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-logic-13",
+        "parent_container_id": "oros-logic-c4",
+        "name": "Braid-Caus Continuity",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Knots stop erasure of the past",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:13",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-logic-14",
+        "parent_container_id": "oros-logic-c4",
+        "name": "Calyx-Seed Protection",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Core immune to dissonance",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:14",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-logic-15",
+        "parent_container_id": "oros-logic-c4",
+        "name": "Harmonic Transposition",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "An octave up shifts zones",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:15",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-logic-16",
+        "parent_container_id": "oros-logic-c4",
+        "name": "Metric Failure",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Tempo slip reverts all to stacking",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:LOGIC:16",
+        "created_at": 0,
+        "tags": [
+         "logic"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-simulation",
+    "parent_genesis_id": "OROS-V7",
+    "name": "SIMULATION",
+    "crest": "continuum",
+    "department": "SYSTEMS",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-simulation-c1",
+      "parent_mythos_id": "oros-simulation",
+      "name": "DAWN",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-simulation-01",
+        "parent_container_id": "oros-simulation-c1",
+        "name": "Khy-Dawn",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Pitch rises 0→108Hz",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:1",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-simulation-02",
+        "parent_container_id": "oros-simulation-c1",
+        "name": "Lattice-Alignment",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Structures snap to the stave",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.69,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:2",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-simulation-03",
+        "parent_container_id": "oros-simulation-c1",
+        "name": "Vril-Storm-Rise",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Vines glow violet",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.91,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:3",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-simulation-04",
+        "parent_container_id": "oros-simulation-c1",
+        "name": "Lyric-Bloom-Phase",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Forests grow a metre per 16 pulses",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:4",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-simulation-c2",
+      "parent_mythos_id": "oros-simulation",
+      "name": "STORM & BLOOM",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-simulation-05",
+        "parent_container_id": "oros-simulation-c2",
+        "name": "Echo-Dusk",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The world replays its shadow",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:5",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-simulation-06",
+        "parent_container_id": "oros-simulation-c2",
+        "name": "Zhy-Silence-Well",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "64 pulses of silence",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.42,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:6",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-simulation-07",
+        "parent_container_id": "oros-simulation-c2",
+        "name": "Cres-Lumen-High",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Peak sun-friction",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.79,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:7",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-simulation-08",
+        "parent_container_id": "oros-simulation-c2",
+        "name": "Glis-Descent-Tide",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Gravity pulls everything down",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:8",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-simulation-c3",
+      "parent_mythos_id": "oros-simulation",
+      "name": "FRACTURE",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-simulation-09",
+        "parent_container_id": "oros-simulation-c3",
+        "name": "Metric-Fracture-Hour",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Time stutters",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "wrath"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:9",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-simulation-10",
+        "parent_container_id": "oros-simulation-c3",
+        "name": "Braid-Tension-Shift",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Loops reset, vaults sync",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:10",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-simulation-11",
+        "parent_container_id": "oros-simulation-c3",
+        "name": "Spur-Manifest-Peak",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Intent leaves golden trails",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.67,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:11",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-simulation-12",
+        "parent_container_id": "oros-simulation-c3",
+        "name": "Hap-Chord-Solidify",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Matter at max resistance",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.64,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:12",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-simulation-c4",
+      "parent_mythos_id": "oros-simulation",
+      "name": "PURGE",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "myth"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-simulation-13",
+        "parent_container_id": "oros-simulation-c4",
+        "name": "Pho-Gla-Whirl",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "The sky becomes a prism",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:13",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-simulation-14",
+        "parent_container_id": "oros-simulation-c4",
+        "name": "Sem-Flux-Midnight",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Names fade, objects turn glass",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:14",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-simulation-15",
+        "parent_container_id": "oros-simulation-c4",
+        "name": "Calyx-Purge",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "A cleansing 108Hz pulse",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:15",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-simulation-16",
+        "parent_container_id": "oros-simulation-c4",
+        "name": "Mute-Resolution",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "16 pulses of stasis before reboot",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.52,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:SIMULATION:16",
+        "created_at": 0,
+        "tags": [
+         "simulation"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-forge",
+    "parent_genesis_id": "OROS-V7",
+    "name": "FORGE",
+    "crest": "forge",
+    "department": "SYSTEMS",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-forge-c1",
+      "parent_mythos_id": "oros-forge",
+      "name": "INSCRIBING",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-forge-01",
+        "parent_container_id": "oros-forge-c1",
+        "name": "Lith-Inscribing",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Carving nouns for permanence",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:FORGE:1",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-forge-02",
+        "parent_container_id": "oros-forge-c1",
+        "name": "Pho-Suspension",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Breath makes the heavy float",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.69,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:FORGE:2",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-forge-03",
+        "parent_container_id": "oros-forge-c1",
+        "name": "Vril-Infusion",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Charging tools with potential",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:FORGE:3",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-forge-04",
+        "parent_container_id": "oros-forge-c1",
+        "name": "Hap-Weaving",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Braiding tactile fibre",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:FORGE:4",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-forge-c2",
+      "parent_mythos_id": "oros-forge",
+      "name": "INFUSION",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-forge-05",
+        "parent_container_id": "oros-forge-c2",
+        "name": "Met-Quantizing",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Aligning craft to the grid",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:FORGE:5",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-forge-06",
+        "parent_container_id": "oros-forge-c2",
+        "name": "Zhy-Erasing",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Removing syllables deletes",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:FORGE:6",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-forge-07",
+        "parent_container_id": "oros-forge-c2",
+        "name": "Res-Sampling",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Echoes as building material",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:FORGE:7",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-forge-08",
+        "parent_container_id": "oros-forge-c2",
+        "name": "Oros-Grafting",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Growth merged with lattice",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:FORGE:8",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-forge-c3",
+      "parent_mythos_id": "oros-forge",
+      "name": "CASTING",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-forge-09",
+        "parent_container_id": "oros-forge-c3",
+        "name": "Mute-Casting",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Silence poured into moulds",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.33,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:FORGE:9",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-forge-10",
+        "parent_container_id": "oros-forge-c3",
+        "name": "Spur-Sharpening",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Intent raises a blade's Hum",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:FORGE:10",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-forge-11",
+        "parent_container_id": "oros-forge-c3",
+        "name": "Drift-Masking",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Renaming to hide",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:FORGE:11",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-forge-12",
+        "parent_container_id": "oros-forge-c3",
+        "name": "Grip-Weighting",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Locking items with gravity",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:FORGE:12",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-forge-c4",
+      "parent_mythos_id": "oros-forge",
+      "name": "NESTING",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "amber"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-forge-13",
+        "parent_container_id": "oros-forge-c4",
+        "name": "Cres-Polishing",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Smoothing glass with light",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:FORGE:13",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-forge-14",
+        "parent_container_id": "oros-forge-c4",
+        "name": "Glis-Accelerating",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Descent-phonemes on boots",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:FORGE:14",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-forge-15",
+        "parent_container_id": "oros-forge-c4",
+        "name": "Braid-Looping",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Tying an item to its owner",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:FORGE:15",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-forge-16",
+        "parent_container_id": "oros-forge-c4",
+        "name": "Calyx-Nesting",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Data in a phonetic shell",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:FORGE:16",
+        "created_at": 0,
+        "tags": [
+         "forge"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "oros-network",
+    "parent_genesis_id": "OROS-V7",
+    "name": "NETWORK",
+    "crest": "nexus",
+    "department": "SYSTEMS",
+    "lifecycle": "active",
+    "resonance_hz": 108,
+    "bound_elements": [],
+    "capacity": {
+     "growth_mode": "fixed",
+     "declared_octave": 2,
+     "current_octave": 2,
+     "max_children_current": 4,
+     "child_count": 4
+    },
+    "containers": [
+     {
+      "id": "oros-network-c1",
+      "parent_mythos_id": "oros-network",
+      "name": "BACKBONE",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-network-01",
+        "parent_container_id": "oros-network-c1",
+        "name": "Monochord-Bus",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "108Hz backbone of the monoliths",
+         "index": 1,
+         "scenes": 2,
+         "intensity": 0.32,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:1",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-network-02",
+        "parent_container_id": "oros-network-c1",
+        "name": "Lattice-Hop",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Short jumps between cells",
+         "index": 2,
+         "scenes": 3,
+         "intensity": 0.69,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:2",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-network-03",
+        "parent_container_id": "oros-network-c1",
+        "name": "Hum-Conduit",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Sub-terrain Vril pipes",
+         "index": 3,
+         "scenes": 4,
+         "intensity": 0.66,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:3",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-network-04",
+        "parent_container_id": "oros-network-c1",
+        "name": "Echo-Relay",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Data by reflection",
+         "index": 4,
+         "scenes": 2,
+         "intensity": 0.63,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:4",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-network-c2",
+      "parent_mythos_id": "oros-network",
+      "name": "STREAMS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-network-05",
+        "parent_container_id": "oros-network-c2",
+        "name": "Vril-Stream",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "High-altitude currents",
+         "index": 5,
+         "scenes": 3,
+         "intensity": 0.6,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:5",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-network-06",
+        "parent_container_id": "oros-network-c2",
+        "name": "Phon-Carrier",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Messages in wind patterns",
+         "index": 6,
+         "scenes": 4,
+         "intensity": 0.57,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:6",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-network-07",
+        "parent_container_id": "oros-network-c2",
+        "name": "Lyric-Flow",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Signals through roots and pollen",
+         "index": 7,
+         "scenes": 2,
+         "intensity": 0.54,
+         "mood": "love"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:7",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-network-08",
+        "parent_container_id": "oros-network-c2",
+        "name": "Null-Drain",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "One-way pull of corruption",
+         "index": 8,
+         "scenes": 3,
+         "intensity": 0.51,
+         "mood": "fear"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:8",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-network-c3",
+      "parent_mythos_id": "oros-network",
+      "name": "DRAINS & BEAMS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-network-09",
+        "parent_container_id": "oros-network-c3",
+        "name": "Glis-Slide",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Gravity transport",
+         "index": 9,
+         "scenes": 4,
+         "intensity": 0.48,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:9",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-network-10",
+        "parent_container_id": "oros-network-c3",
+        "name": "Cres-Beam",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Light-pulse transmission",
+         "index": 10,
+         "scenes": 2,
+         "intensity": 0.45,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:10",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-network-11",
+        "parent_container_id": "oros-network-c3",
+        "name": "Braid-Link",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Causal non-linear links",
+         "index": 11,
+         "scenes": 3,
+         "intensity": 0.42,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:11",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-network-12",
+        "parent_container_id": "oros-network-c3",
+        "name": "Semic-Vector",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Paths of shared meaning",
+         "index": 12,
+         "scenes": 4,
+         "intensity": 0.39,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:12",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     },
+     {
+      "id": "oros-network-c4",
+      "parent_mythos_id": "oros-network",
+      "name": "TETHERS",
+      "domain": "narrative",
+      "lifecycle": "active",
+      "resonance_hz": 108,
+      "metadata": {
+       "pace_bpm": 60,
+       "mode": "PENTA",
+       "channel": "bone"
+      },
+      "capacity": {
+       "growth_mode": "fixed",
+       "declared_octave": 2,
+       "current_octave": 2,
+       "max_children_current": 4,
+       "child_count": 4
+      },
+      "bound_elements": [],
+      "capsules": [
+       {
+        "id": "oros-network-13",
+        "parent_container_id": "oros-network-c4",
+        "name": "Grip-Tether",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Gravity pull between masses",
+         "index": 13,
+         "scenes": 2,
+         "intensity": 0.36,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:13",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 108
+       },
+       {
+        "id": "oros-network-14",
+        "parent_container_id": "oros-network-c4",
+        "name": "Spur-Beam",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Lines held by collective intent",
+         "index": 14,
+         "scenes": 3,
+         "intensity": 0.33,
+         "mood": "desire"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:14",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 216
+       },
+       {
+        "id": "oros-network-15",
+        "parent_container_id": "oros-network-c4",
+        "name": "Mute-Tunnel",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Silent secure paths",
+         "index": 15,
+         "scenes": 4,
+         "intensity": 0.7,
+         "mood": "grief"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:15",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 324
+       },
+       {
+        "id": "oros-network-16",
+        "parent_container_id": "oros-network-c4",
+        "name": "Khy-Baseband",
+        "wire_type": "NAR",
+        "payload": {
+         "description": "Emergency recovery frequency",
+         "index": 16,
+         "scenes": 2,
+         "intensity": 0.67,
+         "mood": "hope"
+        },
+        "lineage_hash": "OROS-V7:NETWORK:16",
+        "created_at": 0,
+        "tags": [
+         "network"
+        ],
+        "resonance_hz": 432
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}

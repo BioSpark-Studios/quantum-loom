@@ -1,0 +1,22 @@
+[package]
+name = "forge"
+description = "FORGE — the BioSpark Main Rack client (egui + wgpu)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+rack-core = { path = "../rack-core" }
+instrument-kit = { path = "../instrument-kit" }
+egui.workspace = true
+eframe.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+egui_kittest = { version = "0.37", features = ["wgpu"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
