@@ -8,6 +8,7 @@ pub mod forge;
 pub mod matrix;
 pub mod rack;
 pub mod sections;
+pub mod settings;
 pub mod shell;
 pub mod util;
 

@@ -166,15 +166,7 @@ pub fn tools(app: &mut ForgeApp, ui: &mut Ui, compact: bool) {
                 .on_hover_text("Walk the graph in dependency order")
                 .clicked()
             {
-                let writes = app.graph.run();
-                for (k, v) in &writes {
-                    app.bus.set_num(k, *v);
-                }
-                app.fui.msg = format!(
-                    "ran {} nodes · {} bus writes",
-                    app.graph.nodes.len(),
-                    writes.len()
-                );
+                app.run_graph();
             }
             if widgets::cv_btn(ui, "CLEAR OUT", false, false).clicked() {
                 app.graph.nodes.iter_mut().for_each(|n| {
@@ -1823,7 +1815,7 @@ fn canvas(app: &mut ForgeApp, ui: &mut Ui, area: Rect) {
             5.0,
             if sel {
                 GOLD
-            } else if n.skipped {
+            } else if n.skipped || n.error.is_some() {
                 alpha(SIGNAL_HOT, 0.6)
             } else {
                 black(0.8)
@@ -2100,10 +2092,11 @@ fn node_inspector(app: &mut ForgeApp, ui: &mut Ui, area: Rect) {
             }
         }
         if n.kind == "model" {
-            ui.label(egui::RichText::new("The LLM router (Ollama first) is not connected in this pass. A model node passes its prompt through, marked.").font(instrument_kit::theme::body(11.0)).color(SIGNAL_AMBER));
+            ui.label(egui::RichText::new("Calls the local Ollama server from Settings. Set MODEL to a pulled model name, or leave \"local\" for the default.").font(instrument_kit::theme::body(11.0)).color(SIGNAL_AMBER));
         }
         sub_head(ui, "OUTPUT");
         let out = match (&n.out, n.skipped) {
+            _ if n.error.is_some() => format!("failed: {}", n.error.clone().unwrap_or_default()),
             (_, true) => "skipped — an upstream node is grounded".to_owned(),
             (Some(v), _) => v.text(),
             (None, _) => "— run the graph —".to_owned(),

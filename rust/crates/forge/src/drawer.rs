@@ -93,27 +93,49 @@ pub fn show(app: &mut ForgeApp, ui: &mut Ui, dr: Rect, body: Rect) {
     );
     let tabs = Rect::from_min_size(dr.min, vec2(dr.width(), 32.0));
     row(ui, tabs.shrink2(vec2(12.0, 0.0)), "drawer-tabs", |ui| {
-        widgets::tool_btn(ui, "console", Some("CONSOLE"), true, Some(SIGNAL_COOL));
+        let tab = app.prefs.drawer_tab.clone();
+        if widgets::tool_btn(
+            ui,
+            "console",
+            Some("CONSOLE"),
+            tab != "settings",
+            Some(SIGNAL_COOL),
+        )
+        .clicked()
+        {
+            app.prefs.drawer_tab = "console".into();
+        }
+        if widgets::tool_btn(
+            ui,
+            "gear",
+            Some("SETTINGS"),
+            tab == "settings",
+            Some(SIGNAL_COOL),
+        )
+        .clicked()
+        {
+            app.prefs.drawer_tab = "settings".into();
+        }
         ui.add_enabled_ui(false, |ui| {
             for (i, l) in [
                 ("keys", "PERFORM"),
                 ("map", "STAGE"),
                 ("browser", "BROWSER"),
-                ("gear", "SETTINGS"),
             ] {
                 widgets::tool_btn(ui, i, Some(l), false, None)
                     .on_disabled_hover_text("Arrives in a later pass");
             }
         });
     });
-    console(
-        app,
-        ui,
-        Rect::from_min_max(
-            pos2(dr.left() + 12.0, tabs.bottom()),
-            pos2(dr.right() - 12.0, dr.bottom() - 8.0),
-        ),
+    let body = Rect::from_min_max(
+        pos2(dr.left() + 12.0, tabs.bottom()),
+        pos2(dr.right() - 12.0, dr.bottom() - 8.0),
     );
+    if app.prefs.drawer_tab == "settings" {
+        crate::settings::show(app, ui, body);
+    } else {
+        console(app, ui, body);
+    }
 }
 
 /// HEADLESS CORE · OUTPUT — the frame every adapter sees.

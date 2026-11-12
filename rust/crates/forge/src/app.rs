@@ -102,6 +102,24 @@ impl Default for Prefs {
     }
 }
 
+/// User settings that outlive a session.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Settings {
+    pub llm: rack_llm::LlmSettings,
+}
+
+/// Work running on a background thread; polled each frame.
+pub enum Job {
+    Models(std::sync::mpsc::Receiver<Result<Vec<String>, rack_llm::LlmError>>),
+    Graph(std::sync::mpsc::Receiver<GraphRun>),
+}
+
+pub struct GraphRun {
+    pub graph: rack_core::graph::Graph,
+    pub writes: Vec<(String, f32)>,
+}
+
 #[derive(Default)]
 pub struct GateForm {
     pub user: String,
@@ -153,6 +171,12 @@ pub enum Action {
 
 pub struct ForgeApp {
     pub ws: Workspace,
+    ctx: egui::Context,
+    pub settings: Settings,
+    pub jobs: Vec<Job>,
+    pub llm_models: Vec<String>,
+    pub llm_status: String,
+    pub midi: rack_core::midi::Midi,
     pub bus: Bus,
     pub engine: Engine,
     pub state: RackState,
@@ -182,12 +206,14 @@ pub struct ForgeApp {
     saved_rev: u64,
     log_step: i32,
     save_decks: bool,
+    saved_settings: Settings,
 }
 
 impl ForgeApp {
     pub fn new(ctx: &egui::Context, root: std::path::PathBuf) -> Self {
         instrument_kit::theme::install(ctx);
         let ws = Workspace::new(root);
+        let settings = ws.load::<Settings>("settings").unwrap_or_default();
         let mut bus = Bus::new();
         Engine::seed(&mut bus);
         if let Some(params) = ws.load::<HashMap<String, rack_core::Value>>("params") {
@@ -236,6 +262,13 @@ impl ForgeApp {
             forge_doc,
             graph,
             fui: Default::default(),
+            ctx: ctx.clone(),
+            saved_settings: settings.clone(),
+            settings,
+            jobs: vec![],
+            llm_models: vec![],
+            llm_status: String::new(),
+            midi: Default::default(),
             session,
             vaults,
             prefs,
@@ -415,7 +448,95 @@ impl ForgeApp {
         }
     }
 
+    /// Probe the Ollama server and list its models.
+    pub fn refresh_models(&mut self) {
+        let s = self.settings.llm.clone();
+        let ctx = self.ctx.clone();
+        self.llm_status = "checking…".into();
+        self.jobs.push(Job::Models(rack_llm::spawn(
+            move || rack_llm::list_models(&s),
+            move || ctx.request_repaint(),
+        )));
+    }
+
+    /// Run the node graph on a worker thread; MODEL nodes call Ollama.
+    pub fn run_graph(&mut self) {
+        if self.jobs.iter().any(|j| matches!(j, Job::Graph(_))) {
+            return;
+        }
+        let mut graph = self.graph.clone();
+        let s = self.settings.llm.clone();
+        let ctx = self.ctx.clone();
+        self.fui.msg = "running…".into();
+        self.jobs.push(Job::Graph(rack_llm::spawn(
+            move || {
+                let writes = graph.run_with(&mut |model, system, prompt| {
+                    let mut st = s.clone();
+                    if !model.trim().is_empty() && model.trim() != "local" {
+                        st.model = model.trim().to_owned();
+                    }
+                    rack_llm::chat(&st, system, prompt, |_| {}).map_err(|e| e.to_string())
+                });
+                GraphRun { graph, writes }
+            },
+            move || ctx.request_repaint(),
+        )));
+    }
+
+    fn poll_jobs(&mut self) {
+        let mut done = vec![];
+        for (i, j) in self.jobs.iter().enumerate() {
+            match j {
+                Job::Models(rx) => {
+                    if let Ok(r) = rx.try_recv() {
+                        match r {
+                            Ok(m) => {
+                                self.llm_status = format!("connected · {} model(s)", m.len());
+                                self.llm_models = m;
+                            }
+                            Err(e) => {
+                                self.llm_status = e.to_string();
+                                self.llm_models.clear();
+                            }
+                        }
+                        done.push(i);
+                    }
+                }
+                Job::Graph(rx) => {
+                    if let Ok(run) = rx.try_recv() {
+                        // Keep edits made while it ran; take only the results.
+                        for n in &run.graph.nodes {
+                            if let Some(t) = self.graph.node_mut(&n.id) {
+                                t.out = n.out.clone();
+                                t.skipped = n.skipped;
+                                t.error = n.error.clone();
+                            }
+                        }
+                        for (k, v) in &run.writes {
+                            self.bus.set_num(k, *v);
+                        }
+                        let failed = run.graph.nodes.iter().filter(|n| n.error.is_some()).count();
+                        self.fui.msg = if failed > 0 {
+                            format!("{failed} node(s) failed — see the NODE panel")
+                        } else {
+                            format!(
+                                "ran {} nodes · {} bus writes",
+                                run.graph.nodes.len(),
+                                run.writes.len()
+                            )
+                        };
+                        done.push(i);
+                    }
+                }
+            }
+        }
+        for i in done.into_iter().rev() {
+            self.jobs.remove(i);
+        }
+    }
+
     fn tick(&mut self, dt: f64) {
+        self.poll_jobs();
         self.engine.update(&mut self.bus, dt);
         let t_ms = self.engine.time * 1000.0;
         if let Some(g) = &self.genesis {
@@ -467,6 +588,10 @@ impl ForgeApp {
     }
 
     pub fn autosave(&mut self) {
+        if self.settings != self.saved_settings && self.ws.save("settings", &self.settings).is_ok()
+        {
+            self.saved_settings = self.settings.clone();
+        }
         if self.state != self.saved_state && self.ws.save("rack", &self.state).is_ok() {
             self.saved_state = self.state.clone();
         }

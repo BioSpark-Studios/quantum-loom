@@ -10,6 +10,7 @@ pub mod decks;
 pub mod engine;
 pub mod genesis;
 pub mod graph;
+pub mod midi;
 pub mod model;
 pub mod panel;
 pub mod store;

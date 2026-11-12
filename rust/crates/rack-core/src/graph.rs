@@ -185,6 +185,9 @@ pub struct GNode {
     pub out: Option<Val>,
     #[serde(skip)]
     pub skipped: bool,
+    /// Why a node produced nothing (e.g. the model call failed).
+    #[serde(skip)]
+    pub error: Option<String>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -229,6 +232,7 @@ impl Graph {
             lock: false,
             out: None,
             skipped: false,
+            error: None,
         });
         id
     }
@@ -338,6 +342,18 @@ impl Graph {
     /// BUS OUT and module nodes. A bypassed node passes its first input
     /// through; a node whose input was skipped is skipped too.
     pub fn run(&mut self) -> Vec<(String, f32)> {
+        self.run_with(&mut |model, _system, prompt| {
+            Ok(format!("[{model} · router not connected]\n{prompt}"))
+        })
+    }
+
+    /// Like [`Graph::run`], with `llm(model, system, prompt)` answering MODEL
+    /// nodes. A failed call grounds the node (and everything downstream of it)
+    /// and leaves the error text on the node.
+    pub fn run_with(
+        &mut self,
+        llm: &mut dyn FnMut(&str, &str, &str) -> Result<String, String>,
+    ) -> Vec<(String, f32)> {
         let mut writes = vec![];
         let mut vals: HashMap<(String, usize), Val> = HashMap::new();
         let mut dead: Vec<String> = vec![];
@@ -358,6 +374,7 @@ impl Graph {
             }
             let n = &mut self.nodes[i];
             n.skipped = upstream_dead;
+            n.error = None;
             if upstream_dead {
                 n.out = None;
                 dead.push(id);
@@ -394,11 +411,13 @@ impl Graph {
                         Some(Val::Text(parts.join(&sep)))
                     }
                     "textout" => ins.first().cloned().flatten(),
-                    "model" => Some(Val::Text(format!(
-                        "[{} · router not connected]\n{}",
-                        field,
-                        t(0)
-                    ))),
+                    "model" => match llm(&field, &t(1), &t(0)) {
+                        Ok(text) => Some(Val::Text(text)),
+                        Err(e) => {
+                            n.error = Some(e);
+                            None
+                        }
+                    },
                     "num" => Some(Val::Num(k_field.clamp(0.0, 1.0))),
                     "resistor" => Some(Val::Num(f(0) * k_field)),
                     "diode" => {
@@ -536,6 +555,32 @@ mod tests {
         // bypass passes the input straight through
         g.node_mut(&dio).unwrap().bypass = true;
         assert_eq!(g.run().len(), 1);
+    }
+
+    #[test]
+    fn model_nodes_use_the_callback_and_failures_ground_downstream() {
+        let mut g = Graph::default();
+        let p = g.add("prompt", 0.0, 0.0);
+        g.node_mut(&p).unwrap().text = "hi".into();
+        let m = g.add("model", 0.0, 0.0);
+        g.node_mut(&m).unwrap().text = "llama3.2".into();
+        let out = g.add("textout", 0.0, 0.0);
+        g.connect(&p, 0, &m, 0).unwrap();
+        g.connect(&m, 0, &out, 0).unwrap();
+        let mut seen = vec![];
+        g.run_with(&mut |model, _sys, prompt| {
+            seen.push((model.to_owned(), prompt.to_owned()));
+            Ok("pong".into())
+        });
+        assert_eq!(seen, vec![("llama3.2".to_owned(), "hi".to_owned())]);
+        assert_eq!(g.node(&out).unwrap().out.as_ref().unwrap().text(), "pong");
+        g.run_with(&mut |_, _, _| Err("Ollama is not reachable".into()));
+        assert_eq!(
+            g.node(&m).unwrap().error.as_deref(),
+            Some("Ollama is not reachable")
+        );
+        assert!(g.node(&out).unwrap().skipped);
+        assert!(g.node(&out).unwrap().out.is_none());
     }
 
     #[test]

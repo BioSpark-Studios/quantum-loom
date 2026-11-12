@@ -11,6 +11,7 @@ workspace = true
 
 [dependencies]
 rack-core = { path = "../rack-core" }
+rack-llm = { path = "../rack-llm" }
 instrument-kit = { path = "../instrument-kit" }
 egui.workspace = true
 eframe.workspace = true

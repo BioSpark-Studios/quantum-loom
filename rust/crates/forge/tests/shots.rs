@@ -189,3 +189,35 @@ fn perform() {
     });
     snap(&mut h, "03-perform");
 }
+
+#[test]
+fn settings_drawer_and_faceplate_in_rack() {
+    if !gpu() {
+        return;
+    }
+    let mut h = harness("settings", SIZE, |a| {
+        signed_in(a, "rack");
+        a.prefs.drawer_open = true;
+        a.prefs.drawer_tab = "settings".into();
+        a.llm_status = "Ollama is not reachable: connection refused".into();
+    });
+    snap(&mut h, "08-settings");
+    let mut h = harness("plate", SIZE, |a| {
+        signed_in(a, "rack");
+        let fp = &mut a.forge_doc.current;
+        fp.add_component("p1", "scope", "SIGNAL");
+        fp.add_component("p2", "knob", "DRIVE");
+        fp.add_component("p3", "envelope", "ENV");
+        fp.add_component("p4", "fader", "LEVEL");
+        fp.bind = Some("i-lights".into());
+        let id = a.forge_doc.save_current();
+        a.state
+            .lib
+            .iter_mut()
+            .find(|i| i.id == "i-lights")
+            .unwrap()
+            .faceplate = Some(id);
+        a.state.rack.retain(|d| d.inst == "i-lights");
+    });
+    snap(&mut h, "09-faceplate-in-rack");
+}

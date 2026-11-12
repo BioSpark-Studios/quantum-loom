@@ -451,8 +451,22 @@ fn device(app: &mut ForgeApp, ui: &mut Ui, x0: f32, w: f32, dev: &Device, inst: 
     let (top, bottom, light) = skin(&inst.skin);
     let body_w = w - EAR_W * 2.0;
 
+    // A saved faceplate bound to the instrument is its folded front panel.
+    let plate = inst
+        .faceplate
+        .as_ref()
+        .and_then(|f| app.forge_doc.plate(f))
+        .cloned();
     let mid_h = if dev.open {
         sections::device_height(inst, body_w)
+    } else if let Some(fp) = &plate {
+        match fp.preset.as_str() {
+            "rack1u" => 120.0,
+            "theater" => 260.0,
+            "euro" => 300.0,
+            "auto" => 200.0,
+            _ => 220.0,
+        }
     } else {
         MACROS_H
     };
@@ -620,6 +634,20 @@ fn device(app: &mut ForgeApp, ui: &mut Ui, x0: f32, w: f32, dev: &Device, inst: 
     let mid = Rect::from_min_size(pos2(bx, strip.bottom()), vec2(body_w, mid_h));
     if dev.open {
         sections::device_body(app, ui, mid, dev, inst, on);
+    } else if let Some(fp) = &plate {
+        util::col(ui, mid, ("plate", &dev.id), |ui| {
+            if !on {
+                ui.set_opacity(0.35);
+            }
+            crate::assets::plate(
+                ui,
+                &mut app.bus,
+                &mut app.engine,
+                mid.shrink2(vec2(6.0, 4.0)),
+                fp,
+                &format!("{}.plate", dev.id),
+            );
+        });
     } else {
         let macros = inst.macro_params(&dev.id);
         row(
