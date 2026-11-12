@@ -234,7 +234,7 @@ pub fn asset(key: &str) -> Option<&'static Asset> {
     ASSETS.iter().find(|a| a.key == key)
 }
 
-fn hash(s: &str) -> u32 {
+pub fn hash(s: &str) -> u32 {
     s.chars()
         .fold(7u32, |h, c| h.wrapping_mul(31).wrapping_add(c as u32))
 }
@@ -536,7 +536,14 @@ pub fn material(key: &str) -> (Color32, Color32) {
 }
 
 /// Paint a pane's plate: material, bevelled frame, accent bar, circuit traces.
-pub fn pane_bg(p: &egui::Painter, r: Rect, pane: &Pane, device_mat: &str, selected: bool) {
+pub fn pane_bg(
+    p: &egui::Painter,
+    r: Rect,
+    pane: &Pane,
+    device_mat: &str,
+    selected: bool,
+    plate: Option<egui::TextureId>,
+) {
     let key = if pane.material == "inherit" {
         device_mat
     } else {
@@ -545,8 +552,20 @@ pub fn pane_bg(p: &egui::Painter, r: Rect, pane: &Pane, device_mat: &str, select
     let (a, b) = material(key);
     let accent = util::chc(&pane.accent);
     let r = r.shrink(2.0);
-    grad_v(p, r, 8.0, a, b);
     let light = a.r() as u32 + a.g() as u32 + a.b() as u32 > 420;
+    match plate {
+        // Composited on the GPU: gradient, grain and accent glow in one texture.
+        Some(tex) => {
+            let uv = Rect::from_min_max(pos2(0.0, 0.0), pos2(1.0, 1.0));
+            p.add(egui::epaint::RectShape::filled(r, 8.0, Color32::WHITE).with_texture(tex, uv));
+        }
+        None => {
+            grad_v(p, r, 8.0, a, b);
+            if key != "screen" && !light {
+                brushed(p, r, 0.02);
+            }
+        }
+    }
     if key == "screen" {
         let g = p.with_clip_rect(r);
         let mut x = r.left();
@@ -566,7 +585,6 @@ pub fn pane_bg(p: &egui::Painter, r: Rect, pane: &Pane, device_mat: &str, select
             y += 16.0;
         }
     } else if !light {
-        brushed(p, r, 0.02);
         // etched circuit traces in two corners
         let g = p.with_clip_rect(r);
         for (i, (c0, sx)) in [
@@ -667,7 +685,7 @@ pub fn plate(
             ),
             vec2(nr[2] * rect.width(), nr[3] * rect.height()),
         );
-        pane_bg(ui.painter(), pr, pane, &fp.material, false);
+        pane_bg(ui.painter(), pr, pane, &fp.material, false, None);
         for c in &pane.components {
             let addr = c
                 .param

@@ -1061,7 +1061,29 @@ fn plate_editor(app: &mut ForgeApp, ui: &mut Ui, stage: Rect, edit_components: b
         {
             app.fui.pane = Some(pane.id.clone());
         }
-        assets::pane_bg(ui.painter(), pr, pane, &fp.material, sel && !play);
+        let plate = app.gpu.as_mut().map(|g| {
+            let key = if pane.material == "inherit" {
+                fp.material.as_str()
+            } else {
+                pane.material.as_str()
+            };
+            let (a, b) = assets::material(key);
+            let ppp = ui.ctx().pixels_per_point();
+            let size = (
+                (pr.width() * ppp).round().max(1.0) as u32,
+                (pr.height() * ppp).round().max(1.0) as u32,
+            );
+            let f = |c: egui::Color32| c.to_array().map(|v| v as f32 / 255.0);
+            g.plate(
+                &format!("plate.{}", pane.id),
+                size,
+                f(a),
+                f(b),
+                f(util::chc(&pane.accent)),
+                assets::hash(&pane.id),
+            )
+        });
+        assets::pane_bg(ui.painter(), pr, pane, &fp.material, sel && !play, plate);
         for c in &pane.components {
             let cr = assets::comp_rect(pr, &c.kind, c.x, c.y);
             let addr = fp.address(c);
