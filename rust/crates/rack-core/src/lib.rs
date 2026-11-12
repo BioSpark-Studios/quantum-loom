@@ -6,9 +6,12 @@
 
 pub mod bus;
 pub mod catalog;
+pub mod decks;
 pub mod engine;
 pub mod genesis;
+pub mod graph;
 pub mod model;
+pub mod panel;
 pub mod store;
 
 pub use bus::{Bus, Value};

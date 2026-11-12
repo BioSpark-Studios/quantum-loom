@@ -158,6 +158,10 @@ pub struct ForgeApp {
     pub state: RackState,
     saved_state: RackState,
     pub genesis: Option<Genesis>,
+    pub decks: rack_core::decks::Decks,
+    pub forge_doc: rack_core::panel::ForgeDoc,
+    pub graph: rack_core::graph::Graph,
+    pub fui: crate::forge::ForgeUi,
     pub session: Option<Session>,
     pub vaults: Vec<Vault>,
     pub prefs: Prefs,
@@ -177,6 +181,7 @@ pub struct ForgeApp {
     save_acc: f64,
     saved_rev: u64,
     log_step: i32,
+    save_decks: bool,
 }
 
 impl ForgeApp {
@@ -196,6 +201,21 @@ impl ForgeApp {
         let genesis = ws
             .load::<Genesis>("genesis")
             .or_else(|| Some(Genesis::oros_v7()));
+        let mut decks = ws
+            .load::<rack_core::decks::Decks>("decks")
+            .filter(|d| d.decks.len() == 16)
+            .unwrap_or_default();
+        if decks.decks.iter().all(|d| d.mythos.is_none()) {
+            if let Some(g) = &genesis {
+                decks.seed(g);
+            }
+        }
+        let forge_doc = ws
+            .load::<rack_core::panel::ForgeDoc>("forge-doc")
+            .unwrap_or_default();
+        let graph = ws
+            .load::<rack_core::graph::Graph>("graph")
+            .unwrap_or_else(rack_core::graph::Graph::demo);
         let mut engine = Engine::new();
         // A silent transport runs from the start so screens move before anything is armed.
         engine.play(&mut bus);
@@ -212,6 +232,10 @@ impl ForgeApp {
             engine,
             state,
             genesis,
+            decks,
+            forge_doc,
+            graph,
+            fui: Default::default(),
             session,
             vaults,
             prefs,
@@ -229,6 +253,7 @@ impl ForgeApp {
             core_acc: 0.0,
             save_acc: 0.0,
             log_step: -1,
+            save_decks: true,
         }
     }
 
@@ -384,6 +409,7 @@ impl ForgeApp {
             }
             Action::Mount(g) => {
                 let _ = self.ws.save("genesis", &*g);
+                self.decks.seed(&g);
                 self.genesis = Some(*g);
             }
         }
@@ -392,6 +418,10 @@ impl ForgeApp {
     fn tick(&mut self, dt: f64) {
         self.engine.update(&mut self.bus, dt);
         let t_ms = self.engine.time * 1000.0;
+        if let Some(g) = &self.genesis {
+            let bpm = Engine::bpm_exact(&self.bus);
+            self.decks.update(g, &mut self.bus, dt, bpm);
+        }
 
         self.route_acc += dt;
         if self.route_acc >= 0.05 {
@@ -443,6 +473,11 @@ impl ForgeApp {
         if self.prefs != self.saved_prefs && self.ws.save("prefs", &self.prefs).is_ok() {
             self.saved_prefs = self.prefs.clone();
         }
+        let _ = self.ws.save("forge-doc", &self.forge_doc);
+        let _ = self.ws.save("graph", &self.graph);
+        if self.save_decks {
+            let _ = self.ws.save("decks", &self.decks);
+        }
         if self.bus.rev != self.saved_rev && self.ws.save("params", &self.bus.snapshot()).is_ok() {
             self.saved_rev = self.bus.rev;
         }
@@ -484,14 +519,7 @@ impl ForgeApp {
         match self.prefs.app.as_str() {
             "rack" => rack::body(self, ui, body),
             "modular" => matrix::body(self, ui, body),
-            "perform" => shell::stub(
-                ui,
-                body,
-                "perform",
-                "PERFORMANCE · DJ",
-                "Live parameter tweaking across decks, crossfader and cue points.",
-                "ARRIVES IN THE NEXT PASS · decks, mixer and Genesis discs",
-            ),
+            "perform" => crate::decks::body(self, ui, body),
             _ => crate::forge::body(self, ui, body),
         }
         drawer::show(self, ui, dr, body);

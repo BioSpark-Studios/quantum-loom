@@ -35,16 +35,25 @@ single source of truth.
 - **Headless core output** — the frame adapters see (addresses + numbers), DMX preview, log.
 - **Genesis** — the bundled OROS-V7 world mounts by default; drop a Genesis `.json` on the window to mount another.
 
+- **Performance · DJ** — two jog decks with orb platters, narrative waveform, loop section, transport,
+  quantum-event pads; four-channel mixer with master and the timeline crossfader; FX rack; 16 decks in
+  4 banks playing the mounted Genesis (one deck = one Mythos, Containers are the track list). The core
+  publishes `deck.<id>.out` / `clock` and `mix.intensity` on the bus, and the routing matrix lists deck
+  controls as destinations.
+- **FORGE stages** — LIBRARY (36 live assets by family, search, + PANEL), MODULES (eurorack case, 29 modules,
+  macros, skins, save to library / add to rack), PANEL (pane tree: split, remove, place, drag, play mode,
+  materials, accent, bind and save a faceplate to an instrument), LAYOUTS (7 partition templates, faction
+  resonance), NODE GRAPH (typed wires, cycle check, RUN in dependency order, D/R/L flags, bus writes).
+
 ## Not ported yet
 
-- FORGE stages (Library, Modules, Panel, Layouts, Node Graph) — placeholders.
-- Performance · DJ decks.
+- Faceplates are saved and bound, but a bound instrument still shows its macro knobs in the rack
+  (`assets::plate` draws a faceplate live and is ready to hook in).
 - Bespoke faces for Main Timeline, Eidolon Stage, Chronoscriptorium, Orchestration Nexus,
-  Hearthstone, Herald, Axiomatic Loom, Atom Graph, Atmosphere. They show a control surface:
-  a live screen plus a knob per parameter on the real addresses.
-- Drawer tabs other than Console; Settings; the LLM router (Ollama first).
-- Audio output and MIDI input. The engine runs the same clock and note choice and exposes a
-  synthetic signal model to the screens; `rack_core::engine::AudioBackend` is the seam for a real one.
+  Hearthstone, Herald, Axiomatic Loom, Atom Graph, Atmosphere (control surface for now).
+- The EXTENDED deck layout; the asset families that are mostly art (scenes, icon atlas, QMF / Alchemy sets).
+- Drawer tabs other than Console; Settings; the LLM router (Ollama first) — model nodes pass through, marked.
+- Audio output and MIDI input (controller profiles, MIDI Learn). `rack_core::engine::AudioBackend` is the seam.
 - `.qgcp` (zip / sealed) packages — only plaintext `{header, manifest}` JSON is read.
 
 ## Tests

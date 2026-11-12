@@ -139,10 +139,53 @@ fn matrix_and_drawer() {
 }
 
 #[test]
-fn forge_stage() {
+fn forge_stages() {
     if !gpu() {
         return;
     }
-    let mut h = harness("forge", SIZE, |a| signed_in(a, "forge"));
-    snap(&mut h, "02-forge");
+    for (stage, name) in [
+        ("library", "02-forge-library"),
+        ("case", "02-forge-modules"),
+        ("panel", "02-forge-panel"),
+        ("layouts", "02-forge-layouts"),
+        ("graph", "02-forge-graph"),
+    ] {
+        let mut h = harness("forge", SIZE, move |a| {
+            signed_in(a, "forge");
+            a.prefs.stage = stage.into();
+            if stage == "case" {
+                for k in ["chronicle", "quill", "composer", "dmx"] {
+                    let uid = a.state.ids.next("m");
+                    a.draft.modules.push(rack_core::model::ModuleRef {
+                        uid,
+                        kind: k.into(),
+                    });
+                }
+            }
+            if stage == "panel" {
+                let fp = &mut a.forge_doc.current;
+                fp.add_component("p1", "scope", "SIGNAL");
+                fp.add_component("p2", "knob", "DRIVE");
+                fp.add_component("p3", "envelope", "ENV");
+                fp.add_component("p4", "fader", "LEVEL");
+            }
+            if stage == "graph" {
+                a.graph.run();
+            }
+        });
+        snap(&mut h, name);
+    }
+}
+
+#[test]
+fn perform() {
+    if !gpu() {
+        return;
+    }
+    let mut h = harness("perform", SIZE, |a| {
+        signed_in(a, "perform");
+        a.decks.decks[0].playing = true;
+        a.decks.decks[0].pos = 40.0;
+    });
+    snap(&mut h, "03-perform");
 }

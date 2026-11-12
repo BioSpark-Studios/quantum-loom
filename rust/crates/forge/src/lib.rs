@@ -1,6 +1,8 @@
 //! FORGE — the BioSpark Main Rack client.
 
 pub mod app;
+pub mod assets;
+pub mod decks;
 pub mod drawer;
 pub mod forge;
 pub mod matrix;
