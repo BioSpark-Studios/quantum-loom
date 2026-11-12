@@ -45,11 +45,13 @@ fn mock_ollama(reply: &'static str) -> String {
 }
 
 fn frame(ctx: &egui::Context, app: &mut ForgeApp) {
-    let mut input = egui::RawInput::default();
-    input.screen_rect = Some(egui::Rect::from_min_size(
-        egui::pos2(0.0, 0.0),
-        egui::vec2(1680.0, 1000.0),
-    ));
+    let input = egui::RawInput {
+        screen_rect: Some(egui::Rect::from_min_size(
+            egui::pos2(0.0, 0.0),
+            egui::vec2(1680.0, 1000.0),
+        )),
+        ..Default::default()
+    };
     let mut out = ctx.run_ui(input, |ui| app.ui(ui));
     // No renderer here: the texture uploads are intentionally dropped.
     out.textures_delta.clear();
