@@ -1128,6 +1128,9 @@ html,body{
       <div class="hn-tab" id="hnt-sequencer" onclick="switchLayer('sequencer')" title="Track Sequencer" data-tip="DAW-style timeline — arrange events, beats, and scene triggers" data-tip-title="SEQUENCER">
         <span class="hn-icon">⧖</span>Sequencer
       </div>
+      <div class="hn-tab" id="hnt-rack" onclick="switchLayer('rack')" title="Instrument Rack" data-tip="Modular instrument and signal processing rack with patch cables" data-tip-title="RACK">
+        <span class="hn-icon">◫</span>Rack
+      </div>
       <div class="hn-tab" id="hnt-subgraph" onclick="switchLayer('subgraph')" title="Node Graph" data-tip="Build rule systems and compile subgraph logic for narrative conditions" data-tip-title="NODE GRAPH">
         <span class="hn-icon">⬡</span>Node Graph
       </div>
@@ -1193,6 +1196,11 @@ html,body{
         <span class="ni-icon">⌚</span>
         <span class="ni-label">Scenes</span>
         <span class="nav-badge" id="nb-scenes">0</span>
+      </div>
+      <div class="nav-item" id="nav-rack" data-layer="rack"
+           style="--lc:var(--c-rack)" onclick="switchLayer('rack')" title="Instrument Rack" data-tip="Instrument rack">
+        <span class="ni-icon">⚙</span>
+        <span class="ni-label">Rack</span>
       </div>
       <div class="nav-item" id="nav-sequencer" data-layer="sequencer"
            style="--lc:var(--c-sequencer)" onclick="switchLayer('sequencer')" title="Track Sequencer" data-tip="Track sequencer">
@@ -1278,6 +1286,15 @@ html,body{
         src="quantum-loom-scenes.html"
         onload="frameLoaded('scenes')"></iframe>
 
+      <!-- Rack -->
+      <div class="frame-loader" id="loader-rack">
+        <div class="loader-glyph">⚙</div>
+        <div class="loader-lbl">Loading Instrument Rack</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+      </div>
+      <iframe class="layer-frame" id="frame-rack"
+        src="quantum-loom-rack.html"
+        onload="frameLoaded('rack')"></iframe>
 
       <!-- Sequencer -->
       <div class="frame-loader" id="loader-sequencer">
@@ -2106,6 +2123,7 @@ const LAYERS = {
   library:   { label:'Capsule Library',     icon:'⊞',  color:'var(--c-library)',   file:'quantum-loom-library.html'  },
   zones:     { label:'Zone Canvas',         icon:'◫',  color:'var(--c-zones)',     file:'quantum-loom-zones.html'    },
   scenes:    { label:'Scene Manager',       icon:'⌚',  color:'var(--c-scenes)',    file:'quantum-loom-scenes.html'   },
+  rack:      { label:'Instrument Rack',     icon:'⚙',  color:'var(--c-rack)',      file:'quantum-loom-rack.html'     },
   sequencer: { label:'Track Sequencer',     icon:'⧖',  color:'var(--c-sequencer)', file:'quantum-loom-sequencer.html'},
   subgraph:  { label:'Sub-Graph Canvas',    icon:'⬡',  color:'var(--c-subgraph)',  file:'quantum-loom-subgraph.html' },
   ionodes:   { label:'Signal Bus & I/O',    icon:'⇌',  color:'var(--c-ionodes)',   file:'quantum-loom-io-nodes.html' },
@@ -3817,7 +3835,7 @@ const ATLAS_LAYERS = new Set(['atlas','environ','architect','lighting','modeling
 // Loom layer tab IDs (maps layer key → header tab id)
 const LOOM_TAB_MAP = {
   workspace:'hnt-workspace', library:'hnt-library', zones:'hnt-zones',
-  scenes:'hnt-scenes', sequencer:'hnt-sequencer',
+  scenes:'hnt-scenes', sequencer:'hnt-sequencer', rack:'hnt-rack',
   subgraph:'hnt-subgraph', ionodes:'hnt-subgraph', output:'hnt-output',
 };
 

@@ -42,7 +42,7 @@ Built by BioSpark Studios as part of the Quantum Ecosystem — a modular platfor
 - **16 wire types** — typed data channels (DAT, CTL, AUD, NAR, TMP, AGT, VIS, SPA, BHV, SOC, ENR, IDN, EVT, AST, MET, LGC)
 - **B-DNA** — deterministic entity identity hash (LCG-derived 16-char hex)
 - **Hex grid** — pointy-top axial coordinates, radius 14, 631 hexes
-- **Main Rack (native)** — the instrument rack now lives in `rust/` as FORGE, an egui + wgpu app (`cd rust && cargo run -p forge --release`); see `rust/README.md`
+- **Instrument Rack** — modular audio synthesis linked to the Sound module
 - **AI Draft mode** — streams prose from Ollama, Claude, Gemini, OpenAI, or Azure
 - **Firebase cloud sync** with real-time collaboration
 - **Electron desktop app** with native file dialogs

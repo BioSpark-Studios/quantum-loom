@@ -6,7 +6,7 @@ Written for the next agent. Read this first, then `rust/README.md` and `rust/ref
 > (`BioSpark-Studios/quantum-loom`, branch `claude/design-implementation-0wt4j2`, PR #32) because that was
 > where the session started. The owner says it likely belongs somewhere else (a new repo, or local).
 > Everything lives under `rust/` and is self-contained, so it can be lifted out as a unit. Nothing outside
-> `rust/` was changed except where noted in "What was replaced".
+> `rust/` was changed, except `.gitignore` (one line for `rust/target/`) and `.github/workflows/rust.yml`.
 
 ## 1. What this is
 
@@ -125,9 +125,10 @@ to a push).
   `5ff3565` (the GPU plate commit) when this was written.
 - Verified headlessly (swiftshader) against the design's screenshots; the GPU plate was checked by rendering one
   to an image. **The live app window has never been seen by the owner or by me.**
-- What was replaced: the Electron Instrument Rack page's role (the owner chose "Replace the Electron rack page").
-  The Rust app lives beside it under `rust/`; check whether the old page still needs removing once the final repo
-  is decided.
+- The original plan replaced the Electron rack page. That was **undone**: `app/quantum-loom-rack.html`, the
+  hub, the library page and the root README are restored to their pre-PR state, so the Loom app is untouched.
+  The Rust app is a separate port that sits beside it; nothing in the Loom links to it. The root README no
+  longer mentions it.
 
 ## 7. Not done, and why
 

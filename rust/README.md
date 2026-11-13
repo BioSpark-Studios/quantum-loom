@@ -1,7 +1,7 @@
 # FORGE · BioSpark Main Rack (Rust · egui · wgpu)
 
 Native port of the **BioSpark Main Rack** design (`BioSpark Main Rack.html` in the
-Claude Design project). It replaces the Electron `quantum-loom-rack.html` page.
+Claude Design project). It is a native port of the Main Rack; the Electron `quantum-loom-rack.html` page is left as it was.
 
 ```bash
 cd rust
