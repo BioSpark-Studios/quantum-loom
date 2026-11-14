@@ -1,0 +1,15 @@
+[package]
+name = "instrument-kit"
+description = "Shared egui instrument widgets for the Quantum ecosystem: tokens, knobs, faders, pads, meters, screens, glyphs."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+egui.workspace = true
+serde_json.workspace = true
+resvg.workspace = true

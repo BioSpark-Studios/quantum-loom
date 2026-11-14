@@ -1,0 +1,28 @@
+[workspace]
+resolver = "2"
+members = ["crates/rack-core", "crates/rack-llm", "crates/stencil-core", "crates/stencil-gpu", "crates/instrument-kit", "crates/forge"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "LicenseRef-BioSpark-Licensing"
+publish = false
+
+[workspace.dependencies]
+egui = "0.37"
+eframe = { version = "0.37", default-features = false, features = ["wgpu", "default_fonts", "x11", "wayland"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+resvg = "0.45"
+wgpu = "30"
+bytemuck = { version = "1", features = ["derive"] }
+pollster = "0.4"
+
+[profile.dev]
+opt-level = 1
+
+[workspace.lints.clippy]
+# Painting helpers take geometry + style in one call; bundling them into
+# structs would only add ceremony at every call site.
+too_many_arguments = "allow"
+needless_range_loop = "allow"
